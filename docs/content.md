@@ -31,7 +31,7 @@ map-vessel tags `POSITION/COURSE/SPEED/ROUTE/ROUTE_TIME/CONTACT_*/CARGO/NEEDS` Â
 * Enemy strike groups are stored in the **save** and can be rewritten (rebalance repo: `sg_editor.py`); levels cannot be added (`formats.md`).
 
 ## Experiment plan (safe, reversible; back up `Media/`, `Data/Dialogs/`, saves first)
-1. New art: add `TESTNPC_C` / `TESTNPC_S` Animations (a copied portrait PNG) in a new `.res` listed in `media.res`, or in `Tex_Extra/Extra.res`. Does the game load an extra `.res`?
+1. New art: add `TESTNPC_C` / `TESTNPC_S` Animations (a copied portrait PNG) in a new `.res` listed in `media.res`, or in `Tex_Extra/Extra.res`. The engine's `Include` is generic and new names are accepted (`formats.md`), and `hge.log` reports script errors, so this is the safest first test.
 2. Replace the text of one easily reached, harmless entry with `<NPC=TESTNPC>...`; does the portrait appear, does an unknown name break anything?
 3. New event picture: `event_test` Animation + an `EVENT_CARD` entry using it.
 4. Only then: reach a NEW key (needs a script/event that jumps to it: chain it from an existing `<SCR=CONTINUE|NEWKEY>` or answer button).

@@ -52,6 +52,11 @@ recomputing arcs, sensor arcs, global stats, mass/density and elevation. It does
   `Animation name { texture  rect = x,y,w,h  hotspot  zorder  resgroup  frames }`: a named rectangle of a 4096x4096 RGBA PNG atlas.
   `Tex_Extra/Extra.res` is a small pack of loose textures. Sounds are `Media/Snd` (wav/ogg), `*.psi` particle files in `Prt`.
 * Animation names are used by parts, icons (`Static*.res`), dialogue (`{animation=...}`), UI.
+* The `.res` language is stock **HGE** (open source: github.com/masonm12/HGE, `src/helpers/parser.cpp`, `resources.cpp`) [code]: resource kinds `Include Resource Texture Sound Music Stream Target Sprite Animation Font
+  Particle Distortion StringTable`; properties `filename resgroup mipmap amplify size zbuffer texture rect hotspot blendmode color zorder flip scale proportion rotation frames fps mode tracking spacing sprite mesh`;
+  `;` starts a comment; `Name : BaseName { ... }` derives a resource from an earlier one; `Include <path>` loads another script (path through the engine's file loader, recursive, an already loaded script is skipped).
+  **A name already defined for the same resource type is rejected** ("already has been defined"; the first definition wins), so new art needs new names, and overriding a vanilla name means editing the original.
+  Parse errors are written to the engine log (`hge.log` in the game folder). `texasm` (in the HGE tools) packs sprites into an atlas and writes the `.res`.
 
 ## Levels (`Data/Levels/*.seria`) [game + guide]
 Empty shells: `LVL_SCRIPT=SCR_*`, `LVL_HIGH/LOW` (arena size), `LVL_WIND_FORCE`, `LVL_BACKGROUND`. All logic is in code (no script files). Known: `Map`, `City`, `Missile`
