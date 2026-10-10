@@ -34,7 +34,7 @@ Each is a float from 0 to 1 (a too bright HUD at night is uncomfortable). `GFX_S
 ## Dialog tags
 Tags in the dialog files are written in angle brackets, e.g. `<BLUR=0>`.
 `<RENDER_LAMP_ON>` / `<RENDER_LAMP_OFF>` turn the lamp effect in dialogs on and off.
-(The full set of tags found in the game's own English dialog file is in NOTES.md, section "Dialogue, characters and events".)
+(The full tag census from the game's own English dialog file is in NOTES.md, section 9.)
 
 ## Keys actually present in a stock `Config.ini` (Steam 1.163, observed)
 `CORE_INIT_LEVEL`, `CORE_PROLOGUE_PASSED`, `CORE_LANGUAGE` (1 on the Russian install), `CORE_AIMING_MODE`, `CORE_LAST_LOADED_VERSION`,

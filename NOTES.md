@@ -254,7 +254,35 @@ A community member who reads the code said the refuel rate is **hard-coded**, no
 * On the map, missiles can be shot at planes and other missiles; this is computed on the map without a battle level.
 * Planes: a group is one `MapCraft` object; in `Bombers.seria` they spawn from it.
 
-## 9. Open questions
+## 9. Dialogue, characters, events and textures  (feasibility study, nothing built yet)
+
+Question: could mods add NEW characters, events and textures (not just convert existing ones)? What the files and the code show so far:
+
+**Textures are plain data [game files].** `Media/media.res` is a text index (`Include Media/Tex/Background1.res`, ... `Include Media/Tex_Extra/Extra.res`). Each `.res` has
+```
+Texture Background1 { filename = Media/Tex/Background1.png  resgroup = 0 }
+Animation crowd_man6_salute1_01 { texture = Background1  rect = 3,3,150,150  hotspot = 75,75  zorder = 0.0  resgroup = 0  frames = 17 }
+```
+Atlases are 4096x4096 RGBA PNGs; an Animation is a named rectangle (x,y,w,h) of an atlas. `Tex_Extra/Extra.res` is a small pack of 4 loose textures. Animation names are used all over: parts
+(`m_animation_name=nuke_03`), icons, dialogue text (`{animation=event_diana}`), UI. So new art = new PNG + new `.res` + one `Include` line (to be verified that the game reads it).
+
+**Dialogue** [game files, decoded English pack, 2914 entries]: `Data/Dialogs/*.seria_enc` (cipher in section 3). An entry is `#KEY<TAB>text`; the text mixes `<TAG=value>` commands with the spoken text and `{...}` text styling.
+* Tag census (top): `SCR` 1010, `NPC` 722, `SIDE` 496, `ANS` 473 (answer buttons: `<ANS=text|NEXT_KEY|effect>`), `EVENT_CARD` 172, `NOSPEAK`, `SHADOW`, `MUSIC`, `APPROVE`, `TRG`, `HANDSHOW_*`, `AMBIENT`, `BLUR*`, `SOUND`, `GLOW_GUI`, `EVENT`, `ACTIVE`, `BACKGROUND`, `ILLUSTRATION`, `SALUTE`, `CORNER_SPEAK`, `FADEAWAY`, `POSITION/COURSE/SPEED/ROUTE/ROUTE_TIME` (a vessel on the map), `NEEDS`, `CARGO`, `CONTACT_*`, ... 60 kinds in all.
+* `<SCR=...>` is the script action (223 distinct): `CONTINUE|NEXT_KEY`, `STOP`, `EXIT`, `SKIP|KEY`, `CHECK_JOINED|NAME|KEY`, `END_BRIEFING|n`, `MORAL|n`, `JOIN=Ship,NPC`, `LEVEL_WEALTH=-1`, ... Entries are chained by key name (`PETR_DAUD_1` -> `PETR_DAUD_2`).
+* Event cards: `<EVENT_CARD>{font=...}{align=2}TITLE@10 {animation=event_diana} @30...`; there are ~48 `event_*` animations (event_diana, event_triumph, event_murder_01, ...) and `event_noimage`.
+* `<ILLUSTRATION=-1>`, `<BACKGROUND=name>` (e.g. `background_crowd_01`, `undeground_02`), `<MUSIC=Duduk_4_ever>`.
+
+**Characters [game files + code]:** 16 `<NPC=NAME>` values in the English pack: PETR (294 lines), DAUD, FASIL, BOY, HIRE, OMAR, GOVERNOR, AIRBORNE, LOCAL, HISSID, HARISHID, GIRL, SCOUT, VETERAN, KNIGHT, PROPHET.
+* Art naming is uniform: two portrait animations per character, **`NAME_C` and `NAME_S`** (about 1000-1300 px wide, on `Static*.res` atlases), plus `icon_name` (87x87, `Static*`), and for some a full-screen scene `alarm_name` / `inter_name` (1920x1080, `Hall*.res`). `LOCAL` and `HIRE` have no portraits.
+* Code: a generic NPC system with saved lists `m_npcs`, `m_npcs_known`, `m_npc_index` and events `NPC_JOINED`, `NPC_LEFT`, `NPC_STATUS`, `NPC_TAKEOFF`, UI `LANDMODE_NPC`, `icon_npc_black`, and the script `CHECK_JOINED`; AND hard-coded story logic for particular scripted flows (`PETR_DEPARTURE`, `PETR_DEPARTURE_CHANCES`, `PETR_DAUD`, `PETR_ANYTIME`, `TUTORIAL_*`, `ISAIAH_*`). [guess] NPC names are strings, not an enum, so a dialogue-only new character may need nothing but art and text; characters with mechanics (joining the fleet with a role) may need code.
+* The community save editor in vladyorsh/highfleet_total_rebalance (section 10) shows that enemy strike-group compositions live in the SAVE (`profile.seria`) and can be rewritten.
+
+**Experiment plan (safe, reversible):** (1) add `Texture`/`Animation` entries `TESTNPC_C`/`TESTNPC_S` (copy an existing portrait PNG) to `Tex_Extra/Extra.res`; (2) replace the text of one easily reached, harmless dialogue entry with `<NPC=TESTNPC>`; (3) see whether the portrait shows; then (4) a new `event_test` card; (5) only then think about triggering NEW dialogue (a new key must be reachable from a script/event or from the save). Back up `Media/` and `Data/Dialogs/` first; a game update overwrites them.
+
+## 10. Prior art: highfleet_total_rebalance (vladyorsh, GitHub)
+A data-only "total rebalance": edited `Libraries/OL.seria` + `parts.seria`, ~hundreds of redesigned ships in `Objects/Designs`, edited dialogue packs (new ship entries, typo fixes), submods (ship replacements, "Revert to Vanilla"), and **Python tools**: `updater.py` (re-computes a ship's stats after the part library changed, using the vanilla OL as reference), `sg_editor.py` + `sg_config.py` (rewrites the enemy "strike group" fleets inside a save from a config: per group a list of `ShipEntry([names], difficulties, spawn_chance)`), `renamer.py`, and `ModTool` (a GUI, shipped as a 49 MB `modtool.exe` in the repo: not run here). Useful for us as a precedent for the data pipeline, for save rewriting, and for the library-diff idea (a ship must be re-saved after a part changes).
+
+## 11. Open questions
 * Map-level AA against flocks/salvos (a merged object is only created inside the fight, but check the three-crafts-per-pass rule against bigger groups).
 * Launching a volley as ONE map object with count N (it would also fly as a group); the `MapCraft` scenario `SCR_BOMBERS` has not been read.
 * Whether an AI fleet defending against our salvo uses the same `Missile.seria` setup (the merge would apply to it too).
