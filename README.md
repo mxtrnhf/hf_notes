@@ -12,6 +12,7 @@ Tags: **[game]** verified in play · **[code]** read from the decompilation · *
 | [docs/hooks.md](docs/hooks.md) | hooking techniques and who owns which patch site |
 | [docs/mods/](docs/mods/) | one short page per mod: elevation, speed, multicharge, salvo, refuel |
 | [docs/content.md](docs/content.md) | dialogue, characters, events, textures (study + experiment plan) |
+| [docs/total-conversion-hara-vera.md](docs/total-conversion-hara-vera.md) | study of the "Flight to Hara Vera" total conversion: package, media, parts, dialogue, installer format |
 | [docs/open-questions.md](docs/open-questions.md) | what is unknown or undecided |
 | [ref/](ref/) | Config.ini reference, summaries of community guides and prior art |
 
