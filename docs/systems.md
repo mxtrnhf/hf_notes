@@ -51,8 +51,8 @@ Per frame, inside the fleet update, for a docked fleet (`RSI`), station (`R15`),
   `0x10` force floor 3. A part without `0x01`/`0x10` keeps its saved floor. An automatic part rises by 1 when every connection-slot neighbour is at or above it, repeating until stable
   (bumping attached non-socket children). Saved ships contain floors 1-3.
 * Arc scan `Body::ScanSectors` `0x140052340`: 360 one-degree rays via `World_RaycastBodies` `0x140239f30`; a hit writes 0 to that degree's `m_sectors` entry. `UpdateEngineCovered`
-  `0x14001c4a0` averages the engine cone into `m_mdl_covered`. A body blocks a ray only if its category bit (0-based 5) is not set (deck) **or** `shooterFloor <= otherFloor`
-  (+1 if the body's master type is 7): elevation decides who can block whom.
+  `0x14001c4a0` averages the engine cone into `m_mdl_covered`. A body blocks a ray only if it is **not a gun** (category bit 5) **or** `shooterFloor <= otherFloor`
+  (+1 if the body's master type is 7): elevation decides who can block whom (guns only block by height).
 * Gun arc blocking is restored in 1.163 by highfleet-qol: it detours `FireGun` (inject `0x140032f22`, exit `0x140032ef0`, return `0x140032f29`), reads the gun's 360 `m_sectors`
   (requires stats +0x128 != 0), maps the gun angle relative to the root to a sector and blocks on 0.0.
 

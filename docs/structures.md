@@ -52,11 +52,28 @@ transform, +0x178 side (float; sign = friend/foe), +0x210 damage. Smart-ref = 0x
 Units [guide]: `m_weapon_load_time` in 4/7 s; `m_launched_range` km for strategic; `m_launched_speed` m/s on the map, `speed2` arcade; guns with the lowest priority value are
 auxiliary (ground units fire only priority <= 100). Caliber index ties to shell stats (ammo-extended `padding_cch`).
 
-### `m_category` bits [guide, 1-based from the least significant bit; "?" = uncertain]
-5 strategic launch · 6 deck · 7 APS · 9 flares · 10 jammer · 11 bomb logic · 12 IR detection · 13 enables arc calc and elevation, elevation -1 (?) · 16 ELINT/radar (?) ·
-17 anti-radiation homing (?) · 18 arcade launch (missile) · 19 leg · 20 cargo (?) · 21 crew/generator (?) · 22 aircraft · 24 engine · 25 hull · 26 MDL_BLOCK (?) ·
-27 gun (enables elevation, +1) · 28 ammo · 29 escape pods · 30 FSS · 31 armor · 32 fuel. (Bits 1-4 unused; 8, 14, 15, 23 unknown.)
-Cross-check [game]: the raycast "may block" test uses `~(category >> 5) & 1` (0-based bit 5 = guide bit 6, **deck**).
+### `m_category` bits [game files: read from every `m_stats` record of the 1.163 `OL.seria`]
+0-based bit = value 2^n. (The community guide numbers the same bits from the high end: guide N = bit 32 - N; its descriptions match.)
+
+| Bit | Value | Parts with it | Bit | Value | Parts with it |
+|---|---|---|---|---|---|
+| 0 | 1 | fuel | 14 | 16384 | tactical missiles (arcade launch) |
+| 1 | 2 | armor | 15 | 32768 | protector (?) |
+| 2 | 4 | FSS | 16 | 65536 | radar, FCR, SPO (ELINT/radar) |
+| 3 | 8 | escape pods (EVAC) | 17 | 131072 | railing |
+| 4 | 16 | ammo | 19 | 524288 | ground units, missile drum |
+| 5 | 32 | **gun** (cannons, harpoon, RSZO, torpedo) | 20 | 1048576 | IR detection (IRST) |
+| 6 | 64 | block, bridge | 21 | 2097152 | bomb |
+| 7 | 128 | hull (HARD, FERMA) | 22 | 4194304 | jammer |
+| 8 | 256 | engine | 23 | 8388608 | flares |
+| 9 | 512 | destiller | 24 | 16777216 | rescue items |
+| 10 | 1024 | aircraft (CRAFT_*) | 25 | 33554432 | KAZ (active protection) |
+| 11 | 2048 | generator, quarters | 26 | 67108864 | deck |
+| 12 | 4096 | cargo | **27** | **134217728** | **strategic launch** (all `MDL_NUKE_*`, so the A-100) |
+| 13 | 8192 | leg | 28-31 | - | unused |
+
+The guide adds: gun enables elevation and shifts it +1; bit 19's group enables arc calculation and shifts elevation -1 (?). Cross-check [game]: the raycast "may block" test uses
+`~(category >> 5) & 1`, i.e. a body blocks a ray unless it is a **gun** (bit 5), or the floor rule allows it (`systems.md`).
 
 ## Fleet (Escadra, 0x147) [code unless noted]
 +0x100 std::list of ships (ship objects via `FUN_14021b070`) · +0x150/+0x154 position · +0x158 speed · +0x15c heading · +0x240 reverse flag ·
