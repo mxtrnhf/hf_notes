@@ -5,6 +5,7 @@ Tags: **[game]** verified in play · **[code]** read from the decompilation · *
 
 | Read | For |
 |---|---|
+| [docs/install.md](docs/install.md) | **installing the mods on a clean game**: order, per-mod steps, test settings, pass/fail log lines, troubleshooting |
 | [docs/setup.md](docs/setup.md) | tools, modloader, building, pitfalls, safe-edit rules |
 | [docs/formats.md](docs/formats.md) | `.seria`, libraries, ships, saves, language packs, textures/`.res`, levels |
 | [docs/structures.md](docs/structures.md) | class codes, Body / stats / fleet / map-missile layouts, `m_category` bits |

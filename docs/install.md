@@ -1,0 +1,64 @@
+# Installing the mods on a clean game (Steam 1.163, Linux/Proton)
+
+Order matters in two places: the modloader before any mod, and the game must have run **once with ShipworksExtended** before the data tool can add parts to the shipworks palette.
+Facts below come from our own installs; the Proton launch options are the part of this page you may not need (see "Proton").
+
+## 0. Before the reinstall
+* Back up `Saves/`, `SavesSkirmish/`, `Ships/`, `Config.ini` (a tarball of these plus `Modloader/config` is in `~/Development/hf_game_backup`).
+* Steam may install a newer build than 1.163. Check after step 2: `error.log` starts with `HIGHFLEET v.1.163`, and later the modloader log says `Highfleet version: Steam 1.163`. Our DLLs refuse to run on any other build.
+
+## 1. Clean reinstall
+1. Steam: uninstall Highfleet. 2. Delete what is left of the folder (`Modloader/`, `modloader/`, `shipworksext/`, `hge/` clones, `bass.dll.bak`...). The game folder must show only Steam's files.
+3. Install through Steam, then **verify the game files** once. 4. Restore `Saves/`, `Ships/`, `Config.ini` from the backup *while the game is closed*.
+The Wine prefix (`~/.local/share/Steam/steamapps/compatdata/1434950`) survives an uninstall and already has `gdiplus.dll`; no launch options are set on our machine and everything works.
+
+## 2. Modloader 4.1.0 (logdot)
+Download `Artifacts.zip` from the latest release, extract into the game folder. You must end up with **`bass.dll` (the loader) and `bass.dll_` (the original)** next to `Highfleet.exe`.
+Start the game once and close it: `Modloader/` appears with `logs/`, `config/logging.json`, `mods/`. Its newest log (`Modloader/logs/Highfleet_<date>.log`) must say `Highfleet version: Steam 1.163`.
+
+## 3. Companion mods (drop DLLs in `Modloader/mods`, configs in `Modloader/config`)
+| Mod | Source | Notes |
+|---|---|---|
+| ShipworksExtended | logdot release (Linux support is merged) or our saved working copy `hf_aa_missile/ShipworksExtended.dll` | needs `gdiplus` in the prefix; **open the shipworks once** so `Modloader/config/Shipworks.json` is created, then close the game |
+| highfleet-qol | logdot release | creates `qol.json`; for the elevation test keep `"enable_unblocked_guns": false` (gun arcs blocked) |
+Do not hand-edit `Shipworks.json` with ids that do not exist: a part that is missing or malformed in the shipworks list crashes the game on entering the shipworks (ShipworksExtended README).
+
+## 4. Our mods (each zip merges into the game folder)
+`highfleet-elevation`, `highfleet-speed`, `highfleet-refuel`, `highfleet-salvo` are plain drop-ins (config files are shipped or created on first run).
+**`highfleet-multicharge` has one extra step**, with the game *closed* and `Shipworks.json` present:
+```
+python3 tools/apply_data.py "<game folder>"
+```
+Expected output: each section `OL.seria stats : [...]`, `parts.seria body: [...]`, `language packs : {...}`, `shipworks palette: [...]` listing the new ids (`MDL_AA_X3/X2/X1`, `MDL_A101_4..1`), then `done`.
+It makes `.bak` copies once; running it again prints `already present`. A game update overwrites the edited files: run it again. Do NOT keep an older `elevation.dll` next to `highfleet_elevation.dll`.
+
+## 5. Settings used for the tests (everything ships at vanilla values)
+| File | Setting | Test value |
+|---|---|---|
+| `salvo.ini` | `map_launch_delay` / `group_missiles` | `3` / `1` (shipped `-1` / `0` = off) |
+| `refuel.ini` | `player_rate_multiplier` | `5` (shipped `1`) |
+| `speed.ini` | `preset` | `classic` for the second half of the speed test (shipped `vanilla`) |
+Restart the game after any change (speed.ini reloads by itself).
+
+## 6. Pass/fail record: what each mod writes when it works
+| Mod | File | Expected lines |
+|---|---|---|
+| Modloader | `Modloader/logs/Highfleet_*.log` | `Highfleet version: Steam 1.163`, `Loading mod: ...` for every DLL, no `Failed` |
+| elevation | `Modloader/elevation.log` | `elevation mod loaded: U raise, P lower, \ auto ...`, `overlay created` |
+| speed | `Modloader/speed.log` | `patch installed (call site 0000000140080699 ...)`, then `speed: TWR=... -> ... km/h` lines when ships are shown |
+| multicharge | `Modloader/multicharge.log` | `charges: enabled=1, 2 part chain(s)`, `detours: player=1 ai=1 map=1`; in battle `... launched a clone of part ... now MDL_AA_X2 (2 of 3 left)` and finally `last charge (MDL_AA_X1) launched the real part`; on the map `map launch: ... level MDL_A101_4 (4 of 4 charges left)` |
+| salvo | `Modloader/salvo.log` | `salvo: enabled=1 map_launch_delay=3 group_missiles=1 ...`, `loader hook=1, launch cooldown patch=1`, `launch cooldown: 300 -> 3`; a grouped defence logs `group: merged N object(s); the defence will face N+1 missile(s)` |
+| refuel | `Modloader/refuel.log` | `rate patch: 1` and three `rate: ...` lines (`player (fuel station) rate 200 -> 1000`, `player rate 100 -> 500`, `AI rate 100 -> 100`) |
+In-game checks, in the order of the checklist: elevation (U/P/\\ on a held part), speed (shipworks stats: vanilla numbers first, then classic = `25 * TWR`), Triumph in a shipworks test battle (names go "С-4 Триумф" > "(2/3)" > "(1/3)" and the part vanishes after the third launch),
+A-101 in the campaign (map launch 4/4 -> 1/4, then gone), the Kh-15 salvo (volley leaves together; grouped defence faces several missiles in one battle), refueling (compare the time at multiplier 1 and 5).
+
+## 7. If something does nothing
+1. The mod's own log first (table above): a `unsupported game version` line means the build is not Steam 1.163; `... never matched the expected bytes` means the game code differs.
+2. The modloader log: the DLL must be listed as loaded; `does not expose highfleet_mod_setup_v1` is only the optional logging bridge and is harmless.
+3. Crash when entering the shipworks: `gdiplus` (`protontricks 1434950 gdiplus`) or a bad entry in `Shipworks.json`.
+4. After a game update: run `apply_data.py` again; if the build changed, our mods stay inactive by design.
+5. Roll back: delete the mod DLLs; restore the `.bak` files (`Libraries/OL.seria`, `parts.seria`, `Data/Dialogs/*`); Steam "verify files". Saves containing the multi-charge parts will not load without their definitions.
+
+## Proton
+Logdot's ShipworksExtended README suggests launch options `WINEDLLOVERRIDES="dinput8=n,b;gdiplus=n,b;bass=n,b" %command%` and `protontricks 1434950 gdiplus` for Linux. On our machine neither was needed (no launch options; `gdiplus.dll` already in the prefix);
+add them only if the shipworks crashes or the loader is not picked up.
