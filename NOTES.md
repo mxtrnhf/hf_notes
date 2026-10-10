@@ -258,6 +258,7 @@ A community member who reads the code said the refuel rate is **hard-coded**, no
 * Map-level AA against flocks/salvos (a merged object is only created inside the fight, but check the three-crafts-per-pass rule against bigger groups).
 * Launching a volley as ONE map object with count N (it would also fly as a group); the `MapCraft` scenario `SCR_BOMBERS` has not been read.
 * Whether an AI fleet defending against our salvo uses the same `Missile.seria` setup (the merge would apply to it too).
+* **Multi-charge strategic missiles together with salvos** is deliberately not designed or tested: one A-101 part is one launcher switch (one queued launch at a time), so a single part cannot fire several charges in one volley; a volley of several A-101 parts works as separate launches, and the defence merge treats them like any other missiles. Decide the intended use before testing or documenting it.
 * `CraftsVsMissile` / `CraftsVsCrafts` flows; shop behaviour of the Triumph in a fresh campaign (QoL rolls shops once per city).
 * Gun-side use of `m_sectors` is solved by highfleet-qol; the arc scan being "gated off by data" (stats +0x128 == 0) versus a patched call is not settled.
 * For a public release: inject names/descriptions at runtime instead of editing the language packs; README/guide for adding new multi-charge parts; LICENSE name; scrub paths.
