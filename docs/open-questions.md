@@ -9,6 +9,9 @@
 * The arc scan being "gated off by data" (stats +0x128 == 0) versus a patched call is not settled (gun-side blocking itself is solved by highfleet-qol).
 * Refuel: the buy-fuel slider and `REFUEL_TIME` are untraced. GOG 1.163 may share addresses with Steam 1.163; untested.
 
+## Engine (see `engine-hge.md`)
+* Which assets go through `Resource_Load` (textures? sounds? particles?) and whether `Resource_AttachPack` can override `media.res`: needs a log-only hook run. Which stock System_ method is missing from the interface table (Launch or Snapshot).
+
 ## Content (see `content.md`, `total-conversion-hara-vera.md`)
 * Hara Vera proves new art, parts, dialogue and event branches as data; untested: a brand-new NPC *name* (the mod reused the 14 originals), a new random-event root, and whether its installer's 101 entries without data are duplicates (needs a real run into an empty folder).
 * Does the game read an extra `.res` listed in `media.res`? Does an unknown `<NPC=...>` work with only `_C/_S` art? How to reach a brand-new dialogue key? Which characters need code (`JOIN`, loyalty)?

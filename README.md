@@ -9,6 +9,7 @@ Tags: **[game]** verified in play · **[code]** read from the decompilation · *
 | [docs/formats.md](docs/formats.md) | `.seria`, libraries, ships, saves, language packs, textures/`.res`, levels |
 | [docs/structures.md](docs/structures.md) | class codes, Body / stats / fleet / map-missile layouts, `m_category` bits |
 | [docs/systems.md](docs/systems.md) | how launching, engagements, refueling, elevation/arcs work |
+| [docs/engine-hge.md](docs/engine-hge.md) | the HGE engine under the game: interface table, resource loading, stock formats (.psi, .fnt, .res), mod seams |
 | [docs/hooks.md](docs/hooks.md) | hooking techniques and who owns which patch site |
 | [docs/mods/](docs/mods/) | one short page per mod: elevation, speed, multicharge, salvo, refuel |
 | [docs/content.md](docs/content.md) | dialogue, characters, events, textures (study + experiment plan) |
