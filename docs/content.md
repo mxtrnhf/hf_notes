@@ -30,10 +30,21 @@ map-vessel tags `POSITION/COURSE/SPEED/ROUTE/ROUTE_TIME/CONTACT_*/CARGO/NEEDS` Â
 * What triggers a given key is in code or in earlier entries' scripts. The guide lists "triggering specific events" and "expanding/branching existing events" as unsolved.
 * Enemy strike groups are stored in the **save** and can be rewritten (rebalance repo: `sg_editor.py`); levels cannot be added (`formats.md`).
 
+## How the code reaches entries [code: key strings in the exe vs. references between entries]
+* 2902 entries. Only 442 are referenced by another entry's `<SCR|ANS|TRG>`; ~860 entry points are **literal strings in the executable** (the code triggers them by name);
+  ~1250 are built from a prefix + name/number at run time. Prefix constants found in the exe: `HELLO_GREETING_`, `INTERCOM_`, `DIALOG_`, `SHIP_NAME_`, `SHIP_DESC_`, `LOCATION_NAME_`,
+  `ESCADRA_NAME_`, `FILM_`, `VERSE_`, `SUPPLIES_`, `PRECOMBAT_PLAYER_`, `GLITCH_LEVEL_`, `MAPMARK_`, `MAPMODE_`, `LANDMODE_`, `BUY_`, `CRAFT_`, `RAM_`, `EDC_`.
+  A new entry under such a prefix may be found without code changes (e.g. `SHIP_NAME_<new ship>`); whether the code takes a random/last index (e.g. more greetings) is unknown.
+* **Random events** are families `EVENT_<NAME>[_NN]` (194 entries, ~38 events: ASSAULT, BLASPHEMY, BLESSING_01, BURN_FUEL, CARAVAN_01-04, CHASE, CLOTH, DAAVAT, DILEMA, DISASTER, DISCONTENT_01,
+  DISHONOR, EHUDA, EXECUTION, HEADS, HUSH_01, LEGEND_01, LOYALISTS, MONK_01, MURDER_01, NAME, PARTISANS_01, RADIORELAY, REVOLT, ROBE, SILO, SLAVERY_01/02, STEALING_01, TRAITOR). The **root name is in
+  code**; branches/outcomes (`_YES`, `_NO_FAIL`, `_RES2`...) are reached by text scripts only. Consequence: existing events can be rewritten or extended freely; a NEW event root needs code
+  (a hook that starts it) or must reuse an existing root.
+* Outcome effects seen inside events (`<SCR=...|EFFECT=n>`): `MORAL`, `GOLD`, `FORCE`, `<NPC>=n` (loyalty), `FEAR`, `GERAT`, `DICE`, `LEVEL_FEAR`, `HUSH`, `WEALTH`, `CREW`, `RIGHT`, `WOUND`, `CRUELTY`, `INTEL`.
+
 ## Experiment plan (safe, reversible; back up `Media/`, `Data/Dialogs/`, saves first)
 1. New art: add `TESTNPC_C` / `TESTNPC_S` Animations (a copied portrait PNG) in a new `.res` listed in `media.res`, or in `Tex_Extra/Extra.res`. The engine's `Include` is generic and new names are accepted (`formats.md`), and `hge.log` reports script errors, so this is the safest first test.
 2. Replace the text of one easily reached, harmless entry with `<NPC=TESTNPC>...`; does the portrait appear, does an unknown name break anything?
 3. New event picture: `event_test` Animation + an `EVENT_CARD` entry using it.
-4. Only then: reach a NEW key (needs a script/event that jumps to it: chain it from an existing `<SCR=CONTINUE|NEWKEY>` or answer button).
+4. Only then: reach a NEW key: chain it from an existing entry (`<SCR=CONTINUE|NEWKEY>` or an answer button), or hang a new branch on an existing event root. A brand-new event root needs a code hook.
 5. Characters with mechanics (`JOIN=`, `CHECK_JOINED`) afterwards, by watching `m_npcs` in a save.
 Open risk: dialogue and `Media/` are overwritten by game updates; runtime injection (a mod DLL) would avoid editing files but is not designed.
