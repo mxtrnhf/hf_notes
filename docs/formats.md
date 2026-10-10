@@ -56,7 +56,9 @@ recomputing arcs, sensor arcs, global stats, mass/density and elevation. It does
   Particle Distortion StringTable`; properties `filename resgroup mipmap amplify size zbuffer texture rect hotspot blendmode color zorder flip scale proportion rotation frames fps mode tracking spacing sprite mesh`;
   `;` starts a comment; `Name : BaseName { ... }` derives a resource from an earlier one; `Include <path>` loads another script (path through the engine's file loader, recursive, an already loaded script is skipped).
   **A name already defined for the same resource type is rejected** ("already has been defined"; the first definition wins), so new art needs new names, and overriding a vanilla name means editing the original.
-  Parse errors are written to the engine log (`hge.log` in the game folder). `texasm` (in the HGE tools) packs sprites into an atlas and writes the `.res`.
+  Parse errors are written to the engine log (`hge.log` in the game folder). [game] The vanilla `media.res` lists **196** includes of which only **45 exist** (`Static1-9`, `Hall1-8`, `Background1-6`, `Mapmode1-7`, ...); each missing one is logged as
+  "Script ... not found" and skipped. Vanilla scripts also log duplicate names (`Mapmode3.res`, `Media/Snd/sound.res`) and a syntax error (`Ships1.res` line 3238) and the game runs fine: an
+  extra `Include` line is safe and a mistake in a new `.res` should only cost log lines. Sounds use the same language in `Media/Snd/sound.res`. `texasm` (in the HGE tools) packs sprites into an atlas and writes the `.res`.
 
 ## Levels (`Data/Levels/*.seria`) [game + guide]
 Empty shells: `LVL_SCRIPT=SCR_*`, `LVL_HIGH/LOW` (arena size), `LVL_WIND_FORCE`, `LVL_BACKGROUND`. All logic is in code (no script files). Known: `Map`, `City`, `Missile`
