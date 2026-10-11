@@ -18,7 +18,7 @@ map-vessel tags `POSITION/COURSE/SPEED/ROUTE/ROUTE_TIME/CONTACT_*/CARGO/NEEDS` Â
 
 ## Characters
 * 16 `<NPC=NAME>` values: PETR (294 lines), DAUD, FASIL, BOY, HIRE, OMAR, GOVERNOR, AIRBORNE, LOCAL, HISSID, HARISHID, GIRL, SCOUT, VETERAN, KNIGHT, PROPHET.
-* Art per character is uniform [game files]: portraits **`NAME_C`** and **`NAME_S`** (about 900-2100 px wide, `Static*.res` atlases; confirmed by a guide: `PETR_S rect=3,3,1007,1115` in `Static7`),
+* Art per character is uniform [game]: portraits **`NAME_C`** and **`NAME_S`** (about 900-2100 px wide, `Static*.res` atlases; confirmed by a guide: `PETR_S rect=3,3,1007,1115` in `Static7`),
   icon **`icon_name`** (87x87), and for some a full-screen scene **`alarm_name` / `inter_name`** (1920x1080, `Hall*.res`). `LOCAL` and `HIRE` have no portraits.
   Replacing a portrait = edit the PNG region named by its `rect` (known to work, guide).
 * Code [code]: a generic NPC system (saved lists `m_npcs`, `m_npcs_known`, `m_npc_index`; events `NPC_JOINED`, `NPC_LEFT`, `NPC_STATUS`, `NPC_TAKEOFF`; UI `LANDMODE_NPC`, `icon_npc_black`; script
@@ -31,7 +31,7 @@ map-vessel tags `POSITION/COURSE/SPEED/ROUTE/ROUTE_TIME/CONTACT_*/CARGO/NEEDS` Â
 * Enemy strike groups are stored in the **save** and can be rewritten (rebalance repo: `sg_editor.py`); levels cannot be added (`formats.md`).
 
 ## How the code reaches entries [code: key strings in the exe vs. references between entries]
-* 2902 entries. Only 442 are referenced by another entry's `<SCR|ANS|TRG>`; ~860 entry points are **literal strings in the executable** (the code triggers them by name);
+* 2914 `#KEY` lines (the Hara Vera study counted 2902 by a stricter rule, so its deltas are relative to that). Only 442 are referenced by another entry's `<SCR|ANS|TRG>`; ~860 entry points are **literal strings in the executable** (the code triggers them by name);
   ~1250 are built from a prefix + name/number at run time. Prefix constants found in the exe: `HELLO_GREETING_`, `INTERCOM_`, `DIALOG_`, `SHIP_NAME_`, `SHIP_DESC_`, `LOCATION_NAME_`,
   `ESCADRA_NAME_`, `FILM_`, `VERSE_`, `SUPPLIES_`, `PRECOMBAT_PLAYER_`, `GLITCH_LEVEL_`, `MAPMARK_`, `MAPMODE_`, `LANDMODE_`, `BUY_`, `CRAFT_`, `RAM_`, `EDC_`.
   A new entry under such a prefix may be found without code changes (e.g. `SHIP_NAME_<new ship>`); whether the code takes a random/last index (e.g. more greetings) is unknown.

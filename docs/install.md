@@ -4,12 +4,12 @@ Order matters in two places: the modloader before any mod, and the game must hav
 Facts below come from our own installs; the Proton launch options are the part of this page you may not need (see "Proton").
 
 ## 0. Before the reinstall
-* Back up `Saves/`, `SavesSkirmish/`, `Ships/`, `Config.ini` (a tarball of these plus `Modloader/config` is in `~/Development/hf_game_backup`).
+* Back up `Saves/`, `SavesSkirmish/`, `Ships/`, `Config.ini`, `Modloader/config/` (a tarball of these plus `Modloader/config` is in `~/Development/hf_game_backup`).
 * Steam may install a newer build than 1.163. Check after step 2: `error.log` starts with `HIGHFLEET v.1.163`, and later the modloader log says `Highfleet version: Steam 1.163`. Our DLLs refuse to run on any other build.
 
 ## 1. Clean reinstall
 1. Steam: uninstall Highfleet. 2. Delete what is left of the folder (`Modloader/`, `modloader/`, `shipworksext/`, `hge/` clones, `bass.dll.bak`...). The game folder must show only Steam's files.
-3. Install through Steam, then **verify the game files** once. 4. Restore `Saves/`, `Ships/`, `Config.ini` from the backup *while the game is closed*.
+3. Install through Steam, then **verify the game files** once. 4. Restore `Saves/`, `SavesSkirmish/`, `Ships/`, `Config.ini` from the backup (`Modloader/config/` only after step 3 has created it) *while the game is closed*.
 The Wine prefix (`~/.local/share/Steam/steamapps/compatdata/1434950`) survives an uninstall and already has `gdiplus.dll`; no launch options are set on our machine and everything works.
 
 ## 2. Modloader 4.1.0 (logdot)
@@ -24,13 +24,13 @@ Start the game once and close it: `Modloader/` appears with `logs/`, `config/log
 Do not hand-edit `Shipworks.json` with ids that do not exist: a part that is missing or malformed in the shipworks list crashes the game on entering the shipworks (ShipworksExtended README).
 
 ## 4. Our mods (each zip merges into the game folder)
-`highfleet-elevation`, `highfleet-speed`, `highfleet-refuel`, `highfleet-salvo` are plain drop-ins (config files are shipped or created on first run).
+`highfleet-elevation` (**do not keep an older `elevation.dll` next to `highfleet_elevation.dll`**), `highfleet-speed`, `highfleet-refuel`, `highfleet-salvo` are plain drop-ins (config files are shipped or created on first run).
 **`highfleet-multicharge` has one extra step**, with the game *closed* and `Shipworks.json` present:
 ```
 python3 tools/apply_data.py "<game folder>"
 ```
 Expected output: each section `OL.seria stats : [...]`, `parts.seria body: [...]`, `language packs : {...}`, `shipworks palette: [...]` listing the new ids (`MDL_AA_X3/X2/X1`, `MDL_A101_4..1`), then `done`.
-It makes `.bak` copies once; running it again prints `already present`. A game update overwrites the edited files: run it again. Do NOT keep an older `elevation.dll` next to `highfleet_elevation.dll`.
+It makes `.bak` copies once; running it again prints `already present`. A game update overwrites the edited files: run it again.
 
 ## 5. Settings used for the tests (everything ships at vanilla values)
 | File | Setting | Test value |

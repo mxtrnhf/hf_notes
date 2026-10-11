@@ -1,6 +1,6 @@
 # Game structures (1.163)
 
-**[game]** verified in play, **[code]** read from decompiled code, **[guide]** community guide. Offsets are hex byte offsets.
+Tags: legend in `../README.md`. Offsets are hex byte offsets.
 
 ## Class codes (`m_code`, at object +0x28) and sizes (from the copy routine `FUN_1401bfd00`)
 | Code | Class | Size |
@@ -52,7 +52,7 @@ transform, +0x178 side (float; sign = friend/foe), +0x210 damage. Smart-ref = 0x
 Units [guide]: `m_weapon_load_time` in 4/7 s; `m_launched_range` km for strategic; `m_launched_speed` m/s on the map, `speed2` arcade; guns with the lowest priority value are
 auxiliary (ground units fire only priority <= 100). Caliber index ties to shell stats (ammo-extended `padding_cch`).
 
-### `m_category` bits [game files: read from every `m_stats` record of the 1.163 `OL.seria`]
+### `m_category` bits [game: read from every `m_stats` record of the 1.163 `OL.seria`]
 0-based bit = value 2^n. (The community guide numbers the same bits from the high end: guide N = bit 32 - N; its descriptions match.)
 
 | Bit | Value | Parts with it | Bit | Value | Parts with it |
@@ -61,6 +61,7 @@ auxiliary (ground units fire only priority <= 100). Caliber index ties to shell 
 | 1 | 2 | armor | 15 | 32768 | protector (?) |
 | 2 | 4 | FSS | 16 | 65536 | radar, FCR, SPO (ELINT/radar) |
 | 3 | 8 | escape pods (EVAC) | 17 | 131072 | railing |
+| 18 | 262144 | (unused in vanilla) |
 | 4 | 16 | ammo | 19 | 524288 | ground units, missile drum |
 | 5 | 32 | **gun** (cannons, harpoon, RSZO, torpedo) | 20 | 1048576 | IR detection (IRST) |
 | 6 | 64 | block, bridge | 21 | 2097152 | bomb |

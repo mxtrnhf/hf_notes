@@ -1,7 +1,7 @@
 # Highfleet 1.163 reverse-engineering notes
 
 Short, topic-based notes behind the Highfleet mods (Steam 1.163, image base `0x140000000`).
-Tags: **[game]** verified in play · **[code]** read from the decompilation · **[guide]** community guide · **[guess]** inferred.
+Tags (one legend for all docs): **[game]** verified in play or on the real game files · **[code]** read from the decompilation · **[guide]** community guide, unverified here · **[guess]** inferred.
 
 | Read | For |
 |---|---|

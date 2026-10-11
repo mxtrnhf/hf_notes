@@ -24,11 +24,11 @@ Its README says: it does not change the core of the game; it needs the modloader
 
 ## Parts [verified]
 `OL.seria` 176 -> 184 ids (15 new: `MDL_BARELEG_01-04`, `MDL_CANNON_180P/GROM/OGON/PYR_152/RAZOR`, `MDL_ENGINE_NERVA`, `MDL_ANTENNA_BIG`, `MDL_MISSILE_CLUSTER`, `MDL_MSL_A100(_CONV)`, `SOLDIER_RIFLEMAN`, 7 removed);
-`parts.seria` 157 -> 176 (25 new incl. `MDL_HOOK_1/2`, `MDL_CATAPULT`, `MDL_CASEMATE_1`, `MDL_FLAG_01`, `MDL_GRAFFI_01`, `MDL_NEWARMOR2X1_01/02`, `CRAFT_MB110OG`).
+`parts.seria` 157 -> 176 (25 new, so 6 were removed; incl. `MDL_HOOK_1/2`, `MDL_CATAPULT`, `MDL_CASEMATE_1`, `MDL_FLAG_01`, `MDL_GRAFFI_01`, `MDL_NEWARMOR2X1_01/02`, `CRAFT_MB110OG`).
 Its `Shipworks.json` lists the new fuel, legs, engine, guns, sensor and expendables so they appear in the palette (the same mechanism highfleet-multicharge uses).
 
 ## Dialogue, characters, events [verified]
-English pack: vanilla 2902 entries -> 3157 (**892 new keys, 637 removed, 840 changed**); Russian: 885 new, 693 removed, 863 changed.
+English pack: vanilla 2902 entries (counted by the diff script; 2914 `#KEY` lines in `content.md`) -> 3157 (**892 new keys, 637 removed, 840 changed**); Russian: 885 new, 693 removed, 863 changed.
 * **No new character names.** Every `<NPC=...>` is one of the original ones (PETR, FASIL, OMAR, DAUD, KNIGHT, HIRE, GIRL, GOVERNOR, PROPHET, HARISHID, HISSID, AIRBORNE, SCOUT, BOY); new characters-by-art were not attempted. No new tag kinds (only a typo `NCP` and `RENDER_LAMP_OFF`).
 * New content families: `MONASTERY_MARCH/CORSAIR/PLAIN/...`, `ENDWAR_BRIEFING_CORSAIR`, `EVENT_REVENGE`, `EVENT_MUTINY`, `EVENT_FAMILY`, `EVENT_HUNTERS`, `EVENT_WEDDING`, `EVENT_CHAPEL`, `EVENT_BOX`, `EVENT_SARYAN`, `EVENT_DINNER_*`, `EVENT_DRINKERS`, `EVENT_ANTONTROUBLE`, `EVENT_TOWN_CORSAIR`, `BETRAYAL_*`, `INTERCOM_FASIL_MEGAPONTOS`, `INTERCOM_GIRL_GOD`, `HELLO_HARISHID`, `CABIN_PLAYER`, `JOURNAL`, ...
 * **How new content is attached, without any code change:** 85 *original* entries were rewritten to jump into new keys, e.g. `ISAIAH_0_1` / `ISAIAH_1_1` / `ENDRACE_SPEECH_1` / `PETR_DAUD_1` / `ANT_1` -> `EVENT_TOWN_CORSAIR_1`, `PETR_DAUD_1` -> `EVENT_DINNER_1`, `ENDWAR_BRIEFING_0` -> `MONASTERY_CORSAIR_1` / `MONASTERY_MARCH_1`,

@@ -1,6 +1,6 @@
 # How the game works (launching, engagements, refueling)
 
-Addresses are for Steam 1.163. **[game]** = verified in play, **[code]** = read from the decompilation.
+Addresses are for Steam 1.163. Tags: legend in `../README.md`.
 
 ## Combat missile launch [game]
 * `FUN_14002e590(part)` (player) / `FUN_14002e3a0(part, target)` (AI) need a target (`FUN_14006c0e0`/`FUN_14006c440`), the owner (+0xb8), the owner's cooldown (+0xad4) and in-flight
@@ -57,4 +57,4 @@ Per frame, inside the fleet update, for a docked fleet (`RSI`), station (`R15`),
   (requires stats +0x128 != 0), maps the gun angle relative to the root to a sector and blocks on 0.0.
 
 ## Map cruise speed [game]
-The ship stats routine `FUN_14007fcf0` computes `powf(TWR - 1, 0.5)` at `0x140080699`: speed = `50 * sqrt(TWR - 1)` m/s in 1.163 (1.151 used `25 * TWR`). The game caches each ship's speed.
+The ship stats routine `FUN_14007fcf0` computes `powf(TWR - 1, 0.5)` at `0x140080699`: speed = `50 * sqrt(TWR - 1)` m/s in 1.163 (internal unit; the UI and `speed.log` show km/h = m/s x 3.6) (1.151 used `25 * TWR`). The game caches each ship's speed.

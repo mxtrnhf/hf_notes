@@ -25,7 +25,7 @@ Same order as the stock header, except one System_ method is missing between slo
 | 17 | `0x140174380` | (added) file loader | | 32-34 | `0x140174350`, `0x140174320`, `0x1401742d0` | Random_Seed / Int / Float |
 | 18 | **`0x140174850`** | **Resource_Load** | | 35.. | `0x140174310`... | Timer_*, Effect_*, Music_*, Stream_*, Channel_*, Input_*, Gfx_*, Target_*, Texture_* (order of `include/hge.h`) |
 
-## Stock HGE formats used by the game [game files]
+## Stock HGE formats used by the game [game]
 * `.res` scripts (`formats.md`): `Include/Texture/Animation/Sound/Font/Particle/...`, parsed by `RScriptParser` (source `src/helpers/parser.cpp`, `resources.cpp`).
 * **Particles `Media/Prt/*.psi`: 144 files, every one exactly 128 bytes** = HGE's `hgeParticleSystemInfo`; editable with HGE's `particleed` (`tools/particleed`, source `src/particleed`).
 * **Fonts `Media/Fnt/*.fnt`:** text `[HGEFONT]`, `Bitmap=...png`, `Char="x",x,y,w,h,pre,post` lines; HGE `fonted`/`fontconv`. 59 files.
