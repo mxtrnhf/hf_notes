@@ -14,7 +14,8 @@ Tags: legend in `../README.md`. Offsets are hex byte offsets.
 | 0x147 (327) | **Escadra**, a fleet | 0x618 |
 | 0x203 (515) | intel entry | 0x1b8 |
 | 0x400000001047 | **Missile** (map object) | 0x308 |
-| 0x800000001047 | **MapCraft** (map aircraft group) | 0x270 |
+| 0x800000001047 | **MapCraft** (map aircraft group) | 0x340 |
+| 0x8000000003 | (unnamed; Ghidra calls its ctor `CreateFX`) | 0x270 |
 
 ## Body (ship part): ctor `FUN_140015690`, vtable `0x140352a30`
 | Offset | Field |
