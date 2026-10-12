@@ -259,3 +259,34 @@ The save file `Saves/Profile_N/profile.seria` serialises the `Profile` object (1
   values are the "flags" (tutorial progress, warnings) that a save editor may want to reset.
 
 <!-- MOVE: -> formats.md "Save files" (field-name hints and the 8 personality names); keep the offsets out of the doc until verified for 1.163. -->
+
+## Group 10: what 1.163 added or removed, from the string tables [code, `list_strings` diff of the two programs]
+Method: all strings of both programs (6,800 in 1.151, 6,683 in 1.163), set difference. 229 strings only in 1.163 and 112 only in 1.151 (many are generated names or noise; the list below is filtered by hand).
+A string being "only in" one version means that exact text is absent from the other program; code that builds a name at run time would not show up, so absence is a hint, not proof.
+
+### New in 1.163
+* **Skirmish and PVP modes:** level scripts `SCR_EDITOR_SKIRMISH`, `SCR_PRESELECT_SKIRMISH`, `SCR_PRESELECT_SKIRMISH_PVP`, `SCR_COMBAT_SKIRMISH`, `SCR_COMBAT_SKIRMISH_PVP`, `SCR_CITY_GENERATED_SKIRMISH`
+  (plus `SCR_ED_RUN`, `SCR_DUNGEON`, `SCR_EMPTY`, `SCR_START`, `SCR_TITLE`), level files `EditorSkirmish.seria`, `PreselectSkirmish.seria`, `PreselectSkirmishPVP.seria`, `CombatSkirmish.seria`,
+  `CombatSkirmishPVP.seria`, `City_generatedSkirmish.seria`, and a separate save directory **`SavesSkirmish/Profile_1..3`**. Title-menu keys `TITLE_SKIRMISH`, `TITLE_SKIRMISH_PVP`, `TITLE_HOTSEAT_DEVICE_*`,
+  `TITLE_CONTROLS_HOTSEAT` (hot-seat two-player), `PRECOMBAT_PLAYER_1..4`, `PRESELECT_NPLAYERS`, `PRESELECT_MAX_WEIGHT`, `PROFILE_RESET_SKIRMISH_*`. The skirmish mode has its own profile, ship purchase
+  (`SKIRMISH_BUY_SHIPS`, `ED_SHPWRK_BUY_SHIPS`) and **captain hiring** (`HIRE_CAPTAIN*`, `TRAIN_CAPTAIN*`, `SKIRMISH_HIRE_CAPTAIN*`, `totalCaptains`, `vecFreeCaptains`, `availableMassLevel`, `skirmishLevel`,
+  `nextSkirmishEscadraLevel`, `skirmishAADs`). The `SCR_*` list in `formats.md` ("Levels") is therefore incomplete for 1.163: it lacks all of the above.
+* **Controller support:** 1.163 links **SDL2** (`SDL2.dll`, `SDL_Init`, `SDL_JoystickOpen/Close/Name`, `SDL_NumJoysticks`, `SDL_PollEvent`, `SDL_Quit`; strings `Xbox Series X Controller`, `PS5 Controller`, `KEYBOARD`);
+  1.151 used **DirectInput8** (`DINPUT8.dll`, `DirectInput8Create`, `GAMEPAD`, `MOUSE4`, `MOUSE5`). Relevant to the modloader (input hooks differ) and to the roadmap's mouse-sensitivity item.
+* **Stats record fields (confirms group 6):** the strings **`m_mdl_sectors_shift`** and **`m_missile_explosive_cluster`** exist only in 1.163: these are exactly the two fields inserted in the stats record,
+  so `OL.seria` in 1.163 can carry them. Also `MDL_MISSILE_CLUSTER_SFW_01` (a cluster missile part), `ITEM_HARPOON`, `ITEM_AMMO_57MM_TANK`, `ITEM_KAZ_AMMO`, `MDL_FIGHTER_01`, `ANTENNA_PART`.
+* **KAZ (active protection) is a feature with ammo:** `ITEM_KAZ_AMMO` and the log line `HIDS %s activated.` (1.151 had `HIDS_ACTIVE %s activated.`: renamed). `m_tele_nukes_arm` / `m_tele_nukes_range` /
+  `m_tele_dynamic_landing` / `m_tele_thrust_left_landing` / `m_tele_thrust_right_landing` are new telemetry keys (1.151 had `m_tele_nuke_range`): an in-game telemetry/landing readout.
+* **New ships and names:** `Navarin Mk2`, `Navarin Mk3`, `Nomad Mk2`, `Lancer`, `Paladin`, `Titan`, `Gladiator LANCE`, `Egida`, `Novorossiysk`; `ALSAHIR_MESSAGE_COUNTER`, `CHECK_STARS`, `STATS_FEAR_EXTRA1/2`.
+* **Graphics options:** `GFX_GLITCH_LEVEL`, `GLITCH_LEVEL_`, `RENDER_LAMP_ON/OFF` (1.151 had `GFX_GLITCH_LOW`, `GLITCHLOW_ON/OFF`: the on/off glitch option became a level). `D3DX11SaveTextureToFileA` (screenshot/texture dump) appears too.
+* `GAME_TAKEOFF_TIME_AIR/BOMB/COMBAT/UNDEF`, `GAME_COUNTDOWN`, `LANDING_STAT_DAMAGE/EXPENDABLES/RADIATION/USVH`, `QUIT_TITLE_NO_ASK`, `Skirmish landing fixed` (a developer note left in the binary).
+
+### Removed or renamed in 1.163
+* **A debug HUD/overlay in 1.151:** `HGEFPS: %i`, `Batches: %i`, `Quads: %i`, `FILLRATE: %i%%`, `FXPSes: %i`, `Total particles: %i`, `BURN: %i`, `Render area: %f`, `cur time: %H:%M:%S`, and per-key
+  lines `Key F1..F12: true` / `Render F1..F12: false`. None of these strings exists in 1.163, so the debug overlay was removed (or its text is built differently). For the modder-tools roadmap: the
+  1.151 build is the reference for how the original overlay worked.
+* `Media/fx.seria` (a 1.151 FX loader path and `ERR: FX load failed.`), `KHIVA`/`EHUDA`/`Big_Bouzouk`/`Mellifluous`/`Simple` strings (names that moved elsewhere), `ITEM_GUN37`.
+* `m_tele_nuke_range` -> `m_tele_nukes_range`; `HIDS_ACTIVE %s activated.` -> `HIDS %s activated.`.
+
+<!-- MOVE: Skirmish/levels -> formats.md ("Levels" list) and content.md; SDL2/DirectInput -> setup.md (modloader note) and roadmap.md (mouse sensitivity item); stats fields -> structures.md (stats row, 'version differences');
+     debug HUD -> roadmap.md tooling section; ship names -> content.md. -->
