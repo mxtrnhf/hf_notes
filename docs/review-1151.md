@@ -105,3 +105,44 @@ Reading the list by theme (names only; contents not yet opened except where mark
 * None of the 354 names was opened except `CreateMapAircraftGroup`.
 * Comments, plate comments and bookmarks of 1.151 not reviewed.
 * Nothing was written to either Ghidra program. Carrying names/types across needs a checkout and saving the shared project; wait for the review by logdot.
+
+## How automatable is the type transfer? (checked, nothing changed)
+
+**Short answer: names and function signatures yes (mostly), struct layouts no (needs a per-region offset remap and verification).**
+
+Facts [code, from `search_data_types` / `get_struct_layout` on both programs]:
+* 1.163 already has the project categories that 1.151 has (`_Body`, `_Escadra`, `_Missile`, `_Profile`, `_Creature`, `_AircraftLogic`, `_Link`, `_Node`, `_GUI`, ...). The types were
+  ported once (Version Tracking), including `.conflict` duplicates (`Body.conflict`, `BodyVFTABLE.conflict`, `DLL<Body>.conflict`) that should be cleaned up. 1.151 additionally has
+  `hge.h` / `hge.h/functions`, `hge.pdb`, `unzip.h`, `zlib.h`, `ioapi.h`, `bass.h`, `mfobjects.h`, `rpcndr.h`, `tapi.h`, `wtypes.h`, `New Category` and `HighFleet` (the HGE
+  interface and library headers; 1.163 lacks them).
+* **The ported 1.163 `Body` struct is the wrong size.** Ghidra says 2,568 bytes (0xa08); the game allocates **0xa40** (`New(0xa40)`, `structures.md`). 1.151's struct is 2,576 (0xa10).
+  So 1.163 has about 0x38 more bytes than the struct models.
+* **Offsets drift by region, not by a constant.** `floorType`/`floor` are at 0x980/0x988 in the 1.151 struct, at 0x978/0x980 in the 1.163 struct, but the game-verified 1.163
+  offsets are `+0x9b0` (`m_floor_type`) and `+0x9b8` (`m_floor`) (`structures.md`). `weaponAmmoAmount` is 0x84c in 1.151 and +0x858 in 1.163. So the struct fields past about
+  +0x2f0 are partly stale in the 1.163 program and **copying 1.151's struct over would put names on the wrong offsets**.
+* 1.151 names more fields than 1.163 does (for example `aircraft_loudout?`, `m_mdl_fuel`, `m_mdl_pump`, `fFireCharge`, `fFireRateTimer`, `fFireDelay`, `bFireStatus`, `aircraft_logic`), which are exactly the
+  kind of names our notes would like (weapon timers, fire status).
+
+What each piece needs:
+
+| Piece | Automatable? | How / blocker |
+|---|---|---|
+| Function names and signatures (the 354 only-in-1.151 hand names, plus signatures) | **Mostly yes** | Ghidra's Version Tracking (a session `1.15TO1.16Test` already exists in the local project): exact/similar function matches, then "apply markup". Matches below ~0.9 need a human check (see Method). |
+| Global labels and data names | **Mostly yes** | Same VT markup, via data matches. |
+| Plain/enum types, typedefs, `hge.h`-style function types | **Yes** | `clone_data_type` / copy between programs; no layout problem. |
+| **Struct layouts (`Body`, `Escadra`, `Missile`, `Profile`, `Creature`, ...)** | **No (semi-manual)** | Offsets moved. Needs a remap table per struct (1.151 offset -> 1.163 offset), built from matched functions or from our game-verified offsets in `structures.md`, then `modify_struct_field` / `resize_struct`. The bridge has the tools (`create_struct`, `modify_struct_field`, `resize_struct`, `set_*_type`), but nothing infers the remap. |
+| Comments (plate/EOL) | **Partly** | VT markup copies them for matched functions only. |
+
+Tooling notes:
+* The MCP has `import_data_types`, `clone_data_type`, `run_script_inline` / `run_ghidra_script` (arbitrary Ghidra scripts, so a custom transfer script is possible), and an archive-ingest
+  function that is **disabled** unless `GHIDRA_MCP_ARCHIVE_URL` is set (it would send data to an outside service; leave it disabled).
+* Every write needs the shared project checked out and saved; do it only after logdot's review, and in small batches that can be undone by versions.
+
+Suggested order when the time comes (cheapest first, each a separate Ghidra version so it can be reverted):
+1. Delete the `.conflict` types in 1.163 (check nothing references them first).
+2. VT markup of function names and signatures for matches >= 0.99, then 0.9-0.99 spot-checked.
+3. Import the `hge.h` types and HGE function pointer names (feeds `engine-hge.md`).
+4. Struct by struct (start with `Body`, `Escadra`, `Missile`): build the remap from `structures.md` offsets, resize to the real object size, then bring over names.
+
+<!-- MOVE: this whole section -> roadmap.md under "Ghidra side" (it is the plan), with the facts about struct size drift also added to setup.md Pitfalls ("the 1.163 Body struct in Ghidra
+     is 0xa08, the object is 0xa40; do not trust field offsets past ~0x2f0 in the Ghidra struct, use structures.md"). -->
