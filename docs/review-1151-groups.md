@@ -339,3 +339,36 @@ Both versions carry logdot's header comment: *"Spawns a projectile based on ammo
 * **1.163 extra:** `DAT_147fc6fd4` (the second flag besides `BOOL_147eed9ae` in 1.151) divides the flash size by 1.5, and the first branch (case 5) also calls `Random_Int(1,4)` when `param_8 == 0`.
 
 <!-- MOVE: -> roadmap.md under the "HP modification" and "AI cannot use LG/INC shells / AP only at close range" items (the ammo-index dispatch and the new indices 54 and 90); -> systems.md (new subsection "Firing": FireGun -> FireShell). The ammo-index -> ammo-name map is still missing (look up DefineAmmos / AmmoDefList). -->
+
+## Group 13: the ammo definition table (`DefineAmmos`, 1.151 `0x1402356d0`) [code]
+Builds `AmmoDefList` (entry stride `0x188`, same as a stats record; two undefined entries first, then these). The field `index` is the key `FireShell` (group 12) dispatches on. Base entries; every derived
+entry **copies its base (including `index`)** and changes strings and a few numbers, which is why all variants of one calibre share one `FireShell` case.
+
+| `index` | Item | Calibre text | `explosivePower` | `speed` | Extras |
+|---|---|---|---|---|---|
+| 5 | `ITEM_AMMO_37MM` | 37mm | 0.3 | 1000 | `bulletHeight` 16, `caliber` field 100 |
+| 10 | `ITEM_AMMO_57MM` | 57mm | 2.0 | 700 | `bulletHeight` 19 |
+| 15 | `ITEM_AMMO_100MM` | 100mm | 14.0 | 700 | `bulletHeight` 24 |
+| 20 | `ITEM_AMMO_130MM` | 130mm | 20.0 | 700 | `bulletHeight` 28 |
+| 25 | `ITEM_AMMO_180MM` | 180mm | 82.0 | 700 | `bulletHeight` 38 |
+| 30 | `ITEM_AMMO_203MM` | 203mm | 118.0 | 700 | `bulletHeight` 38 |
+| 40 | `ITEM_AMMO_305MM` | 305mm | 400.0 | 700 | `bulletHeight` 38 |
+| 51 | `ITEM_NAR122` | 122mm rocket pod | 45.0 | 150 | `caliber` 130, `gun_rate_time` 0.2, price 50, aircraft strength 3, shop rarity 0.7, amount 100 |
+| 52 | `ITEM_AMMO_220MM` | 220mm rocket | 90.0 | 150 | price 0 (not sold) |
+| 54 | `ITEM_AMMO_300MM` | 300mm rocket | 90.0 | 150 | price 0; **no `FireShell` case in 1.151** (see below) |
+| 55 | `ITEM_NAR340` | 340mm rocket pod | 90.0 | 150 | `gun_rate_time` 0.5, price 100, aircraft strength 5, rarity 0.3, amount 20 |
+
+Derived variants (they copy the base, so same `index`): `_INC` (`incendiaryPower` 1000; 37, 57, 100, 130, 180, 220, 300 mm), `_AP` (`explosivePower` 1.0, `speed` 1500, `apDrag` 0.0007,
+`penetrativePower` **16** at 100mm, **20** at 130mm, **34** at 180mm; no 37/57 AP), `_PROXY` (`caliber` 160; 100, 130, 180 mm), `_LG` laser guided (`caliber` 140, `speed` 500, `explosivePower` x4; 130 and 180 mm only).
+Bombs: `ITEM_FAB100` (explosive 50, aircraft strength 3), `ITEM_FAB250` (100, 5), `ITEM_FAB500` (200, 8). Aircraft guns: `ITEM_GUN37` (`gun_rate_time` 0.1, `gun_max_load` 10), `ITEM_GUN57`
+(0.2, 7); air-to-air `ITEM_K13` (aircraft strength 4). Shop numbers are given per entry (`shopPrice`, `shopRarity`, `shopAmount`), for example 130mm AP price 100 / rarity 0.5 / amount 50, 180mm LG 500 / 0.3 / 10.
+
+* **How this answers parts of the roadmap's tactical-AI item** ("AI cannot use LG/INC shells; AP only at extremely short range"): the *projectile* behaviour of LG, INC, AP and PROXY shells is not in `FireShell`
+  (it shares the base calibre's case) but in the `Ammo` fields read by `Body::BulletImpact__`. The AI's *choice* of ammo is elsewhere (loading/selection code such as `loadPrecombatAmmo?` / the AI gun logic), not in
+  these files.
+* **A 1.151 bug visible here:** `index 54` (`ITEM_AMMO_300MM`) has no case in the 1.151 `FireShell` switch (cases are 51, 52, 55), so it falls into the default branch (only the muzzle flash). The 1.163 switch has a
+  case `0x36` (54). That fits "300mm rockets did nothing in 1.151" [guess; the 1.163 index table was not read].
+* **Roadmap items served:** "caliber above 30mm should not kill missiles in one shot" and "HP for cannon shells" start from the `Ammo` fields here (`explosivePower`, `penetrativePower`, `apDrag`) plus
+  `BulletImpact__`; the `speed` column is the "capped top speed" item for projectiles.
+
+<!-- MOVE: -> content.md or a new short "Ammo" section in systems.md (the table + variants), formats.md (OL.seria `m_launched_*` vs this table are different data: this table is in code, not in OL.seria); roadmap.md (the two notes above). -->
