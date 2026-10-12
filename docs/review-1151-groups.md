@@ -323,7 +323,7 @@ Both versions carry logdot's header comment: *"Spawns a projectile based on ammo
 `FireGun` calls it (group `FireGun` in `review-1151.md`). 1.163 has one more argument (`param_8`) and `Body` allocations of `0xa40` (1.151: `0xa08`).
 
 * **Dispatch is on `ammo->index`** (the `AmmoDefList` entry, stride `0x188` = the same size as the stats record; ammo definitions are built in `DefineAmmos`). Cases in **both** versions:
-  `5, 10 (0xa), 15 (0xf), 20 (0x14), 25 (0x19), 30 (0x1e), 40 (0x28)` = the plain cannon shells (logdot's comments tag `10` as "57mm; can kill in one volley", `0xf` "180mm high explosive", `0x14` "130mm",
+  `5, 10 (0xa), 15 (0xf), 20 (0x14), 25 (0x19), 30 (0x1e), 40 (0x28)` = the plain cannon shells (logdot's comments tag `10` as "57mm; can kill in one volley", `0xf` "180mm high explosive" (by the ammo table in group 13, `0xf` is the **100mm** shell and `0x19` is the 180mm, so that comment is off by one calibre), `0x14` "130mm",
   `0x1e` "203mm normal shell"), `51 (0x33), 52 (0x34), 55 (0x37)` = rockets/missiles (sprite `missile_01`, particles `rocket_glow.psi`/`smoke_FIRE.psi`, sounds `missile_launch`/`missile_launch_far`),
   `60 (0x3c)` = a 3-pellet canister, `70 (0x46)` = a 6-pellet canister, `80 (0x50)` = EMP (`emp_01`). **1.163 adds `54 (0x36)` (another rocket variant) and `90 (0x5a)`** (a heavy shell that also
   changes the firing body's `logic` to `0x89` and sets projectile flags `0x10015`).
@@ -386,7 +386,7 @@ body, the root body, the fire direction, a speed factor (1.0), `is_local_player`
   local player the opposite impulse is applied to the firing body (recoil).
 * **Hit points:** `maxHealth = health = <health parameter>`. Every `FireShell` call passes `1.0`, so **all cannon shells have 1 HP**. That single constant (the 9th/10th argument in each `BulletImpact__` call)
   is the "HP of cannon shells" in the roadmap item; the 300 mm and heavier shells do not get more.
-* Effects: screen shake `shake_power` (the last float in each call: 5.0 for 37mm, 10.0 for 57mm, 15.0 for 180mm, 20-60 for larger), muzzle `scaleY = gfxFlash * flash_power`, sounds from the ammo
+* Effects: screen shake `shake_power` (the last float in each call: 5.0 for 37mm, 10.0 for 57mm, 15.0 for 100mm, 20.0 for 130mm, 30.0 for 180mm, 40.0 for 203mm, 60.0 for 305mm), muzzle `scaleY = gfxFlash * flash_power`, sounds from the ammo
   (`shellOutSound` for the local player at close zoom, `shellFarSound` otherwise). Enemy shooters on some difficulties halve the volume (`0.5`).
 
 <!-- MOVE: -> roadmap.md (HP and damage items: where each constant lives), systems.md "Firing"; the `caliber` = logic-id remark also goes to structures.md (Ammo table). -->
