@@ -30,6 +30,8 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 * **[Tactical, exploitable]** Closing to very short range of an enemy ship in tactical combat disables all of its weapon systems.
 * **[Tactical, exploitable]** The AI consistently gives way to the player's ship, which gives the player easy positional advantage.
 * **[Tactical]** The AI cannot use some ordnance or parts (LG/INC shells); AP rounds are fired only at extremely short range; the AI cannot deploy flares.
+  * Flares: the cause and a mod design are in [ai-flares.md](ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
+  * Flares: the cause and a mod design are in [ai-flares.md](ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
 * **[Tactical, exploitable]** High convergence angles can be used to disable enemy turrets.
 
 ### Mod scope

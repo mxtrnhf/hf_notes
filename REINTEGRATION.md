@@ -10,6 +10,7 @@ After the review by logdot and his agent, this branch is merged/split into the n
 
 ## Commits on this branch that ARE final (cherry-pick or merge to master after review)
 * `494e8b9` systems.md: map-launch queue details (nuclear warning gating, target types, dead-part skip).
+* `docs/ai-flares.md` (+ the README row and the roadmap pointer, added together in one commit on this branch): **self-contained, can be cherry-picked to master on its own** without the rest of the review. Preserves the AI-flares finding in full.
 (If the review changes it, amend before merging.)
 
 ## Open flags to raise with logdot before anything moves

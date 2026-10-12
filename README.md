@@ -15,6 +15,8 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/mods/](docs/mods/) | one short page per mod: elevation, speed, multicharge, salvo, refuel |
 | [docs/content.md](docs/content.md) | dialogue, characters, events, textures (study + experiment plan) |
 | [docs/total-conversion-hara-vera.md](docs/total-conversion-hara-vera.md) | study of the "Flight to Hara Vera" total conversion: package, media, parts, dialogue, installer format |
+| [docs/ai-flares.md](docs/ai-flares.md) | why AI ships never use flares (missing trigger, not missing parts) and a design for a mod; evidence and unknowns |
+| [docs/ai-flares.md](docs/ai-flares.md) | why AI ships never use flares (missing trigger, not missing parts) and a design for a mod; evidence and unknowns |
 | [docs/open-questions.md](docs/open-questions.md) | what is unknown or undecided |
 | [docs/roadmap.md](docs/roadmap.md) | long-term mod wish list (bugs, QoL, AI, mod scope) and wanted modder tooling (seria/save editors, debug mod, logging, verification); not scheduled, do not act on it unasked |
 | [ref/](ref/) | Config.ini reference, summaries of community guides and prior art |
