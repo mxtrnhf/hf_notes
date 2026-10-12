@@ -4,8 +4,10 @@ Game: Steam 1.163 (also 1.151 exists; GOG 1.163 is reported by the modloader but
 Runs under Proton on Linux; our DLLs are plain 64-bit Windows DLLs.
 
 ## Analysis
-* `Highfleet.exe` on disk is Steam-DRM packed. **Analysis uses a memory dump** of the running process (`/proc/<pid>/mem`, file offset = RVA),
-  loaded into Ghidra. Code bytes are identical between dumps, so addresses are stable for this build.
+* `Highfleet.exe` on disk is Steam-DRM packed. The shared Ghidra project's main program is the **DRM-stripped `Highfleet.exe.unpacked.exe`** (v1.163, with names and structs).
+  A **memory dump** of the running process (`/proc/<pid>/mem`, file offset = RVA) is kept as a reference copy (`Highfleet_1.163_dump.exe`): same code addresses and the same
+  instruction bytes at the sites we compared, but a different section layout (`.bind` section, split `.data`) and fewer analysed functions (4,638 vs 5,115).
+  Neither is a full-file hash match; verify patch-site bytes before trusting an address on a new build.
 * Ghidra + a Ghidra MCP bridge: decompile, xrefs, `search_instructions`, `disassemble_bytes`, `read_memory`.
   Huge functions (the scenario script `FUN_1402ac970`) time out: read the jump tables with `read_memory` and disassemble the blocks.
 * Cheapest live probe: a **log-only hook in our own DLL** that writes what it sees, driven by a test the player performs.
