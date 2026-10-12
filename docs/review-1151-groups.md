@@ -526,5 +526,17 @@ The function needs a target, and nothing in the AI tick calls anything without o
 
 **Still not read:** where the per-ship launch counter at `+0xc98` resets, what is in the ship's launch list at `+0x13f0`, and the meaning of the two mode flags.
 
-<!-- MOVE: -> hooks.md (new row in the Ownership table for 0x14007b021 / 0x14007b025 "close-range margin", unowned, operand repoint) and roadmap.md AI items "closing to very short range" (found, with the patch recipe) and "AI gives way to the player" (candidate cause: no special case, symmetric separation); systems.md "Tactical AI" subsection (stand-off 0.35 x reach, orbit, separation, launch caps); structures.md Creature fields: +0x1840 centre, +0x1850 bounding radius, +0xad4 side float, +0x13d8/+0x13f0 launch lists, +0xd60/+0xd64 launch cooldowns, +0xc98 launch counter; systems.md "Launching" (the per-target launch limits of FUN_14002e3a0, which also belongs next to the multicharge owner row in hooks.md); open-questions.md (flares, mode flags). -->
+**Pinned: the stand-off knobs in `FUN_140062f90` [code; untested].** All three constants are pooled and shared, so patch the instruction's operand (repoint) and never the constant (`hooks.md` rule):
+
+| Knob | Instruction (address, bytes) | Constant | Other users of the constant |
+|---|---|---|---|
+| stand-off = `0.35` x reach | `0x1400631a6` `f3 0f 59 1d 0e 15 2f 00` and `0x1400631ec` `f3 0f 59 1d c8 14 2f 00` (`MULSS XMM3,[rip+d]`; two paths, with and without a ship target) | `0.35f` at `0x1403546bc` | 6 (`SomethingWithLevelSerias` x4, `FUN_14012f120`, one more) |
+| stand-off cap 1000 | `0x14006320d` `f3 0f 10 35 2f f6 2e 00` (`MOVSS XMM6,[rip+d]`, then `MINSS XMM3,XMM6` at `0x14006321e`) | `1000.0f` at `0x140352844` | many (also the AP range threshold of group 16) |
+| stand-off cap 660 when the `+0xc74` flag is set | `0x1400631fe` `f3 0f 5d 1d ce 33 2f 00` (`MINSS XMM3,[rip+d]`) | `660.0f` at `0x1403565d4` | not checked |
+| radial weight width 600 | `0x140064723` `f3 0f 5e 05 11 e1 2e 00` (`DIVSS XMM0,[rip+d]`; `XMM0` = distance - stand-off, then clamped to +-1 against the pooled `1.0f` loaded at `0x14006471b`) | `600.0f` at `0x14035283c` | about 24 |
+
+Recipes (all by operand repoint to a private float, with a 40-byte-or-so version guard around each site): a **smaller `0.35`** makes the AI hold a shorter range (it closes in); a **larger `600`** flattens the radial term so the AI retreats more
+gently when the player gets inside its stand-off; a very large `600` means it almost never backs away. Not owned in `hooks.md`. The orbit and separation terms are unchanged by these.
+
+<!-- MOVE: -> hooks.md (new rows in the Ownership table for 0x14007b021 / 0x14007b025 "close-range margin" and for the stand-off knobs 0x1400631a6, 0x1400631ec, 0x14006320d, 0x1400631fe, 0x140064723, all unowned, operand repoints) and roadmap.md AI items "closing to very short range" (found, with the patch recipe) and "AI gives way to the player" (candidate cause: no special case, symmetric separation); systems.md "Tactical AI" subsection (stand-off 0.35 x reach, orbit, separation, launch caps); structures.md Creature fields: +0x1840 centre, +0x1850 bounding radius, +0xad4 side float, +0x13d8/+0x13f0 launch lists, +0xd60/+0xd64 launch cooldowns, +0xc98 launch counter; systems.md "Launching" (the per-target launch limits of FUN_14002e3a0, which also belongs next to the multicharge owner row in hooks.md); open-questions.md (flares, mode flags). -->
 
