@@ -123,3 +123,33 @@ Very large (2,072 decompiled lines in 1.151; the matcher scored 0.76 against `FU
 
 <!-- MOVE: Combat.seria + the cooldown-field fact -> systems.md ("Engagements" first bullet and "Map launch" consumer bullet); the sound names -> roadmap.md (audio cue item) and a new
      short "Sounds" list in content.md; the named calls -> nowhere (only for finding code later). -->
+
+## Group 5: cluster munitions and the bomblet TTL (roadmap: "Make TTL adjustable for cluster munitions and mine bomblets")
+
+* **1.151:** `Projectile_ExplodeAndCluster(projectile, ?, multiplier, maxCount, ttl)` at `0x14002c170`, called only from `creatureLogic` (`0x1400335b0`). It spawns
+  `min(explosive * multiplier, maxCount)` bomblets; each is `New(0xa08)` + `Body::Body` (1.151 Body size, see the corrected size in `review-1151.md`), `CreateShell_`, `is_bullet`, owner = the projectile's owner,
+  **`timeToLive = ttl`**, `desowningTime = ttl`, `ttlDesolveTime = 0.1`, `collisions = 2`, health/maxHealth `5.0`, each carrying `explosive / count`. Difficulty scaling: if the owner is a player-side creature
+  the "dud" flag chance is `5% * (0.3 on difficulty 0, 0.6 on difficulty 1, 1.0 otherwise)`. Then it spawns the smoke/flash sprites ("strides" and "strides_fire" sounds, 1.151 `PlayRadioSound_`).
+* **1.163:** the same job is done by **`FUN_140032fb0`** (`FireGun`'s next function): `(shooter, ?, count, damageA, damageB, ttl, angle)`. The bomblet fields now sit at the shifted offsets (TTL `+0x2c0`, desowning `+0xf0/+0xf4`,
+  `ttlDesolveTime +0x2c4 = 0.1`, `collisions +0x2b8 = 2`, health `+0x2c8`/`+0x2cc` `= 5.0`), which confirms the Body remap. The **TTL is the sixth argument and is written to three fields**, so
+  adding a config multiplier there (one place) makes cluster/mine bomblet lifetime adjustable. No caller was found by `get_function_callers` (the function is probably reached through a table or a jump from
+  `FireShell`); finding the call sites is the remaining step, search for calls into `0x140032fb0` or the constants passed as the sixth argument.
+* **Not this function:** `FUN_14002f480` (it also plays "strides") is the **active-protection burst** (KAZ): it tests nearby incoming bullets and missiles by stats category (`0x4000`, `0x8000000`, `0x200000`
+  are excluded) within `60.0` / `120.0`, and damages them with the vtable damage slot. That is the code behind the "KAZ" part category in `structures.md` (bit 25) [guess]; its caller is `FUN_14007eb50`.
+
+<!-- MOVE: -> roadmap.md under the TTL item (give both addresses and the sixth-argument remark); the KAZ remark -> systems.md (new short "Active protection" subsection) after a check of the category bit. -->
+
+## Coverage so far, and what is left
+Read in detail: `TryLaunchAiAircraftGroup`, `CreateMapAircraftGroup`, `UpdateMapAircraftGroup`, `runMissileandAircraftIntercept_`, `UpdateStrategicFleet` (by pattern), `FireGun`, `copyOverBody`,
+`createNewBody`, `Projectile_ExplodeAndCluster`, `AADefense::FireMissile` (below), plus the Body and Profile struct layouts.
+Not read yet (about 540 of the ~875 hand names): `creatureLogic` and its named pieces, `handleEndgameContent` and the `spawn*` family, `calcDMGPercentage` (trivial: `damage / maxHealth`), `FireShell`, `shipKill`,
+`handleRamming`, `checkJammed`/`handleIRST`, the stats getters (`GetLaunched*`, `GetMissile*`, `GetThrust`, `returnMass`, `StatLegForce`), `CalculateStats`/`CalculateSectors`, the level-script labels
+(`SomethingWithLevelSerias_*`), save/load (`serializeProfile`, `Save`, `Load`), shop/editor/UI functions, the HGE interface names, and the 1,449 data types.
+Reading by brute force (batch decompile of all names) costs about 20-30k tokens per 40-100 functions and returned mostly library plumbing in the first two batches; the rest should be read by theme.
+
+### Side finding: ground defense (`AADefense`) [code]
+1.151 `createGroundDefenseCreatures__` (`0x140004950`) builds an `AADefense` object (class code `0x80007`, a comment by logdot: "This 0x80007 only shows up for ground defense creatures") with a linked
+`Runner` creature and `MDL_WHEEL_01` wheels; `AADefense::FireMissile__` (`0x140005370`) is its state machine: it needs one part each of categories `0x10` (ammo), `0x20` (gun) and `0x800` (generator/quarters) plus
+at least two wheels, then flies a `MDL_MISSILE_01` (TTL 60.0, layer 7) at the nearest hostile within `500.0` when its reload timer (`+0x12c`, base `30.0` at `+0x128`) is zero. Relevant to the
+roadmap's tactical-AI items on what the AI can and cannot use; the 1.163 `Ground defense creatures?` comment on `FUN_1400e4530` is thus about a different class (see the MapCraft finding).
+<!-- MOVE: -> systems.md (ground defense paragraph) and structures.md class table (0x80007 = AADefense). -->

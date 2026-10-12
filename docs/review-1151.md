@@ -168,8 +168,9 @@ Tags: **[V]** 1.163 offset is also verified in `structures.md` (game or code); *
 | about `0x980` .. `0xa30` (floor, edRotate, aircraft logic) | **+0x30** | `floorType`, `floor`, `edRotate`, aircraft logic pointer |
 | tail flags (`isFocusable` ...) | **+0x30 or +0x38** [?] | the copy routine writes bytes at 0xa38..0xa3d; the 1.151 flags are at 0x9fc..0xa0d, so this end zone is unresolved |
 
-Total size: the 1.151 object ends at `0xa10`; the 1.163 object is `0xa40` (+0x30), consistent with the last zone being +0x30. The aircraft logic pointer is the only apparent +0x38:
-1.151 has two pointers (`aircraft_logic` 0x9e8, `aircraftLogic` 0x9f0); 1.163 has one (0xa20), which fits +0x30 from `aircraftLogic` and the other pointer being gone [guess].
+**Total size (corrected):** the *real* 1.151 Body is **0xa08** bytes (`New(0xa08)` in 1.151 `Projectile_ExplodeAndCluster`; the Ghidra 1.151 struct says 0xa10, 8 bytes too big), and the real 1.163 Body
+is **0xa40** (`New(0xa40)`), so the object grew by **0x38**. That also explains the stale 1.163 Ghidra struct: it is 2,568 = **0xa08 bytes, i.e. the 1.151 layout**, copied over and never resized.
+The shift therefore climbs through the zones (0, +4, +0x10, +0x14, then +0x30 at the floor fields, and +0x38 at the end: aircraft logic pointer `0x9e8 -> 0xa20`).
 
 ### Anchor pairs (1.151 name @ offset -> 1.163 offset)
 
