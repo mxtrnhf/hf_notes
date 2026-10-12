@@ -234,3 +234,28 @@ Present in 1.151 as a named function; **not matched** in 1.163 by the fuzzy tool
 * Extra useful hook: `Resource_AttachPack` is slot 19 in 1.151 and **slot 20** in 1.163 (`engine-hge.md` says 20: consistent).
 
 <!-- MOVE: -> engine-hge.md (interface table: add the 1.151 slot names column and the "added slot 17 is new in 1.163" fact); open-questions.md (update the missing System_ method line). -->
+
+## Group 9: the save root, the `Profile` struct (names only) [code-struct, key pairing is a guess]
+The save file `Saves/Profile_N/profile.seria` serialises the `Profile` object (1,380 bytes in both Ghidra programs; vectors moved by +0x48 in 1.163, see the Profile remap, and scalar offsets past
+`0x1e0` are probably shifted too, so the offsets below are 1.151 values). `formats.md` lists the keys by observation; the field names below are logdot's and can help decide which key is which.
+
+| Profile field (1.151 offset) | Likely save key (`formats.md`) |
+|---|---|
+| `countdown` `0x140`, `days` `0x144`, `daysFromEvent` `0x148` | `m_countdown` (days to the darkness event) |
+| `enemyValue` `0x180`, `score` `0x184`, `scoreExpedition` `0x188`, `scoreMilitary` `0x18c`, `scoreSurvivors` `0x190` | the score counters (`m_scores` is the **starting cash** per the notes; here `cash` is a separate int at `0x260`; check which one the key is) |
+| `escadras` `0x1b0`, `locations` `0x1c0`, `Missiles` `0x1e0`, `explosions` `0x1f0`, `designs` `0x210`, `mapCrafts` `0x228`, `mapMarks` `0x258`, `npcs` `0x268`, `items` `0x278` | `m_escadras`, `m_locations`, ... (the vectors) |
+| `cash` `0x260`, `npcIndex` `0x264` | cash and the next-NPC counter |
+| `reinforcementState` `0x28c`, `endRace` `0x290`, `endWar` `0x291`, `endStrike` `0x292`, `escalation` `0x294`, `flagshipLost` `0x298`, `burnFuel` `0x299`, `rams` `0x29c` | campaign state flags; **`endWar`/`escalation` are set by `spawnEndgameShips_`** (group 7) |
+| `alert` `0x2a0`, `alertHr` `0x2a4`, `radioDuration` `0x2ac`, `radioDurationBase` `0x2b0` | alert level and radio timing |
+| `enigmaSet1..4` `0x2b8..`, `enigmaKey1..12` `0x2c8..`, `enigmaGot1..12` `0x2f8..`, `enigmaTimer` `0x304` | the Enigma puzzle (12 keys, 12 "got" flags, a timer) |
+| `tadsRecord` `0x308`, `intelData` `0x30c`, `ant` `0x310` | TADS record, intel counter, a flag named `ant` (`restOfEventsPrologueAntIsaiah` is the prologue event handler) |
+| `charFear`, `charGerat`, `charRomani`, `charFaith`, `charRight`, `charForce`, `charWealth`, `charKindness` (ints `0x314..`) and the same eight `...Val` floats (`0x334..`) | `m_char_*`: the **eight player personality stats** (Fear, Gerat, Romani, Faith, Right, Force, Wealth, Kindness) as integer level and float value |
+| `nextCreatureId` `0x358`, `nextHistoryDesign` `0x360` | id counters for new ships and saved designs |
+| `trigger` `0x398`, `unlocks` `0x3d8`, `strigger` `0x418`, `events` `0x458`, `arguments` `0x498`, `demoState` `0x4b0`, `demoLoot` `0x4b8`, `inventory???` `0x4d8` | the string/number trigger tables (`CreateTriggerVal` reads these; `TUTORIAL_*`, `ESCALTION_WARNING` live here), unlocks, events |
+| `mapSkyOffsetX/Y` `0x520/0x524`, `mapSkySteps`, `mapSkySeed`, `gameVersion` `0x548` | map sky, game version (written into the save) |
+
+* **`Profile.gameVersion` (float at `0x548` in 1.151)** is what the version check `CORE_LAST_LOADED_VERSION` in `Config.ini` interacts with; the game version is also reachable through `GetGameVersionString` (`0x1401fa190`).
+* The trigger tables are keyed by name: `CreateTriggerVal(&Profile+0x3f0, ...)` returns a reference to a named value (as seen in the tutorial code and in `ESCALTION_WARNING`). For save editing, these named
+  values are the "flags" (tutorial progress, warnings) that a save editor may want to reset.
+
+<!-- MOVE: -> formats.md "Save files" (field-name hints and the 8 personality names); keep the offsets out of the doc until verified for 1.163. -->
