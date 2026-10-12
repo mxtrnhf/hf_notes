@@ -2,7 +2,7 @@
 
 Tags: legend in `../README.md`. Offsets are hex byte offsets.
 
-## Class codes (`m_code`, at object +0x28) and sizes (from the copy routine `FUN_1401bfd00`)
+## Class codes (`m_code`, at object +0x28) and sizes
 | Code | Class | Size |
 |---|---|---|
 | 0x7 | Node | 0x128 |
@@ -16,6 +16,10 @@ Tags: legend in `../README.md`. Offsets are hex byte offsets.
 | 0x400000001047 | **Missile** (map object) | 0x308 |
 | 0x800000001047 | **MapCraft** (map aircraft group) | 0x340 |
 | 0x8000000003 | (unnamed; Ghidra calls its ctor `CreateFX`) | 0x270 |
+
+Source of the sizes [code]: the copy routine `FUN_1401bfd00` (`CopyObject`, one `New(size)` per code) for every row **except** `0x800000001047`. That code has no case in the copy routine;
+its 0x340 comes from the default-construction factory (entry `0x1402024e0`, Ghidra name `Panel::Constructor`; a switch on the code, `New(0x340)` then `FUN_1400e4530`, which
+builds on the `Mark` constructor). The same factory gives the same sizes for the other rows, and also covers codes the copy routine lacks (for example `0x2047` = 0x268, `0x803` = 0x188).
 
 ## Body (ship part): ctor `FUN_140015690`, vtable `0x140352a30`
 | Offset | Field |
