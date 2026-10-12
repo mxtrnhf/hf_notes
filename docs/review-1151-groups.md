@@ -188,8 +188,30 @@ In 1.151 the stats record is the Ghidra struct `ShipPart` (384 = `0x180` bytes; 
 * **Flag for `structures.md`:** the notes call `+0xd4` "tank capacity (int; the part's current fuel is Body +0x804)". In 1.151 `+0xd4` is **`mdl_crew_capacity`** (int) and the **fuel tank capacity is the double at `+0xc8`**
   (`mdl_fuel_capacity`), which also fits ship-level fuel being doubles (`+0x1638/+0x1640`). Likely correction: `+0xc8` tank capacity (double), `+0xd4` crew capacity. Verify with a fuel tank and a crew module in `OL.seria` before editing.
 * **`GetMissileFuzeType`** is the only getter returning an int; all others return floats, which the notes' units already assume.
-* **`GetPartPrice`** returns 0 when `endWar` is set (Profile `+0x290`, field `endWar` at Ghidra offset 657) or when the part's category has bit 6 (`0x40`, "block, bridge") set; otherwise `price`. This is why bridge/block
+* **`GetPartPrice`** returns 0 when `endWar` is set (Profile field `endWar`, Ghidra offset 657 = `0x291` in 1.151) or when the part's category has bit 6 (`0x40`, "block, bridge") set; otherwise `price`. This is why bridge/block
   parts are free to swap in the editor and why prices vanish after the war ends. Not in the notes.
 * The notes' sentence "Stats record ... `GetStats(index)` `FUN_140281e00`" is right: 1.163 `GetStats` is a bounds-checked pointer-array lookup (checked); the 1.151 name is `GetShipPart`.
 
 <!-- MOVE: this table -> structures.md "Stats record" (replace the offset list with the full named list and add a 'version differences' line: 1.163 inserts sectors_shift and cluster); the GetPartPrice rule -> systems.md or formats.md (OL.seria row). FLAG +0xd4 vs +0xc8 for review. -->
+
+## Group 7: the end game (`spawnEndgameShips_`, 1.151 `0x14023fa80`) [code]
+Present in 1.151 as a named function; **not matched** in 1.163 by the fuzzy tool (not looked up by hand yet). It is the scripted collapse that begins the "nuclear war" and closes the campaign. Read from the
+1.151 decompilation (very long: three-way list sorting plus spawns).
+
+* **Cities used by name:** `KHIVA` (the capital) and `BASRA`. Everything is positioned relative to `KHIVA`'s position.
+* **Phase 1, sort the garrisons:** it walks the profile's city list (the vector at Ghidra offset 456/464) and drops those that already have a hostile fleet with `side > 0` within `700.0`. The remaining cities (with
+  `moid+0xc != 0`, i.e. an active flag) are split into **four lists by quadrant relative to Khiva** (x below/above, y below/above) and each list is sorted by distance (`MergeSortObjectListByScratchKeyDescending`,
+  key at `+0xf8`). The first city of each list gets state `2` at `+0x19c`.
+* **Phase 2, strike groups:** from the cities with state `2` it picks one at random and spawns `spawnEndgameStrikeGroups_(strength 100.0, -1.0, position, name, 1)` for each; every fleet gets type `6`, its
+  target set to Khiva's position, and enters the profile fleet vector; their `moid+0xc` is set to `3`.
+* **Phase 3, reinforcement search:** up to **100 tries** to find a city (`+0x2e8 > 1`, active, 2000 to 4000 units from Khiva, not already occupied by a hostile fleet) and spawn another strike group
+  there with strength `200.0` (normal) or `300.0` (hard mode, `Profile.hardMode`). Fleets from this phase get ships `Tarantul` (66%) or `Tarantul ARM` (34%).
+* **Phase 4, garrison ships:** for every city with garrison strength it spawns ships through `somethingSpawnShips` (divides the strength by `20.0` or `50.0` depending on the city kind) and copies up to 3 of
+  the generated names into the city record.
+* **Finale:** `BASRA`'s record is cleared; then, **"Start the nuclear war"** (logdot's comment): if `Profile.escalation == 0` it shows `THE_BEGINNING` / `NUCLEAR_WAR`, plays `dram_hit_01`, and sets
+  `escalation = max(escalation, 1)`; finally **`Profile.endWar = true`**. This is what `GetPartPrice` (group 6) checks, so after this function runs, part prices become 0.
+* **Lead for the Khiva crash/loop bug in the roadmap [guess]:** the whole finale sits inside nested `if (list non-empty)` guards, and the city search is a fixed 100-try loop. If every city around Khiva is
+  already captured, the candidate lists are empty, the function does nothing, and `endWar` is never set, while the caller expects the event to progress: a state that never advances (an endless loading
+  loop) rather than a crash in this function. Check the caller's retry logic in 1.163 before trusting this; the function itself is not yet located there.
+
+<!-- MOVE: -> roadmap.md under the "Capturing all cities around Khiva" bug (lead + names); -> systems.md (new short "End game" section: the three phases, endWar, escalation); -> open-questions.md (locate the 1.163 counterpart). -->
