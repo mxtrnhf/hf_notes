@@ -317,3 +317,25 @@ real allocation sizes in `CopyObject` (`structures.md`) show which structs are a
   signature). Do it only after a check of which functions use which twin.
 
 <!-- MOVE: -> roadmap.md Ghidra side (the order), structures.md (the table of sizes becomes the "Ghidra struct status" note); open-questions.md (Creature size). -->
+
+## Group 12: `FireShell`, the projectile factory (1.151 `0x1400307f0`, 1.163 `0x1400300d0`) [code]
+Both versions carry logdot's header comment: *"Spawns a projectile based on ammo type index ... Dispatches on `ammo->index` ... Always spawns a muzzle flash body at the end regardless of ammo type."*
+`FireGun` calls it (group `FireGun` in `review-1151.md`). 1.163 has one more argument (`param_8`) and `Body` allocations of `0xa40` (1.151: `0xa08`).
+
+* **Dispatch is on `ammo->index`** (the `AmmoDefList` entry, stride `0x188` = the same size as the stats record; ammo definitions are built in `DefineAmmos`). Cases in **both** versions:
+  `5, 10 (0xa), 15 (0xf), 20 (0x14), 25 (0x19), 30 (0x1e), 40 (0x28)` = the plain cannon shells (logdot's comments tag `10` as "57mm; can kill in one volley", `0xf` "180mm high explosive", `0x14` "130mm",
+  `0x1e` "203mm normal shell"), `51 (0x33), 52 (0x34), 55 (0x37)` = rockets/missiles (sprite `missile_01`, particles `rocket_glow.psi`/`smoke_FIRE.psi`, sounds `missile_launch`/`missile_launch_far`),
+  `60 (0x3c)` = a 3-pellet canister, `70 (0x46)` = a 6-pellet canister, `80 (0x50)` = EMP (`emp_01`). **1.163 adds `54 (0x36)` (another rocket variant) and `90 (0x5a)`** (a heavy shell that also
+  changes the firing body's `logic` to `0x89` and sets projectile flags `0x10015`).
+* **Where projectile hit points and lifetimes are set (roadmap: "HP modification for missiles, aircraft, rockets and cannon shells"):** rockets get `health = maxHealth = 10.0` and `timeToLive` `10.0` (cases 51/55) or
+  `30.0` (cases 52/54) in this function; canister pellets get `health` 30.0 (case 60, explosive 200, TTL 12) or 10.0 (case 70, TTL 30, `explosive` 0); cluster bomblets are in group 5. These are literal constants
+  here, so an HP/TTL config means patching these stores (or reading ammo-definition fields if the game exposes them). Cannon shells go through `Body::BulletImpact__` (below) instead.
+* **Rocket logic:** the projectile's `logic` field is set to `ammo->caliber` and `isLogicActive = 1` (the missile guidance branch in `creatureLogic` keys on that id), `logicF2 = 1.5` is a guidance parameter, and
+  `explosive = ammo->explosivePower`. So rocket speed and acceleration live partly in the ammo definition and partly in that logic branch (not in `FireShell`).
+* **1.151 only: the "special behaviour" roll:** for enemy shooters, `behavior = 1.0` is scaled to `0.5` (difficulty 0) or `0.75` (difficulty 1), and each shell gets `field218_0x3b0 = (rand < behavior * p)` with
+  `p = 0.5` for most shells, `0.8` for the 57mm and `0.2` for rockets. 1.163 no longer has the difficulty scaling; it computes a time value with `FUN_1401af7b0(n)` (n = 1, 3, 5, 6 or 8 depending on whether the owner is the
+  player and on `Profile.field_0x164`) and stores it in the projectile (`+0x3c0`, the "launch timer" field of the Body table). That is the changed AI/difficulty rule; the 1.151 flag `+0x3b0` is gone.
+* **Recoil and flash:** `apply_recoil_` applies an opposite impulse to the root body for the canister cases; the muzzle flash is a separate short-lived body (`timeToLive 5.0`, sprites `flash` / `flash_fire`).
+* **1.163 extra:** `DAT_147fc6fd4` (the second flag besides `BOOL_147eed9ae` in 1.151) divides the flash size by 1.5, and the first branch (case 5) also calls `Random_Int(1,4)` when `param_8 == 0`.
+
+<!-- MOVE: -> roadmap.md under the "HP modification" and "AI cannot use LG/INC shells / AP only at close range" items (the ammo-index dispatch and the new indices 54 and 90); -> systems.md (new subsection "Firing": FireGun -> FireShell). The ammo-index -> ammo-name map is still missing (look up DefineAmmos / AmmoDefList). -->
