@@ -225,12 +225,12 @@ Present in 1.151 as a named function; **not matched** in 1.163 by the fuzzy tool
 * **1.151 slot names** (stock HGE order, with the game's differences): 0 Release, 1 `System_Initiate`, 2 `System_Shutdown`, 3 `System_Start`, 4 *(unnamed: GetErrorMessage)*, 5 `System_Log`, 6 *(unnamed: one of
   Launch/Snapshot)*, 7-11 `System_SetStateBool/Func/(Hwnd)/Int/String`, 12-16 `GetState*`, 17 `Resource_Load`, 18 `Resource_Free`, 19 `AttachPack`, 20 `RemovePack`, 21 `RemoveAllPacks`, 22 `Resource_MakePath`,
   23 `EnumFiles`, 24 `EnumFolders`, 25-30 `SetInt/GetInt/SetFloat/GetFloat/SetString/GetString` (`Ini_*`), 31 `Random_Seed`, 32 `Random_Int`, 33 `Random_Float`, 34 `GetSeed`, 35 `GetTime`, 36 `GetDelta`,
-  37 `GetFps`, 38 `EffectLoad`, 39 `EffectFree`, 40 `EffectPlay`, 41 `PlayEx`, 42 `StreamPlay`, 43 `MusicLoad`, 44 `MusicFree`, 55 `StreamLoad`, 56 `StreamFree`, 61-71 `Channel*`, 77-87 input (`GetMousePos`,
+  37 `GetFps`, 38 `EffectLoad`, 39 `EffectFree`, 40 `EffectPlay`, 41 `PlayEx`, 42 `StreamPlay`, 43 `MusicLoad`, 44 `MusicFree`, 55 `StreamLoad`, 56 `StreamFree`, 57-60 `ChannelUnknown`, 61-72 `Channel*` (`Pause`, `Resume`, `Stop`, `PauseAll`, `ResumeAll`, `StopAll`, `IsPlaying`, `GetLength`, `SetPos`, slot 70 unnamed, `SlideTo`, `IsSliding`), 77-87 input (`GetMousePos`,
   `SetMousePos`, `GetMoseWheel` [sic], `IsMouseOver`, `KeyDown`, `KeyUp`, `GetKeyState`, `GetKeyName`, `GetKey`, `GetChar`, `GetEvent`), 97 `showPoweredByHGE?`, 98/99 `GetSpriteWidth?`/`GetSpriteHeight?`
-  (names with a question mark are logdot's guesses). The Gfx_/Target_/Texture_ slots (45-54, 72-76, 88-96) are unnamed in 1.151.
+  (names with a question mark are logdot's guesses). The slots 45-54, 73-76 and 88-96 are unnamed in 1.151 (the stock header puts Gfx_/Target_/Texture_ there).
 * **It answers the open question** in `open-questions.md` about which stock System_ method is missing: the table has **one** slot (6) between `System_Log` and `SetStateBool` where the stock header has two
   (`System_Launch`, `System_Snapshot`). Which one is still unnamed.
-* **Two stock names are not in the stock source:** none; all other slot names match the HGE 1.8 header (`Resource_AttachPack` etc.), consistent with the notes' claim that the game uses a lightly modified stock HGE.
+* All named slots match the HGE 1.8 header order, consistent with the notes' claim that the game uses a lightly modified stock HGE.
 * Extra useful hook: `Resource_AttachPack` is slot 19 in 1.151 and **slot 20** in 1.163 (`engine-hge.md` says 20: consistent).
 
 <!-- MOVE: -> engine-hge.md (interface table: add the 1.151 slot names column and the "added slot 17 is new in 1.163" fact); open-questions.md (update the missing System_ method line). -->
