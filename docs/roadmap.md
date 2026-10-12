@@ -4,7 +4,7 @@
 Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, QoL, Feature, AI, Mod Scope, Physics Engine.
 
 ## Version scope
-For 1.151 only these are planned: the **speed curve** (already fixed) and **damage changes**. The damage changes may need both game versions played side by side, with Claude attached to the running game, to see what happens inside.
+**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed) and the **damage changes**. The damage changes may need both game versions played side by side, with Claude attached to the running game, to see what happens inside.
 
 ## Items
 
