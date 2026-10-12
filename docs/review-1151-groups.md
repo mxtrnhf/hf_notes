@@ -436,3 +436,40 @@ Variants (`_INC`, `_AP`, `_PROXY`, `_LG`) copy their base and keep its `index`. 
 code that fills other ammo (not read).
 
 <!-- MOVE: -> systems.md "Firing" / a new "Ammo" section (the table, the ttl change); roadmap.md items "Adjustable TTL for cluster munitions and mine bomblets" and "HP modification for ... cannon shells" and the damage-changes note in "Version scope" (ttl is per ammo type in 1.163, a data constant); structures.md (Ammo record 0x168 vs 0x188). The 1.151 vs 1.163 value-change list is the evidence for "damage changes"; keep it in roadmap.md version scope. -->
+
+## Group 16: where the tactical AI fires and picks ammo (1.163 `FUN_14007a8d0`, 1.151 `0x140076300`) [code unless noted]
+Found by following the combat launch chain upward, not by name: `FireShell` <- `FireGun` <- `FireGuns` (`0x1400559e0`, a loop over one gun) <- **`FUN_14007a8d0`** (1.163, `0x14007a8d0`-`0x14007bfb1`). It is the
+per-ship **AI weapon controller**: it aims every gun on an AI creature, picks the ammo, and decides whether to fire. The 1.151 twin is `rep_140076300_API-MS-WIN-CRT-MATH-L1-1-0.DLL::atan2f` at `0x140076300`
+(a propagated name that has nothing to do with `atan2f`; flag for logdot). Both are called from the big ship update (1.163 `FUN_140062f90`, not read).
+
+**Premise check on `creatureLogic`.** `creatureLogic` (1.151 `0x1400335b0`, 1.163 `0x140033b90`) is not the ship AI. `FireShell`/`FireGun` call it, its callees are the missile/cluster/evac-pod functions, and
+`BulletImpact__` stores `ammo->caliber` into the projectile's `logic` field (group 14). It is the **per-body behaviour dispatcher for projectiles, missiles and aircraft**, keyed by that logic id (100 plain shell, 130
+rockets, 140 laser guided, 160 proximity, and in 1.163 132 for the 300mm rocket and 135 for the harpoon). The roadmap's tactical-AI items are therefore in the function above and its caller, not in `creatureLogic`.
+I did not read `creatureLogic` itself (it timed out twice); this is inferred from callers/callees and the field it keys on [code, indirect].
+
+**Answers to the roadmap's tactical items:**
+* **"Closing to very short range disables all weapons" [Tactical, exploitable]: found, and new in 1.163.** After the target's position is read, 1.163 returns before any aiming or `FireGuns` when
+  `distance < target.+0x1850 + self.+0x1850 + 30.0` (the field is added once per ship, so it is probably a hull extent or radius [guess]). 1.151 has no such test. So the "all guns go silent when you
+  are touching them" behaviour is a 1.163 addition, and a patch is a change to that compare or to the constant `30.0` in this function (address not yet pinned; see the disassembly of `0x14007a8d0`).
+* **"AP only at extremely short range": confirmed, same rule in both versions.** For guns whose part caliber index is 15, 20, 25 or 30 (100, 130, 180, 203mm) the controller sets the gun's ammo slot
+  (1.163 gun `+0x850`, 1.151 `+0x83c`) with `FindAmmoIndex(name)`. It picks `_AP` only if two creature flags are set **and the target is closer than 1000** units; else the proximity variant when other flags are set; else the plain shell.
+  It **never selects `_INC` or `_LG`**, which matches the roadmap ("the AI cannot use LG/INC shells"). The 37mm, 57mm and rocket guns keep whatever they were loaded with.
+* **A latent bug in both versions:** for caliber index 30 it looks up `ITEM_AMMO_230MM` (and `_PROXY`, `_AP`), but the table (group 13/15) has `ITEM_AMMO_203MM`. `FindAmmoIndex` returns 0 on a miss, which is the undefined
+  entry whose `index` is 0, a `FireShell` default (muzzle flash only, no shell). **It does not bite in vanilla**: in the game's `OL.seria` no part has `m_weapon_caliber=30` [game]. It would bite a mod that adds a 203mm gun.
+* **"Gives way to the player", "cannot deploy flares", "high convergence angles disable turrets": not in this function.** No movement code and no flare code here. The convergence item may relate to the new aim test below, but I have not shown that [guess].
+
+**Other differences from 1.151 in this controller:**
+* **Aim tolerance (1.163):** a gun fires only if its turret is within **0.025 rad** (about 1.4 degrees) of the aim angle; I see no such test in the 1.151 version of this function. [code; effect untested]
+* **Range for firing at special targets (the missile/aircraft target branch):** strategic-launch targets (part flag `0x8000000`, the A-100 class): 1.151 unlimited range (`3.4e38`), 1.163 **3500**. Aircraft (`0x400`): 1.151 2x the
+  gun range, 1.163 at least **3000** (the larger of 2x range and 3000). Tactical missiles (`0x4000`): 0.75x range in both. A creature flag (`damageCounter_` in 1.151, `linkDLL` in 1.163, the labels are wrong) caps the range at 700 in both.
+* **Small guns (part caliber index <= 10) are limited to 1500** when a global flag is set (both versions).
+* **Proximity-ammo rule** was restructured (1.151: both flags needed; 1.163: `c76+7` and (`c6e+7` or `c76`)); I could not tell what the flags mean.
+
+**[game] cross-check from the game's `OL.seria` (vanilla 1.163):** `m_weapon_caliber` is the ammo `index`: `MDL_CANNON_30_6` = 5, `MDL_CANNON_57_2` = 10, `MDL_CANNON_100_2` = 15, `MDL_CANNON_130` / `_LOW` = 20,
+`MDL_CANNON_180` / `_180_2` = 25, `MDL_RSZO_220` = 52, `MDL_TORPEDO_300` = 54, `MDL_CANNON_HARPOON` = 90, `MDL_KAZ` = 100. Notably **`MDL_CANNON_305_2` also uses 25 (180mm shells)**, so `ITEM_AMMO_305MM` (index 40) and
+`ITEM_AMMO_203MM` (30) have no vanilla gun. This ties the stats record's `+0x144` (`caliber`) to the ammo table.
+
+**Not found / still open:** the ship update that calls this controller (movement, "gives way"), flare logic, the meaning of the creature flags at `+0xc06..+0xc77` that choose AP/proximity, and the exact patch address for the 30.0 test.
+
+<!-- MOVE: -> systems.md new "Tactical AI weapons" subsection (the controller, ammo choice rule, close-range cutoff, aim tolerance); roadmap.md AI items "Tactical, exploitable: closing to very short range" (found), "AI cannot use LG/INC; AP at very short range" (found), and a note for the Version scope (the range and cutoff changes are 1.163 gameplay differences); structures.md (Creature fields +0x1850, +0x850 gun ammo slot); open-questions.md (flares, give-way, flag meaning). -->
+
