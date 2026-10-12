@@ -64,8 +64,9 @@ they are not independent evidence. The ~875 hand names and the data types are th
   fleet (`SetLink` at `+0x280`), appends the group to the profile's map-object vector `mapCrafts` (`+0x228/+0x230`), and calls `ComputeMapAircraftWeaponStrength`.
 * **Conclusion:** `0x800000001047`, size 0x340, **is the MapCraft (map aircraft group)**; the Ghidra comment "Ground defense creatures?" in the 1.163 factory is wrong, and so is
   the name `createGroundDefenseCreatures??` in 1.151 if it was meant for this code (1.151 `0x140004950`; unchecked).
-* The profile vector `mapCrafts` (+0x228/+0x230) holds **both** Missile and MapCraft objects: the 1.163 map-launch consumer pushes its new Missile into the same vector. So
-  `structures.md` "missiles +0x228/+0x230" is the right vector, but its name should be "map objects".
+* **Correction (see `review-1151-groups.md`, "Profile remap"):** the first version of this bullet said the profile vector `mapCrafts` holds both Missiles and MapCrafts. That was wrong. The Profile
+  layout moved by +0x48 between versions: in 1.151 Missiles are at `+0x1e0` and MapCrafts at `+0x228`; in 1.163 Missiles are at `+0x228` (the map-launch consumer pushes there) and MapCrafts at
+  `+0x270` (`CreateMapAircraftGroup` pushes there). Ghidra's name `mapCrafts` at `+0x228` in the 1.163 program is a stale label.
 * The function's fourth argument is an optional target object. If given, the MapCraft copies that object's link into `+0x268`, and its field `+0x338` takes either a fleet's `+0x4c8`
   or a MapCraft's `+0x300 + +0x304`, chosen by the mask tests `& 0x147` / `& 0x800000001047` on the linked object. So **a MapCraft's target can be a fleet or another MapCraft**,
   consistent with the target-type finding for the map-launch queue (`systems.md`).
