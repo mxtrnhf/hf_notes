@@ -41,4 +41,5 @@ After the review by logdot and his agent, this branch is merged/split into the n
 | review-1151.md "Body remap" anchors | structures.md new subsection "Version differences" | not moved |
 | review-1151.md "How automatable ...", "Body remap" | roadmap.md Ghidra side / structures.md | not moved |
 | review-1151-groups.md Profile remap | structures.md world singleton line (after flag 6) | not moved |
-| review-1151-groups.md groups 1-14 | systems.md / structures.md / formats.md / engine-hge.md / content.md / roadmap.md / open-questions.md per the MOVE comments in each group | not moved |
+| review-1151-groups.md groups 1-15 | systems.md / structures.md / formats.md / engine-hge.md / content.md / roadmap.md / open-questions.md per the MOVE comments in each group | not moved |
+| review-1151-groups.md group 15 (ammo ttl and value changes) | roadmap.md version scope (damage changes) + systems.md Ammo + structures.md Ammo size | not moved |

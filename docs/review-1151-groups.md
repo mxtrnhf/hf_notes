@@ -322,7 +322,7 @@ real allocation sizes in `CopyObject` (`structures.md`) show which structs are a
 Both versions carry logdot's header comment: *"Spawns a projectile based on ammo type index ... Dispatches on `ammo->index` ... Always spawns a muzzle flash body at the end regardless of ammo type."*
 `FireGun` calls it (group `FireGun` in `review-1151.md`). 1.163 has one more argument (`param_8`) and `Body` allocations of `0xa40` (1.151: `0xa08`).
 
-* **Dispatch is on `ammo->index`** (the `AmmoDefList` entry, stride `0x188` = the same size as the stats record; ammo definitions are built in `DefineAmmos`). Cases in **both** versions:
+* **Dispatch is on `ammo->index`** (the `AmmoDefList` entry; stride `0x168` in 1.151 and `0x188` in 1.163, see group 15; ammo definitions are built in `DefineAmmos`). Cases in **both** versions:
   `5, 10 (0xa), 15 (0xf), 20 (0x14), 25 (0x19), 30 (0x1e), 40 (0x28)` = the plain cannon shells (logdot's comments tag `10` as "57mm; can kill in one volley", `0xf` "180mm high explosive" (by the ammo table in group 13, `0xf` is the **100mm** shell and `0x19` is the 180mm, so that comment is off by one calibre), `0x14` "130mm",
   `0x1e` "203mm normal shell"), `51 (0x33), 52 (0x34), 55 (0x37)` = rockets/missiles (sprite `missile_01`, particles `rocket_glow.psi`/`smoke_FIRE.psi`, sounds `missile_launch`/`missile_launch_far`),
   `60 (0x3c)` = a 3-pellet canister, `70 (0x46)` = a 6-pellet canister, `80 (0x50)` = EMP (`emp_01`). **1.163 adds `54 (0x36)` (another rocket variant) and `90 (0x5a)`** (a heavy shell that also
@@ -341,7 +341,7 @@ Both versions carry logdot's header comment: *"Spawns a projectile based on ammo
 <!-- MOVE: -> roadmap.md under the "HP modification" and "AI cannot use LG/INC shells / AP only at close range" items (the ammo-index dispatch and the new indices 54 and 90); -> systems.md (new subsection "Firing": FireGun -> FireShell). The ammo-index -> ammo-name map is still missing (look up DefineAmmos / AmmoDefList). -->
 
 ## Group 13: the ammo definition table (`DefineAmmos`, 1.151 `0x1402356d0`) [code]
-Builds `AmmoDefList` (entry stride `0x188`, same as a stats record; two undefined entries first, then these). The field `index` is the key `FireShell` (group 12) dispatches on. Base entries; every derived
+Builds `AmmoDefList` (entry stride `0x168` in 1.151, `0x188` in 1.163 (corrected in group 15; it is not the stats-record size); two undefined entries first, then these). The field `index` is the key `FireShell` (group 12) dispatches on. Base entries; every derived
 entry **copies its base (including `index`)** and changes strings and a few numbers, which is why all variants of one calibre share one `FireShell` case.
 
 | `index` | Item | Calibre text | `explosivePower` | `speed` | Extras |
@@ -390,3 +390,49 @@ body, the root body, the fire direction, a speed factor (1.0), `is_local_player`
   (`shellOutSound` for the local player at close zoom, `shellFarSound` otherwise). Enemy shooters on some difficulties halve the volume (`0.5`).
 
 <!-- MOVE: -> roadmap.md (HP and damage items: where each constant lives), systems.md "Firing"; the `caliber` = logic-id remark also goes to structures.md (Ammo table). -->
+
+## Group 15: the 1.163 ammo table and what changed from 1.151 (`DefineAmmos`, 1.163 `0x140256f10`) [code]
+The 1.163 counterpart exists and is named `DefineAmmos` (`0x140256f10`-`0x14025afc4`; it builds 35 entries into `AmmoDefList`/`AMMO_LIST_BEGIN` at `0x143a13be0`). It was found through the data: the global's xrefs
+(168) include the writers inside this function, and `FireShell` indexes the same global. Source: the 1.163 decompile of `DefineAmmos`, `CreateUndefAmmo?` (`0x140289190`) / `UndefAmmo` (`0x140292e50`) and
+`Body::BulletImpact__` (`0x140052a80`), against the 1.151 versions (group 13/14). Offsets are bytes into the `Ammo` record.
+
+**Record layout.** 1.151 `Ammo` is `0x168` (360) bytes; 1.163 is `0x188` (392). The extra `0x20` comes from two inserts: a string `shell_enemy` (an "enemy fire" sound, `+0x110`, so the sound strings are `shell_in`,
+`shell_out`, `shell_enemy`, `shell_far`) and a float **`ttl`** (`+0x16c`). Everything from `ttl` on moved by `+0x24` (1.151 `shopPrice` `0x14c` -> 1.163 `0x170`; `gun_rate_time` -> `fire_delay` at `0x17c`;
+`gun_max_load` at `0x180`; `aircraftStrengthContribution` at `0x184`). Earlier in this file I wrote `0x188` for the 1.151 stride (group 12/13); that was wrong, it is the 1.163 size, and the 1.151 size is `0x168`.
+Defaults (`UndefAmmo`): `incendiary_power` 100.0 (both versions), **`ttl` 10.0 (1.163 only)**, `fire_delay` (1.151 `gun_rate_time`) 0.5, `gun_max_load` 10.
+
+**What 1.163 does with `ttl` (the main finding).** `BulletImpact__` now sets the shell's `timeToLive` / `desowningTime` from `ammo->ttl` (1.151 used a literal 10.0, with 3.0 for 57mm and 2.0 for 37mm). Armor-piercing
+shells (`penetrative_power != 0`) still fly 1.0. The values stored in `DefineAmmos`:
+
+| Shell | 1.151 lifetime (s) | 1.163 `ttl` (s) |
+|---|---|---|
+| 37mm | 2.0 | 2.0 |
+| 57mm (and the new `ITEM_AMMO_57MM_TANK`) | 3.0 | 3.0 |
+| 100mm | 10.0 | **4.0** |
+| 130mm | 10.0 | **7.0** |
+| 180mm | 10.0 | **30.0** |
+| 203mm, 305mm | 10.0 | 10.0 (default) |
+| AP variants (100/130/180) | 1.0 | 1.0 |
+
+Shell range is lifetime x muzzle speed (`speed` 700 for the base shells), so this changes effective range: a 100mm shell now lives 4 s, a 180mm shell 30 s. **This is a real gameplay difference between the versions
+and the first hard evidence for the roadmap's "damage changes" scope**; both are data in `DefineAmmos`, so they are patchable constants. [code]; whether it is felt in play is untested [guess].
+
+**Other value changes between the versions** (from the two `DefineAmmos` decompiles, `[code]`):
+* `ITEM_AMMO_220MM` `explosive_power` **90 -> 180**; `ITEM_AMMO_300MM` **90 -> 500**, and its `caliber` (projectile logic id) 130 -> **132** (`0x84`). `ITEM_NAR122` (45) and `ITEM_NAR340` (90) are unchanged.
+* Incendiary variants: `incendiary_power` **1000 -> 300** (every `_INC` entry).
+* Laser-guided variants: `explosive_power` multiplier **x4 -> x1.5** (`ITEM_AMMO_130MM_LG`, `ITEM_AMMO_180MM_LG`).
+* `ITEM_FAB250` `aircraftStrengthContribution` 5 -> **6** (FAB100 3 and FAB500 8 unchanged).
+* `ITEM_GUN37`: `fire_delay` 0.1 -> **0.05** and `gun_max_load` 10 -> **20** (GUN57 unchanged at 0.2 / 7).
+* Unchanged: the base cannon `explosive_power` / `speed` / `bullet_height` (37mm .. 305mm), the AP penetrations 16 / 20 / 34 and `apDrag`, shop prices / rarities / amounts, `ITEM_K13`.
+* **New entries:** `ITEM_HARPOON` (`index` 90 = `0x5a`, `caliber` 135 = `0x87`, `speed` 700, `explosive_power` 0), `ITEM_KAZ_AMMO` (`index` 100, no `FireShell` case; the KAZ burst is `FUN_14002f480`),
+  and `ITEM_AMMO_57MM_TANK` (`index` 10, `caliber` 0 = no projectile logic, 57mm numbers).
+
+**Resolves two earlier guesses.** (1) `FireShell` case `0x5a` (90), which I called "a heavy shell that changes the firing body's logic to 0x89", is the **harpoon** (`index` 90). (2) The 300mm rocket (`index` 54) had
+no `FireShell` case in 1.151; 1.163 adds case `0x36` and raises the warhead from 90 to 500, which fits "the 300mm rocket was unfinished in 1.151". The 1.151 half is `[code]`; the "it did nothing in play" half is still a guess.
+Case `0x37` (55, `ITEM_NAR340`) and `0x33`/`0x34` (51/52) are as before.
+
+**Index map for 1.163** (the dispatch key of `FireShell`): 5 37mm, 10 57mm, 15 100mm, 20 130mm, 25 180mm, 30 203mm, 40 305mm, 51 NAR122, 52 220mm rocket, 54 300mm rocket, 55 NAR340, 90 harpoon, 100 KAZ.
+Variants (`_INC`, `_AP`, `_PROXY`, `_LG`) copy their base and keep its `index`. The `FireShell` cases 60 (`0x3c`) and 70 (`0x46`) (canisters) and 80 (`0x50`, EMP) have no `DefineAmmos` entry in either version: they come from
+code that fills other ammo (not read).
+
+<!-- MOVE: -> systems.md "Firing" / a new "Ammo" section (the table, the ttl change); roadmap.md items "Adjustable TTL for cluster munitions and mine bomblets" and "HP modification for ... cannon shells" and the damage-changes note in "Version scope" (ttl is per ammo type in 1.163, a data constant); structures.md (Ammo record 0x168 vs 0x188). The 1.151 vs 1.163 value-change list is the evidence for "damage changes"; keep it in roadmap.md version scope. -->
