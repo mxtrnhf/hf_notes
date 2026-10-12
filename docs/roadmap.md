@@ -4,7 +4,7 @@
 Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, QoL, Feature, AI, Mod Scope, Physics Engine.
 
 ## Version scope
-**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed) and the **damage changes**. The damage changes may need both game versions played side by side, with Claude attached to the running game, to see what happens inside.
+**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed) and the **damage changes**. The code-side differences are listed in [ammo-1151-vs-1163.md](ammo-1151-vs-1163.md) (per-ammo shell lifetime, rocket warheads, incendiary power and more). The damage changes may need both game versions played side by side, with Claude attached to the running game, to see what happens inside.
 
 ## Items
 
