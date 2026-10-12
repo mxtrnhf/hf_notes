@@ -17,6 +17,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 * **[QoL]** Audio cue (or auto-pause) when aircraft intercept enemy forces on the strategic map.
 * **[QoL]** Toggle for auto-pause on the strategic map.
 * **[Bug]** Capturing all cities around Khiva before the end-game event causes a crash loop / infinite loading.
+  * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [khiva-crash.md](khiva-crash.md). Not reproduced in game.
 
 ### New features
 * **[Feature]** Cruise-missile barrage mechanic (for example salvos of 4 simultaneous incoming cruise missiles).
@@ -28,7 +29,9 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 * **[Strategic]** The AI launches all its aircraft when it detects the player within strike range, so none are left for defensive interception.
 * **[Strategic]** The AI has no evasive manoeuvring against cruise missiles on the strategic map.
 * **[Tactical, exploitable]** Closing to very short range of an enemy ship in tactical combat disables all of its weapon systems.
+  * Found, and a 1.163 addition: the cutoff and its patch sites are in [ai-tick-patch-sites.md](ai-tick-patch-sites.md) (section 1). Not applied or run in game.
 * **[Tactical, exploitable]** The AI consistently gives way to the player's ship, which gives the player easy positional advantage.
+  * Likely mechanism (the stand-off retreat) and its patch sites: [ai-tick-patch-sites.md](ai-tick-patch-sites.md) (section 2). Guess; not run in game.
 * **[Tactical]** The AI cannot use some ordnance or parts (LG/INC shells); AP rounds are fired only at extremely short range; the AI cannot deploy flares.
   * Flares: the cause and a mod design are in [ai-flares.md](ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
   * Flares: the cause and a mod design are in [ai-flares.md](ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
