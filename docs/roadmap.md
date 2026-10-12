@@ -34,7 +34,6 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
   * Likely mechanism (the stand-off retreat) and its patch sites: [ai-tick-patch-sites.md](ai-tick-patch-sites.md) (section 2). Guess; not run in game.
 * **[Tactical]** The AI cannot use some ordnance or parts (LG/INC shells); AP rounds are fired only at extremely short range; the AI cannot deploy flares.
   * Flares: the cause and a mod design are in [ai-flares.md](ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
-  * Flares: the cause and a mod design are in [ai-flares.md](ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
 * **[Tactical, exploitable]** High convergence angles can be used to disable enemy turrets.
 
 ### Mod scope
