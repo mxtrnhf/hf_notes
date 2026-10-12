@@ -37,6 +37,7 @@ After the review by logdot and his agent, this branch is merged/split into the n
 19. Names to fix: `0x1400739c0` is labelled `shipKill?` but is the per-ship AI tick caller of `FUN_140062f90`; `0x140071120` is labelled `...::sqrtf` but computes the ship bounding radius (writer of Creature +0x1850); `0x14007ffaa` sits in `CalculateStats`.
 20. Likely cause of the Khiva crash (group 18): four unguarded `first_node->payload->+0x19c = 2` writes at 1.163 0x140262226 (1.151 0x140240266). Earlier group 7 text claimed they were guarded; corrected. Also: 1.163 `Profile` struct is the stale 1.151 layout (+0x58 from `endRace`). Please confirm one empty-quadrant case by reading the list code or reproducing on a throwaway save before anything is merged to master.
 21. `FUN_140261a20` and the `SCR_MAP` handler region around 0x1402b8a00-0x1402b8b30 have no function defined / are unnamed; same Ghidra-gap family as flag 7.
+22. `+0xd4`: group 19 now supports crew capacity (and `Body +0x804` = crew present) from the ship stats aggregation in 1.163; this resolves flag 11's open part in logdot's favour. Roadmap 'combined sensors' item is NOT confirmed by the code read (sensors combine by max; only jammers sum).
 
 ## Pending moves (update as I go)
 | From | To | Status |
@@ -52,3 +53,4 @@ After the review by logdot and his agent, this branch is merged/split into the n
 | review-1151-groups.md group 16 (tactical AI controller) | systems.md Tactical AI + roadmap.md AI items + structures.md Creature | not moved |
 | review-1151-groups.md group 17 (AI tick, patch site) | hooks.md Ownership row + roadmap.md AI items + systems.md Tactical AI + structures.md Creature | not moved |
 | review-1151-groups.md group 18 (endgame, Khiva crash cause) | roadmap.md Khiva bug + systems.md End game + hooks.md + open-questions.md | not moved; wait for logdot's confirmation |
+| review-1151-groups.md group 19 (sensor combine rules, +0xd4) | structures.md Stats + Body, roadmap.md sensors/crew items, systems.md | not moved |
