@@ -25,7 +25,7 @@ Source of the sizes [code]: the copy routine `FUN_1401bfd00` (`CopyObject`, one 
 its 0x340 comes from the default-construction factory (entry `0x1402024e0`, Ghidra name `Panel::Constructor`; a switch on the code, `New(0x340)` then `FUN_1400e4530`, which
 builds on the `Mark` constructor). The same factory gives the same sizes for the other rows, and also covers codes the copy routine lacks (for example `0x2047` = 0x268, `0x803` = 0x188).
 
-## Body (ship part): ctor `FUN_140015690`, vtable `0x140352a30`
+## Body (ship part): copy ctor `FUN_140015690` (Ghidra `createNewBody`: takes a source object and calls `copyOverBody`; the default one is `Body::Body(this, 1)` in the factory), vtable `0x140352a30`
 | Offset | Field |
 |---|---|
 | +0x28 / +0x48 | class code / state (0 = dead or dropped) [code] |
@@ -87,12 +87,12 @@ The guide adds: gun enables elevation and shifts it +1; bit 19's group enables a
 
 ## Fleet (Escadra, 0x147) [code unless noted]
 +0x100 std::list of ships (ship objects via `FUN_14021b070`) · +0x150/+0x154 position · +0x158 speed · +0x15c heading · +0x240 reverse flag ·
-+0x270 the tracked incoming missile · +0x420 `m_refuel_timer` (float), +0x424 `m_refuel_amount` · +0x461/+0x468 flags (+0x468 refuel animation) ·
++0x270 the tracked incoming missile or MapCraft [code: also read as a MapCraft-masked pointer in `changeAircraftState_`] · +0x420 `m_refuel_timer` (float), +0x424 `m_refuel_amount` · +0x461/+0x468 flags (+0x468 refuel animation) ·
 +0x498 / +0x4a0 fuel and capacity (doubles) · **+0x50c launch cooldown (float)** [game] · **+0x538/+0x540/+0x548 map launch queue** [game] ·
 callsign/name strings. Ship (Creature) fields used: +0x1638/+0x1640 fuel current/capacity (doubles), +0x1330 part list, +0x13d8/+0x13f0 launch lists, +0x17b0 in-flight limit,
 +0xad4 owner cooldown. Station (location): +0x258 flag, +0x25c type (4 = fuel city), +0x274 fuel stock (float).
 
-## Map missile (Missile, 0x400000001047), ctor `FUN_1400e48a0`, vtable `0x14035e998` [game]
+## Map missile (Missile, 0x400000001047), default ctor `FUN_1400e48a0` (no source argument; sets the name "Missile" and the code; the copy ctor is `Missile`, which also references the vtable), vtable `0x14035e998` [game]
 +0x150/+0x154 position · +0x158 speed · +0x15c heading · +0x240 reverse flag · **+0x248 count** (launch writes 1) · +0x270 target fleet · +0x29c type (3 = ground, range <= 60) ·
 **+0x2b8 / +0x2c8 / +0x2d0 part id** (std::string). The world singleton `FUN_140292a90()` holds the lists: missiles +0x228/+0x230, fleets +0x270/+0x278, friendly-fleet list +0x1f8/+0x200.
 `FUN_1400ec440(a,b,dt)`: do two map objects come within 1.0 of each other during the next dt step (closest approach along headings); used for every encounter.
