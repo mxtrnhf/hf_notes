@@ -45,12 +45,17 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 * **[Physics]** Limited acceleration restricts the turn rate of missiles (Zenith) and aircraft; capped top speeds restrict projectile velocity.
 
 ## Tooling for modders (debug, edit, test)
-Same status as above: wish list, nothing started. What exists today: `hfcrypt.py` (language packs), `apply_data.py` in the multicharge/multimissile repos (writes
-part data into `OL.seria`/`parts.seria`), per-mod log files, the modloader 4.1.0 logging SDK (`setup.md`), and Ghidra with an MCP bridge. Everything else is hand-edited text.
-Ordered by how much time each would save, not by effort. Tags: **[pain]** a problem we have actually hit, **[guess]** an expected benefit.
+Same status as above: wish list, nothing started. What exists today:
+* `hfcrypt.py`: encodes and decodes the language packs.
+* `apply_data.py` (identical copies in the multicharge and multimissile repos): creates variants of parts by cloning stats into `OL.seria`, body prototypes into `parts.seria`,
+  text into the language packs and entries into `Shipworks.json`. Idempotent, makes a `.bak` once, supports `--dry-run`. It is a generator for one specific job (charge-level
+  variants), not a general editor, but it holds working code for reading and appending `.seria` blocks.
+* `dec`/`enc` (C++ with build script) in `hf_dialog_src`, another language-pack decoder; a `binwalk` binary in `hf_mods_unpack/tools/bin`.
+* Per-mod log files, the modloader 4.1.0 logging SDK (`setup.md`), and Ghidra with an MCP bridge. Everything else is hand-edited text.
+Ordered by how much time each would save, not by effort. Tag: **[guess]** is an expected benefit (legend in `../README.md`); other claims are from problems we hit in practice.
 
 ### 1. `.seria` library and CLI (parse, query, patch, diff)
-* **Why [pain]:** `.seria` is picky (nested `header=number { }`, braces alone on a line, never indented, defaults omitted, repeated `attr=value` lines are arrays), so by-hand edits
+* **Why (hit in practice):** `.seria` is picky (nested `header=number { }`, braces alone on a line, never indented, defaults omitted, repeated `attr=value` lines are arrays), so by-hand edits
   of 2051 `m_stats` records break silently. The game also **rewrites `OL.seria` and `parts.seria` at startup**, and a game update overwrites `Libraries/`.
 * A parser/serializer that round-trips a file byte-for-byte when nothing is changed (so a diff shows only the intended edit). Then:
   * `get`/`set` by id and field, for example `OL.seria[MDL_NUKE_03_CONV].m_launched_range`, with bulk edits from a CSV or JSON.
@@ -61,7 +66,7 @@ Ordered by how much time each would save, not by effort. Tags: **[pain]** a prob
   * `diff` between two game versions' libraries, for example 1.151 vs 1.163 (that is also the evidence for "which differences do players still prefer").
 
 ### 2. Save editor and save snapshots
-* **Why [pain]:** saves are plain text but huge (every part of every ship is a full Body record). Cash, unlocks, fuel and ship swaps are one-line edits that are tedious to find.
+* **Why (hit in practice):** saves are plain text but huge (every part of every ship is a full Body record). Cash, unlocks, fuel and ship swaps are one-line edits that are tedious to find.
 * Named snapshots (backup before editing is already the rule, make it one command) and a **save diff**: take two snapshots around an action (fire a volley, enter a city,
   refuel) and list exactly which fields changed. **[guess]** this is the cheapest way to learn what a game action writes, and it can confirm offsets in `structures.md`.
 * Common edits as commands: cash (`m_scores`), `m_countdown`, unlocks, a city's fuel stock, escadra composition, NPC loyalty. Sanity checks before writing (`m_id` uniqueness, escadra
@@ -74,8 +79,10 @@ Ordered by how much time each would save, not by effort. Tags: **[pain]** a prob
   disagrees with the game is then visible immediately instead of in a later log.
 * **Direct-to-scenario launcher:** call the level loader (`FUN_14025afd0`, owned by highfleet-salvo, so coordinate) to start `Missile.seria`, `Bombers.seria` and similar with chosen
   sides, skipping the map. Needed for testing salvo and AI work (`systems.md`), and for reproducing the crash bugs in the roadmap on demand.
-* **Crash capture** [guess]: a vectored exception handler that logs faulting address, module, registers and a short stack, and writes a minidump. The flare-collision crash and the
-  Khiva loading loop are both currently "it crashes" with no address. This should turn each into an RVA we can open in Ghidra.
+* **Crash capture** [guess]: a vectored exception handler that logs faulting address, module, registers and a short stack, and writes a minidump. The flare-collision crash is
+  currently "it crashes" with no address; this should turn it into an RVA we can open in Ghidra.
+* **Hang watchdog** [guess]: the Khiva "infinite loading" is a loop, not an exception, so the handler above never fires. A watchdog thread that notices the main thread has made
+  no frame or load progress for N seconds and then dumps its stack (or a periodic stack sampler) is what would find the loop. Two tools, one per failure kind.
 
 ### 4. Logging and tracing
 * **Declarative log hooks:** a JSON file `{address, expected bytes, what to log}` that installs a log-only detour with the existing version guard (expected bytes compared before
@@ -87,9 +94,9 @@ Ordered by how much time each would save, not by effort. Tags: **[pain]** a prob
 * Rate limiting: the AI calls the launch every frame (hundreds of failures per fight, `systems.md`), so any hook needs count-and-summarise or "log only changes".
 
 ### 5. Verification and regression
-* **Site verifier [pain]:** read the patch-site table in `hooks.md` and check that every address still holds the expected bytes in a given exe or dump, plus the constants
+* **Site verifier (we did this by hand in practice):** read the patch-site table in `hooks.md` and check that every address still holds the expected bytes in a given exe or dump, plus the constants
   patched (300.0f launch cooldown, the 100/200 refuel rates, the 50.0f speed factor) and the class sizes in `structures.md`. We did this by hand for 1.163; scripted, it
-  runs after every game update and in CI. It also answers "is this dump the same build" without opening Ghidra.
+  is a local script run after each game update (it needs the game exe or a dump, which cannot go in a public repo or public CI). It also answers "is this dump the same build" without opening Ghidra.
 * **Install smoke test:** from a clean game folder, check modloader present, mods load, version guards pass, `hge.log` has no new errors, pass/fail log lines from `install.md`.
 * **Notes vs binary check:** the same idea for `structures.md` offsets: a script that decompiles/greps a function and confirms a stated offset, so notes cannot drift unnoticed
   (the MapCraft size was wrong for a while).

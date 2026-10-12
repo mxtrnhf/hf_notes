@@ -16,7 +16,7 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/content.md](docs/content.md) | dialogue, characters, events, textures (study + experiment plan) |
 | [docs/total-conversion-hara-vera.md](docs/total-conversion-hara-vera.md) | study of the "Flight to Hara Vera" total conversion: package, media, parts, dialogue, installer format |
 | [docs/open-questions.md](docs/open-questions.md) | what is unknown or undecided |
-| [docs/roadmap.md](docs/roadmap.md) | long-term mod wish list (bugs, QoL, AI, mod scope); not scheduled, do not act on it unasked |
+| [docs/roadmap.md](docs/roadmap.md) | long-term mod wish list (bugs, QoL, AI, mod scope) and wanted modder tooling (seria/save editors, debug mod, logging, verification); not scheduled, do not act on it unasked |
 | [ref/](ref/) | Config.ini reference, summaries of community guides and prior art |
 
 Mods (all on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader)):
