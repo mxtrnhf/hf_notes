@@ -23,7 +23,7 @@ Tags: legend in `../README.md`. Offsets are hex byte offsets.
 
 Source of the sizes [code]: the copy routine `FUN_1401bfd00` (`CopyObject`, one `New(size)` per code) for every row **except** `0x800000001047`. That code has no case in the copy routine;
 its 0x340 comes from the default-construction factory (entry `0x1402024e0`, Ghidra name `Panel::Constructor`; a switch on the code, `New(0x340)` then `FUN_1400e4530`, which
-builds on the `Mark` constructor). The same factory gives the same sizes for the other rows, and also covers codes the copy routine lacks (for example `0x2047` = 0x268, `0x803` = 0x188).
+builds on the `Mark` constructor). The same factory gives the same sizes for the other rows, and also covers codes the copy routine lacks (for example `0x800000000003` = 0x1b0, ctor named `AircraftLogic` by Ghidra; `0xc000f` = 0xe98; `0x44000f` = 0xf18).
 
 ## Body (ship part): copy ctor `FUN_140015690` (Ghidra `createNewBody`: takes a source object and calls `copyOverBody`; the default one is `Body::Body(this, 1)` in the factory), vtable `0x140352a30`
 | Offset | Field |
