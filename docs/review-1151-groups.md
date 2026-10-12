@@ -290,3 +290,30 @@ A string being "only in" one version means that exact text is absent from the ot
 
 <!-- MOVE: Skirmish/levels -> formats.md ("Levels" list) and content.md; SDL2/DirectInput -> setup.md (modloader note) and roadmap.md (mouse sensitivity item); stats fields -> structures.md (stats row, 'version differences');
      debug HUD -> roadmap.md tooling section; ship names -> content.md. -->
+
+## Group 11: the Ghidra type library, version by version [code, struct sizes vs allocation sizes]
+`search_data_types` with a pattern containing a dot lists the `.conflict` duplicates, which exist for most project structs in 1.163 (a side effect of the earlier Version Tracking apply). Their sizes against the
+real allocation sizes in `CopyObject` (`structures.md`) show which structs are already right in 1.163 and which are stale:
+
+| Struct (`.conflict` in 1.163) | Ghidra size | Real 1.163 size | Status |
+|---|---|---|---|
+| `Node` | 296 (`0x128`) | `0x128` | OK |
+| `Missile` | 776 (`0x308`) | `0x308` | OK |
+| `Location` | 880 (`0x370`) | `0x370` | OK |
+| `Sprite` | 424 (`0x1a8`) | `0x1a8` | OK |
+| `AircraftLogic` | 432 (`0x1b0`) | `0x1b0` | OK |
+| `Item` | 80 (`0x50`) | `0x50` | OK |
+| `Body` | 2568 (`0xa08`) | `0xa40` | **stale** (+`0x38` missing) |
+| `Escadra` | 1536 (`0x600`) | `0x618` | **stale** (+`0x18` missing) |
+| `Creature` | 6358 | `0x1a50` = 6736 | **stale** (+378; the odd size shows the struct was patched by hand) |
+| `GUI` | 3640 (`0xe38`) | `0xe70`..`0xf18` depending on the subclass | partly stale |
+| `Profile` | 1380 (`0x564`) | not allocated through `CopyObject` | layout moved (group Profile remap) |
+| `HGEVFTABLE` (800 bytes, 100 slots) | **absent in 1.163** | 101 slots | missing; 1.151 has it (group 8) |
+| `ShipPart` (384 bytes) | **absent in 1.163** | `0x188` | missing; 1.151 has it (group 6) |
+
+* **Order for the struct rebuild:** the OK structs need nothing; `Body`, `Escadra`, `Creature` get a remap (the Body remap is in `review-1151.md`; the Escadra shift so far: count `+4`, range `+4`, missile cooldown `+4`,
+  aircraft cooldown `+4`, time stamp `+0x10`, i.e. +4 early and +0x10 by `+0x518`); `ShipPart` and `HGEVFTABLE` can be created from the tables in groups 6 and 8 (1.163 needs two extra stats fields and one extra vtable slot).
+* **Cleanup:** every `*.conflict` type should end up replacing its non-conflict twin (the non-conflict `Body`, `BodyVFTABLE`, ... are the older 1.151 copies still referenced by names such as `createNewBody`'s
+  signature). Do it only after a check of which functions use which twin.
+
+<!-- MOVE: -> roadmap.md Ghidra side (the order), structures.md (the table of sizes becomes the "Ghidra struct status" note); open-questions.md (Creature size). -->
