@@ -161,7 +161,9 @@ Tags: **[V]** 1.163 offset is also verified in `structures.md` (game or code); *
 | `0x000` .. about `0x1f8` | **0** | vtable, class name, `m_code`, `state`, `m_id`, owner, name, position/velocity/angle at `0x128..0x13c`, stats index `0x188`, `m_oid` `0x190`, density..dragAngle `0x1d0..0x1e0`, layer `0x1f0` all equal [V] |
 | about `0x20c` (center) | **+4** | `centerX/Y` 0x20c -> 0x210 [C] |
 | about `0x2a8` .. `0x7f0` | **+0x10** | collisions/ttl/health block, slots, spasm, `logic*`, sectors, `count` block, `mdl_fuel`, `mdl_fss` (rows below) |
-| about `0x828` .. `0x860` (weapon/ammo area) | **+0xc** (some fields +0x10) [?] | a 4-byte field is missing in 1.163 between `mdl_fss` and `mdl_covered`; see "unresolved" |
+| `0x828`, `0x82c` | **+0x10** | pump pair [C] |
+| about `0x834` .. `0x868` (weapon/ammo area) | **+0x14** | resolved with `FireGun` (below): 4 more bytes than the +0x10 zone, so 4 bytes were inserted between `0x82c` and `0x834` in 1.163 |
+| `0x86a` .. `0x87c` (rescue flags, `isCrtScreen`, `repairType`) | about 0 [?] | bool cluster is repacked; see "unresolved" |
 | about `0x980` .. `0xa30` (floor, edRotate, aircraft logic) | **+0x30** | `floorType`, `floor`, `edRotate`, aircraft logic pointer |
 | tail flags (`isFocusable` ...) | **+0x30 or +0x38** [?] | the copy routine writes bytes at 0xa38..0xa3d; the 1.151 flags are at 0x9fc..0xa0d, so this end zone is unresolved |
 
@@ -197,9 +199,15 @@ Total size: the 1.151 object ends at `0xa10`; the 1.163 object is `0xa40` (+0x30
 | `m_mdl_fuel` | 0x7e8 | 0x7f8 | +0x10 | [C] |
 | `mdl_fuel` (double, copied as two words) | 0x7f0 | 0x800 (second word 0x804) | +0x10 | [C]; our notes' "current fuel +0x804" is the upper word of this double [?] |
 | `mdl_fss` | 0x7f8 | 0x808 | +0x10 | [C] |
-| `mdl_covered` | 0x83c | **0x848** | **+0xc** | [V] (`m_mdl_covered` 0x848) |
-| `weaponAmmoAmount` | 0x84c | **0x858** | **+0xc** | [V] (`m_weapon_ammo_amount` 0x858) |
-| `isCrtScreen` | 0x878 | 0x878 | **0** | [C] (copy routine reads 0x878 in 1.163) [?] |
+| `m_mdl_pump`, `field_0x82c` | 0x828, 0x82c | 0x838, 0x83c | +0x10 | [C] copy-order pairing |
+| `mdl_turbine` | 0x834 | **0x848** | **+0x14** | [C]; **0x848 is the field `UpdateEngineCovered` writes and the missile launch tests** (see below) |
+| `field_0x838` | 0x838 | 0x84c | +0x14 | [C] |
+| `mdl_covered` (1.151 name; the value `FireGun` passes to `FireShell`) | 0x83c | **0x850** | **+0x14** | [C] FireGun in both versions |
+| `weaponType`, `ammoIndex`, `weaponAmmoExtra` | 0x840, 0x844, 0x848 | 0x854, 0x858, 0x85c | +0x14 | [C] copy order |
+| `weaponAmmoAmount` (decremented per shot) | 0x84c | **0x860** | **+0x14** | [C] FireGun in both versions |
+| cooldown float set to `1/(rate/60)` (`field_0x858`) | 0x858 | **0x86c** | +0x14 | [C] FireGun in both versions |
+| float that blocks firing when > 0 (`field_0x85c`) | 0x85c | **0x870** | +0x14 | [C] FireGun in both versions |
+| byte written 1 on entry (named `fFireRateTimer` in 1.151) | 0x860 | **0x874** | +0x14 | [C] FireGun in both versions |
 | `floorType`, `floor` | 0x980, 0x988 | 0x9b0, 0x9b8 | +0x30 | [V] (`m_floor_type`, `m_floor`) |
 | `lightColorR..A`, `lightFade`, `ambient` | 0x9c8.. | 0x9fc..? | +0x30 | [?] by zone |
 | `edRotate` | 0x9f8 | 0xa28 | +0x30 | [V] (`m_ed_rotate` 0xa28) |
@@ -217,10 +225,37 @@ Total size: the 1.151 object ends at `0xa10`; the 1.163 object is `0xa40` (+0x30
 * **A field the notes could correct.** `mdl_fuel` is a **double** copied as two words (0x800/0x804) in 1.163; `structures.md` lists "the part's current fuel is Body +0x804" (it appears in the
   stats row). If that is the high word of the double, reading it as a float/int there is wrong; confirm by reading a fuel part in game before changing the notes.
 
+### Weapon/ammo area resolved with `FireGun` (1.151 `0x140032fa0`, 1.163 `0x140032e60`) [code]
+The two versions of `FireGun` use the same fields in the same roles, so each field pairs exactly:
+
+| Role in `FireGun` | 1.151 | 1.163 |
+|---|---|---|
+| ammo counter: test `< 1.0` exits, decremented by 1.0 per shot | `weaponAmmoAmount` `0x84c` | `+0x860` |
+| float `> 0` blocks firing | `0x85c` | `+0x870` |
+| byte set to 1 on entry | `fFireRateTimer` `0x860` | `+0x874` |
+| float set to `1 / (rate / 60)` after a shot, non-zero blocks firing (`rate` is stats `+0x150` in 1.163) | `0x858` | `+0x86c` |
+| value passed as the third argument of `FireShell` | `mdl_covered` `0x83c` | `+0x850` |
+| stats lookup | `part_index` `0x188` | `0x188` |
+
+* So in this zone the shift is **+0x14**, not +0xc. My first-pass guess of +0xc was wrong; it came from trusting two notes values (see the next bullet).
+* **Discrepancy with `structures.md` (needs a decision):** the notes say `+0x848` = `m_mdl_covered` and `+0x858` = `m_weapon_ammo_amount`. The code supports the first half: `FUN_14001c4a0`
+  (`UpdateEngineCovered`) clears and sets 1.0 at `+0x848`, and the missile launch `FUN_14002e590` returns 0 unless `+0x848 == 0.0`, so `+0x848` really is the "engine cone blocked / launch
+  blocked" flag. But **`+0x858` is not the ammo counter**: `FireGun` decrements `+0x860`, and `+0x858` pairs with 1.151 `ammoIndex` (`0x844`). Likely correct values: ammo counter `+0x860`;
+  `+0x858` = ammo index [guess, from copy-order pairing]. The 1.151 field *names* `mdl_covered` / `mdl_turbine` are also swapped relative to what 1.163's `UpdateEngineCovered`
+  writes (`+0x848` = 1.151 `0x834` `mdl_turbine`; the thing `FireGun` passes on is `+0x850`). Do not trust 1.151's name for that pair.
+* The 1.151 names `fFireCharge` (`0x854`), `fFireRateTimer` (`0x860`), `fFireDelay` (`0x864`), `bFireStatus` (`0x868`) do not match how `FireGun` uses the fields (`0x860` is a byte flag, `0x858` and
+  `0x85c` are floats). Those names in the 1.151 Ghidra struct look misplaced; do not carry them across.
+* **`FireGun` itself changed:** 1.151 contains the 360-sector blocking check that `highfleet-qol` restores (`iSectorIndex`, "This is what stops you from firing if your gun is blocked by your own ship");
+  1.163's `FireGun` has no sector check. Useful evidence for `systems.md` ("gun arc blocking restored by qol") and for the roadmap item about turret blocking.
+* 1.151's `FireGun` also carries two logdot comments worth keeping: `FireShell` is the call that actually fires; and the rate cooldown store is required for guns to fire at all.
+
+<!-- MOVE: the pairing table -> structures.md Body table (replace the "+0x858 m_weapon_ammo_amount" row after a quick in-game or second-code check); the FireGun-change note -> systems.md
+     "Elevation and firing arcs"; the swapped-name warning -> setup.md pitfalls. FLAG for review with logdot: confirm +0x860 vs +0x858. -->
+
 ### Unresolved (need a second look)
-1. The `+0x10` -> `+0xc` change between `mdl_fss` (0x7f8) and `mdl_covered` (0x83c): which field disappeared, and where. Compare 1.151 `m_mdl_pump` (0x828), `field_0x82c`, `mdl_turbine` (0x834),
-   `field_0x838` with the 1.163 copies at 0x838, 0x83c, 0x848, 0x84c (the counts match, the offsets do not map by a single constant).
-2. `isCrtScreen` at 0x878 in both versions (shift 0) conflicts with the +0xc zone around it: probably a field was inserted just before it that cancels the shift. Verify by reading the 1.163 constructor bytes around 0x860..0x880.
+1. ~~The +0x10 -> +0xc change~~ **Resolved above** (+0x10 until `0x82c`, then +0x14 for `0x834..0x868`).
+2. The bool cluster `0x86a..0x87c` (rescue flags, `isCrtScreen`, `repairType`): the 1.163 copy routine copies single bytes at `0x877..0x87b`, the 1.151 one at `0x878..0x87c`; the shift there is about 0
+   (-1 for some bytes), not +0x14. Read the 1.163 constructor around `0x860..0x880` before laying these fields out. The region `0x880..0x980` then has to climb from about 0 to +0x30 (floor): unmapped.
 3. Lighting fields (`lightColor*`, `lightFade`, `ambient`) and the `aircraft_logic` / `aircraftLogic` pair: assigned by zone only.
 4. All fields in the `(unnamed)` rows of the 1.151 struct (about 60% of its size). They have no names to carry, so the remap matters only for resizing, not for naming.
 
