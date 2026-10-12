@@ -401,7 +401,9 @@ The 1.163 counterpart exists and is named `DefineAmmos` (`0x140256f10`-`0x14025a
 `gun_max_load` at `0x180`; `aircraftStrengthContribution` at `0x184`). Earlier in this file I wrote `0x188` for the 1.151 stride (group 12/13); that was wrong, it is the 1.163 size, and the 1.151 size is `0x168`.
 Defaults (`UndefAmmo`): `incendiary_power` 100.0 (both versions), **`ttl` 10.0 (1.163 only)**, `fire_delay` (1.151 `gun_rate_time`) 0.5, `gun_max_load` 10.
 
-**What 1.163 does with `ttl` (the main finding).** `BulletImpact__` now sets the shell's `timeToLive` / `desowningTime` from `ammo->ttl` (1.151 used a literal 10.0, with 3.0 for 57mm and 2.0 for 37mm). Armor-piercing
+**Careful: `+0x16c` means different things in two structs.** In the stats record it is `cluster` (group 6); in the `Ammo` record it is `ttl`. A Ghidra struct edit or an offset search will hit both.
+
+**What 1.163 does with `ttl` (the main finding).** `BulletImpact__` now sets the shell's `timeToLive` / `desowningTime` from `ammo->ttl` (1.151 `BulletImpact__`, `0x140050300`, re-read: literal 10.0, `penetrativePower != 0` gives 1.0, `index == 10` gives 3.0, `index == 5` gives 2.0). Armor-piercing
 shells (`penetrative_power != 0`) still fly 1.0. The values stored in `DefineAmmos`:
 
 | Shell | 1.151 lifetime (s) | 1.163 `ttl` (s) |
@@ -421,9 +423,9 @@ and the first hard evidence for the roadmap's "damage changes" scope**; both are
 * `ITEM_AMMO_220MM` `explosive_power` **90 -> 180**; `ITEM_AMMO_300MM` **90 -> 500**, and its `caliber` (projectile logic id) 130 -> **132** (`0x84`). `ITEM_NAR122` (45) and `ITEM_NAR340` (90) are unchanged.
 * Incendiary variants: `incendiary_power` **1000 -> 300** (every `_INC` entry).
 * Laser-guided variants: `explosive_power` multiplier **x4 -> x1.5** (`ITEM_AMMO_130MM_LG`, `ITEM_AMMO_180MM_LG`).
-* `ITEM_FAB250` `aircraftStrengthContribution` 5 -> **6** (FAB100 3 and FAB500 8 unchanged).
+* `ITEM_FAB250`: `aircraftStrengthContribution` 5 -> **6** and shop price 100 -> **200** (FAB100 and FAB500 unchanged). `ITEM_K13` (air-to-air missile): shop price 300 -> **400**.
 * `ITEM_GUN37`: `fire_delay` 0.1 -> **0.05** and `gun_max_load` 10 -> **20** (GUN57 unchanged at 0.2 / 7).
-* Unchanged: the base cannon `explosive_power` / `speed` / `bullet_height` (37mm .. 305mm), the AP penetrations 16 / 20 / 34 and `apDrag`, shop prices / rarities / amounts, `ITEM_K13`.
+* Unchanged (compared by hand, every numeric store in both decompiles, not by script): the base cannon `explosive_power` / `speed` / `bullet_height` (37mm .. 305mm), the AP penetrations 16 / 20 / 34 and `apDrag`, the rocket speeds and pod stats, and the shop price / rarity / amount of every other entry (including `ITEM_K13`'s rarity and amount, the FAB250 rarity and amount). Sound and sprite strings were **not** compared.
 * **New entries:** `ITEM_HARPOON` (`index` 90 = `0x5a`, `caliber` 135 = `0x87`, `speed` 700, `explosive_power` 0), `ITEM_KAZ_AMMO` (`index` 100, no `FireShell` case; the KAZ burst is `FUN_14002f480`),
   and `ITEM_AMMO_57MM_TANK` (`index` 10, `caliber` 0 = no projectile logic, 57mm numbers).
 
@@ -435,12 +437,12 @@ Case `0x37` (55, `ITEM_NAR340`) and `0x33`/`0x34` (51/52) are as before.
 Variants (`_INC`, `_AP`, `_PROXY`, `_LG`) copy their base and keep its `index`. The `FireShell` cases 60 (`0x3c`) and 70 (`0x46`) (canisters) and 80 (`0x50`, EMP) have no `DefineAmmos` entry in either version: they come from
 code that fills other ammo (not read).
 
-<!-- MOVE: -> systems.md "Firing" / a new "Ammo" section (the table, the ttl change); roadmap.md items "Adjustable TTL for cluster munitions and mine bomblets" and "HP modification for ... cannon shells" and the damage-changes note in "Version scope" (ttl is per ammo type in 1.163, a data constant); structures.md (Ammo record 0x168 vs 0x188). The 1.151 vs 1.163 value-change list is the evidence for "damage changes"; keep it in roadmap.md version scope. -->
+<!-- MOVE: -> systems.md "Firing" / a new "Ammo" section (the table, the ttl change); roadmap.md item "HP modification for ... cannon shells" and the damage-changes note; the roadmap item "Adjustable TTL for cluster munitions and mine bomblets" is a different mechanism (the bomblet spawner argument, group 5), not this field in "Version scope" (ttl is per ammo type in 1.163, a data constant); structures.md (Ammo record 0x168 vs 0x188). The 1.151 vs 1.163 value-change list is the evidence for "damage changes"; keep it in roadmap.md version scope. -->
 
 ## Group 16: where the tactical AI fires and picks ammo (1.163 `FUN_14007a8d0`, 1.151 `0x140076300`) [code unless noted]
 Found by following the combat launch chain upward, not by name: `FireShell` <- `FireGun` <- `FireGuns` (`0x1400559e0`, a loop over one gun) <- **`FUN_14007a8d0`** (1.163, `0x14007a8d0`-`0x14007bfb1`). It is the
 per-ship **AI weapon controller**: it aims every gun on an AI creature, picks the ammo, and decides whether to fire. The 1.151 twin is `rep_140076300_API-MS-WIN-CRT-MATH-L1-1-0.DLL::atan2f` at `0x140076300`
-(a propagated name that has nothing to do with `atan2f`; flag for logdot). Both are called from the big ship update (1.163 `FUN_140062f90`, not read).
+(a propagated name that has nothing to do with `atan2f`; flag for logdot). The 1.163 version is called from `FUN_140062f90` (the big ship update, not read) and from a function labelled `shipKill?`; I did not check the 1.151 callers.
 
 **Premise check on `creatureLogic`.** `creatureLogic` (1.151 `0x1400335b0`, 1.163 `0x140033b90`) is not the ship AI. `FireShell`/`FireGun` call it, its callees are the missile/cluster/evac-pod functions, and
 `BulletImpact__` stores `ammo->caliber` into the projectile's `logic` field (group 14). It is the **per-body behaviour dispatcher for projectiles, missiles and aircraft**, keyed by that logic id (100 plain shell, 130
@@ -449,8 +451,8 @@ I did not read `creatureLogic` itself (it timed out twice); this is inferred fro
 
 **Answers to the roadmap's tactical items:**
 * **"Closing to very short range disables all weapons" [Tactical, exploitable]: found, and new in 1.163.** After the target's position is read, 1.163 returns before any aiming or `FireGuns` when
-  `distance < target.+0x1850 + self.+0x1850 + 30.0` (the field is added once per ship, so it is probably a hull extent or radius [guess]). 1.151 has no such test. So the "all guns go silent when you
-  are touching them" behaviour is a 1.163 addition, and a patch is a change to that compare or to the constant `30.0` in this function (address not yet pinned; see the disassembly of `0x14007a8d0`).
+  `distance < target.+0x1850 + self.+0x1850 + 30.0` (the field is added once per ship, so it is probably a hull extent or radius [guess]). 1.151's version of this function has no such test (I did not compare the callers). So the "all guns go silent when you
+  are touching them" behaviour is, as far as this function goes, a 1.163 addition, and a patch is a change to that compare or to the constant `30.0` in this function (address not yet pinned; see the disassembly of `0x14007a8d0`).
 * **"AP only at extremely short range": confirmed, same rule in both versions.** For guns whose part caliber index is 15, 20, 25 or 30 (100, 130, 180, 203mm) the controller sets the gun's ammo slot
   (1.163 gun `+0x850`, 1.151 `+0x83c`) with `FindAmmoIndex(name)`. It picks `_AP` only if two creature flags are set **and the target is closer than 1000** units; else the proximity variant when other flags are set; else the plain shell.
   It **never selects `_INC` or `_LG`**, which matches the roadmap ("the AI cannot use LG/INC shells"). The 37mm, 57mm and rocket guns keep whatever they were loaded with.
