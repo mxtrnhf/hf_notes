@@ -26,6 +26,12 @@ After the review by logdot and his agent, this branch is merged/split into the n
 9. TryLaunchAiAircraftGroup limit raised from 480.0 to 1200.0 in 1.163 (target +0x78); group size = all aircraft (coin-flip half if >10): roadmap item "AI launches everything".
 10. Intercept probabilities (0.75 missiles, 0.66 aircraft) are the two constants in runMissileandAircraftIntercept_ (1.163 0x140111110); add the 75% roll to systems.md.
 
+11. Stats record: 1.163 inserts `sectors_shift` (0x12c) and `cluster` (0x16c); confirmed by strings `m_mdl_sectors_shift`, `m_missile_explosive_cluster` (only in 1.163). Notes' `+0xd4 tank capacity` is probably `crew capacity`; tank capacity is the double at `+0xc8`.
+12. `GetPartPrice` returns 0 after `Profile.endWar` and for category bit 6; `endWar` is set by `spawnEndgameShips_` (1.151 0x14023fa80, 1.163 counterpart not yet found).
+13. 1.163 adds Skirmish/PVP modes, SDL2 controllers, captains, KAZ ammo; removes the 1.151 debug overlay strings. `formats.md` level list is incomplete for 1.163.
+14. Ammo table lives in code (`DefineAmmos`), not in `OL.seria`; `caliber` there is a projectile logic id; all cannon shells have 1 HP (`BulletImpact__` argument); `index 54` (300mm) has no `FireShell` case in 1.151.
+15. Ghidra type library: `ShipPart` and `HGEVFTABLE` exist only in 1.151; 1.163 `Body`/`Escadra`/`Creature` structs are stale.
+
 ## Pending moves (update as I go)
 | From | To | Status |
 |---|---|---|
@@ -35,4 +41,4 @@ After the review by logdot and his agent, this branch is merged/split into the n
 | review-1151.md "Body remap" anchors | structures.md new subsection "Version differences" | not moved |
 | review-1151.md "How automatable ...", "Body remap" | roadmap.md Ghidra side / structures.md | not moved |
 | review-1151-groups.md Profile remap | structures.md world singleton line (after flag 6) | not moved |
-| review-1151-groups.md groups 1-5 | systems.md / roadmap.md / open-questions.md per the MOVE comments | not moved |
+| review-1151-groups.md groups 1-14 | systems.md / structures.md / formats.md / engine-hge.md / content.md / roadmap.md / open-questions.md per the MOVE comments in each group | not moved |

@@ -372,3 +372,21 @@ Bombs: `ITEM_FAB100` (explosive 50, aircraft strength 3), `ITEM_FAB250` (100, 5)
   `BulletImpact__`; the `speed` column is the "capped top speed" item for projectiles.
 
 <!-- MOVE: -> content.md or a new short "Ammo" section in systems.md (the table + variants), formats.md (OL.seria `m_launched_*` vs this table are different data: this table is in code, not in OL.seria); roadmap.md (the two notes above). -->
+
+## Group 14: how a cannon shell is set up (`Body::BulletImpact__`, 1.151 `0x140050300`) [code]
+Called by `FireShell` for every plain shell (cases 5 to 40) right after `CreateShell_`. Parameters (logdot's names where given): the shell body, the `Ammo` entry, the owner creature, the owner tag, the firing
+body, the root body, the fire direction, a speed factor (1.0), `is_local_player`, `flash_power`, **`health`**, `shake_power`, a spread (`param_13`) and the fire power. What it sets:
+
+* **Lifetime:** `timeToLive = desowningTime = 10.0`, but `1.0` if the ammo has `penetrativePower` (AP shells fly for one second), `3.0` for index 10 (57mm) and `2.0` for index 5 (37mm).
+  (`FireShell` passes the constants `1.25`/`0.25`/... for size and the mass per calibre; see group 12.)
+* **Damage fields copied from the ammo definition (group 13):** `explosive = explosivePower`, `isArmorPiercing` (a float) `= penetrativePower`, `explosiveTemperature = incendiaryPower`,
+  `dragLinear = apDrag`, and **`logic = ammo->caliber`** with `isLogicActive = 1`. So `caliber` in the ammo table is not a size but a **projectile logic id** (100 plain shell, 130 rocket, 140 laser guided,
+  160 proximity fuze); the per-frame projectile code in `creatureLogic` branches on it. This is why `LG`/`PROXY` variants behave differently although they share the base calibre's `FireShell` case.
+* **Launch impulse:** speed `= Random_Float(0.98, 1.2) * ammo->speed * speedFactor`, deflected by a random angle within `+-spread`, applied as an impulse scaled by the shell's mass; if the shooter is the
+  local player the opposite impulse is applied to the firing body (recoil).
+* **Hit points:** `maxHealth = health = <health parameter>`. Every `FireShell` call passes `1.0`, so **all cannon shells have 1 HP**. That single constant (the 9th/10th argument in each `BulletImpact__` call)
+  is the "HP of cannon shells" in the roadmap item; the 300 mm and heavier shells do not get more.
+* Effects: screen shake `shake_power` (the last float in each call: 5.0 for 37mm, 10.0 for 57mm, 15.0 for 180mm, 20-60 for larger), muzzle `scaleY = gfxFlash * flash_power`, sounds from the ammo
+  (`shellOutSound` for the local player at close zoom, `shellFarSound` otherwise). Enemy shooters on some difficulties halve the volume (`0.5`).
+
+<!-- MOVE: -> roadmap.md (HP and damage items: where each constant lives), systems.md "Firing"; the `caliber` = logic-id remark also goes to structures.md (Ammo table). -->
