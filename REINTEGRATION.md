@@ -19,6 +19,13 @@ After the review by logdot and his agent, this branch is merged/split into the n
 4. The four air-group functions (`CreateMapAircraftGroup`, `UpdateMapAircraftGroup`, `ComputeMapAircraftWeaponStrength`, `ConfigureStrategicMissileForTacticalBattle`) have no 1.163 match.
 5. `mdl_covered` / `mdl_turbine` names in 1.151 are swapped relative to what 1.163 `UpdateEngineCovered` writes.
 
+## More flags for logdot (added during the groups pass)
+6. `structures.md` "fleets +0x270/+0x278" is probably the MapCraft vector (Profile remap +0x48); fleets are the +0x1f8 list. Verify one writer/iterator of +0x270.
+7. 1.163 has no function defined at 0x140117840 (UpdateMapAircraftGroup); same likely for other "unmatched" air-group functions. Needs a Ghidra edit (create function) after the review.
+8. Real Body size: 1.151 = 0xa08, 1.163 = 0xa40 (+0x38); the 1.163 Ghidra struct is the 1.151 layout. Fleet field shifts (count +0x4e8->+0x4ec, range +0x4f0->+0x4f4, missile cooldown +0x508->+0x50c, aircraft cooldown +0x50c->+0x510).
+9. TryLaunchAiAircraftGroup limit raised from 480.0 to 1200.0 in 1.163 (target +0x78); group size = all aircraft (coin-flip half if >10): roadmap item "AI launches everything".
+10. Intercept probabilities (0.75 missiles, 0.66 aircraft) are the two constants in runMissileandAircraftIntercept_ (1.163 0x140111110); add the 75% roll to systems.md.
+
 ## Pending moves (update as I go)
 | From | To | Status |
 |---|---|---|
@@ -26,4 +33,6 @@ After the review by logdot and his agent, this branch is merged/split into the n
 | review-1151.md "1.151 names that confirm ..." | systems.md / structures.md / engine-hge.md as "(1.151 name: X)" tags | not moved |
 | review-1151.md "CreateMapAircraftGroup settles ..." | structures.md class table + systems.md | not moved |
 | review-1151.md "Body remap" anchors | structures.md new subsection "Version differences" | not moved |
-| review-1151.md "How automatable ..." | roadmap.md Ghidra side | not moved |
+| review-1151.md "How automatable ...", "Body remap" | roadmap.md Ghidra side / structures.md | not moved |
+| review-1151-groups.md Profile remap | structures.md world singleton line (after flag 6) | not moved |
+| review-1151-groups.md groups 1-5 | systems.md / roadmap.md / open-questions.md per the MOVE comments | not moved |
