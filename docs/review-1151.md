@@ -146,3 +146,84 @@ Suggested order when the time comes (cheapest first, each a separate Ghidra vers
 
 <!-- MOVE: this whole section -> roadmap.md under "Ghidra side" (it is the plan), with the facts about struct size drift also added to setup.md Pitfalls ("the 1.163 Body struct in Ghidra
      is 0xa08, the object is 0xa40; do not trust field offsets past ~0x2f0 in the Ghidra struct, use structures.md"). -->
+
+## Body remap, 1.151 -> 1.163 (first pass, read-only)
+
+**Method.** Both `copyOverBody` functions were decompiled (1.151 `0x140017f60`, 1.163 `0x140017e70`). The 1.163 copy routine names offsets directly (`param_2 + 0x...`); the 1.151 one uses
+the struct's field names, whose offsets come from the 1.151 `Body` struct. Pairing is by field meaning (same name/role, same size, same position in the statement groups), checked
+against the offsets our notes verified in 1.163 (`structures.md`). The ctors (`createNewBody`, 1.151 `0x1400157c0`, 1.163 `0x140015690`) were used for the zero/-1.0 init patterns only.
+Tags: **[V]** 1.163 offset is also verified in `structures.md` (game or code); **[C]** 1.163 offset read from the copy routine and paired by role; **[?]** uncertain.
+
+### The shift is piecewise constant, not one number
+
+| 1.151 offset range | 1.163 shift | Evidence |
+|---|---|---|
+| `0x000` .. about `0x1f8` | **0** | vtable, class name, `m_code`, `state`, `m_id`, owner, name, position/velocity/angle at `0x128..0x13c`, stats index `0x188`, `m_oid` `0x190`, density..dragAngle `0x1d0..0x1e0`, layer `0x1f0` all equal [V] |
+| about `0x20c` (center) | **+4** | `centerX/Y` 0x20c -> 0x210 [C] |
+| about `0x2a8` .. `0x7f0` | **+0x10** | collisions/ttl/health block, slots, spasm, `logic*`, sectors, `count` block, `mdl_fuel`, `mdl_fss` (rows below) |
+| about `0x828` .. `0x860` (weapon/ammo area) | **+0xc** (some fields +0x10) [?] | a 4-byte field is missing in 1.163 between `mdl_fss` and `mdl_covered`; see "unresolved" |
+| about `0x980` .. `0xa30` (floor, edRotate, aircraft logic) | **+0x30** | `floorType`, `floor`, `edRotate`, aircraft logic pointer |
+| tail flags (`isFocusable` ...) | **+0x38** (struct end 0xa10 -> 0xa40 is +0x30; see note) | |
+
+Total size: 1.151 object ends at `0xa10`; 1.163 at `0xa40` (+0x30), consistent with the last zone being +0x30 (the extra +0x38 seen for the aircraft logic pointer is explained by the
+two pointers `aircraft_logic`/`aircraftLogic` in 1.151 collapsing into one at `0xa20` in 1.163).
+
+### Anchor pairs (1.151 name @ offset -> 1.163 offset)
+
+| Field (1.151 name) | 1.151 | 1.163 | Shift | Basis |
+|---|---|---|---|---|
+| `className`, `m_code`, `state`, `m_id` | 0x08, 0x28, 0x48, 0x78 | same | 0 | [V] |
+| `positionX/Y`, `velocityX/Y`, `angle`, `angleVelocity` | 0x128..0x13c | 0x128..0x13c | 0 | [V] copy routine |
+| `part_index` (stats index) | 0x188 | 0x188 | 0 | [V] |
+| `moid` | 0x190 | 0x190 | 0 | [V] |
+| `density`, `friction`, `mass`, `dragLinear`, `dragAngle` | 0x1d0..0x1e0 | 0x1d0..0x1e0 | 0 | [V] copy routine |
+| `layer` | 0x1f0 | 0x1f0 | 0 | [V] |
+| `centerX/Y` | 0x20c | 0x210 | +4 | [C] |
+| `collisions`, `timeToLive`, `ttlDesolveTime` | 0x2a8, 0x2b0, 0x2b4 | 0x2b8, 0x2c0, 0x2c4 | +0x10 | [C] |
+| `health`, `maxHealth` | 0x2b8, 0x2bc | 0x2c8, 0x2cc | +0x10 | [V] (`m_health`/max) |
+| `healthLock`, `contamination` | 0x2c0, 0x2c4 | 0x2d0, 0x2d4 | +0x10 | [C] |
+| `explosive`, `explosiveType`, `explosiveTemperature` | 0x2cc, 0x2d4, 0x2d8 | 0x2dc, 0x2e4, 0x2e8 | +0x10 | [C] |
+| `burnHp` | 0x324 | 0x334 | +0x10 | [C] |
+| `slots` (vector begin) / `slotsEnd?` | 0x340 / 0x348 | 0x350 / 0x358 | +0x10 | [V] (slot vector) |
+| `slotType` | 0x358 | 0x368 | +0x10 | [C] |
+| `spasmCode` | 0x360 | 0x370 | +0x10 | [C] |
+| `collisionSensor` | 0x37c | 0x38c | +0x10 | [C] |
+| `logic`, `isLogicActive` | 0x3b4, 0x3b8 | 0x3c4, 0x3c8 | +0x10 | [V] (`m_logic_active` 0x3c8) |
+| `logicF1..F4`, `logicI1..I4` | 0x3c0.., 0x3d4.. | 0x3d0.., 0x3e4.. | +0x10 | [V] |
+| `logic_editor` | 0x4e0 | 0x4f0 | +0x10 | [C] |
+| `sectors` / `endSectors` | 0x4f8 / 0x500 | 0x508 / 0x510 | +0x10 | [V] (`m_sectors`) |
+| `count` | 0x798 | 0x7a8 | +0x10 | [V] (`m_count`) |
+| `isLoot`, `isBlueprint`, `isWheel`, `isLeg` | 0x79c, 0x79d, 0x79f, 0x7a0 | 0x7ac, 0x7ad, 0x7af, 0x7b0 | +0x10 | [V] (blueprint flag 0x7ad) |
+| `m_mdl_fuel` | 0x7e8 | 0x7f8 | +0x10 | [C] |
+| `mdl_fuel` (double, copied as two words) | 0x7f0 | 0x800 (second word 0x804) | +0x10 | [C]; our notes' "current fuel +0x804" is the upper word of this double [?] |
+| `mdl_fss` | 0x7f8 | 0x808 | +0x10 | [C] |
+| `mdl_covered` | 0x83c | **0x848** | **+0xc** | [V] (`m_mdl_covered` 0x848) |
+| `weaponAmmoAmount` | 0x84c | **0x858** | **+0xc** | [V] (`m_weapon_ammo_amount` 0x858) |
+| `isCrtScreen` | 0x878 | 0x878 | **0** | [C] (copy routine reads 0x878 in 1.163) [?] |
+| `floorType`, `floor` | 0x980, 0x988 | 0x9b0, 0x9b8 | +0x30 | [V] (`m_floor_type`, `m_floor`) |
+| `lightColorR..A`, `lightFade`, `ambient` | 0x9c8.. | 0x9fc..? | +0x30 | [?] by zone |
+| `edRotate` | 0x9f8 | 0xa28 | +0x30 | [V] (`m_ed_rotate` 0xa28) |
+| `aircraftLogic` pointer | 0x9f0 (and 0x9e8) | 0xa20 | +0x30 | [C] |
+| `helpInex` / flags (`isFocusable`...) | 0x9fc.. | 0xa34..0xa3d | +0x38 / +0x30 | [C] copy routine bytes at 0xa38..0xa3d |
+
+<!-- MOVE: the anchor table + shift zones -> a new "Version differences (1.151 vs 1.163)" subsection of structures.md (Body), once confirmed by logdot's review. The shift-zone table is
+     also what the Ghidra struct rebuild (see "How automatable ...") will use. -->
+
+### What this tells us
+* **Mostly mechanical.** About 75% of the named Body fields fall in the +0 / +0x10 / +0x30 zones and can be mapped by adding a constant per zone. Only the weapon/ammo area
+  (`0x828..0x880` in 1.151) and the `aircraftLogic`/lighting tail need individual attention.
+* **The notes' offsets are self-consistent with this table** at every anchor I could cross-check (health, count/blueprint, logic, sectors, floor, edRotate, covered, weapon ammo): good
+  evidence that `structures.md` is right for 1.163 and that the stale part is the Ghidra struct, not the notes.
+* **A field the notes could correct.** `mdl_fuel` is a **double** copied as two words (0x800/0x804) in 1.163; `structures.md` lists "the part's current fuel is Body +0x804" (it appears in the
+  stats row). If that is the high word of the double, reading it as a float/int there is wrong; confirm by reading a fuel part in game before changing the notes.
+
+### Unresolved (need a second look)
+1. The `+0x10` -> `+0xc` change between `mdl_fss` (0x7f8) and `mdl_covered` (0x83c): which field disappeared, and where. Compare 1.151 `m_mdl_pump` (0x828), `field_0x82c`, `mdl_turbine` (0x834),
+   `field_0x838` with the 1.163 copies at 0x838, 0x83c, 0x848, 0x84c (the counts match, the offsets do not map by a single constant).
+2. `isCrtScreen` at 0x878 in both versions (shift 0) conflicts with the +0xc zone around it: probably a field was inserted just before it that cancels the shift. Verify by reading the 1.163 constructor bytes around 0x860..0x880.
+3. Lighting fields (`lightColor*`, `lightFade`, `ambient`) and the `aircraft_logic` / `aircraftLogic` pair: assigned by zone only.
+4. All fields in the `(unnamed)` rows of the 1.151 struct (about 60% of its size). They have no names to carry, so the remap matters only for resizing, not for naming.
+
+### Next step for the struct transfer
+Resize the 1.163 `Body` struct to `0xa40`, then lay fields at the **1.163** offsets above (not at the 1.151 offsets), then bring the 1.151 names across. Do it as a Ghidra script or by hand with
+`modify_struct_field`, but only after logdot's review and a checkout. No changes were made to either program.
