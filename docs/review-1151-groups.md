@@ -153,3 +153,43 @@ Reading by brute force (batch decompile of all names) costs about 20-30k tokens 
 at least two wheels, then flies a `MDL_MISSILE_01` (TTL 60.0, layer 7) at the nearest hostile within `500.0` when its reload timer (`+0x12c`, base `30.0` at `+0x128`) is zero. Relevant to the
 roadmap's tactical-AI items on what the AI can and cannot use; the 1.163 `Ground defense creatures?` comment on `FUN_1400e4530` is thus about a different class (see the MapCraft finding).
 <!-- MOVE: -> systems.md (ground defense paragraph) and structures.md class table (0x80007 = AADefense). -->
+
+## Group 6: the stats record (`ShipPart`, `GetStats` getters) [code + Ghidra struct]
+In 1.151 the stats record is the Ghidra struct `ShipPart` (384 = `0x180` bytes; 1.163 allocates `0x188`, `New(0x188)` in `CopyObject`, and has no `ShipPart` struct at all). The 1.151 getters
+(`GetLaunchedRange`, `GetThrust`, `GetMissileAp`, ... each is `GetShipPart(part_index)->field`) confirm which field name belongs to each offset. Comparing with the stats row in `structures.md`:
+**the record grew by 8 bytes = two fields inserted in 1.163**, and everything in the notes agrees with that.
+
+| 1.151 field (offset) | 1.163 offset | Note |
+|---|---|---|
+| `m_oid` `0x48`, `icon_name` `0x68` | same | |
+| `price` `0x88`, `important` `0x8c`, `timecost` `0x90`, `repair_cost` `0x94` | same | notes [V] |
+| `resources` `0x98` (and `edPropResources` `0xa0`) | same | repair/resource list; `repairPartsStats` returns its element count |
+| `category` `0xb0`, `sort_index` `0xb4` | same | notes [V] |
+| `burn_hp_max` `0xb8`, `burn_ignite` `0xbc`, `burn_heat` `0xc0` | same | **new names**: burning parameters (not in the notes) |
+| `mdl_armor` `0xc4` | same | notes [V] |
+| **`mdl_fuel_capacity` `0xc8` (double)** | same [?] | see the flag below |
+| `mdl_fuel_need` `0xd0` | same | notes [V] |
+| **`mdl_crew_capacity` `0xd4` (int)**, `mdl_crew_need` `0xd8` | same | see the flag below |
+| `mdl_power` `0xdc`, `mdl_power_need` `0xe0`, `mdl_power_priority` `0xe4` | same | notes list `power_need` only |
+| `mdl_ammobox` `0xe8`, `ammobox_need` `0xec`, `ammobox_priority` `0xf0`, `mdl_fss_capacity` `0xf4` | same | new names |
+| `mdl_thrust` `0xf8`, `mdl_thrust_map` `0xfc` | same | notes [V] |
+| `mdl_at` `0x100`, `mdl_leg_force` `0x104`, `mdl_rotation` `0x108` | same | new names (`GetMdlAt`, `StatLegForce`) |
+| `mdl_radar` `0x10c`, `tracking` `0x110`, `guiding` `0x114`, `elint` `0x118`, `irst` `0x11c`, `jammer` `0x120`, `lifesupport` `0x124` | same | notes [V] except `lifesupport` (new) |
+| `mdl_sectors_type` `0x128` | same | notes [V] (non-zero = takes part in arc scanning) |
+| *(new in 1.163)* | `0x12c` `sectors_shift` | the first inserted field |
+| `mdl_sectors_threshold` `0x12c` | `0x130` | +4 |
+| `signature_ir` `0x130`, `fxpos.x/.y` `0x134/0x138` | `0x134`, `0x138/0x13c` | +4; `signature_ir` and `fxpos` are new names |
+| `weapon_priority` `0x13c` .. `weapon_rate` `0x14c` (`priority`, `caliber`, `load_amount`, `load_time`, `rate`) | `0x140` .. `0x150` | +4; `rate` `+0x150` is the value `FireGun` divides into 60 |
+| `acceleration_time` `0x150`, `launched_speed` `0x154`, `launched_speed2` `0x158`, `launched_range` `0x15c` | `0x154`, `0x158`, `0x15c`, `0x160` | +4 |
+| `missile_type` `0x160`, `missile_explosive` `0x164` | `0x164`, `0x168` | +4 (`+0x168 > 100000` = nuclear, verified in the queue filler) |
+| *(new in 1.163)* | `0x16c` `cluster` | the second inserted field |
+| `missile_ap` `0x168`, `agility` `0x16c`, `radar_range` `0x170`, `radar_cone` `0x174`, `fuze_type` `0x178`, `launched_health` `0x17c` | `0x170`, `0x174`, `0x178`, `0x17c`, `0x180`, `0x184` | +8 |
+
+* **Flag for `structures.md`:** the notes call `+0xd4` "tank capacity (int; the part's current fuel is Body +0x804)". In 1.151 `+0xd4` is **`mdl_crew_capacity`** (int) and the **fuel tank capacity is the double at `+0xc8`**
+  (`mdl_fuel_capacity`), which also fits ship-level fuel being doubles (`+0x1638/+0x1640`). Likely correction: `+0xc8` tank capacity (double), `+0xd4` crew capacity. Verify with a fuel tank and a crew module in `OL.seria` before editing.
+* **`GetMissileFuzeType`** is the only getter returning an int; all others return floats, which the notes' units already assume.
+* **`GetPartPrice`** returns 0 when `endWar` is set (Profile `+0x290`, field `endWar` at Ghidra offset 657) or when the part's category has bit 6 (`0x40`, "block, bridge") set; otherwise `price`. This is why bridge/block
+  parts are free to swap in the editor and why prices vanish after the war ends. Not in the notes.
+* The notes' sentence "Stats record ... `GetStats(index)` `FUN_140281e00`" is right: 1.163 `GetStats` is a bounds-checked pointer-array lookup (checked); the 1.151 name is `GetShipPart`.
+
+<!-- MOVE: this table -> structures.md "Stats record" (replace the offset list with the full named list and add a 'version differences' line: 1.163 inserts sectors_shift and cluster); the GetPartPrice rule -> systems.md or formats.md (OL.seria row). FLAG +0xd4 vs +0xc8 for review. -->
