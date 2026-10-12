@@ -17,6 +17,10 @@ Tags: legend in `../README.md`. Offsets are hex byte offsets.
 | 0x800000001047 | **MapCraft** (map aircraft group) | 0x340 |
 | 0x8000000003 | (unnamed; Ghidra calls its ctor `CreateFX`) | 0x270 |
 
+**Codes nest as bit sets.** The code tests membership with a mask, for example `(code & 0x147) == 0x147` for a fleet and `(code & 0x800000001047) == 0x800000001047` for a MapCraft
+[code], and `& 0x4000f`, `& 0x2f` for Body-like objects. The values themselves look like an inheritance chain: 0x7 (Node) -> 0xf (Body) -> 0x1f (Frame) / 0x2f (Creature), 0x7 -> 0x47 ->
+0x147 (Escadra) / 0xc7 (location), and 0x1047 as the common base of Missile (0x400000001047) and MapCraft (0x800000001047) [guess]. Practical rule: to test "is this a X", mask and compare; do not compare equal to the code.
+
 Source of the sizes [code]: the copy routine `FUN_1401bfd00` (`CopyObject`, one `New(size)` per code) for every row **except** `0x800000001047`. That code has no case in the copy routine;
 its 0x340 comes from the default-construction factory (entry `0x1402024e0`, Ghidra name `Panel::Constructor`; a switch on the code, `New(0x340)` then `FUN_1400e4530`, which
 builds on the `Mark` constructor). The same factory gives the same sizes for the other rows, and also covers codes the copy routine lacks (for example `0x2047` = 0x268, `0x803` = 0x188).
