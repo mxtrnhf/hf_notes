@@ -622,3 +622,22 @@ Roadmap item: "a proximity-fused missile colliding with flares crashes the game"
 
 <!-- MOVE: -> roadmap.md under the "proximity-fused missile colliding with flares" bug (status: not located; what is known about the flare body; the test), and systems.md (flare release, point-defence burst, the lists at +0x1408 / +0x13c0 / +0x1438); -> structures.md Body logic ids (0x44c flare). -->
 
+## Group 21: why AI ships never use flares, and how to give them flares [code + game; no mod written, nothing run]
+**The cause is a missing trigger, not missing parts or a broken release.**
+* **AI ships carry flare launchers** [game]: 26 of the 81 vanilla designs in `Objects/Designs` contain `FLARES` parts (99 launchers in all; for example `Navarin`, `Intrepid Mk2`, `Gladiator`, `Fearsome` have 6, the `Tarantul` family 4). The part (`MDL_FLARES`, category bit 23 = `8388608`) holds 30 flares (`m_weapon_load_amount`),
+  `m_weapon_rate` 400, and effectively never reloads (`m_weapon_load_time` 99999).
+* **Release is generic** [code]: the per-creature update `FUN_14007eb50(creature, dt)` is a virtual method called for **every** creature (it has data references from a vtable, no direct callers). When the creature byte **`+0xbc0`** (flag "flares", Ghidra `param_1[0x178]`) is non-zero it calls the flare release `FUN_14002eed0` on every launcher in the creature's list
+  `+0x1408..+0x1410`, plays the "flare" sound, and the release itself checks the launcher's cooldown (`+0x848`), armed state and remaining count (`+0x860`), so calling it repeatedly is safe. The same function reads the sibling flags `+0xbbc`, `+0xbbd` (fire guns) and `+0xbbe`.
+* **Nothing sets `+0xbc0` for AI ships** [code, by search]: the only stores to that offset I found clear it (a 16-bit zero over `+0xbc0/+0xbc1` in two places); the setting comes from the player's input path. The AI tick (group 17) and the AI weapon controller (group 16) never touch it. That is why the AI never drops flares.
+* **How the missile side works** [not read]: whether and how a missile seeker prefers a flare body (logic `0x44c`, group 20) lives in `creatureLogic`, which I could not decompile; the player uses flares successfully, so a flare released by an AI ship should behave the same.
+
+**Design for a mod (not written; follows `hooks.md`):**
+1. **Hook:** a function-entry detour on `FUN_14007eb50` (`0x14007eb50`, unowned; version-guard its first bytes) or, alternatively, a call-site hook in the AI tick. Run before the original body so the flag is seen in the same frame.
+2. **Trigger:** for creatures on the AI side (side float at `+0xad4` non-zero and `<= 0`, group 17) that have flare launchers (`+0x1408 != +0x1410`) and flares left, look for a **threat**: a live projectile body whose target link points at this creature. The launcher stores a link to its target at `launcher+0x490` (target) and `+0x4a8` (owner), and the link's pointer is at `+0x498`
+   (the same field `FUN_14002e3a0` compares); the global body array is `DAT_143a33c90` with count `DAT_143a51150`, the one the point-defence burst iterates. Practical filter: a missile-class body (stats category `0x4000` tactical missile or `0x8000000` strategic, as the burst code excludes them) within a configurable range, aimed at this creature.
+3. **Act:** set `+0xbc0 = 1` while the threat holds (with a probability and a minimum gap so a ship does not dump all 30 at once), clear it otherwise. No other state is needed.
+4. **Knobs worth exposing:** trigger range, reaction probability, min interval, flares per burst, which ship classes use flares.
+**Unknowns to settle in a first test run:** the exact meaning of the link at `+0x498` for a missile aimed at a ship (is it the ship root or a part?), and whether a flared AI ship should also manoeuvre. The check is a log line when the trigger fires.
+
+<!-- MOVE: -> roadmap.md AI item "the AI cannot deploy flares" (cause and mod design; keep the [guess]/[not read] tags); hooks.md (candidate unowned site 0x14007eb50, flag +0xbc0); systems.md (flare release path); structures.md Creature (+0xbbc..+0xbc0 control flags, +0x1408 flare launcher list). -->
+
