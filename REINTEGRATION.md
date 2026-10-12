@@ -27,7 +27,7 @@ After the review by logdot and his agent, this branch is merged/split into the n
 10. Intercept probabilities (0.75 missiles, 0.66 aircraft) are the two constants in runMissileandAircraftIntercept_ (1.163 0x140111110); add the 75% roll to systems.md.
 
 11. Stats record: 1.163 inserts `sectors_shift` (0x12c) and `cluster` (0x16c); confirmed by strings `m_mdl_sectors_shift`, `m_missile_explosive_cluster` (only in 1.163). Notes' `+0xd4 tank capacity` is probably `crew capacity`; tank capacity is the double at `+0xc8`.
-12. `GetPartPrice` returns 0 after `Profile.endWar` and for category bit 6; `endWar` is set by `spawnEndgameShips_` (1.151 0x14023fa80, 1.163 counterpart not yet found).
+12. `GetPartPrice` returns 0 after `Profile.endWar` and for category bit 6; `endWar` is set by `spawnEndgameShips_` (1.151 0x14023fa80; 1.163 counterpart `FUN_140261a20`, found, group 18).
 13. 1.163 adds Skirmish/PVP modes, SDL2 controllers, captains, KAZ ammo; removes the 1.151 debug overlay strings. `formats.md` level list is incomplete for 1.163.
 14. Ammo table lives in code (`DefineAmmos`), not in `OL.seria`; `caliber` there is a projectile logic id; all cannon shells have 1 HP (`BulletImpact__` argument); `index 54` (300mm) has no `FireShell` case in 1.151.
 15. Ghidra type library: `ShipPart` and `HGEVFTABLE` exist only in 1.151; 1.163 `Body`/`Escadra`/`Creature` structs are stale.
@@ -35,6 +35,8 @@ After the review by logdot and his agent, this branch is merged/split into the n
 17. `Ammo` struct: 1.151 is 0x168, 1.163 is 0x188 (adds `shell_enemy` string and float `ttl` at +0x16c). 1.163 `ttl` makes shell lifetime per ammo type (100mm 4 s, 130mm 7 s, 180mm 30 s). My earlier note that the 1.151 stride was 0x188 was wrong (fixed in group 12/13/15).
 18. Latent bug in both versions: the AI controller looks up `ITEM_AMMO_230MM*`, the table has `ITEM_AMMO_203MM` (group 16). Harmless in vanilla; logdot may know if it is intended.
 19. Names to fix: `0x1400739c0` is labelled `shipKill?` but is the per-ship AI tick caller of `FUN_140062f90`; `0x140071120` is labelled `...::sqrtf` but computes the ship bounding radius (writer of Creature +0x1850); `0x14007ffaa` sits in `CalculateStats`.
+20. Likely cause of the Khiva crash (group 18): four unguarded `first_node->payload->+0x19c = 2` writes at 1.163 0x140262226 (1.151 0x140240266). Earlier group 7 text claimed they were guarded; corrected. Also: 1.163 `Profile` struct is the stale 1.151 layout (+0x58 from `endRace`). Please confirm one empty-quadrant case by reading the list code or reproducing on a throwaway save before anything is merged to master.
+21. `FUN_140261a20` and the `SCR_MAP` handler region around 0x1402b8a00-0x1402b8b30 have no function defined / are unnamed; same Ghidra-gap family as flag 7.
 
 ## Pending moves (update as I go)
 | From | To | Status |
@@ -49,3 +51,4 @@ After the review by logdot and his agent, this branch is merged/split into the n
 | review-1151-groups.md group 15 (ammo ttl and value changes) | roadmap.md version scope (damage changes) + systems.md Ammo + structures.md Ammo size | not moved |
 | review-1151-groups.md group 16 (tactical AI controller) | systems.md Tactical AI + roadmap.md AI items + structures.md Creature | not moved |
 | review-1151-groups.md group 17 (AI tick, patch site) | hooks.md Ownership row + roadmap.md AI items + systems.md Tactical AI + structures.md Creature | not moved |
+| review-1151-groups.md group 18 (endgame, Khiva crash cause) | roadmap.md Khiva bug + systems.md End game + hooks.md + open-questions.md | not moved; wait for logdot's confirmation |

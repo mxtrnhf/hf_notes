@@ -195,7 +195,7 @@ In 1.151 the stats record is the Ghidra struct `ShipPart` (384 = `0x180` bytes; 
 <!-- MOVE: this table -> structures.md "Stats record" (replace the offset list with the full named list and add a 'version differences' line: 1.163 inserts sectors_shift and cluster); the GetPartPrice rule -> systems.md or formats.md (OL.seria row). FLAG +0xd4 vs +0xc8 for review. -->
 
 ## Group 7: the end game (`spawnEndgameShips_`, 1.151 `0x14023fa80`) [code]
-Present in 1.151 as a named function; **not matched** in 1.163 by the fuzzy tool (not looked up by hand yet). It is the scripted collapse that begins the "nuclear war" and closes the campaign. Read from the
+Present in 1.151 as a named function; **not matched** by the fuzzy tool, **located by hand in 1.163 as `FUN_140261a20` (group 18)**. It is the scripted collapse that begins the "nuclear war" and closes the campaign. Read from the
 1.151 decompilation (very long: three-way list sorting plus spawns).
 
 * **Cities used by name:** `KHIVA` (the capital) and `BASRA`. Everything is positioned relative to `KHIVA`'s position.
@@ -210,9 +210,8 @@ Present in 1.151 as a named function; **not matched** in 1.163 by the fuzzy tool
   the generated names into the city record.
 * **Finale:** `BASRA`'s record is cleared; then, **"Start the nuclear war"** (logdot's comment): if `Profile.escalation == 0` it shows `THE_BEGINNING` / `NUCLEAR_WAR`, plays `dram_hit_01`, and sets
   `escalation = max(escalation, 1)`; finally **`Profile.endWar = true`**. This is what `GetPartPrice` (group 6) checks, so after this function runs, part prices become 0.
-* **Lead for the Khiva crash/loop bug in the roadmap [guess]:** the whole finale sits inside nested `if (list non-empty)` guards, and the city search is a fixed 100-try loop. If every city around Khiva is
-  already captured, the candidate lists are empty, the function does nothing, and `endWar` is never set, while the caller expects the event to progress: a state that never advances (an endless loading
-  loop) rather than a crash in this function. Check the caller's retry logic in 1.163 before trusting this; the function itself is not yet located there.
+* **Lead for the Khiva crash/loop bug in the roadmap: superseded by group 18.** An earlier version of this note said the finale was behind "list non-empty" guards and that the bug would be a state that never advances.
+  That was wrong: the first write to each of the four quadrant lists is **unguarded** (group 18), in both versions, and the 1.163 counterpart is now located.
 
 <!-- MOVE: -> roadmap.md under the "Capturing all cities around Khiva" bug (lead + names); -> systems.md (new short "End game" section: the three phases, endWar, escalation); -> open-questions.md (locate the 1.163 counterpart). -->
 
@@ -539,4 +538,35 @@ Recipes (all by operand repoint to a private float, with a 40-byte-or-so version
 gently when the player gets inside its stand-off; a very large `600` means it almost never backs away. Not owned in `hooks.md`. The orbit and separation terms are unchanged by these.
 
 <!-- MOVE: -> hooks.md (new rows in the Ownership table for 0x14007b021 / 0x14007b025 "close-range margin" and for the stand-off knobs 0x1400631a6, 0x1400631ec, 0x14006320d, 0x1400631fe, 0x140064723, all unowned, operand repoints) and roadmap.md AI items "closing to very short range" (found, with the patch recipe) and "AI gives way to the player" (candidate cause: no special case, symmetric separation); systems.md "Tactical AI" subsection (stand-off 0.35 x reach, orbit, separation, launch caps); structures.md Creature fields: +0x1840 centre, +0x1850 bounding radius, +0xad4 side float, +0x13d8/+0x13f0 launch lists, +0xd60/+0xd64 launch cooldowns, +0xc98 launch counter; systems.md "Launching" (the per-target launch limits of FUN_14002e3a0, which also belongs next to the multicharge owner row in hooks.md); open-questions.md (flares, mode flags). -->
+
+## Group 18: the 1.163 endgame function and a probable cause of the Khiva crash [code; not reproduced in game]
+**Located:** the 1.163 counterpart of `spawnEndgameShips_` is `FUN_140261a20` (`0x140261a20`-`0x140263534`, unnamed). Found via the strings `NUCLEAR_WAR` and `dram_hit_01` (its only code reference besides one other
+function), then confirmed by an almost identical callee set and the same body (`KHIVA`, `BASRA`, the 100-try search, `Tarantul`/`Tarantul ARM`, `THE_BEGINNING`). Its one caller is at `0x1402b8af2`, in a region of the
+level-script (`SCR_MAP`) handler where **no function is defined** (the same Ghidra gap as `0x140117840`). The call is preceded by a gate on three profile/global flags (bytes at `0x1402b8a27`-`0x1402b8a47`):
+profile `+0x2ec` non-zero, profile `+0x2e9` zero, and the global byte `0x147fc6fca` zero. These are the 1.163 positions of `escalation` and `endWar` (the Ghidra `Profile` struct is the stale 1.151 layout, shifted `+0x58`: `endRace` `0x2e8`, `endWar` `0x2e9`,
+`escalation` `0x2ec`); that reading of the gate is unverified, and it sits oddly with the function's own "if `escalation == 0`" branch (below), so do not rely on it.
+
+**The probable cause of "capture all cities around Khiva and the game crashes / loops on load":** the function builds four circular lists (quadrants around Khiva) of eligible cities, sorts them, then writes `city.+0x19c = 2` to
+**the first element of each list with no emptiness check**:
+
+| 1.163 `0x140262226`-`0x140262279` (84 bytes, four blocks of 21) | meaning |
+|---|---|
+| `mov rax,[rbp-8]` / `mov rax,[rax]` / `mov rax,[rax+0x10]` / `mov dword [rax+0x19c],2` | list 1 head -> first node -> payload (the city) -> state = 2 |
+| same with `[rbp-0x18]`, `[rbp-0x28]`, `[rbp-0x38]` | lists 2, 3, 4 |
+
+(1.151: the same four writes at `0x140240266`; the decompile shows them straight after the four sorts, unguarded.) An empty list is a lone sentinel node from `New(0x18)` (a plain `operator new`, no zeroing; only its two link
+fields are set), so `first = sentinel` and `[sentinel+0x10]` is whatever the heap held: typically a stale pointer or zero, then `+0x19c` is written through it. That is a wild write: a crash if the pointer is bad, silent heap
+corruption if it is not. **A list is empty when no city in that quadrant passes the filter** (city state `+0x19c != 0`, and no friendly-side fleet within 700 of it); capturing every city in one quadrant around Khiva fits. If the
+function runs on load of such a save, the game would crash each time, which would look like a loop. [code for the unguarded writes and the empty-list case; "captured cities have state 0" and the load-time repeat are guesses, untested]
+The roadmap names 1.163, but the same code is in 1.151, so 1.151 should have it too [guess, not run].
+
+**Patch recipe (not applied, untested):** a function-entry-style detour at `0x140262226` over those 84 bytes (the `hooks.md` technique; a 14-byte jump into a stub that returns to `0x14026227a`): for each of the four lists
+(pointers at `[rbp-0x8]`, `[rbp-0x18]`, `[rbp-0x28]`, `[rbp-0x38]`), do `first = *list; if (first != list && first[2] != 0) first[2]->+0x19c = 2`. Version guard: compare those 84 bytes before patching. The rest of the function already
+handles empty lists (the later loops are guarded), so nothing else should need to change. What the game should do when a quadrant is empty is a design question; the guard just stops the wild write.
+
+**Other differences from 1.151 in this function:** the phase structure, the `100.0/200.0/300.0` strike strengths (`hardMode`), the `2000`-`4000` search ring, the `700` exclusion and the `Tarantul` split (66%) are unchanged. 1.163 adds
+`CopyEscadraName` calls with a state flag set through bit marks (`local_234 |= 1/2/4`, unused locals as far as I can tell) and uses the escalation/`enigmaKey10` pair as the stale Ghidra struct shows them (offset 660 is `escalation`, 744
+`enigmaKey10` is a mislabel: at the shifted layout it lines up with 1.151 `escalation`/`endWar`); I did not resolve these two names.
+
+<!-- MOVE: -> roadmap.md under the "Capturing all cities around Khiva" bug (the cause and patch recipe, with the [guess] tags kept); -> systems.md "End game" section (three phases, the four-list write, endWar/escalation, Profile offsets +0x58 in 1.163); -> hooks.md Ownership table (candidate site 0x140262226, unowned); -> open-questions.md (the 3-flag gate in the SCR_MAP handler, the two profile names). Do NOT move before logdot confirms the stale-struct reading of the Profile offsets. -->
 
