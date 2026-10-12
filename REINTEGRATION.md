@@ -34,6 +34,7 @@ After the review by logdot and his agent, this branch is merged/split into the n
 16. Names to fix in Ghidra (after review): the 1.151 AI weapon controller at 0x140076300 is named `rep_140076300_...::atan2f` (propagated); its 1.163 twin `FUN_14007a8d0` is unnamed. `creatureLogic` is the projectile/missile/aircraft behaviour dispatcher (keyed by the ammo `caliber` logic id), not the ship AI, so the name misleads. Creature flag names `damageCounter_` (1.151) and `linkDLL` (1.163) at the 700-range cap are wrong.
 17. `Ammo` struct: 1.151 is 0x168, 1.163 is 0x188 (adds `shell_enemy` string and float `ttl` at +0x16c). 1.163 `ttl` makes shell lifetime per ammo type (100mm 4 s, 130mm 7 s, 180mm 30 s). My earlier note that the 1.151 stride was 0x188 was wrong (fixed in group 12/13/15).
 18. Latent bug in both versions: the AI controller looks up `ITEM_AMMO_230MM*`, the table has `ITEM_AMMO_203MM` (group 16). Harmless in vanilla; logdot may know if it is intended.
+19. Names to fix: `0x1400739c0` is labelled `shipKill?` but is the per-ship AI tick caller of `FUN_140062f90`; `0x140071120` is labelled `...::sqrtf` but computes the ship bounding radius (writer of Creature +0x1850); `0x14007ffaa` sits in `CalculateStats`.
 
 ## Pending moves (update as I go)
 | From | To | Status |
@@ -47,4 +48,4 @@ After the review by logdot and his agent, this branch is merged/split into the n
 | review-1151-groups.md groups 1-15 | systems.md / structures.md / formats.md / engine-hge.md / content.md / roadmap.md / open-questions.md per the MOVE comments in each group | not moved |
 | review-1151-groups.md group 15 (ammo ttl and value changes) | roadmap.md version scope (damage changes) + systems.md Ammo + structures.md Ammo size | not moved |
 | review-1151-groups.md group 16 (tactical AI controller) | systems.md Tactical AI + roadmap.md AI items + structures.md Creature | not moved |
-
+| review-1151-groups.md group 17 (AI tick, patch site) | hooks.md Ownership row + roadmap.md AI items + systems.md Tactical AI + structures.md Creature | not moved |

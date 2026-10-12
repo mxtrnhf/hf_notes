@@ -451,8 +451,8 @@ I did not read `creatureLogic` itself (it timed out twice); this is inferred fro
 
 **Answers to the roadmap's tactical items:**
 * **"Closing to very short range disables all weapons" [Tactical, exploitable]: found, and new in 1.163.** After the target's position is read, 1.163 returns before any aiming or `FireGuns` when
-  `distance < target.+0x1850 + self.+0x1850 + 30.0` (the field is added once per ship, so it is probably a hull extent or radius [guess]). 1.151's version of this function has no such test (I did not compare the callers). So the "all guns go silent when you
-  are touching them" behaviour is, as far as this function goes, a 1.163 addition, and a patch is a change to that compare or to the constant `30.0` in this function (address not yet pinned; see the disassembly of `0x14007a8d0`).
+  `distance < target.+0x1850 + self.+0x1850 + 30.0` (`+0x1850` is the ship's **bounding radius**, see group 17). 1.151's version of this function has no such test (I did not compare the callers). So the "all guns go silent when you
+  are touching them" behaviour is, as far as this function goes, a 1.163 addition, and a patch is a change to that compare or to the constant `30.0` in this function (pinned in group 17: `0x14007b021` / `0x14007b02d`).
 * **"AP only at extremely short range": confirmed, same rule in both versions.** For guns whose part caliber index is 15, 20, 25 or 30 (100, 130, 180, 203mm) the controller sets the gun's ammo slot
   (1.163 gun `+0x850`, 1.151 `+0x83c`) with `FindAmmoIndex(name)`. It picks `_AP` only if two creature flags are set **and the target is closer than 1000** units; else the proximity variant when other flags are set; else the plain shell.
   It **never selects `_INC` or `_LG`**, which matches the roadmap ("the AI cannot use LG/INC shells"). The 37mm, 57mm and rocket guns keep whatever they were loaded with.
@@ -474,4 +474,45 @@ I did not read `creatureLogic` itself (it timed out twice); this is inferred fro
 **Not found / still open:** the ship update that calls this controller (movement, "gives way"), flare logic, the meaning of the creature flags at `+0xc06..+0xc77` that choose AP/proximity, and the exact patch address for the 30.0 test.
 
 <!-- MOVE: -> systems.md new "Tactical AI weapons" subsection (the controller, ammo choice rule, close-range cutoff, aim tolerance); roadmap.md AI items "Tactical, exploitable: closing to very short range" (found), "AI cannot use LG/INC; AP at very short range" (found), and a note for the Version scope (the range and cutoff changes are 1.163 gameplay differences); structures.md (Creature fields +0x1850, +0x850 gun ammo slot); open-questions.md (flares, give-way, flag meaning). -->
+
+## Group 17: the per-ship AI tick (1.163 `FUN_140062f90`) and the close-range cutoff patch site [code unless noted]
+Read in full (all 1587 decompiled lines). `FUN_140062f90` (`0x140062f90`-`0x140065f99`) has one caller, `0x1400739c0`, which Ghidra labels `shipKill?` (a wrong label: it calls this once per ship, so it is the
+per-ship AI tick). The function does the movement steering, launches aircraft and missiles from the ship, and calls the weapon controller of group 16 (`FUN_14007a8d0`) when the ship has a target. 1.151 was not compared here.
+
+**Pinned: the close-range cutoff (group 16) is in `FUN_14007a8d0`, bytes at `0x14007b011`-`0x14007b033`:**
+
+| Address | Bytes | Instruction |
+|---|---|---|
+| `0x14007b011` | `f3 0f 10 83 50 18 00 00` | `MOVSS XMM0,[RBX+0x1850]` (target radius) |
+| `0x14007b019` | `f3 0f 58 87 50 18 00 00` | `ADDSS XMM0,[RDI+0x1850]` (own radius) |
+| `0x14007b021` | `f3 0f 58 05 b3 74 2d 00` | `ADDSS XMM0,[rip+0x2d74b3]` -> the float `30.0` at `0x1403524dc` |
+| `0x14007b029` | `41 0f 2f c6` | `COMISS XMM0,XMM14` (XMM14 = distance between the two ships) |
+| `0x14007b02d` | `0f 87 0c 0f 00 00` | `JA 0x14007bf3f` (the function's return: no aiming, no `FireGuns`) |
+
+The guard is `radius(target) + radius(self) + 30.0 > distance -> return`. **Do not patch the constant at `0x1403524dc`**: it is a pooled `30.0f` with about 60 other references (`hooks.md` rule). The two clean options:
+* **Make the margin adjustable (operand repoint, the `hooks.md` technique):** change the disp32 at `0x14007b025` (bytes `b3 74 2d 00`) so the `ADDSS` reads a private float in the mod's memory (allocate within +-2 GB of the image). The mod's setting is that float; `30.0` is vanilla.
+* **Disable the cutoff:** set that private float to a large negative value (`-1e9`); the sum then never exceeds the distance. (Alternative: overwrite the six `JA` bytes with a 6-byte nop; the operand route keeps the knob adjustable.)
+Version guard: compare the 40 bytes from `0x14007b011` to `0x14007b039` before patching. The function is not owned by any mod in `hooks.md`. **The effect is untested in game**; the margin only matters when two ships are nearly touching.
+
+**`Creature +0x1850` is the ship's bounding radius [code]:** written in `CalculateStats` (`0x14007ffaa`, the only writer) from `0x140071120`, which takes the maximum over the ship's root parts of
+(distance from the centre at `+0x1840` + that part's own radius at Body `+0x20c`). `+0x1840/+0x1844` is the centre of mass computed just above it.
+
+**How the AI steers (movement), as read:**
+* **Stand-off distance:** `0.35 x` the larger of two weapon-reach floats (`+0x1838`, `+0x183c`), capped at **1000** (660 if the flag at `+0xc74` is set). The ship tries to hover at that range from its target; the heading is
+  a sum of weighted unit vectors: toward/away from the target by `clamp((distance - standoff)/600, -1, 1)`, a perpendicular **orbit** term with weight `1 - |that|` (so it circles at the stand-off range), **separation from other ships**, cohesion toward the
+  average position of the ship's group (weight `clamp(distance/250 - 1, 0, 3)`), pull toward a waypoint (`clamp(distance/300 - 1, 0, 3)`), and push away from the map edges.
+* **Separation is applied to every other live creature, with no exemption for the player** (only `self` is skipped). For ships that count as allies of this one (`FUN_140220170` on the two side floats at `+0xad4`) the push is
+  `min(1, 200/(d+1))` (500 with a mode flag), scaled by 1 (or 100 when `BOOL_147fc6fdb` is set). Non-allies are pushed away with `min(1, 500/(d+1))` only when the ship has reach >= 6000 or a related flag is set
+  (and a second avoid-enemies loop with weight `1 - d/1500`, doubled, only under that same condition). I could not resolve what `DAT_147fc6fe0` and `BOOL_147fc6fdb` mean (both mode flags).
+* **What this says about "the AI consistently gives way to the player":** nothing in the steering steers the player's ship; the AI treats it as one more body to avoid, with the same separation push it uses between its own
+  ships. That is a plausible structural reason for the behaviour [guess: not shown in play], and there is no special case for the player. The fix point would be the separation weights above (not yet pinned to patch sites).
+* **Launching from the ship** (end of the function): if the ship has a target creature it can launch aircraft (`FUN_14002ff60`) when the target is between `radius(target) + radius(self) + 100` and `2000` away, on a random roll
+  (about 1% per tick plus a term in the launch counts), with a 2.0 s ship-level cooldown (`+0xd60`) and a 6.0 s timer (`+0xcb8`). Missiles are launched through `FUN_14002e3a0` (the combat launch of the multicharge mod, `hooks.md`)
+  from the ship's second launch list (`+0x13f0`). If the target is a strategic launch (`0x8000000`) or an aircraft (`0x400`), the ship fires at it with a cap of **3 launches (strategic missile) or 1 (aircraft)**, 0.5 s apart
+  (`+0xd64`). [code; the 3/1 caps are the counter compared at `+0x9c8`; I did not find where the counter resets.]
+* **Flares: not found.** Nothing in this function or in the weapon controller references category bit 23 or a flare part. Whether `FUN_14002e3a0` can fire flares from the launch lists is not shown.
+
+**Still not read:** `FUN_14002e3a0` (what a "launch" picks), `FUN_14020fce0` and `FUN_140220170` (distance and side tests), the callers of the counter at `+0x9c8`, and the meaning of the two mode flags.
+
+<!-- MOVE: -> hooks.md (new row in the Ownership table for 0x14007b021 / 0x14007b025 "close-range margin", unowned, operand repoint) and roadmap.md AI items "closing to very short range" (found, with the patch recipe) and "AI gives way to the player" (candidate cause: no special case, symmetric separation); systems.md "Tactical AI" subsection (stand-off 0.35 x reach, orbit, separation, launch caps); structures.md Creature fields: +0x1840 centre, +0x1850 bounding radius, +0xad4 side float, +0x13d8/+0x13f0 launch lists, +0xd60/+0xd64 launch cooldowns; open-questions.md (flares, mode flags). -->
 
