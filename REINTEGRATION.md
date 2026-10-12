@@ -54,3 +54,4 @@ After the review by logdot and his agent, this branch is merged/split into the n
 | review-1151-groups.md group 17 (AI tick, patch site) | hooks.md Ownership row + roadmap.md AI items + systems.md Tactical AI + structures.md Creature | not moved |
 | review-1151-groups.md group 18 (endgame, Khiva crash cause) | roadmap.md Khiva bug + systems.md End game + hooks.md + open-questions.md | not moved; wait for logdot's confirmation |
 | review-1151-groups.md group 19 (sensor combine rules, +0xd4) | structures.md Stats + Body, roadmap.md sensors/crew items, systems.md | not moved |
+| review-1151-groups.md group 20 (flares, crash hunt, partial) | roadmap.md flare bug + systems.md + structures.md Body logic ids | not moved |
