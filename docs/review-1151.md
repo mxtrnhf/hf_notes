@@ -163,10 +163,10 @@ Tags: **[V]** 1.163 offset is also verified in `structures.md` (game or code); *
 | about `0x2a8` .. `0x7f0` | **+0x10** | collisions/ttl/health block, slots, spasm, `logic*`, sectors, `count` block, `mdl_fuel`, `mdl_fss` (rows below) |
 | about `0x828` .. `0x860` (weapon/ammo area) | **+0xc** (some fields +0x10) [?] | a 4-byte field is missing in 1.163 between `mdl_fss` and `mdl_covered`; see "unresolved" |
 | about `0x980` .. `0xa30` (floor, edRotate, aircraft logic) | **+0x30** | `floorType`, `floor`, `edRotate`, aircraft logic pointer |
-| tail flags (`isFocusable` ...) | **+0x38** (struct end 0xa10 -> 0xa40 is +0x30; see note) | |
+| tail flags (`isFocusable` ...) | **+0x30 or +0x38** [?] | the copy routine writes bytes at 0xa38..0xa3d; the 1.151 flags are at 0x9fc..0xa0d, so this end zone is unresolved |
 
-Total size: 1.151 object ends at `0xa10`; 1.163 at `0xa40` (+0x30), consistent with the last zone being +0x30 (the extra +0x38 seen for the aircraft logic pointer is explained by the
-two pointers `aircraft_logic`/`aircraftLogic` in 1.151 collapsing into one at `0xa20` in 1.163).
+Total size: the 1.151 object ends at `0xa10`; the 1.163 object is `0xa40` (+0x30), consistent with the last zone being +0x30. The aircraft logic pointer is the only apparent +0x38:
+1.151 has two pointers (`aircraft_logic` 0x9e8, `aircraftLogic` 0x9f0); 1.163 has one (0xa20), which fits +0x30 from `aircraftLogic` and the other pointer being gone [guess].
 
 ### Anchor pairs (1.151 name @ offset -> 1.163 offset)
 
@@ -210,7 +210,7 @@ two pointers `aircraft_logic`/`aircraftLogic` in 1.151 collapsing into one at `0
      also what the Ghidra struct rebuild (see "How automatable ...") will use. -->
 
 ### What this tells us
-* **Mostly mechanical.** About 75% of the named Body fields fall in the +0 / +0x10 / +0x30 zones and can be mapped by adding a constant per zone. Only the weapon/ammo area
+* **Mostly mechanical for the fields I could anchor.** Most named fields I checked fall in the +0 / +0x10 / +0x30 zones and can be mapped by adding a constant per zone (I did not count them). Only the weapon/ammo area
   (`0x828..0x880` in 1.151) and the `aircraftLogic`/lighting tail need individual attention.
 * **The notes' offsets are self-consistent with this table** at every anchor I could cross-check (health, count/blueprint, logic, sectors, floor, edRotate, covered, weapon ammo): good
   evidence that `structures.md` is right for 1.163 and that the stale part is the Ghidra struct, not the notes.
