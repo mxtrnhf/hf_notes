@@ -1,7 +1,7 @@
 # Why AI ships never use flares, and how to give them flares (1.163)
 
 Status: **finding, no mod written, nothing run in game.** Tags as in `../README.md`: **[game]** verified on the real game files · **[code]** read from the 1.163 decompilation · **[guess]** inferred · **[not read]** known gap.
-Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap item "the AI cannot deploy flares" (`roadmap.md`, AI, Tactical). Longer working notes are on the `review-1151-annotations` branch.
+Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap item "the AI cannot deploy flares" (`roadmap.md`, AI, Tactical). Working notes: `review-1151-groups.md` groups 16, 17, 20, 21.
 
 ## Short answer
 The AI is not missing flares or a release routine. It is missing the **trigger**. The release code is generic and runs for every creature, but the flag that starts it is only ever set by the player's input path.
@@ -28,4 +28,4 @@ Follows the conventions in `hooks.md` (function-entry detour with version guard;
 * What the link at `+0x498` points at for a missile aimed at a ship: the ship root, a part, or the bridge. A log line when the trigger fires answers it.
 * How a missile seeker reacts to a flare body (logic `0x44c`). That is in `creatureLogic` (`0x140033b90`), which could not be decompiled in one piece [not read]. The player uses flares successfully, so an AI-released flare should behave the same.
 * Whether a flaring AI ship should also manoeuvre. Not addressed by this design.
-* The related roadmap bug "a proximity-fused missile colliding with flares crashes the game" is **not located** (details on the `review-1151-annotations` branch); an AI that uses flares more often could hit it more often, so test with that bug in mind.
+* The related roadmap bug "a proximity-fused missile colliding with flares crashes the game" is **not located** (`review-1151-groups.md` group 20); an AI that uses flares more often could hit it more often, so test with that bug in mind.
