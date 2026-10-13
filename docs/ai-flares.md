@@ -1,0 +1,31 @@
+# Why AI ships never use flares, and how to give them flares (1.163)
+
+Status: **finding, no mod written, nothing run in game.** Tags as in `../README.md`: **[game]** verified on the real game files · **[code]** read from the 1.163 decompilation · **[guess]** inferred · **[not read]** known gap.
+Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap item "the AI cannot deploy flares" (`roadmap.md`, AI, Tactical). Longer working notes are on the `review-1151-annotations` branch.
+
+## Short answer
+The AI is not missing flares or a release routine. It is missing the **trigger**. The release code is generic and runs for every creature, but the flag that starts it is only ever set by the player's input path.
+
+## Evidence
+* **AI ships carry flare launchers** [game]. 26 of the 81 vanilla designs in `Objects/Designs/*.seria` contain parts named `FLARES` (99 launchers in total). Six launchers: `Navarin`, `Intrepid Mk2`, `Gladiator`, `Fearsome`; five: `Intrepid Mk3`; four: `Wanderer`, `Wanderer Mk2`, `Titan`, `Tarantul`, `Tarantul MRL`, `Tarantul MRL Mk2`, `Tarantul ARM`, `Scarab`, `Navarin Mk2`, `Navarin Mk3`, `Jaguar`, `Gladiator MRL`, `Gladiator LANCE`, `Ballistic`; two: `Tanker`, `Talos`, `Lion`, `Jaguar Mk2`, `Hound`, `Fury`, `Flower`.
+  Method: concatenate the design files, strip `\r`, count lines `m_name=FLARES` per file.
+* **The part** [game] (`Libraries/OL.seria`, `m_oid=MDL_FLARES`): `m_category=8388608` (bit 23), `m_price=800`, `m_mdl_armor=5`, `m_mdl_power_need=10`, `m_mdl_sectors_type=3`, `m_mdl_sectors_threshold=0.5`, `m_weapon_load_amount=30`, `m_weapon_load_time=99999` (practically no reload), `m_weapon_rate=400`.
+* **Release is generic** [code]. The per-creature update `FUN_14007eb50(creature, dt)` (`0x14007eb50`-`0x14007fce9`) is a virtual method: it has data references from a vtable (`0x14807b2d0`, `0x140354ce8`) and no direct callers, so it runs for every creature, AI included. In it:
+  * `if (creature byte +0xbc0 != 0)` (Ghidra `param_1[0x178]`): for every entry in the vector at `creature +0x1408 .. +0x1410` (entries are 0x18 bytes, the launcher pointer at +8) call **`FUN_14002eed0(launcher)`**, then play the sound `flare` once if any launcher fired, then `rep_14024f4f0_Get_Profile?(creature, 0x40000000)`. The flag itself is **not cleared** here.
+  * Sibling flags read in the same function: `+0xbbc` (fires the guns in the list at `+0x13a8`), `+0xbbd` (guns in `+0x13c0`), `+0xbbe` (a one-shot, cleared after use).
+* **`FUN_14002eed0` (the flare release)** [code]: does nothing unless the launcher's cooldown float `+0x848` is zero, `+0x80c` and `+0x818` are non-zero (armed/powered), the count `+0x860` is at least 1 and `+0x86c` is zero. Then it decrements `+0x860`, sets `+0x86c` from a rate, and spawns one `Body` (`New(0xa40)`): lifetime `timeToLive` (`+0x2c0`) 5.0 s, **`logic` (`+0x3c4`) = `0x44c` (1100)**, layer `+0x1f0` = 0, sprite id `+0x8d8` = 5, drag `+0x1dc` = `0x3a378034` (about 0.0007, like AP shells), velocity along the launcher direction x 400 with a random angle of +-0.2 rad, and three particle effects (`smoke_FIRE.psi`, `rocket_glow.psi`, `fire_LRE.psi`). It is not built from a stats record: `explosive` (`+0x2dc`) is left at its default and `isLogicActive` (`+0x3c8`) is not set. Calling it every frame is safe because of its own gates.
+* **Nothing sets `+0xbc0` for AI ships** [code, by instruction search]. The only writes to that offset I found are two 16-bit zero stores (`0x14023278e` in `displayTextOnCreature?`, `0x14024c0e3` in `FUN_14024c0b0`) and one store of a register word at `0x140072d37`; none sets the byte to 1 from an AI path. The AI tick `FUN_140062f90` and the AI weapon controller `FUN_14007a8d0` do not reference it. [The positive setter, i.e. the player's input code, was not located; the setting by search patterns with wildcards is unreliable, so this is "not found", not "proven absent".]
+
+## Mod design (not written)
+Follows the conventions in `hooks.md` (function-entry detour with version guard; or an operand/call-site patch).
+1. **Hook:** a function-entry detour on `FUN_14007eb50` (`0x14007eb50`, **unowned** in the `hooks.md` ownership table), run before the original body so the flag is seen the same frame. Version guard: compare the first bytes of the function before patching.
+2. **Select creatures:** AI side only. The side float at `Creature +0xad4`: negative and non-zero = AI side, positive = player's (inferred from where the difficulty byte applies, **[guess]**); has a non-empty flare list (`+0x1408 != +0x1410`); the launchers still have count `+0x860 >= 1`.
+3. **Detect a threat:** a live projectile body whose target link points at this creature. A launcher writes its target link at `launcher +0x490` and its owner link at `+0x4a8` (`FUN_14002e3a0`); the link's pointer is the qword at `+0x498`, the field that function compares against the target. The global body array is `DAT_143a33c90`, count `DAT_143a51150` (the array the point-defence burst `FUN_14002f480` walks). Class filter: stats category `0x4000` (tactical missile) or `0x8000000` (strategic launch). Distance from the existing helper `FUN_1401f47f0`/the plain distance in `FUN_14020fce0` (centre to centre).
+4. **Act:** set `creature +0xbc0 = 1` while the threat holds, clear it otherwise; add a reaction probability and a minimum interval so one ship does not release all 30 at once.
+5. **Knobs to expose:** trigger range, reaction probability, minimum interval, number of flares per burst, which designs or classes use flares.
+
+## Unknowns (settle in a first test run)
+* What the link at `+0x498` points at for a missile aimed at a ship: the ship root, a part, or the bridge. A log line when the trigger fires answers it.
+* How a missile seeker reacts to a flare body (logic `0x44c`). That is in `creatureLogic` (`0x140033b90`), which could not be decompiled in one piece [not read]. The player uses flares successfully, so an AI-released flare should behave the same.
+* Whether a flaring AI ship should also manoeuvre. Not addressed by this design.
+* The related roadmap bug "a proximity-fused missile colliding with flares crashes the game" is **not located** (details on the `review-1151-annotations` branch); an AI that uses flares more often could hit it more often, so test with that bug in mind.
