@@ -8,6 +8,7 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 |---|---|
 | [docs/install.md](docs/install.md) | **installing the mods on a clean game**: order, per-mod steps, test settings, pass/fail log lines, troubleshooting |
 | [docs/setup.md](docs/setup.md) | tools, modloader, building, pitfalls, safe-edit rules, comparing with the 1.151 program |
+| [docs/porting-1151-1163.md](docs/porting-1151-1163.md) | **porting a mod between 1.151 and 1.163**: what changed, how to guard builds, step-by-step site porting, anchor addresses, what each of our mods would need |
 | [docs/open-questions.md](docs/open-questions.md) | what is unknown or undecided, and the list of Ghidra fixes to raise with logdot |
 | [docs/roadmap.md](docs/roadmap.md) | long-term mod wish list (bugs, QoL, AI, mod scope) and wanted modder tooling; not scheduled, do not act on it unasked |
 

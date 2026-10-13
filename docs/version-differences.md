@@ -1,7 +1,7 @@
 # 1.151 vs 1.163: what moved, what was added (reference)
 
 Source: a read-only comparison of logdot's annotated 1.151 Ghidra program with the 1.163 program, plus targeted decompilation. Neither program was edited. Tags as in `../README.md`: **[V]** 1.163 offset also verified in `structures.md` (game or code) · **[C]** 1.163 offset read from the copy routine and paired by role · **[?]** uncertain · **[tool]** fuzzy-match result · **[code]**, **[guess]**, **[game]** as in the README.
-Use this when a 1.151 name, offset or comment has to be carried to 1.163, or to see which differences are gameplay changes.
+Porting a mod? Start with the guide: [porting-1151-1163.md](porting-1151-1163.md). Use this reference when a 1.151 name, offset or comment has to be carried to 1.163, or to see which differences are gameplay changes.
 
 ## What was compared
 | | 1.151 (`/Highfleet.exe.unpacked.exe v1.151`) | 1.163 (`/Highfleet.exe.unpacked.exe v1.163`) |
