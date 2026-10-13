@@ -16,7 +16,7 @@ After the review by logdot and his agent, this branch is merged/split into the n
 (If the review changes it, amend before merging.)
 
 ## Open flags to raise with logdot before anything moves
-1. `structures.md` says `+0x858` is `m_weapon_ammo_amount`; `FireGun` (1.163 `0x140032e60`) decrements `+0x860`. Decide with a second code read or in-game test.
+1. `structures.md` says `+0x858` is `m_weapon_ammo_amount`; `FireGun` (1.163 `0x140032e60`) decrements `+0x860`. Decide with a second code read or in-game test. **Resolved (static, 1.163):** both are right. `+0x858` is the reserve (int), `+0x860` the loaded rounds (float); `FUN_140054fb0` moves rounds reserve -> loaded one reload step at a time (timer `+0x864`, step size `+0x868`). `structures.md` updated. Not run in game.
 2. Ghidra's 1.163 `Body` struct is 0xa08 bytes, the object is 0xa40; offsets past ~0x2a8 are stale in Ghidra.
 3. `.conflict` duplicate types in the 1.163 program (`Body.conflict`, `BodyVFTABLE.conflict`, `DLL<Body>.conflict`, ...).
 4. The four air-group functions (`CreateMapAircraftGroup`, `UpdateMapAircraftGroup`, `ComputeMapAircraftWeaponStrength`, `ConfigureStrategicMissileForTacticalBattle`) have no 1.163 match.

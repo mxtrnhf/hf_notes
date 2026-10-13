@@ -43,7 +43,8 @@ builds on the `Mark` constructor). The same factory gives the same sizes for the
 | +0x508 / +0x510 | `m_sectors` vector<float>, 360 entries after a scan [game] |
 | +0x7a8 / +0x7ad | `m_count` / blueprint flag [game] |
 | +0x848 | `m_mdl_covered` (1.0 when the engine cone is blocked); also a cooldown test in the launch [code] |
-| +0x858 | `m_weapon_ammo_amount` [code] |
+| +0x858 | `m_weapon_ammo_amount` = **reserve** rounds (int). Loaded from the save key `count` (`bodySecondaryInit`), copied by `copyOverBody`; the per-frame update `FUN_140054fb0` takes one from it per reload step [code] |
+| +0x860 / +0x864 / +0x868 | **loaded** rounds (float; `FireGun` decrements it, needs >= 1) / reload step timer / rounds the current reload step adds (1 if the reserve was non-empty, else 0). Magazine size = Stats `+0x148`, reload time = Stats `+0x14c` [code] |
 | +0x8d8 `m_stage` (not elevation), +0x90c `m_z` [code] |
 | +0x9b0 / +0x9b8 | `m_floor_type` bitmask / `m_floor` = **elevation** [game] |
 | +0xa28 | `m_ed_rotate` [code] |
