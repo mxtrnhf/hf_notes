@@ -19,6 +19,7 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/khiva-crash.md](docs/khiva-crash.md) | probable cause of the Khiva end-game crash (unguarded list writes), addresses, patch recipe, how to confirm |
 | [docs/mouse-sensitivity.md](docs/mouse-sensitivity.md) | mouse sensitivity path in the input task; A220 slowdown not yet located (partial) |
 | [docs/cluster-bomblet-ttl.md](docs/cluster-bomblet-ttl.md) | cluster/mine bomblet spawn function, its call site, the TTL patch site (partial) |
+| [docs/ai-aircraft-launch.md](docs/ai-aircraft-launch.md) | why the strategic AI launches all aircraft at once, launch conditions, patch sites |
 | [docs/ai-tick-patch-sites.md](docs/ai-tick-patch-sites.md) | the tactical AI in 1.163: close-range cutoff, stand-off retreat, ammo choice, launch limits, with byte-exact patch sites |
 | [docs/ai-flares.md](docs/ai-flares.md) | why AI ships never use flares (missing trigger, not missing parts) and a design for a mod; evidence and unknowns |
 | [docs/open-questions.md](docs/open-questions.md) | what is unknown or undecided |

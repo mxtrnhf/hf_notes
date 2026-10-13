@@ -28,6 +28,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 
 ### AI
 * **[Strategic]** The AI launches all its aircraft when it detects the player within strike range, so none are left for defensive interception.
+  * Cause and byte-level patch sites: [ai-aircraft-launch.md](ai-aircraft-launch.md). Not applied or run in game.
 * **[Strategic]** The AI has no evasive manoeuvring against cruise missiles on the strategic map.
 * **[Tactical, exploitable]** Closing to very short range of an enemy ship in tactical combat disables all of its weapon systems.
   * Found, and a 1.163 addition: the cutoff and its patch sites are in [ai-tick-patch-sites.md](ai-tick-patch-sites.md) (section 1). Not applied or run in game.
@@ -39,6 +40,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 
 ### Mod scope
 * **[Mod Scope / Bug]** Support for combined sensors. Sensor range calculation is currently bugged (accumulative) with two or more sensor types.
+  * Code reading says sensors combine by per-sector maximum per type; only jammers sum, so the accumulation claim is not confirmed: `review-1151-groups.md` group 19. Test: two radars vs one in the range readout.
 * **[Mod Scope]** HP modification for missiles (Zenith), aircraft, rockets (A220) and cannon shells.
 * **[Mod Scope]** Wider ship-roster modification (additional ship variants, adjustable composition ratio).
 * **[Mod Scope]** Editing the repair-part composition menu (hull, armor, landing gear, etc.).
