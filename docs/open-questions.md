@@ -5,7 +5,7 @@
   has not been read for bigger groups. A volley as ONE map object with count N (it would also fly as a group) is possible in principle; the `MapCraft` scenario `SCR_BOMBERS` is unread.
 * **Multi-charge x salvo:** deliberately undecided. One A-101 part is one launcher switch (one queued launch at a time); several A-101 parts queue as separate launches and the merge treats them like any missile.
   Decide the intended use before testing or documenting it.
-* `CraftsVsMissile` / `CraftsVsCrafts` flows never observed. Triumph in a fresh campaign's shops (highfleet-qol rolls a city's shop once).
+* `CraftsVsMissile` / `CraftsVsCrafts` flows never observed in game (the code that starts them is now known: [findings/map-air-groups.md](findings/map-air-groups.md)). Triumph in a fresh campaign's shops (highfleet-qol rolls a city's shop once).
 * The arc scan being "gated off by data" (stats +0x128 == 0) versus a patched call is not settled (gun-side blocking itself is solved by highfleet-qol).
 * Refuel: the buy-fuel slider and `REFUEL_TIME` are untraced. GOG 1.163 may share addresses with Steam 1.163; untested.
 
@@ -21,3 +21,24 @@
 ## Release
 * Run the reinstall checklist; README follow-ups (troubleshooting, a worked "add a part" guide); optional move to the modloader's logging SDK; push the repos; LICENSE names are set (`mxtrnhf`).
 * Longer term: inject names/descriptions and part definitions at runtime instead of editing game files (removes the Python step and the update-overwrite problem).
+
+## Static analysis: findings that still need a live test or a second read
+Each finding note ends with a live-test recipe. Open items:
+* A220 mouse-sensitivity slowdown: path to the delta mapped, cause not found: [findings/mouse-sensitivity.md](findings/mouse-sensitivity.md).
+* Cluster/mine bomblet TTL: two call sites found; the TTL at the second is a register not traced: [findings/cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md).
+* Proximity-fuse crash with flares: site not located: [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md).
+* Khiva crash: cause is a reading of the code, not reproduced: [findings/khiva-crash.md](findings/khiva-crash.md). The three-flag gate in the `SCR_MAP` handler (profile `+0x2ec`, `+0x2e9`, global `0x147fc6fca`) and the two Profile names are unresolved.
+* AI: where the per-ship launch counter at `+0xc98` resets, what the launch list at `+0x13f0` holds, the meaning of the mode flags `DAT_147fc6fe0` / `BOOL_147fc6fdb` and of the creature flags at `+0xc06`..`+0xc77` that choose AP/proximity ammo: [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md). A seeker's reaction to a flare body (logic `0x44c`) is in `creatureLogic`, which cannot be decompiled in one piece.
+* Body `+0x800`/`+0x804`: the 1.151 name says `mdl_fuel` (double), the ship stats loop sums `+0x804` as an int next to crew: [version-differences.md](version-differences.md).
+* Sensors: the roadmap's "accumulative" claim is not confirmed by the code (max per type, only jammers sum); the later stage that turns the arrays into a range was not read: [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
+* Body tail: the bool cluster `0x86a..0x87c`, the lighting fields and the unnamed ~60% of the 1.151 struct are mapped by zone only.
+
+## Ghidra: fixes and questions to raise with logdot (no program has been edited)
+Resolved items are gone from this list; see [version-differences.md](version-differences.md) for the evidence.
+1. Ghidra's 1.163 `Body` struct is 0xa08 bytes and is the 1.151 layout; the object is 0xa40. `Escadra` is 0x600 (real 0x618), `Creature` 6358 (real 0x1a50), `Profile` is the stale 1.151 layout (vectors moved +0x48; endgame flags +0x58). `ShipPart` (stats record, 0x188 in 1.163) and `HGEVFTABLE` exist only in the 1.151 program.
+2. `.conflict` duplicate types in the 1.163 program (`Body.conflict`, `BodyVFTABLE.conflict`, `DLL<Body>.conflict`, ...): delete after checking references.
+3. The four air-group functions (`CreateMapAircraftGroup` = `0x14010f8e0`, `UpdateMapAircraftGroup` = `0x140117840`, `ComputeMapAircraftWeaponStrength` = `loadAircraftWeaponsFromBotMenu`, `ConfigureStrategicMissileForTacticalBattle`) have no 1.163 match from the fuzzy tool. **No function is defined at `0x140117840`**, nor in the `SCR_MAP` handler region `0x1402b8a00`-`0x1402b8b30`, nor for `FUN_140261a20` (the endgame function): create them after the review. `find_code_gaps` lists 7,316 gaps, most of them unwind fragments.
+4. Wrong or misleading names: `mapCrafts` at `Profile +0x228` (really the Missile vector); the 1.163 comment "Ground defense creatures?" on `FUN_1400e4530` (builds the MapCraft); `0x1400739c0` labelled `shipKill?` (the per-ship AI tick caller); `0x140071120` labelled `...::sqrtf` (computes the ship bounding radius); `0x14007ffaa` sits inside `CalculateStats`; the 1.151 AI weapon controller `0x140076300` is named `...::atan2f` (its 1.163 twin `FUN_14007a8d0` is unnamed); `creatureLogic` is the projectile/missile/aircraft behaviour dispatcher, not the ship AI; the creature flags `damageCounter_` (1.151) / `linkDLL` (1.163) at the 700-range cap; 1.151 `mdl_covered` / `mdl_turbine` are swapped relative to what `UpdateEngineCovered` writes; 1.151 `fFireCharge`, `fFireRateTimer`, `fFireDelay`, `bFireStatus` do not match `FireGun`'s use of the fields.
+5. `structures.md` entries now believed right but worth a second pair of eyes: `+0xd4` crew capacity (int) and `+0xc8` fuel capacity (double); `+0x858` reserve vs `+0x860` loaded rounds; `+0x270` of the Profile is the MapCraft vector.
+6. Latent bug in both versions: the AI weapon controller looks up `ITEM_AMMO_230MM*` for caliber index 30, but the table has `ITEM_AMMO_203MM`. Harmless in vanilla (no part has `m_weapon_caliber=30`); it would bite a mod that adds a 203 mm gun. Is it intentional?
+7. The `GetStats` getters of 1.151 (`GetLaunchedRange`, `GetMissileAp`, ...) name the stats-record fields; the 1.163 equivalents are `FUN_` and could take the same names.

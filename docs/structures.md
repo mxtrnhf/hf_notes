@@ -1,6 +1,6 @@
 # Game structures (1.163)
 
-Tags: legend in `../README.md`. Offsets are hex byte offsets.
+Tags: legend in `../README.md`. Offsets are hex byte offsets. What moved between 1.151 and 1.163 (Body, Profile, stats record, Ghidra struct status): [version-differences.md](version-differences.md).
 
 ## Class codes (`m_code`, at object +0x28) and sizes
 | Code | Class | Size |
@@ -16,6 +16,7 @@ Tags: legend in `../README.md`. Offsets are hex byte offsets.
 | 0x400000001047 | **Missile** (map object) | 0x308 |
 | 0x800000001047 | **MapCraft** (map aircraft group) | 0x340 |
 | 0x8000000003 | (unnamed; Ghidra calls its ctor `CreateFX`) | 0x270 |
+| 0x80007 | **AADefense**, a ground-defense unit [code, 1.151 `createGroundDefenseCreatures__` `0x140004950`; 1.163 size not checked] | - |
 
 **Codes nest as bit sets.** The code tests membership with a mask, for example `(code & 0x147) == 0x147` for a fleet and `(code & 0x800000001047) == 0x800000001047` for a MapCraft
 [code], and `& 0x4000f`, `& 0x2f` for Body-like objects. The values themselves look like an inheritance chain: 0x7 (Node) -> 0xf (Body) -> 0x1f (Frame) / 0x2f (Creature), 0x7 -> 0x47 ->
@@ -54,7 +55,7 @@ transform, +0x178 side (float; sign = friend/foe), +0x210 damage. Smart-ref = 0x
 `FUN_140194b80`, dtor `FUN_140194d20`, assign `FUN_140194de0`; reallocating vector insert `FUN_140004b00(vec,pos,ref)`; `FUN_1402c7c90` = `vector<Node*>::insert(range of refs)`.
 
 ## Stats record (`GetStats(index)` `FUN_140281e00`; id -> index `FUN_140281cc0`) [code]
-+0x88 price, +0x8c important, +0x90 timecost, +0x94 repair_cost, +0xb0 **category**, +0xb4 sort_index, +0xc4 armor, +0xd0 fuel_need, +0xd4 tank capacity (int; the part's current fuel is Body +0x804), +0xd8 crew_need,
++0x88 price, +0x8c important, +0x90 timecost, +0x94 repair_cost, +0xb0 **category**, +0xb4 sort_index, +0xc4 armor, +0xd0 fuel_need, +0xc8 fuel capacity (double), +0xd4 crew capacity (int) [code, indirect: the 1.151 names plus the ship stats sum; `findings/sensors-and-crew.md`], +0xd8 crew_need,
 +0xe0 power_need, +0xf8 thrust, +0xfc thrust_map, +0x10c radar, +0x110 tracking, +0x114 guiding, +0x118 elint, +0x11c irst, +0x120 jammer, +0x128 sectors_type
 (non-zero = takes part in arc scanning), +0x12c sectors_shift, +0x130 sectors_threshold, +0x140 weapon_priority, +0x144 caliber, +0x148 load_amount, +0x14c load_time,
 +0x150 rate, +0x154 acceleration_time, +0x158 launched_speed, +0x15c speed2, +0x160 range, +0x164 missile_type, +0x168 explosive (> 100000 = nuclear), +0x16c cluster,
@@ -95,5 +96,13 @@ callsign/name strings. Ship (Creature) fields used: +0x1638/+0x1640 fuel current
 
 ## Map missile (Missile, 0x400000001047), default ctor `FUN_1400e48a0` (no source argument; sets the name "Missile" and the code; the copy ctor is `Missile`, which also references the vtable), vtable `0x14035e998` [game]
 +0x150/+0x154 position · +0x158 speed · +0x15c heading · +0x240 reverse flag · **+0x248 count** (launch writes 1) · +0x270 target fleet · +0x29c type (3 = ground, range <= 60) ·
-**+0x2b8 / +0x2c8 / +0x2d0 part id** (std::string). The world singleton `FUN_140292a90()` holds the lists: missiles +0x228/+0x230, fleets +0x270/+0x278, friendly-fleet list +0x1f8/+0x200.
+**+0x2b8 / +0x2c8 / +0x2d0 part id** (std::string). The world singleton `FUN_140292a90()` holds the lists: missiles +0x228/+0x230, **MapCrafts +0x270/+0x278**, fleets +0x1f8/+0x200 [code: `CreateMapAircraftGroup` pushes at +0x270 and the map intercept loops walk +0x228 then +0x270; the earlier "fleets +0x270" was a mix-up with the MapCraft target field]. In the Ghidra program the `Profile` struct is the stale 1.151 layout (vectors +0x48).
 `FUN_1400ec440(a,b,dt)`: do two map objects come within 1.0 of each other during the next dt step (closest approach along headings); used for every encounter.
+
+## Creature (ship) fields seen in the AI and launch code [code]
++0xad4 side float (negative non-zero = AI side, positive = player, 0 = neutral; inferred from where the difficulty byte applies [guess]) · +0xbbc..+0xbc0 control flags (+0xbbd drives `FireGuns`, +0xbbe `FUN_14002e7d0`, **+0xbc0 flares**) · +0xc98 per-ship strategic/aircraft launch counter · +0xcb8 / +0xd60 / +0xd64 launch timers and cooldowns ·
++0x13d8 / +0x13f0 launch lists (stride 0x18, entry +8 = part) · +0x1408..+0x1410 flare launcher list · +0x1840/+0x1844 centre of mass · **+0x1850 bounding radius** (written only in `CalculateStats` `0x14007ffaa`) · +0x1838/+0x183c weapon reach floats · +0x17ec/+0x17f0/+0x17f4 crew present / capacity / needed (int sums) · +0x1638/+0x1640 fuel (doubles).
+Details and addresses: [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md), [findings/ai-flares.md](findings/ai-flares.md), [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
+
+## Projectile logic ids (Body `+0x3c4`, set from the `Ammo` record's `caliber`) [code]
+100 plain shell · 130 rocket · 132 300 mm rocket (1.163) · 135 harpoon (1.163) · 140 laser guided · 160 proximity fuze · 0x44c (1100) flare. `creatureLogic` (`0x140033b90`) branches on this id; it is the per-body behaviour dispatcher for projectiles, missiles and aircraft, not the ship AI. See [findings/firing-and-shells.md](findings/firing-and-shells.md).

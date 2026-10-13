@@ -41,6 +41,9 @@ map-vessel tags `POSITION/COURSE/SPEED/ROUTE/ROUTE_TIME/CONTACT_*/CARGO/NEEDS` Â
   code**; branches/outcomes (`_YES`, `_NO_FAIL`, `_RES2`...) are reached by text scripts only. Consequence: existing events can be rewritten or extended freely, and new events can be hung on any original entry (that mod does it); only a new *random-event root picked by the game* would need code.
 * Outcome effects seen inside events (`<SCR=...|EFFECT=n>`): `MORAL`, `GOLD`, `FORCE`, `<NPC>=n` (loyalty), `FEAR`, `GERAT`, `DICE`, `LEVEL_FEAR`, `HUSH`, `WEALTH`, `CREW`, `RIGHT`, `WOUND`, `CRUELTY`, `INTEL`.
 
+## New in 1.163 (strings only) [code]
+Ships: `Navarin Mk2`, `Navarin Mk3`, `Nomad Mk2`, `Lancer`, `Paladin`, `Titan`, `Gladiator LANCE`, `Egida`, `Novorossiysk`. New parts and items: `MDL_MISSILE_CLUSTER_SFW_01`, `ITEM_HARPOON`, `ITEM_AMMO_57MM_TANK`, `ITEM_KAZ_AMMO`, `MDL_FIGHTER_01`, `ANTENNA_PART`. Skirmish mode, captain hiring and hot-seat UI keys; full list: [version-differences.md](version-differences.md).
+
 ## Experiment plan (safe, reversible; back up `Media/`, `Data/Dialogs/`, saves first)
 1. New art: **already proven by the Hara Vera conversion** (new `.res` files, `Include` lines in `media.res`, part icons as animations named after the part id). Our own test: add `TESTNPC_C` / `TESTNPC_S` Animations (a copied portrait PNG) in a new `.res` listed in `media.res`, or in `Tex_Extra/Extra.res`. The engine's `Include` is generic and new names are accepted (`formats.md`), and `hge.log` reports script errors, so this is the safest first test.
 2. Replace the text of one easily reached, harmless entry with `<NPC=TESTNPC>...`; does the portrait appear, does an unknown name break anything?

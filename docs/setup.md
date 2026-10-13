@@ -14,6 +14,13 @@ Runs under Proton on Linux; our DLLs are plain 64-bit Windows DLLs.
   `gdb` attach also works with `kernel.yama.ptrace_scope=0` (restore it to 1 afterwards).
 * Naming: `FUN_...` are Ghidra auto names; named ones come from public work (ShipworksExtended, highfleet-qol) or from us.
 
+## Comparing with the 1.151 program (method and pitfalls)
+The shared project also holds logdot's annotated 1.151 program (more hand-named functions than 1.163: about 875 against 560; 535 names are in both). What was compared and how to carry names over: [version-differences.md](version-differences.md); the plan: roadmap, Ghidra side.
+* **Fuzzy-match scores below about 0.9 are unreliable.** Example: 1.151 `Get_Profile` at `0x14026ff50` matched 1.163 `0x1402924b0` (score 0.8166), but that is a 4-slot array accessor; the real 1.163 `Get_Profile_` is `0x140292a90`. Treat a low score as a candidate only. The `rep_<addr>_<name>` names are machine-propagated from one program to the other, so they are not independent evidence.
+* **The 1.163 `Body` struct in Ghidra is 0xa08 bytes; the object is 0xa40.** Do not trust Ghidra field offsets past about `0x2f0` in 1.163 (and the `Profile`, `Escadra`, `Creature` structs are stale too); use `structures.md`. Copying 1.151 structs over would put names on the wrong offsets.
+* The 1.151 field names `mdl_covered` / `mdl_turbine` are swapped relative to what 1.163 `UpdateEngineCovered` writes; `fFireCharge`, `fFireRateTimer`, `fFireDelay`, `bFireStatus` do not match how `FireGun` uses the fields. Do not carry them across.
+* Input stack differs by version: 1.163 uses SDL2 for controllers, 1.151 used DirectInput8; keep that in mind for input hooks.
+
 ## Modloader (logdot, `bass.dll` proxy; current 4.1.0)
 * Original `bass.dll` is kept as `bass.dll_`. Mods are `Modloader/mods/*.dll`, loaded in an **unspecified order**; configs in `Modloader/config/`.
 * A mod may export `version(const char*)` (`Steam 1.151`, `Steam 1.163`, `Gog 1.163`) and `init()`.

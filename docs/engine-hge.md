@@ -43,3 +43,20 @@ Same order as the stock header, except one System_ method is missing between slo
 3. **Dialogue text:** needs a different seam (the `ifstream` open, or `CreateFileA/W`), since it bypasses HGE.
 4. Authoring: the HGE tools (`particleed`, `fonted`, `texasm`) produce the formats the game reads.
 5. The engine interface pointer `DAT_143a119e0` gives a mod direct access to `Gfx_*`, `Input_*`, `Timer_*` and the logger (`System_Log` writes to `hge.log`).
+
+## The interface table in 1.151 (names from logdot's annotated program) [code]
+1.151 has a named `HGEVFTABLE` struct (800 bytes = 100 slots, plus `HGE_Impl` 3,464 bytes and the `hge.h` / `hge.pdb` header types). 1.163 has none. Compared with the table above:
+
+* **The 1.163 table is the 1.151 table plus one slot.** In 1.151 `Resource_Load` is slot 17 (`+0x88`) and `Resource_Free` slot 18; in 1.163 they are slots 18 and 19 with an extra "load file" method at 17
+  (already noted above). So **the added file-loader slot is new in 1.163**; every slot at or after 17 is `+8` in 1.163, which is why `Random_Float` is `+0x108` in 1.151 and `+0x110` in 1.163,
+  and the same `+8` applies to the Body vtable damage slot (`+0x208` -> `+0x210`) seen in map-air-groups.md (that one is a different vtable, but the same kind of change).
+* **1.151 slot names** (stock HGE order, with the game's differences): 0 Release, 1 `System_Initiate`, 2 `System_Shutdown`, 3 `System_Start`, 4 *(unnamed: GetErrorMessage)*, 5 `System_Log`, 6 *(unnamed: one of
+  Launch/Snapshot)*, 7-11 `System_SetStateBool/Func/(Hwnd)/Int/String`, 12-16 `GetState*`, 17 `Resource_Load`, 18 `Resource_Free`, 19 `AttachPack`, 20 `RemovePack`, 21 `RemoveAllPacks`, 22 `Resource_MakePath`,
+  23 `EnumFiles`, 24 `EnumFolders`, 25-30 `SetInt/GetInt/SetFloat/GetFloat/SetString/GetString` (`Ini_*`), 31 `Random_Seed`, 32 `Random_Int`, 33 `Random_Float`, 34 `GetSeed`, 35 `GetTime`, 36 `GetDelta`,
+  37 `GetFps`, 38 `EffectLoad`, 39 `EffectFree`, 40 `EffectPlay`, 41 `PlayEx`, 42 `StreamPlay`, 43 `MusicLoad`, 44 `MusicFree`, 55 `StreamLoad`, 56 `StreamFree`, 57-60 `ChannelUnknown`, 61-72 `Channel*` (`Pause`, `Resume`, `Stop`, `PauseAll`, `ResumeAll`, `StopAll`, `IsPlaying`, `GetLength`, `SetPos`, slot 70 unnamed, `SlideTo`, `IsSliding`), 77-87 input (`GetMousePos`,
+  `SetMousePos`, `GetMoseWheel` [sic], `IsMouseOver`, `KeyDown`, `KeyUp`, `GetKeyState`, `GetKeyName`, `GetKey`, `GetChar`, `GetEvent`), 97 `showPoweredByHGE?`, 98/99 `GetSpriteWidth?`/`GetSpriteHeight?`
+  (names with a question mark are logdot's guesses). The slots 45-54, 73-76 and 88-96 are unnamed in 1.151 (the stock header puts Gfx_/Target_/Texture_ there).
+* **It narrows the open question** about which stock System_ method is missing: the table has **one** slot (6) between `System_Log` and `SetStateBool` where the stock header has two
+  (`System_Launch`, `System_Snapshot`). Which one is still unnamed.
+* All named slots match the HGE 1.8 header order, consistent with the notes' claim that the game uses a lightly modified stock HGE.
+* Extra useful hook: `Resource_AttachPack` is slot 19 in 1.151 and **slot 20** in 1.163 (consistent with the table above).

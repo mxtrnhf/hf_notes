@@ -1,7 +1,7 @@
 # The Khiva end-game crash: unguarded list writes (1.163, probable cause)
 
-Status: **probable cause found in the code; not reproduced in game; no patch applied.** Tags as in `../README.md`: **[game]** verified on the real game files · **[code]** read from the decompilation · **[guess]** inferred · **[not read]** known gap.
-Addresses are 1.163 (image base `0x140000000`, the unpacked exe) unless marked 1.151. Origin: roadmap bug "capturing all cities around Khiva before the end-game event causes a crash loop / infinite loading". Working notes: `review-1151-groups.md` groups 7 and 18.
+Status: **probable cause found in the code; not reproduced in game; no patch applied.** Tags as in `../../README.md`: **[game]** verified on the real game files · **[code]** read from the decompilation · **[guess]** inferred · **[not read]** known gap.
+Addresses are 1.163 (image base `0x140000000`, the unpacked exe) unless marked 1.151. Origin: roadmap bug "capturing all cities around Khiva before the end-game event causes a crash loop / infinite loading".
 
 ## Short answer
 The end-game function builds four lists of eligible cities (one per quadrant around Khiva) and then writes `city.state = 2` to the **first element of each list without checking that the list is non-empty**. An empty list holds only a sentinel node whose payload slot is uninitialised heap, so the write goes through a stale pointer. If the player has captured every city in one quadrant, that quadrant's list is empty.

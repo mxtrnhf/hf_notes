@@ -26,14 +26,14 @@ Addresses are for Steam 1.163. Tags: legend in `../README.md`.
 * Loader `FUN_14025afd0(level, bool, bool)` stores the name, sets **`DAT_143a11902 = 1`** (an engagement is pending; blocks a second one in the same pass), then `FUN_1402db350`.
 * Four global vectors of smart-refs describe the sides: **A `0x143a158e0`** (ours), **B `0x143a159c0`** (the other side), C `0x143a158b0`, D `0x143a13de8`.
 * Observed: `Missile.seria` (a missile threatens our fleet): A=[Escadra], B=[Missile]. `Bombers.seria` (air raid): A=[**MapCraft**, one object carrying the planes], B=[Escadra].
-  `CraftsVsMissile.seria` / `CraftsVsCrafts.seria` (planes defending/engaging, set up by `FUN_140117840`) not seen yet.
+  `CraftsVsMissile.seria` / `CraftsVsCrafts.seria` are started from the map aircraft group update `FUN_140117840` (two `SetLevelSeriaToLoad_` calls, side lists built from objects within 15.0); `Combat.seria` (fleet against fleet) is started from the fleet update beside `Missile` and `Bombers` [code, [findings/map-air-groups.md](findings/map-air-groups.md)]. None of the craft flows observed in game yet.
 * Trigger for `Missile.seria` (inside `FUN_140111ff0`): the first missile for which `FUN_1400ec440` is true and sides are opposed wins; the lists are cleared, **that one missile** goes into B,
   nearby friendly fleets into A, the loader is called. A volley of three therefore produced three fights in a row.
 * Scenarios are state machines inside the giant `FUN_1402ac970` (branch by `LVL_SCRIPT` name). `SCR_MISSILE` at `0x1402c4baf`; state byte-table `0x1402c7a00`, offsets `0x1402c79e4`.
   State 1 (`0x1402c4dfc`) calls **`FUN_1402d45c0`**: sorts the defender fleet's ships, spawns up to 4 (`FUN_1402672c0`), then reads **only B[0]**: `for i < B[0]+0x248` it creates a
   missile with `EditorParts_DefinePart(0x143a139f0, string at B[0]+0x2b8, level, 1)` at a random offset, then zeroes the count.
 * So a salvo fights as one only if the first missile's count is the sum; pushing extra list entries is ignored [game].
-* Map-level shooting: `FUN_140111110` (from `FUN_1400f11b0`) prints `MISSILE_INTECEPTED` and downs at most 3 crafts per pass, ~2/3 chance each (`CRAFT_DOWN`, `vtbl+0x210`) [code].
+* Map-level shooting: `FUN_140111110` (from `FUN_1400f11b0`) first rolls **75%** to kill a missile aimed at the same target (`MISSILE_INTECEPTED`, sound `radio_kill_06` on `MAPMODE_RADIO_HANDSET`), then downs at most 3 crafts per pass with a **66%** roll each (`CRAFT_DOWN`, `vtbl+0x210`) [code]. Both probabilities are literal `Random_Float` compares, unchanged since 1.151.
 
 ## Refueling [game]
 Per frame, inside the fleet update, for a docked fleet (`RSI`), station (`R15`), frame time (`XMM15`):
@@ -58,3 +58,23 @@ Per frame, inside the fleet update, for a docked fleet (`RSI`), station (`R15`),
 
 ## Map cruise speed [game]
 The ship stats routine `FUN_14007fcf0` computes `powf(TWR - 1, 0.5)` at `0x140080699`: speed = `50 * sqrt(TWR - 1)` m/s in 1.163 (internal unit; the UI and `speed.log` show km/h = m/s x 3.6) (1.151 used `25 * TWR`). The game caches each ship's speed.
+
+## Strategic AI: aircraft launch, intercepts, end game [code]
+* **Aircraft launch:** `TryLaunchAiAircraftGroup` (`0x1400ef910`) sends all (or, above 10 aircraft, a coin-flip half) of an AI fleet's aircraft in one group when the player is within `0.45 x range`; cooldown 1800. Conditions, patch sites: [findings/ai-aircraft-launch.md](findings/ai-aircraft-launch.md).
+* **Map aircraft groups** (`MapCraft`, 0x340): creation, per-frame update (range left is spent as fuel, return state, engagement triggers), intercept rolls and the fleet update's level loads: [findings/map-air-groups.md](findings/map-air-groups.md).
+* **End game:** `FUN_140261a20` (1.151 `spawnEndgameShips_`) is the scripted collapse (strike groups against Khiva, escalation, `Profile.endWar`); after it runs `GetPartPrice` returns 0. Phases: [findings/end-game.md](findings/end-game.md); the crash cause: [findings/khiva-crash.md](findings/khiva-crash.md).
+* **Part prices:** `GetPartPrice` returns 0 when `Profile.endWar` is set or the part's category has bit 6 (`0x40`, block/bridge); otherwise the stats `price`. This is why bridges and blocks are free in the editor [code, 1.151 read].
+* **Sensors:** radar, tracking, ELINT and IRST combine parts by per-sector maximum; only jammers sum. [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
+
+## Firing, tactical AI, point defence, flares [code]
+* **Firing chain:** AI weapon controller `FUN_14007a8d0` (and the player's input path) -> `FireGuns` `0x1400559e0` -> `FireGun` `0x140032e60` -> `FireShell` `0x1400300d0` (dispatch on the `Ammo` entry's `index`) -> `Body::BulletImpact__` (cannon shells, all with 1 HP). [findings/firing-and-shells.md](findings/firing-and-shells.md); ammo table: [findings/ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md). Weapon fields of the Body: `+0x858` reserve rounds (int), `+0x860` loaded rounds (float) [structures.md](structures.md).
+* **Tactical AI:** per-ship tick `FUN_140062f90` (stand-off `0.35 x reach`, orbit, ally separation, launch caps), weapon controller `FUN_14007a8d0` (ammo choice, close-range cutoff `radius + radius + 30`): [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md).
+* **Active protection (KAZ):** `FUN_14002f480` is the close-in burst of the "strides" sprites: it picks an incoming projectile within 60/120 units and 45 degrees, spends one count and damages it with the target's own explosive power; stats categories `0x4000`, `0x8000000`, `0x200000` are excluded. Called from `FUN_14007eb50`. Matches the KAZ category (bit 25) [guess] and `ITEM_KAZ_AMMO` (1.163).
+* **Flares:** the player's input path sets Creature `+0xbc0`, `FUN_14007eb50` then calls the release `FUN_14002eed0` on the `+0x1408` launcher list; nothing sets the flag for AI ships: [findings/ai-flares.md](findings/ai-flares.md). The proximity-fuse crash is not located: [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md).
+* **Bomblets:** cluster and mine bomblets are spawned by `FUN_140032fb0` (TTL is its sixth argument): [findings/cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md).
+
+## Ground defense (`AADefense`, class `0x80007`) [code, 1.151 read]
+1.151 `createGroundDefenseCreatures__` (`0x140004950`) builds an `AADefense` object (logdot: "This 0x80007 only shows up for ground defense creatures") with a linked `Runner` creature and `MDL_WHEEL_01` wheels. `AADefense::FireMissile__` (`0x140005370`) is its state machine: it needs one part each of categories `0x10` (ammo), `0x20` (gun) and `0x800` (generator/quarters) plus at least two wheels, then flies a `MDL_MISSILE_01` (TTL 60.0, layer 7) at the nearest hostile within `500.0` when its reload timer (`+0x12c`, base `30.0` at `+0x128`) is zero. The 1.163 comment "Ground defense creatures?" on `FUN_1400e4530` is wrong: that constructor builds the MapCraft (0x340).
+
+## Sounds seen in the map code [code, 1.151 names]
+Fleet update: `mission_end` (radio, at most once per 3 s), `turbine_01`, `pump`, `pump_on`, `pump_off`, `engine_rocket_03`, `engine_ignit_int`, `env_horn`, `env_ship_landing`. Intercept: `radio_kill_06`. Refuel: `refueling_start/loop/stop`.

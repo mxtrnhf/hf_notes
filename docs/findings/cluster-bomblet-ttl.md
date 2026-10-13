@@ -1,7 +1,7 @@
 # Cluster and mine bomblet lifetime: the spawn function and its call site (1.163, partial)
 
-Status: **spawn function and the single call site found; the source of the TTL argument at the call site is not traced. Nothing run in game.** Tags as in `../README.md`: **[game]** · **[code]** read from the decompilation · **[guess]** · **[not read]**.
-Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap Mod Scope item "adjustable TTL for cluster munitions and mine bomblets". Earlier working notes: `review-1151-groups.md` group 5 (which said no caller was found).
+Status: **spawn function and the single call site found; the source of the TTL argument at the call site is not traced. Nothing run in game.** Tags as in `../../README.md`: **[game]** · **[code]** read from the decompilation · **[guess]** · **[not read]**.
+Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap Mod Scope item "adjustable TTL for cluster munitions and mine bomblets".
 
 ## The spawn function [code]
 `FUN_140032fb0` (`0x140032fb0`-`0x1400337f7`, the function after `FireGun`). Arguments as the decompiler shows them: `(shooter, ?, count, a4, a5, ttl, angle)`. `count` is `param_3`, `ttl` is the **sixth** argument (`param_6`).

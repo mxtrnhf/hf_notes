@@ -4,50 +4,57 @@
 Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, QoL, Feature, AI, Mod Scope, Physics Engine.
 
 ## Version scope
-**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed) and the **damage changes**. The code-side differences are listed in [ammo-1151-vs-1163.md](ammo-1151-vs-1163.md) (per-ammo shell lifetime, rocket warheads, incendiary power and more). The damage changes may need both game versions played side by side, with Claude attached to the running game, to see what happens inside.
+**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed) and the **damage changes**. The code-side differences are listed in [ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md) (per-ammo shell lifetime, rocket warheads, incendiary power and more). Other 1.163 changes found: the close-range weapon cutoff, the 3500/3000 special-target ranges and the 0.025 rad aim tolerance in the AI weapon controller ([findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md)), the harpoon, KAZ ammo and a removed debug overlay ([version-differences.md](version-differences.md)). The damage changes may need both game versions played side by side, with Claude attached to the running game, to see what happens inside.
 
 ## Items
 
 ### Bugs and QoL
 * **[Bug]** A proximity-fused missile colliding with flares crashes the game.
+  * Not located; what is known about the flare body and how to get the crash address: [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md).
 * **[QoL]** Remove the mechanic by which rockets (A220) lower mouse sensitivity globally for all weapon systems.
-  * Partial: the sensitivity path is mapped and the slowdown is shown NOT to be a write to the device scale or global; location still unknown: [mouse-sensitivity.md](mouse-sensitivity.md).
+  * Partial: the sensitivity path is mapped and the slowdown is shown NOT to be a write to the device scale or global; location still unknown: [mouse-sensitivity.md](findings/mouse-sensitivity.md).
 * **[QoL / Bug]** Changing an A220 rocket's weapon priority (to change hotkey grouping) removes the extended aiming reticle for rocket weapons.
 * **[QoL / Inconsistent behavior]** Salvage minigame: when a safety hazard occurs while the wreck site is out of focus, the game enters auto-mode instead of pausing.
 * **[QoL]** Option to disable Pytor's map-pointing interactions.
 * **[QoL]** Audio cue (or auto-pause) when aircraft intercept enemy forces on the strategic map.
+  * Hook point: the two `SetLevelSeriaToLoad_` calls in the map aircraft group update; the existing intercept cue is `radio_kill_06` on `MAPMODE_RADIO_HANDSET`: [findings/map-air-groups.md](findings/map-air-groups.md).
 * **[QoL]** Toggle for auto-pause on the strategic map.
 * **[Bug]** Capturing all cities around Khiva before the end-game event causes a crash loop / infinite loading.
-  * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [khiva-crash.md](khiva-crash.md). Not reproduced in game.
+  * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [khiva-crash.md](findings/khiva-crash.md). Not reproduced in game.
 
 ### New features
 * **[Feature]** Cruise-missile barrage mechanic (for example salvos of 4 simultaneous incoming cruise missiles).
 * **[Feature, missing]** A functional crew-requirement system.
+  * The per-ship totals already exist (`+0x17ec` present, `+0x17f0` capacity, `+0x17f4` needed); what consumes them was not looked for: [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
 * **[Feature]** Tracking of ballistic missiles in the terminal phase (near the target) on the strategic map.
 * **[Feature]** Editing of new enemy ship spawning events.
 
 ### AI
 * **[Strategic]** The AI launches all its aircraft when it detects the player within strike range, so none are left for defensive interception.
-  * Cause and byte-level patch sites: [ai-aircraft-launch.md](ai-aircraft-launch.md). Not applied or run in game.
+  * Cause and byte-level patch sites: [ai-aircraft-launch.md](findings/ai-aircraft-launch.md). Not applied or run in game.
 * **[Strategic]** The AI has no evasive manoeuvring against cruise missiles on the strategic map.
+  * The intercept probabilities (75% missiles, 66% aircraft) are two literal `Random_Float` compares in `FUN_140111110`: [findings/map-air-groups.md](findings/map-air-groups.md).
 * **[Tactical, exploitable]** Closing to very short range of an enemy ship in tactical combat disables all of its weapon systems.
-  * Found, and a 1.163 addition: the cutoff and its patch sites are in [ai-tick-patch-sites.md](ai-tick-patch-sites.md) (section 1). Not applied or run in game.
+  * Found, and a 1.163 addition: the cutoff and its patch sites are in [ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md) (section 1). Not applied or run in game.
 * **[Tactical, exploitable]** The AI consistently gives way to the player's ship, which gives the player easy positional advantage.
-  * Likely mechanism (the stand-off retreat) and its patch sites: [ai-tick-patch-sites.md](ai-tick-patch-sites.md) (section 2). Guess; not run in game.
+  * Likely mechanism (the stand-off retreat) and its patch sites: [ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md) (section 2). Guess; not run in game.
 * **[Tactical]** The AI cannot use some ordnance or parts (LG/INC shells); AP rounds are fired only at extremely short range; the AI cannot deploy flares.
-  * Flares: the cause and a mod design are in [ai-flares.md](ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
+  * Flares: the cause and a mod design are in [ai-flares.md](findings/ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
 * **[Tactical, exploitable]** High convergence angles can be used to disable enemy turrets.
 
 ### Mod scope
 * **[Mod Scope / Bug]** Support for combined sensors. Sensor range calculation is currently bugged (accumulative) with two or more sensor types.
-  * Code reading says sensors combine by per-sector maximum per type; only jammers sum, so the accumulation claim is not confirmed: `review-1151-groups.md` group 19. Test: two radars vs one in the range readout.
+  * Code reading says sensors combine by per-sector maximum per type; only jammers sum, so the accumulation claim is not confirmed: [findings/sensors-and-crew.md](findings/sensors-and-crew.md). Test: two radars vs one in the range readout.
 * **[Mod Scope]** HP modification for missiles (Zenith), aircraft, rockets (A220) and cannon shells.
+  * Where each constant lives: all cannon shells have 1 HP (a single argument to `BulletImpact__`), rockets 10 HP in `FireShell`, canister pellets 30/10: [findings/firing-and-shells.md](findings/firing-and-shells.md).
 * **[Mod Scope]** Wider ship-roster modification (additional ship variants, adjustable composition ratio).
 * **[Mod Scope]** Editing the repair-part composition menu (hull, armor, landing gear, etc.).
 * **[Mod Scope]** Adjustable time-to-live (TTL) for cluster munitions and mine bomblets.
-  * Spawn function and its call site found (one patch site, sixth argument): [cluster-bomblet-ttl.md](cluster-bomblet-ttl.md). TTL source at the call site not traced; not applied or run in game.
+  * Spawn function and its call site found (one patch site, sixth argument): [cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md). TTL source at the call site not traced; not applied or run in game.
 * **[Mod Scope]** Damage model: calibers above 30 mm should not destroy missiles (Zenith), aircraft, rockets (A220) or cannon shells in a single shot.
+  * Starts from the `Ammo` fields (`explosivePower`, `penetrativePower`, `apDrag`) and `BulletImpact__`: [findings/firing-and-shells.md](findings/firing-and-shells.md), [findings/ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md).
 * **[Mod Scope]** Acceleration and top-velocity modification for rockets (A220).
+  * Rocket speed lives partly in the `Ammo` record (`speed` 150) and partly in the guidance branch of `creatureLogic` (logic id 130); `FireShell` sets `logicF2 = 1.5`: [findings/firing-and-shells.md](findings/firing-and-shells.md).
 
 ### Physics engine
 * **[Physics]** Limited acceleration restricts the turn rate of missiles (Zenith) and aircraft; capped top speeds restrict projectile velocity.
@@ -114,6 +121,10 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
 * Export names, signatures and structs of a program to text in this repo (and import them back), so annotations live in git and can be reviewed. Complements Version Tracking
   for carrying 1.151 work to 1.163 and gives the second person a diffable view of changes.
 * A checked-in list of named functions with address, and a script to flag the ones whose bytes differ between builds.
+* **How automatable is the type transfer?** (checked read-only, nothing changed.) Names and function signatures: mostly yes, via Version Tracking (a session `1.15TO1.16Test` exists in the local project): matches at 0.99 and above can be applied, 0.9-0.99 spot-checked, below that by hand. Global labels: mostly yes. Plain/enum types and typedefs: yes (`clone_data_type`, `import_data_types`). Comments: only for matched functions. **Struct layouts (`Body`, `Escadra`, `Missile`, `Profile`, `Creature`): no, semi-manual**: offsets moved by region, so each needs a remap table (built in [version-differences.md](version-differences.md) for `Body` and `Profile`) and `resize_struct` / `modify_struct_field`; copying 1.151 structs over would put names on the wrong offsets.
+* Tooling notes: the MCP also has `run_script_inline` / `run_ghidra_script` (custom transfer scripts are possible). Its archive-ingest function is disabled unless `GHIDRA_MCP_ARCHIVE_URL` is set; it would send data to an outside service, so leave it disabled. Every write needs the shared project checked out and saved; do it only after logdot's review, in small batches that can be undone by versions.
+* Suggested order, each a separate Ghidra version so it can be reverted: (1) delete the `.conflict` duplicate types in 1.163 after checking nothing references them; (2) Version Tracking markup of function names and signatures; (3) import the `hge.h` types and HGE function names; (4) struct by struct, starting with `Body`, `Escadra`, `Missile`: resize to the real object size, lay fields at the 1.163 offsets, then bring the 1.151 names across.
+* Not done: the 1,449 data types of 1.151 (535 in 1.163) have not been opened beyond `Body`, `Profile`, `ShipPart`, `HGEVFTABLE`; 1.151 comments, plate comments and bookmarks were not reviewed; 354 names exist only in 1.151 and were not opened except the ones in the findings.
 
 ### What to build first
 1. The `.seria` round-trip parser with patch files (1) and the site verifier (5): both are small, scriptable and pay off at every game update.
