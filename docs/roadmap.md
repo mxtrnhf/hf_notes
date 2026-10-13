@@ -43,6 +43,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 * **[Mod Scope]** Wider ship-roster modification (additional ship variants, adjustable composition ratio).
 * **[Mod Scope]** Editing the repair-part composition menu (hull, armor, landing gear, etc.).
 * **[Mod Scope]** Adjustable time-to-live (TTL) for cluster munitions and mine bomblets.
+  * Spawn function and its call site found (one patch site, sixth argument): [cluster-bomblet-ttl.md](cluster-bomblet-ttl.md). TTL source at the call site not traced; not applied or run in game.
 * **[Mod Scope]** Damage model: calibers above 30 mm should not destroy missiles (Zenith), aircraft, rockets (A220) or cannon shells in a single shot.
 * **[Mod Scope]** Acceleration and top-velocity modification for rockets (A220).
 
