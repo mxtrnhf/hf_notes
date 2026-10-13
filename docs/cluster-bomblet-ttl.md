@@ -9,14 +9,23 @@ Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadma
 * After the loop it creates one smoke/flash body and plays `strides` and `strides_fire` once per bomblet.
 * So **one place** sets bomblet lifetime: scaling `param_6` on entry (or the three stores) changes all cluster and mine bomblets. This is the patch site for the roadmap item. [code]; the patch itself is not written or tested.
 
-## The call site [code]
-* Only one direct call exists: `0x140036c68`, inside the `creatureLogic` code region (Ghidra shows no function at that exact address; it is a chunk of `creatureLogic` `0x140033b90`). The other xref (`0x1480797d0`) lies in `.pdata` (`148078000`-`14808c1ff`): it is an exception-table entry for the function, not a call. So there is **one** caller. [code]
-* Argument setup just before the call (`0x140036bf4`-`0x140036c65`): `R8D = (int)(XMM6 / [0x1403524e0])` is the **count**, where `XMM6` came from `FUN_140048870(creature)` and is also stored to `creature +0x2dc`; stack arg 5 (`[rsp+0x20]`) is the constant at `0x140354820`; **stack arg 6 (`[rsp+0x28]`) is `XMM10`**, i.e. the TTL, loaded by an earlier instruction in `creatureLogic`; stack arg 7 is a negated float; `XMM1` is the constant at `0x14035470c`.
+## The call sites [code]
+Ghidra lists one call (`0x140036c68`), but a second one sits in undefined code just before it: **`0x140036886`**. Both are in the `creatureLogic` region (`0x140033b90`). The `.pdata` xref (`0x1480797d0`) is an exception-table entry, not a call. So at least **two** direct callers exist. Stack slots at the call: `[rsp+0x20]` = 5th arg, **`[rsp+0x28]` = 6th arg (TTL)**, `[rsp+0x30]` = 7th (angle), `[rsp+0x38]` = an 8th argument the decompiler does not show.
+| | call `0x140036886` | call `0x140036c68` |
+|---|---|---|
+| count (`R8D`) | `(int)` of a value from `FUN_14001c7b0(...)` | `(int)(XMM6 / [0x1403524e0])`, `XMM6 = FUN_140048870(creature)` = also stored to `creature +0x2dc` |
+| 4th arg (`XMM3`) | `XMM6 = creature[+0x2dc] / count` | constant (`XMM6 / [0x1403524e0]` path) |
+| 5th arg `[rsp+0x20]` | `XMM9` | constant at `0x140354820` = `16.0` |
+| **6th arg `[rsp+0x28]` = TTL** | **constant at `0x1403546b0` = `0.3`** | **`XMM10`** (value not traced) |
+| 7th arg `[rsp+0x30]` (angle) | `XMM9` (0 selects the velocity direction) | a negated float |
+| 8th `[rsp+0x38]` | constant `0x140352844` = `1000.0` | constant `0x1403548bc` = `2000.0` |
+Reading: the first call (condition `EBX` is a missile-type switch; the code before it tests a distance/health ratio) passes the literal `0.3` as TTL, which is the cluster/mine-like case with short-lived bomblets; the second passes a register. Which ammo or part reaches which call is **not** established. [code for the values, guess for the meaning]
+So scaling the sixth argument **inside `FUN_140032fb0`** (one place) still covers both calls.
 
 ## Open [not read]
-* What `XMM10` holds here. It is callee-saved and `creatureLogic` blocks do not run in address order, so the absence of a writer in the low addresses proves nothing. Candidates: `0x14003b658` (`MOVSS XMM10,[RBX+0x68]` then `MULSS` by `[0x140354810]`), and constant loads at `0x14003fd76`, `0x140040f27`, `0x140042053`, `0x14004232e`, `0x140043753`. Not decided.
+* What `XMM10` holds here. It is callee-saved and `creatureLogic` blocks do not run in address order, so the absence of a writer in the low addresses proves nothing. Candidates: `0x14003b658` (`MOVSS XMM10,[RBX+0x68]` then `MULSS` by `[0x140354810]`), and constant loads at `0x14003fd76`, `0x140040f27`, `0x140042053`, `0x14004232e`, `0x140043753`. Not decided. Only matters for the second call; the first uses the literal `0.3`.
 * Whether mine bomblets use this same call site (there is no other caller, so they should).
 * Which projectile logic id reaches this branch (cluster missile vs mine); the TTL may differ per ammo.
 
 ## Live-test recipe
-Breakpoint `0x140036c68` (the call). Read the sixth argument at `[rsp+0x28]` (float; also in `XMM10`) and `R8D` (bomblet count). Fire a cluster missile and trigger a mine; if both reach this address the TTL values show directly. To test the patch idea, scale the float at `[rsp+0x28]` before the call and watch the bomblets live longer or shorter.
+Breakpoints `0x140036886` and `0x140036c68` (the two calls). Read the sixth argument at `[rsp+0x28]` (float) and `R8D` (bomblet count) at each. Fire a cluster missile and trigger a mine; if both reach this address the TTL values show directly. To test the patch idea, scale the float at `[rsp+0x28]` before the call and watch the bomblets live longer or shorter.
