@@ -30,6 +30,10 @@ The shared project also holds logdot's annotated 1.151 program (more hand-named 
   Our mods still write their own log files (candidate follow-up: adopt the SDK).
 * The game code may still be encrypted when mods load: our mods wait (up to 3 min) until the expected bytes are visible before patching.
 
+## Third-party mods we depend on (addresses from ShipworksExtended, 1.163)
+* **ShipworksExtended** palette: `DefinePartEx` `0x14021b190`, `CreateLibraryEx` `0x14027f200`, `MakeGlobalEx` `0x140194de0` (the smart-ref assign `FUN_140194de0`), `New` `0x140334094`, editor libraries at `0x1403bd400..` (stride 0x18), `EditorParts` global `0x143a139f0`. It reads `Modloader/config/Shipworks.json`; the file appears after the first run with the mod (keys in `formats.md`).
+* **Shops** come from logdot's highfleet-qol (`Modloader/config/qol.json`): `enable_shop_parts` and `shop_parts.<ID> = [{probability, min_parts, max_parts, city_types}]`. Rolled **only when a city's shop is first generated**. City types: 1 UR, 2 repair, 3 merchant, 4 fuel, 5 intel, 6 mercenary, 7 fleet HQ.
+
 ## Build
 MinGW-w64 cross compiler, static (`-static -static-libgcc -static-libstdc++`), C++17; one `Makefile` per repo (`make`, `make dist`).
 Editor support: a `.clangd` pointing at the MinGW headers.

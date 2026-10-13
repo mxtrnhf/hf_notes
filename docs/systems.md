@@ -13,7 +13,8 @@ Addresses are for Steam 1.163. Tags: legend in `../README.md`.
   coordinates through the master `vtbl+0xe8/+0xe0`), `FUN_140027f90`, `vtbl+0x88`, count=1, blueprint=0, owner ref, then **add to the level node `*(0x147fc6f88)`** (only objects in the tree are updated).
 
 ## Map launch of strategic missiles [game]
-* Panel `FUN_140273640`: **4 switches** (`MAPMODE_MISSILE_SW`), each bound to a distinct, not-yet-queued missile part of the selected type. A strategic missile (A-100 =
+The Triumph (AA; needs a fire-control radar like the R-9 Sprint `MDL_MISSILE_03`) is **combat only**; the A-100 is a **map-only** strategic missile.
+* Panel `FUN_140273640`: **4 switches** (`MAPMODE_MISSILE_SW`), each bound to a distinct, not-yet-queued missile part of the selected type. `MAPMODE_MISSILE_FIRE` is the fire button. A strategic missile (A-100 =
   `MDL_NUKE_03_CONV`) is a single body with two mount slots.
 * Queue filler `FUN_140214c40`: one **0x38-byte entry** per switched-on missile in the fleet's vector (fleet +0x538/+0x540/+0x548): `{SmartRef part, SmartRef target, float x,y at +0x30}`.
   A missile with stats +0x168 > 100000 triggers `NUCLEAR_ESCALATION_1` [code]: only while the `ESCALTION_WARNING` trigger is set (the game's own spelling) and no other block applies; that press then shows the dialogue, clears the trigger and queues **nothing**, and the next press queues normally. The target of an entry (global `DAT_143a13c68`) may be a fleet (`0x147`), a Missile or a MapCraft (mask tests) [code].
@@ -23,7 +24,7 @@ Addresses are for Steam 1.163. Tags: legend in `../README.md`.
 * AI side: `FUN_1400f00c0(fleet, targetInfo)` decides to fire (cooldown, range 100..9000, per-target salvo caps 1/2/8 at targetInfo+0x84), fills the queue via `FUN_1400fc760`.
 
 ## Engagements: map -> battle [game unless marked]
-* Loader `FUN_14025afd0(level, bool, bool)` stores the name, sets **`DAT_143a11902 = 1`** (an engagement is pending; blocks a second one in the same pass), then `FUN_1402db350`.
+* Loader `FUN_14025afd0(level, bool, bool)` stores the name (global `DAT_1403c1390`), sets **`DAT_143a11902 = 1`** (an engagement is pending; blocks a second one in the same pass), then `FUN_1402db350`.
 * Four global vectors of smart-refs describe the sides: **A `0x143a158e0`** (ours), **B `0x143a159c0`** (the other side), C `0x143a158b0`, D `0x143a13de8`.
 * Observed: `Missile.seria` (a missile threatens our fleet): A=[Escadra], B=[Missile]. `Bombers.seria` (air raid): A=[**MapCraft**, one object carrying the planes], B=[Escadra].
   `CraftsVsMissile.seria` / `CraftsVsCrafts.seria` are started from the map aircraft group update `FUN_140117840` (two `SetLevelSeriaToLoad_` calls, side lists built from objects within 15.0); `Combat.seria` (fleet against fleet) is started from the fleet update beside `Missile` and `Bombers` [code, [findings/map-air-groups.md](findings/map-air-groups.md)]. None of the craft flows observed in game yet.

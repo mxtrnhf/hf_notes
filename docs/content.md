@@ -51,3 +51,5 @@ Ships: `Navarin Mk2`, `Navarin Mk3`, `Nomad Mk2`, `Lancer`, `Paladin`, `Titan`, 
 4. Only then: reach a NEW key: chain it from an existing entry (`<SCR=CONTINUE|NEWKEY>` or an answer button), or hang a new branch on an existing event root. A brand-new event root needs a code hook.
 5. Characters with mechanics (`JOIN=`, `CHECK_JOINED`) afterwards, by watching `m_npcs` in a save.
 Open risk: dialogue and `Media/` are overwritten by game updates; runtime injection (a mod DLL) would avoid editing files but is not designed.
+
+Tag examples (from the early notes): `<BACKGROUND=name>` such as `background_crowd_01` or `undeground_02` (sic), `<MUSIC=Duduk_4_ever>`, `<ILLUSTRATION=-1>`.

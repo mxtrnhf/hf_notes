@@ -53,3 +53,5 @@ The tick launches aircraft (`FUN_14002ff60`) when the target is between `radius(
 
 ## Not read
 Where the launch counter `+0xc98` resets; the contents of the ship's launch list `+0x13f0`; the meaning of the mode flags `DAT_147fc6fe0` and `BOOL_147fc6fdb`; the flag bytes `+0xc06..+0xc77` that choose AP / proximity; the addresses of the 1.151 twin's constants. Flares are covered separately in `ai-flares.md`.
+
+Extra pinned addresses: the cutoff's `JA` ends at `0x14007b033` (the guarded range is `0x14007b011`-`0x14007b039`); the pooled `1.0f` for the radial clamp is loaded at `0x14006471b`, just before the `600.0` divide at `0x140064723`.

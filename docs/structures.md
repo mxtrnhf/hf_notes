@@ -36,7 +36,7 @@ builds on the `Mark` constructor). The same factory gives the same sizes for the
 | +0x128 / +0x12c, +0x130, +0x138 | position x,y (local to master), velocity, angle [game] |
 | +0x188 | stats index [game] |
 | +0x190 / +0x1a0 / +0x1a8 | `m_oid` std::string: data or SSO, length, capacity [game] |
-| +0x1d0 `m_density`, +0x1f0 `m_layer`, +0x2c8/+0x2cc `m_health`/max [code] |
+| +0x1b0 `m_b2bstate` [code], +0x1d0 `m_density`, +0x1f0 `m_layer`, +0x2c8/+0x2cc `m_health`/max [code] |
 | +0x350 / +0x358 | slot vector begin / end [game] |
 | +0x3c0 / +0x3c8 | launch timer / `m_logic_active` (set by the launch) [game] |
 | +0x3d0.. / +0x3e4.. | `m_logic_f1..f4` / `m_logic_i1..i4`. `i4` (+0x3f0) held the first prototype's charge count; `i1` is used heavily by `FUN_140033b90` [game] |
@@ -51,7 +51,7 @@ builds on the `Mark` constructor). The same factory gives the same sizes for the
 | +0x9b0 / +0x9b8 | `m_floor_type` bitmask / `m_floor` = **elevation** [game] |
 | +0xa28 | `m_ed_rotate` [code] |
 
-Vtable slots: +0x40 kill(this,1), +0x48 kill, +0x50 add child, +0x68 remove from master, +0x80/+0x88 editor "place" steps, +0xe0/+0xe8 master angle/position
+Vtable slots: +0x40 kill(this,1), +0x48 kill, (+0x48 kill goes `FUN_140049ea0` -> `FUN_1402805d0` -> vtbl+0x40(this,1)), +0x50 add child, +0x68 remove from master, +0x80/+0x88 editor "place" steps, +0xe0/+0xe8 master angle/position
 transform, +0x178 side (float; sign = friend/foe), +0x210 damage. Smart-ref = 0x18 bytes (vtable, pointer, ?): ctor `FUN_140194bd0(ref,node)`, copy
 `FUN_140194b80`, dtor `FUN_140194d20`, assign `FUN_140194de0`; reallocating vector insert `FUN_140004b00(vec,pos,ref)`; `FUN_1402c7c90` = `vector<Node*>::insert(range of refs)`.
 
