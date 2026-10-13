@@ -44,8 +44,9 @@ builds on the `Mark` constructor). The same factory gives the same sizes for the
 | +0x508 / +0x510 | `m_sectors` vector<float>, 360 entries after a scan [game] |
 | +0x7a8 / +0x7ad | `m_count` / blueprint flag [game] |
 | +0x848 | `m_mdl_covered` (1.0 when the engine cone is blocked); also a cooldown test in the launch [code] |
-| +0x858 | `m_weapon_ammo_amount` = **reserve** rounds (int). Loaded from the save key `m_weapon_ammo_amount` (20 chars, matched in `bodySecondaryInit` at `0x140026d58`-`0x140026d73`; confirms the name), copied by `copyOverBody`; `+0x850`/`+0x854` are parsed from keys in the same chain (`+0x854` from a 19-char key starting `m_weapon_ammo_ex`) [code]; the per-frame update `FUN_140054fb0` takes one from it per reload step [code] |
-| +0x860 / +0x864 / +0x868 | **loaded** rounds (float; `FireGun` decrements it, needs >= 1) / reload step timer / rounds the current reload step adds (1 if the reserve was non-empty, else 0). Magazine size = Stats `+0x148`, reload time = Stats `+0x14c` [code] |
+| +0x84c / +0x850 / +0x854 / +0x858 / +0x85c | saved weapon keys (matched in `bodySecondaryInit`): `m_weapon_type`, `m_weapon_ammo` (the ammo index `FireShell` dispatches on), `m_weapon_ammo_extra`, **`m_weapon_ammo_amount` = reserve rounds (int)**, `m_weapon_ammo_extra_amount` [code, key strings] |
+| +0x860 / +0x864 / +0x868 | runtime, no save key: **loaded** rounds (float; `FireGun` decrements it, needs >= 1) / reload step timer / rounds the current reload step adds (1 if the reserve was non-empty, else 0). `FUN_140054fb0` moves rounds reserve -> loaded one step at a time. Magazine size = Stats `+0x148`, reload time = Stats `+0x14c` [code] |
+| +0x800 / +0x804 | 1.151 name `mdl_fuel` (double, two words); but the ship stats loop sums `Body +0x804` as an int next to crew (crew present?). Conflicting readings, open: [version-differences.md](version-differences.md) [code] |
 | +0x8d8 `m_stage` (not elevation), +0x90c `m_z` [code] |
 | +0x9b0 / +0x9b8 | `m_floor_type` bitmask / `m_floor` = **elevation** [game] |
 | +0xa28 | `m_ed_rotate` [code] |

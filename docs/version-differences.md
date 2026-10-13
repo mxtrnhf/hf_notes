@@ -49,7 +49,7 @@ Tags: **[V]** 1.163 offset is also verified in `structures.md` (game or code); *
 | about `0x20c` (center) | **+4** | `centerX/Y` 0x20c -> 0x210 [C] |
 | about `0x2a8` .. `0x7f0` | **+0x10** | collisions/ttl/health block, slots, spasm, `logic*`, sectors, `count` block, `mdl_fuel`, `mdl_fss` (rows below) |
 | `0x828`, `0x82c` | **+0x10** | pump pair [C] |
-| about `0x834` .. `0x868` (weapon/ammo area) | **+0x14** | resolved with `FireGun` (below): 4 more bytes than the +0x10 zone, so 4 bytes were inserted between `0x82c` and `0x834` in 1.163 |
+| about `0x834` .. `0x868` (weapon/ammo area) | **+0xc for the saved weapon keys (`0x840`..`0x84c`), +0x14 for the `FireGun` runtime fields** | resolved with `FireGun` and the save keys (below): the zone is not one shift |
 | `0x86a` .. `0x87c` (rescue flags, `isCrtScreen`, `repairType`) | about 0 [?] | bool cluster is repacked; see "unresolved" |
 | about `0x980` .. `0xa30` (floor, edRotate, aircraft logic) | **+0x30** | `floorType`, `floor`, `edRotate`, aircraft logic pointer |
 | tail flags (`isFocusable` ...) | **+0x30 or +0x38** [?] | the copy routine writes bytes at 0xa38..0xa3d; the 1.151 flags are at 0x9fc..0xa0d, so this end zone is unresolved |
@@ -90,9 +90,9 @@ The shift therefore climbs through the zones (0, +4, +0x10, +0x14, then +0x30 at
 | `m_mdl_pump`, `field_0x82c` | 0x828, 0x82c | 0x838, 0x83c | +0x10 | [C] copy-order pairing |
 | `mdl_turbine` | 0x834 | **0x848** | **+0x14** | [C]; **0x848 is the field `UpdateEngineCovered` writes and the missile launch tests** (see below) |
 | `field_0x838` | 0x838 | 0x84c | +0x14 | [C] |
-| `mdl_covered` (1.151 name; the value `FireGun` passes to `FireShell`) | 0x83c | **0x850** | **+0x14** | [C] FireGun in both versions |
-| `weaponType`, `ammoIndex`, `weaponAmmoExtra` | 0x840, 0x844, 0x848 | 0x854, 0x858, 0x85c | +0x14 | [C] copy order |
-| `weaponAmmoAmount` (decremented per shot) | 0x84c | **0x860** | **+0x14** | [C] FireGun in both versions |
+| value `FireGun` passes to `FireShell` (1.151 name `mdl_covered`, a mislabel) | 0x83c | **0x850** | +0x14 by role | [C] FireGun in both versions; **0x850 is the saved key `m_weapon_ammo`**, the ammo index `FireShell` dispatches on [V, save-key string in `bodySecondaryInit`] |
+| `weaponType`, `ammoIndex`, `weaponAmmoExtra` | 0x840, 0x844, 0x848 | **0x84c, 0x850, 0x854** | **+0xc** | [V] save keys `m_weapon_type`, `m_weapon_ammo`, `m_weapon_ammo_extra` in `bodySecondaryInit` (an earlier copy-order pairing at +0x14 was wrong) |
+| `weaponAmmoAmount` | 0x84c | **0x858** (saved reserve, key `m_weapon_ammo_amount`, +0xc); `FireGun` decrements a separate runtime counter at **0x860** | +0xc / +0x14 | [V] key; in 1.151 `FireGun` decrements `weaponAmmoAmount` itself, in 1.163 the saved amount is the reserve and `0x860` is the loaded count (see below). Also key `m_weapon_ammo_extra_amount` at **0x85c** |
 | cooldown float set to `1/(rate/60)` (`field_0x858`) | 0x858 | **0x86c** | +0x14 | [C] FireGun in both versions |
 | float that blocks firing when > 0 (`field_0x85c`) | 0x85c | **0x870** | +0x14 | [C] FireGun in both versions |
 | byte written 1 on entry (named `fFireRateTimer` in 1.151) | 0x860 | **0x874** | +0x14 | [C] FireGun in both versions |
@@ -108,7 +108,7 @@ The shift therefore climbs through the zones (0, +4, +0x10, +0x14, then +0x30 at
   (`0x828..0x880` in 1.151) and the `aircraftLogic`/lighting tail need individual attention.
 * **The notes' offsets are self-consistent with this table** at every anchor I could cross-check (health, count/blueprint, logic, sectors, floor, edRotate, covered, weapon ammo): good
   evidence that `structures.md` is right for 1.163 and that the stale part is the Ghidra struct, not the notes.
-* **Open: Body `+0x800`/`+0x804`.** The 1.151 name `mdl_fuel` is a **double** copied as two words (0x800/0x804) in 1.163, yet the ship stats loop adds `Body +0x804` as a 32-bit integer into the crew total (see [findings/sensors-and-crew.md](findings/sensors-and-crew.md)). The two readings conflict; `structures.md` keeps `+0x804` but no longer calls it fuel. Settle it by reading a fuel part and a crewed module in game.
+* **Open: Body `+0x800`/`+0x804`.** The 1.151 name `mdl_fuel` is a **double** copied as two words (0x800/0x804) in 1.163, yet the ship stats loop adds `Body +0x804` as a 32-bit integer into the crew total (see [findings/sensors-and-crew.md](findings/sensors-and-crew.md)). The two readings conflict; `structures.md` lists `+0x804` with both readings and flags the conflict. Settle it by reading a fuel part and a crewed module in game.
 
 ### Weapon and ammo fields, resolved with `FireGun` (1.151 `0x140032fa0`, 1.163 `0x140032e60`) [code]
 The two versions of `FireGun` use the same fields in the same roles, so each field pairs exactly:
@@ -132,6 +132,8 @@ The two versions of `FireGun` use the same fields in the same roles, so each fie
 * **`FireGun` itself changed:** 1.151 contains the 360-sector blocking check that `highfleet-qol` restores (`iSectorIndex`, "This is what stops you from firing if your gun is blocked by your own ship");
   1.163's `FireGun` has no sector check. Useful evidence for `systems.md` ("gun arc blocking restored by qol") and for the roadmap item about turret blocking.
 * 1.151's `FireGun` also carries two logdot comments worth keeping: `FireShell` is the call that actually fires; and the rate cooldown store is required for guns to fire at all.
+
+**Save keys of the whole block (static, 1.163, matched in `bodySecondaryInit`):** `+0x84c` `m_weapon_type`, `+0x850` `m_weapon_ammo` (the ammo index), `+0x854` `m_weapon_ammo_extra`, `+0x858` `m_weapon_ammo_amount`, `+0x85c` `m_weapon_ammo_extra_amount`, `+0x877` `m_rescue_explosive` (bool). The runtime fields `+0x860`..`+0x874` have no save key. So in this block the saved fields shift by **+0xc** and the `FireGun` runtime fields by +0x14; the single 1.151 counter was split into a saved reserve and a runtime loaded count.
 
 **Resolution of the `+0x858` question (static, 1.163):** both are right. `+0x858` is the **reserve** (int), loaded from the save key `m_weapon_ammo_amount` (20 characters, matched in `bodySecondaryInit` at `0x140026d58`-`0x140026d73`); `+0x860` is the **loaded rounds** (float) that `FireGun` decrements. The per-frame update `FUN_140054fb0` moves rounds reserve to loaded one reload step at a time (timer `+0x864`, step size `+0x868`; magazine size and reload time are stats `+0x148` and `+0x14c`). `+0x854` is parsed from a 19-character key starting `m_weapon_ammo_ex`. The earlier pairing with 1.151 `ammoIndex` for `+0x858` was wrong. Not run in game.
 
@@ -224,6 +226,7 @@ real allocation sizes in `CopyObject` (`structures.md`) show which structs are a
 | `HGEVFTABLE` (800 bytes, 100 slots) | **absent in 1.163** | 101 slots | missing; 1.151 has it (engine-hge.md) |
 | `ShipPart` (384 bytes) | **absent in 1.163** | `0x188` | missing; 1.151 has it (stats record above) |
 
+* The 1.151 program also carries the type categories `hge.h` (and `hge.h/functions`), `hge.pdb`, `unzip.h`, `zlib.h`, `ioapi.h`, `bass.h`, `mfobjects.h`, `rpcndr.h`, `tapi.h`, `wtypes.h`, `New Category` and `HighFleet`; 1.163 lacks them. Both have the project categories `_Body`, `_Escadra`, `_Missile`, `_Profile`, `_Creature`, `_AircraftLogic`, `_Link`, `_Node`, `_GUI`.
 * **Order for the struct rebuild:** the OK structs need nothing; `Body`, `Escadra`, `Creature` get a remap (the Body remap is above; the Escadra shift so far: count `+4`, range `+4`, missile cooldown `+4`,
   aircraft cooldown `+4`, time stamp `+0x10`, i.e. +4 early and +0x10 by `+0x518`); `ShipPart` and `HGEVFTABLE` can be created from the stats table above and the HGE slot list in engine-hge.md (1.163 needs two extra stats fields and one extra vtable slot).
 * **Cleanup:** every `*.conflict` type should end up replacing its non-conflict twin (the non-conflict `Body`, `BodyVFTABLE`, ... are the older 1.151 copies still referenced by names such as `createNewBody`'s

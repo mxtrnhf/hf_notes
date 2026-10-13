@@ -19,3 +19,6 @@ Present in 1.151 as a named function; **not matched** by the fuzzy tool, **locat
   `escalation = max(escalation, 1)`; finally **`Profile.endWar = true`**. This is what `GetPartPrice` (version-differences.md, stats record) checks, so after this function runs, part prices become 0.
 
 * **Lead for the Khiva crash/loop bug: superseded.** The first write to each of the four quadrant lists is **unguarded**, in both versions; the 1.163 counterpart `FUN_140261a20` is located. Cause, patch recipe and confirmation: [khiva-crash.md](khiva-crash.md).
+
+## Other differences between the 1.151 and 1.163 versions of the function [code]
+The phase structure, the `100.0/200.0/300.0` strike strengths (`hardMode`), the `2000`-`4000` search ring, the `700` exclusion and the `Tarantul` split (66%) are unchanged. 1.163 adds `CopyEscadraName` calls with a state flag set through bit marks (`local_234 |= 1/2/4`, unused locals as far as seen). The Ghidra names `escalation`/`enigmaKey10` at offsets 660/744 come from the stale 1.151 `Profile` struct: at the shifted layout they line up with 1.151 `escalation`/`endWar`; the two names are not resolved.

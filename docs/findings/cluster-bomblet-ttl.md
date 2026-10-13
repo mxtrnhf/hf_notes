@@ -9,6 +9,9 @@ Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadma
 * After the loop it creates one smoke/flash body and plays `strides` and `strides_fire` once per bomblet.
 * So **one place** sets bomblet lifetime: scaling `param_6` on entry (or the three stores) changes all cluster and mine bomblets. This is the patch site for the roadmap item. [code]; the patch itself is not written or tested.
 
+## The 1.151 original [code]
+`Projectile_ExplodeAndCluster(projectile, ?, multiplier, maxCount, ttl)` at 1.151 `0x14002c170`, called only from `creatureLogic` (1.151 `0x1400335b0`). It spawns `min(explosive * multiplier, maxCount)` bomblets, each `New(0xa08)` + `Body::Body`, `CreateShell_`, `is_bullet`, owner = the projectile's owner, `timeToLive = desowningTime = ttl`, `ttlDesolveTime = 0.1`, `collisions = 2`, health 5.0, carrying `explosive / count`. Difficulty scaling: for a player-side owner the "dud" flag chance is `5% * (0.3 on difficulty 0, 0.6 on difficulty 1, 1.0 otherwise)`. 1.163 no longer has the difficulty scaling here (it stores `FUN_1401af7b0(n)` in `+0x3c0`).
+
 ## The call sites [code]
 Ghidra lists one call (`0x140036c68`), but a second one sits in undefined code just before it: **`0x140036886`**. Both are in the `creatureLogic` region (`0x140033b90`). The `.pdata` xref (`0x1480797d0`) is an exception-table entry, not a call. So at least **two** direct callers exist. Stack slots at the call: `[rsp+0x20]` = 5th arg, **`[rsp+0x28]` = 6th arg (TTL)**, `[rsp+0x30]` = 7th (angle), `[rsp+0x38]` = an 8th argument the decompiler does not show.
 | | call `0x140036886` | call `0x140036c68` |
