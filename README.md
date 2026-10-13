@@ -17,6 +17,7 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/total-conversion-hara-vera.md](docs/total-conversion-hara-vera.md) | study of the "Flight to Hara Vera" total conversion: package, media, parts, dialogue, installer format |
 | [docs/ammo-1151-vs-1163.md](docs/ammo-1151-vs-1163.md) | the ammo table (built in code), the `Ammo` record, and every value change between 1.151 and 1.163 (incl. per-ammo shell lifetime) |
 | [docs/khiva-crash.md](docs/khiva-crash.md) | probable cause of the Khiva end-game crash (unguarded list writes), addresses, patch recipe, how to confirm |
+| [docs/mouse-sensitivity.md](docs/mouse-sensitivity.md) | mouse sensitivity path in the input task; A220 slowdown not yet located (partial) |
 | [docs/ai-tick-patch-sites.md](docs/ai-tick-patch-sites.md) | the tactical AI in 1.163: close-range cutoff, stand-off retreat, ammo choice, launch limits, with byte-exact patch sites |
 | [docs/ai-flares.md](docs/ai-flares.md) | why AI ships never use flares (missing trigger, not missing parts) and a design for a mod; evidence and unknowns |
 | [docs/open-questions.md](docs/open-questions.md) | what is unknown or undecided |

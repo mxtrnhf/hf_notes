@@ -11,6 +11,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 ### Bugs and QoL
 * **[Bug]** A proximity-fused missile colliding with flares crashes the game.
 * **[QoL]** Remove the mechanic by which rockets (A220) lower mouse sensitivity globally for all weapon systems.
+  * Partial: the sensitivity path is mapped and the slowdown is shown NOT to be a write to the device scale or global; location still unknown: [mouse-sensitivity.md](mouse-sensitivity.md).
 * **[QoL / Bug]** Changing an A220 rocket's weapon priority (to change hotkey grouping) removes the extended aiming reticle for rocket weapons.
 * **[QoL / Inconsistent behavior]** Salvage minigame: when a safety hazard occurs while the wreck site is out of focus, the game enters auto-mode instead of pausing.
 * **[QoL]** Option to disable Pytor's map-pointing interactions.
