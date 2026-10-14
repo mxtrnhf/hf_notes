@@ -61,18 +61,18 @@ The editor label pass sets `R14` at `0x1400d445e`/`0x1400d4463` from `0x1401a871
 
 Fonts are **shared, mutable objects** and callers restyle them (scale, blend, colour) before drawing. A mod must either fully restyle before drawing or save and restore `+0x100c`, `+0x1020`, `+0x1028`.
 
-Fonts defined in the game's `Media/Fnt/fonts.res` (**58 declared plus one undeclared `.fnt`**, `flash_large_shadow_special`; the earlier count of 60 came from a grep over several res files; full table, metrics, looks and usage in [fonts.md](fonts.md)): B52_18, B52_26, courier, courier_28, dinpro_10_med, dinpro_14_bold, dinpro_14_med, dinpro_14_reg, dinpro_16_med, dinpro_18_black, dinpro_18_black_shadow, dinpro_18_med, dinpro_200_black, dinpro_20_black, dinpro_20_bold, dinpro_20_reg, dinpro_25_bold, dinpro_25_bold_blured, dinpro_30_black, dinpro_30_reg, dinpro_32_bold, dinpro_45_black, dinpro_48_black, dinpro_48_black_blured, dinpro_80_black, elizabeth_16, fixed_16, fixed_20, fixed_50, flash_large, flash_large_shadow, flash_small, fun_crayon, georgia_15, impact_18, impact_24, myriad_10, myriad_15, myriad_40, nixies_30, olga_24, pollock_100, pollock_20, pollock2_52, pollock_30, pollock_38, pollock_52, pollock_60, pollock_80, radio_20, son_45_blured, sourcepro_14_bold, vcr_12, vcr_14, vcr_16, vcr_21, vcr_30, vcr_40.
+Fonts defined in the game's `Media/Fnt/fonts.res` (**58 declared plus one undeclared `.fnt`**, `flash_large_shadow_special`; full table, metrics, looks and usage in [fonts.md](fonts.md)): B52_18, B52_26, courier, courier_28, dinpro_10_med, dinpro_14_bold, dinpro_14_med, dinpro_14_reg, dinpro_16_med, dinpro_18_black, dinpro_18_black_shadow, dinpro_18_med, dinpro_200_black, dinpro_20_black, dinpro_20_bold, dinpro_20_reg, dinpro_25_bold, dinpro_25_bold_blured, dinpro_30_black, dinpro_30_reg, dinpro_32_bold, dinpro_45_black, dinpro_48_black, dinpro_48_black_blured, dinpro_80_black, elizabeth_16, fixed_16, fixed_20, fixed_50, flash_large, flash_large_shadow, flash_small, fun_crayon, georgia_15, impact_18, impact_24, myriad_10, myriad_15, myriad_40, nixies_30, olga_24, pollock_100, pollock_20, pollock2_52, pollock_30, pollock_38, pollock_52, pollock_60, pollock_80, radio_20, son_45_blured, sourcepro_14_bold, vcr_12, vcr_14, vcr_16, vcr_21, vcr_30, vcr_40.
 
-## Drawing recipe and hook seam [live-tested 2026-10-14, see below]
+## Drawing recipe and hook seam [game]
 1. `font = 0x1401a8710("dinpro_14_bold", scale, 2, 0xAARRGGBB)`.
 2. Call `Render` directly: `0x14016eb40(font, x, y, align, text, null, null, 0, 0.0)`. This avoids the Win64 vararg rules of `printf` and format-string injection from a part id containing `%`.
 3. Glyphs are drawn immediately, so output only appears while the scene is being rendered.
-4. Seam: wrap the `E8 rel32` call at **`0x140303fb4`** (bytes `E8 C7 03 DD FF`, calls the label pass `0x1400d4380`) with a `patchy::Trampoline` (`absolute_call` the original, `preserved_call` ours, `relative_jump` to `0x140303fb9`). Never use `save_overwritten` on a rel32 call (patchy copies the bytes verbatim). **Correction:** an earlier version of this note recommended wrapping the call at `0x140300d63`; that seam is wrong, see attempt 1 below.
+4. Seam: wrap the `E8 rel32` call at **`0x140303fb4`** (bytes `E8 C7 03 DD FF`, calls the label pass `0x1400d4380`) with a `patchy::Trampoline` (`absolute_call` the original, `preserved_call` ours, `relative_jump` to `0x140303fb9`). Never use `save_overwritten` on a rel32 call (patchy copies the bytes verbatim). Wrapping the call at `0x140300d63` instead draws nothing visible (below).
 
-## Live test 2026-10-14 (debug DLL `hf_draw_test`)
+## Live test (debug DLL `hf_draw_test`)
 Crate `$HF_DEV/hf_draw_test` (local git, commit `45b477c`, no remote; built DLL in `hf_draw_test_build/Modloader/mods/`), Rust + `patchy::Trampoline`, installed by the user on the Steam 1.163 install next to `highfleet_qol.dll`. Per editor frame it draws four yellow lines with `dinpro_45_black`: font from `GetFont` `0x1401703e0` on `Media.res` `0x143a119e8` (that pointer is the resource manager and works), style via `0x1401a8710(name, 0.5, 2, 0xffffff00)`, text via `0x14016eb40 Render(font, x, y, align, text, null, null, 0, 0.0)`, then the style is restored from the saved `+0x100c`/`+0x1020`/`+0x1028`. Lines: `QOL TEST left (100,100)` align 0, `QOL TEST centre (960,540)` align 2, `QOL TEST right (1820,1000)` align 1, `frame N` at (100,200).
 
-**Attempt 1: hook at `0x140300d63` (the call to the editor renderer `0x140300db0`; original call first, then ours).** Screenshot `$HF_DEV/hf_draw_test_build/Screenshot_20261014_123328.png`.
+**Hook at `0x140300d63`** (the call to the editor renderer `0x140300db0`; original call first, then ours). Screenshot `$HF_DEV/hf_draw_test_build/Screenshot_20261014_123328.png`.
 * Log: `hook installed at 0x140300d63`, `first editor frame, font 0x1b93b780, scale 1, colour 0xff73604c, blend 2` [game]. The hook ran, the font was found and already carries the editor's own style (colour `0xff73604c`, blend 2).
 * **No test text visible** [game]. The QoL GDI overlay is visible top-left and reads `ELEVATION  U up  P down  Backslash auto` (the configurable keys work).
 * Likely reason [guess]: the editor labels are drawn into an offscreen target that is flushed and composited inside `0x140300db0`, so output issued after it returns is lost.
@@ -87,7 +87,7 @@ Crate `$HF_DEV/hf_draw_test` (local git, commit `45b477c`, no remote; built DLL 
 
 The whole bind, labels, flush block is skipped when byte `[0x1403bd09f]` is 0 (`JZ` at `0x140303f9d`). That byte has only **read** xrefs (`0x140303f96` in the editor renderer, `0x14030c673` in the campaign renderer `0x14030a6b0`, `0x1403124b8` in `0x14030f250`), no writer, and is 1 in the process dump together with its neighbours `0x1403bd098`..`0x1403bd0a3` (all 1) [code]. So it is a static "layer enabled" flag, not a UI-hide toggle, and the block runs in the editor every frame; the neighbouring flags are probably per-layer switches [guess].
 
-**Attempt 2: hook at `0x140303fb4` (the call to the label pass; original call first, then ours).** Screenshot `$HF_DEV/hf_draw_test_build/screenshot_working.png` (2560x1440, 16:9).
+**Hook at `0x140303fb4`** (the call to the label pass; original call first, then ours). Screenshot `$HF_DEV/hf_draw_test_build/screenshot_working.png` (2560x1440, 16:9).
 * Log: `hook installed at 0x140303fb4`, `first editor frame, font 0x1ae0c820, scale 1, colour 0xff73604c, blend 2` [game].
 * All markers visible and sharp, `frame N` counting (345 in the shot) [game].
 
@@ -101,9 +101,9 @@ The whole bind, labels, flush block is skipped when byte `[0x1403bd09f]` is 0 (`
 | `Media.res` `0x143a119e8` works as the resource manager for `GetFont`; `[0x143a13950]` is the renderer object passed to bind and flush | [game] / [code] |
 | Style and restore every frame did not visibly change the game's own labels (stats panel colours normal in attempt 1) | [game], weak evidence |
 
-## Built: native elevation hint (2026-10-14)
-Shipped in the QoL fork `elevation` branch (commits 95d09cd, 9c8acac; [../mods/elevation.md](../mods/elevation.md)). The original plan is kept below with what changed.
-* Draw in the `0x140303fb4` hook with a game font at scale 1, in a free region. The plan was `dinpro_14_bold` (the editor's own label font; the editor styles it with its own scale, blend 2, colour `0xff73604c`); the shipped hint uses `fixed_16` instead (see 'Font decision' below and [fonts.md](fonts.md)). Region: top-right looked free in the screenshots; avoid the top-left SAVE/LOAD row and the bottom palette.
+## Built: native elevation hint
+Shipped in the QoL fork `elevation` branch ([../mods/elevation.md](../mods/elevation.md)).
+* Draw in the `0x140303fb4` hook with a game font at scale 1, in a free region. The shipped hint uses `fixed_16` (see 'Font decision' below and [fonts.md](fonts.md)); the editor's own label font is `dinpro_14_bold`, scale from the editor, blend 2, colour `0xff73604c`. Region: top-right looked free in the screenshots; avoid the top-left SAVE/LOAD row and the bottom palette.
 * Do the key edge detection and the `m_floor` writes in the same game-thread hook, which retires the polling thread, the race and the GDI window (done in `hint: native`; the window stays as the `hint: window` fallback).
 * `GetAsyncKeyState` is global, so also check that the game window is in the foreground.
 * Pre-check the 5 bytes at `0x140303fb4` before preparing the patch and skip the hint on a mismatch (see `../hooks.md`).
@@ -118,14 +118,14 @@ Shipped in the QoL fork `elevation` branch (commits 95d09cd, 9c8acac; [../mods/e
 * Next RE chunk: the sprite path (`0x1401725c0`, `0x140172aa0`, `0x140172ee0`), the renderer object behind HGE slot `+0x2e8`, the target bind `0x1400835a0`, the shader setters (`FUN_1400a0320`, `FUN_1400a0010`, `compareAndUpdateFloatArray_` `0x1400a04e0`).
 
 ## Live-test recipe
-1. Done 2026-10-14: throwaway debug DLL `hf_draw_test` drawing `QOL TEST` from the wrapped call at `0x140303fb4`. Repeat on a 4:3 or 21:9 setup and in the other editor states (part held, test drive, dialogs, save/load screen).
+1. Draw a test string from the wrapped call at `0x140303fb4` (as `hf_draw_test` does) on a 4:3 or 21:9 setup and in the other editor states (part held, test drive, dialogs, save/load screen).
 2. Log-only detour on `0x14016eb40` printing font, `x`, `y`, align and text for editor frames.
 
-## Font decision (2026-10-14) [user decision]
-The first native elevation hint used `dinpro_14_bold`; the user found it too bold and not pixel-like enough (screenshot `$HF_DEV/hf_draw_test_build/screenshot_working_2.png`). After a 20-font live sampler ([game], `screenshot_font_test.png` in the same folder) the user picked `fixed_16`; the QoL hint now uses `fixed_16`, white `0xffffffff`, scale 1.0, blend 2, right-aligned at x=1880, y=24. Every game font is ASCII only; see [fonts.md](fonts.md).
+## Font decision [user decision]
+The hint uses `fixed_16`, white `0xffffffff`, scale 1.0, blend 2, right-aligned at x=1880, y=24; `dinpro_14_bold` (the editor's own font) was too bold and not pixel-like enough (screenshot `$HF_DEV/hf_draw_test_build/screenshot_working_2.png`). `fixed_16` was picked after a 20-font live sampler ([game], `screenshot_font_test.png` in the same folder). Every game font is ASCII only; see [fonts.md](fonts.md).
 
 ## Map and battle renderers: flush sites, state bytes [code]
-Data only; the label-pass equivalents (the bind, labels, flush pattern seen in the editor at `0x140303faf` / `fb4` / `fc2`) are **not found yet** and are the next RE chunk.
+Data only. The label-pass equivalents of the editor's bind, labels, flush pattern (`0x140303faf` / `fb4` / `fc2`) are not found for these renderers.
 
 * Map renderer `0x14030a6b0` (Ghidra `rep_1402df4f0_New`) calls the flush `0x140083b50` at 19 `E8 rel32` sites: `0x14030bb28`, `0x14030bda8`, `0x14030be50`, `0x14030bf37`, `0x14030c13b`, `0x14030c639`, `0x14030c721`, `0x14030caba`, `0x14030d620`, `0x14030d935`, `0x14030da75`, `0x14030dae4`, `0x14030dc7d`, `0x14030dd61`, `0x14030ddc8`, `0x14030dfd9`, `0x14030e1a6`, `0x14030e25c`, `0x14030e2cf`. The label-gating flag `0x1403bd09f` is read at `0x14030c673` there.
 * Battle renderer `0x1403050a0` (Ghidra `rep_1402da020_...pow`) has 29 flush sites from `0x1403063f7` to `0x140309c17` and only three target binds `0x1400835a0`: `0x14030627e`, `0x14030930c`, `0x140309bf5`.
@@ -133,7 +133,7 @@ Data only; the label-pass equivalents (the bind, labels, flush pattern seen in t
 
 ### Mode timeline and screens (probe run 2) [game]
 Dispatcher branches (`0x140300c20`) seen over about 190 s: other 0.017 s; campaign branch 13.369..13.536 (a loading transition on the way to the main menu); other; editor from 21.774; other 87.667, **battle branch** 87.717 (FIGHT in the TEST panel) until 125.716; editor 125.783; other 127.314; campaign branch 150.988 (strategic map); other 175.718, battle 175.834; other 176.759, campaign 176.793; other 179.727, battle 179.845; other 180.654, editor 180.703; battle 185.375 (**fuel shop**); other 190.078; campaign 190.112. **Every screen change passes through the "other" branch for about 0.05 s** (a loading frame).
-* **Branch names are not screen names.** Main menu = "other" branch (screenshot `133302`, probe t 19 s). Editor and the **TEST panel** ("TESTING GROUND": ENEMIES difficulty slider, SMALL / MID / LARGE / CARRIER, AMMO primary and secondary, FIGHT, LANDING; screenshot `133410`, t 87 s) = editor branch. The **fuel shop** screen (screenshot `133552`, t 189 s) = **battle branch** [game+code, by timeline]. *Superseded by probe run 3: the branch is right, but the flags now say which screen it is (table below); shop and landing screens are the battle branch with `bc8` / `bc9` set, not a generic "battle".*
+* **Branch names are not screen names.** Main menu = "other" branch (screenshot `133302`, probe t 19 s). Editor and the **TEST panel** ("TESTING GROUND": ENEMIES difficulty slider, SMALL / MID / LARGE / CARRIER, AMMO primary and secondary, FIGHT, LANDING; screenshot `133410`, t 87 s) = editor branch. The **fuel shop** screen (screenshot `133552`, t 189 s) = **battle branch** [game+code, by timeline]. The flags say which screen it is (table below); shop and landing screens are the battle branch with `bc8` / `bc9` set, not a generic "battle".
 * Screenshot alignment: probe `t = 0` is `13:32:43` (modloader log `Highfleet_2026-10-14_13-32-43.log`); details in [probe-run-1.md](probe-run-1.md).
 * The editor label pass is drawn **under** the palette buttons: a sprite and text drawn from the hook at `0x140303fb4` at frame y about 990-1100 are hidden behind the bottom palette (see [images-and-sprites.md](images-and-sprites.md)).
 
@@ -154,7 +154,7 @@ Anchored by the clicks logged just before each change; details, text keys and th
 Probe 2.2 wrapped all 79 flush calls (map M00-M18 = sites above in order, battle B00-B28, other O00-O30) and drew a label after each. Full results and recipe in [seam-test-run-1.md](seam-test-run-1.md). Summary:
 * Map renderer `0x14030a6b0` also draws the **story dialogue scenes** (over a blurred map); battle renderer `0x1403050a0` draws combat **and** the city, shop, supplies and repair screens; `0x14030f250` draws the main menu and difficulty screens.
 * Clean screen-space seams (observed): battle and city **B22-B24, B16, B10-B12**; map **M11**. B00-B09 are faded or glitched; **M16 and M17 are inside the glitch distortion pass** (labels glitch); **M08/M09 labels landed at wrong positions** (transformed layer, [guess] world space).
-* **Best map seam decided by run 2 [game]: M11 = flush call `0x14030dae4`** (clean, above the cockpit frame, fixed screen space, also clean on dialogue frames); second M16 = `0x14030e1a6`. M10 (`0x14030da75`) is hidden under the cockpit frame; M13-M15 fire only with the Esc menu. Details in seam-test-run-1.md, Run 2. (Replaces the earlier "not decided" note.)
+* **Best map seam decided by run 2 [game]: M11 = flush call `0x14030dae4`** (clean, above the cockpit frame, fixed screen space, also clean on dialogue frames); second M16 = `0x14030e1a6`. M10 (`0x14030da75`) is hidden under the cockpit frame; M13-M15 fire only with the Esc menu. Details in seam-test-run-1.md, Run 2.
 * [code] After flush M05 (`0x14030c639`) the gate flag `0x1403bd09f` is read at `0x14030c673`; if set, one global sprite is drawn (`0x1401725c0`) and flush M06 (`0x14030c721`) runs. The map uses the bind variant `0x1400834e0`, not `0x1400835a0`.
 
 Next for the map and battle seams: take the `TEXT` callers of the map screen (`RADAR_MAP_LABLE`, `FUEL_MAP_LABLE`) and of combat (`HONOR_LABLE`, `RETREAT_LABLE`, `TADS_*`), find the functions that contain them, then look for the bind, pass, flush bracket inside `0x14030a6b0` and `0x1403050a0` instead of scanning the 19 and 29 flush sites by hand.

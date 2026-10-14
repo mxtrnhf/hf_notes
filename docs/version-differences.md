@@ -85,7 +85,6 @@ The shift therefore climbs through the zones (0, +4, +0x10, +0x14, then +0x30 at
 | `count` | 0x798 | 0x7a8 | +0x10 | [V] (`m_count`) |
 | `isLoot`, `isBlueprint`, `isWheel`, `isLeg` | 0x79c, 0x79d, 0x79f, 0x7a0 | 0x7ac, 0x7ad, 0x7af, 0x7b0 | +0x10 | [V] (blueprint flag 0x7ad) |
 | `m_mdl_fuel` | 0x7e8 | 0x7f8 | +0x10 | [C] |
-| ~~`mdl_fuel` double at 0x800, `mdl_fss` at 0x808~~ | | | | **wrong**, see the resolution below: fuel double `0x7f8`, `m_mdl_fss` float `0x800`, `m_mdl_crew` int `0x804` [code] |
 | `m_mdl_pump`, `field_0x82c` | 0x828, 0x82c | 0x838, 0x83c | +0x10 | [C] copy-order pairing |
 | `mdl_turbine` | 0x834 | **0x848** | **+0x14** | [C]; **0x848 is the field `UpdateEngineCovered` writes and the missile launch tests** (see below) |
 | `field_0x838` | 0x838 | 0x84c | +0x14 | [C] |

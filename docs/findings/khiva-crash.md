@@ -30,7 +30,7 @@ At `0x140262226`-`0x140262279` (84 bytes, four blocks of 21 bytes), straight aft
 * What the stale pointer does is undefined: a crash if it is bad, silent heap corruption if it is not.
 
 ## What is *not* the cause
-Everything after those four writes is guarded (the later loops test emptiness and null). The 100-try city search is bounded. An earlier version of the working notes said the finale was behind "list non-empty" guards and that the bug was a state that never advances; that was wrong and has been corrected.
+Everything after those four writes is guarded (the later loops test emptiness and null). The 100-try city search is bounded.
 
 ## Patch recipe (not applied, untested)
 A function-entry-style detour (`hooks.md` technique: a 14-byte `FF 25 00000000 <abs64>` jump, trampoline in a `VirtualAlloc` page) at `0x140262226` over those 84 bytes, returning to `0x14026227a`. The stub, for each of the four list pointers at `[rbp-0x8]`, `[rbp-0x18]`, `[rbp-0x28]`, `[rbp-0x38]`:
