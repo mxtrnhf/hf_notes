@@ -22,6 +22,7 @@ The modloader loads mods in an unspecified order, and a second detour at an alre
 | `0x140080699` (a `call powf`), cave `0x140073330` | call-site patch | highfleet-speed |
 | editor held-part pointer `0x1403c0d88` (read), `m_floor` writes | polling | highfleet-elevation |
 | `0x140032f22` (gun blocking) and others | detours | highfleet-qol (logdot) |
+| `0x140052af2` (1.151 `0x140050372`; `MOVAPS XMM1,XMM10` in `BulletImpact__`, the "penetrative > 0 means ttl 1.0" override) | 4-byte NOP (`enable_unblocked_ttl`) | highfleet-qol (logdot) [code, `src/ttl.rs`] |
 
 ### Candidate sites, not owned and not applied (findings only; each needs a version guard)
 | Site | What | Note |
