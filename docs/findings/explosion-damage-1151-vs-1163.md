@@ -77,6 +77,15 @@ Three byte patches in 1.163 would do it: the multiplier `4.0` at the first-armor
 ## Data files (OL.seria diff, 1.151 vs 1.163) [game]
 The 1.151 `Libraries/OL.seria` was inspected while the Steam folder held 1.151 (not kept; see [../formats.md](../formats.md) on copying per version). Of the missiles, only `MDL_MISSILE_01` (Zenith) changed its warhead: `m_missile_explosive` 200 -> 300. Nadir 400, Sprint 100, cluster 200 are the same in both; `m_missile_ap` (30 on Zenith and Nadir) is the same in both. In 1.163 the nuke conversions (`MDL_NUKE_*_CONV`) went `m_missile_explosive` 500 -> 700 and gained `m_missile_ap` 100 (so they now have a chain, budget 50 at field 0) [not seen in a fight]. Zenith `m_mdl_sectors_threshold` 0.5 -> 0.3 and new `m_mdl_sectors_shift` 1. Part HP in `parts.seria` is unchanged.
 
+**Other `OL.seria` stats that differ (same inspection; not part of the blast code, but part of why 1.163 may play differently):**
+* `MDL_CANNON_180`: `m_weapon_load_time` 6 -> 5 s (about 20% more shells per minute), `m_mdl_power_need` 1800 -> 1200, `m_price` 4000 -> 3000. The 180mm shell blast itself is unchanged (see the controlled run).
+* `MDL_CANNON_305_2`: `m_weapon_rate` 180 -> 240.
+* `MDL_KAZ`: `m_mdl_power_need` 10 -> 100, `m_price` 1500 -> 2000, `m_mdl_sectors_type` 3 -> 5, new `m_weapon_caliber` 100.
+* `m_mdl_crew_need` changed on 11 parts, e.g. `MDL_FCR_01` 1 -> 8, `MDL_FCR_02` 2 -> 6, `MDL_GENERATOR_02` 2 -> 3, `MDL_IRST_01` 1 -> 6.
+* `m_mdl_sectors_threshold` changed on 14 parts (e.g. `MDL_EVAC` 0.5 -> 0.3, `MDL_KAZ` 0.5 -> 0.15, Zenith and Nadir 0.5 -> 0.3); `m_mdl_sectors_shift` is new in 1.163 on 12 parts.
+* New stats records in 1.163: `CRAFT_DEBRIS`, `GROUND_LIGHT_TANK_01`, `GROUND_RIFLEMAN`, `MDL_CANNON_HARPOON`, `MDL_MISSILE_CLUSTER_SFW_01`, `MDL_MISSILE_DRUM_01`, `MDL_TORPEDO_300`; only in 1.151: `SOLDIER_RIFLEMAN`.
+(Values were printed once from the 1.151 file and the 1.163 copy; the 1.151 file was not saved.)
+
 ## Open
 * The x5 aircraft/missile multiplier and the /5 armor reduction in the area routine, and the `+0x165` profile flag in the 0.66 factor, were read but not exercised.
 * The blast radius (+22% predicted) is not measured: the `DMG` lines do not log distance.
