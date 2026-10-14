@@ -57,4 +57,4 @@ Interpretation:
 - [observed] ClickFunc `0x14012f120` is in Gui.cpp.
 
 ## Earlier attempt (superseded)
-An earlier query said the VideoTask.cpp xrefs were not usable (only DATA references from `rep_...` regions, `0x1402ed7ad`-`0x140316722`, and nothing for the other 14 strings). That was wrong or incomplete: the table above, read with a script, resolves them to the functions listed (the `rep_...` regions are inside those functions' ranges, e.g. `0x1402ed2f0`..`0x140316230`).
+An earlier query said the VideoTask.cpp xrefs were not usable (only DATA references from `rep_...` regions, `0x1402ed7ad`-`0x140316722`, and nothing for the other 14 strings). That was incomplete: the table above, read with a script, resolves them to the functions listed. [guess] The `rep_...` regions are probably parts of those same functions (the address ranges overlap), not checked.
