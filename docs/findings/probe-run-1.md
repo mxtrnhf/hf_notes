@@ -85,7 +85,7 @@ First run with the log-only entry hooks and the state watchers; QoL loaded with 
 * Readable `MEM` lines (hex / float / int, named globals), a verbose switch, a per-second cap.
 * HGE mouse position (`HGE+0x9fc/0xa00`), wheel (`HGE+0x9f8`) and the key-state array (`HGE+0xa06`) instead of the OS cursor.
 * HUD seams for map and battle after the RE below.
-* Done in v2.0 (see Run 3): log-only entry hooks on the string lookup `0x1401ae090`, `GUI::HandleClick` `0x14012d050`, the sound-play function, `Editor_OnMouseWheel` `0x1400bc5e0`, and text drawn through `hgeFont::Render` as per-frame `+` / `-` differences. Function entries have RSP = 8 mod 16, so the hook needs an alignment wrapper.
+* Done in v2.0 (see Run 3): four log-only entry hooks (checked against the v2.0 source, commit `417667c`): the GUI click handler `0x14012f120`, the string lookup `0x1401ae090`, the sound-play function `0x1402e30e0` and the .seria loader `0x140225930`; the earlier plan of hooking `GUI::HandleClick` `0x14012d050` and `Editor_OnMouseWheel` `0x1400bc5e0` was not done. Function entries have RSP = 8 mod 16, so the hook needs an alignment wrapper.
 
 ## Live-test recipe
 1. Run v1.1 in the editor, then the map, then a battle; press F9 before and after each action and write down what each pair of marks was.

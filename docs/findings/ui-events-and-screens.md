@@ -79,7 +79,7 @@ The dedupe set is reset at every `MODE` change and keys are counted once per `(k
 | 170.794 s | `0x214692f0` | 1 | 1 | `+0x8` "Location" (class name), `+0xc8` "UR" (city name), `+0x130` "SARGAS", `+0x210` "MARK_INIT", `+0x288` "City_generated.seria" |
 | 198.324 s | `0x214b11a0` | 5 | 1 | `+0xc8` "ZEMARAIM", `+0x130` "VEGA", same `+0x210` and `+0x288` |
 
-`+0x274` (float) was 0.00 on the first visit and 552106.88 at 230.093 s on the second (the notes call it fuel stock; unclear). `+0x25c` agrees with the city types in QoL's shop list (1 UR, 2 repair, 3 merchant, 4 fuel, 5 intel, 6 mercenary, 7 HQ) [file]. `+0x130` is probably a faction or region name [guess].
+`+0x274` (float) was 0.00 on the first visit and 552106.88 at 230.093 s on the second (the station's fuel stock, [systems.md](../systems.md) Refueling [game]). `+0x25c` agrees with the city types in QoL's shop list (1 UR, 2 repair, 3 merchant, 4 fuel, 5 intel, 6 mercenary, 7 HQ) [file]. `+0x130` is probably a faction or region name [guess].
 
 ## Fleet [game]
 `PLAYER_ESCADRA` `0x143a13eb0` -> `0x1ffc71f0`. Fields (Escadra): `+0x150/+0x154` position, `+0x158` speed, `+0x15c` heading (rad), `+0x498` fuel and `+0x4a0` capacity (doubles).
@@ -93,7 +93,7 @@ v2.0 printed the **wrong argument**: the first is the object being loaded into (
 
 ## Unknowns
 * The **map and battle label seams**. Use the `TEXT` callers on the map screen (`RADAR_MAP_LABLE`, `FUEL_MAP_LABLE`) and in combat (`HONOR_LABLE`, `RETREAT_LABLE`, `TADS_*`): find the functions that contain those caller offsets, then the bind, pass, flush bracket inside the renderers `0x14030a6b0` and `0x1403050a0` (as at `0x140303faf` / `fb4` / `fc2` in the editor).
-* What Location `+0x274` and `+0x130` are; the meaning of the 4-byte value at `gui+0xa80`; whether Escadra positions are map units.
+* What Location `+0x130` is (`+0x274` is the station fuel stock, [systems.md](../systems.md)); the meaning of the 4-byte value at `gui+0xa80`; whether Escadra positions are map units.
 * The decoded paths of the 133 level loads (v2.1).
 * A run that launches a fleet to a chosen destination and fights on the map.
 * The meaning of the sound "kind" argument and of `bd4`.

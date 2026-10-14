@@ -47,7 +47,7 @@ if (stringCompLengthAndContent(name, "FUEL_BUY_SLIDER")) {
     goto LAB_140131632;     // shared fuel-apply code, not decompiled yet
 }
 ```
-Interpretation [guess]: `CURRENT_LOCATION+0x274` (f32, previously unexplained in [open-questions.md](../open-questions.md), item "Location and click fields") is compared against the fuel slider value, so it likely holds the fuel amount currently set/bought at the location. The actual apply code is at `LAB_140131632` (not read). Note `structures.md` and `systems.md` already call `+0x274` the station fuel stock (it feeds the fleet refuel formula); both readings may hold, unchecked.
+Interpretation [guess] (superseded in part: [systems.md](../systems.md) Refueling and [structures.md](../structures.md) read `+0x274` as the station's fuel stock [game]; the slider compare below fits that): `CURRENT_LOCATION+0x274` (f32, previously unexplained in [open-questions.md](../open-questions.md), item "Location and click fields") is compared against the fuel slider value, so it likely holds the fuel amount currently set/bought at the location. The actual apply code is at `LAB_140131632` (not read). Note `structures.md` and `systems.md` already call `+0x274` the station fuel stock (it feeds the fleet refuel formula); both readings may hold, unchecked.
 
 ## MAPMODE_MISSION_FULLTANK (`0x140134722`, lines 2362-2382) and MAPMODE_MISSION_HALFTANK (`0x1401347fe`, lines 2383-2387)
 ```c
