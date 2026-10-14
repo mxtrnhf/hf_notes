@@ -146,6 +146,13 @@ Anchored by the clicks logged just before each change; details, text keys and th
 | battle, `bc9` (`0x147fc6fc9`) | supplies / shop screen, also the fuel purchase |
 | battle, `bd4` (`0x147fc6fd4`) | flight HUD after `ED_SHPWRK_LAND`: landing / take-off arcade sequence [guess] |
 
+### Seam test, probe v2.2 (2026-10-14) [game, observed]
+Probe 2.2 wrapped all 79 flush calls (map M00-M18 = sites above in order, battle B00-B28, other O00-O30) and drew a label after each. Full results and recipe in [seam-test-run-1.md](seam-test-run-1.md). Summary:
+* Map renderer `0x14030a6b0` also draws the **story dialogue scenes** (over a blurred map); battle renderer `0x1403050a0` draws combat **and** the city, shop, supplies and repair screens; `0x14030f250` draws the main menu and difficulty screens.
+* Clean screen-space seams (observed): battle and city **B22-B24, B16, B10-B12**; map **M11**. B00-B09 are faded or glitched; **M16 and M17 are inside the glitch distortion pass** (labels glitch); **M08/M09 labels landed at wrong positions** (transformed layer, [guess] world space).
+* The best map seam is **not decided**: no clean map screenshot yet (see the recipe in seam-test-run-1.md).
+* [code] After flush M05 (`0x14030c639`) the gate flag `0x1403bd09f` is read at `0x14030c673`; if set, one global sprite is drawn (`0x1401725c0`) and flush M06 (`0x14030c721`) runs. The map uses the bind variant `0x1400834e0`, not `0x1400835a0`.
+
 Next for the map and battle seams: take the `TEXT` callers of the map screen (`RADAR_MAP_LABLE`, `FUEL_MAP_LABLE`) and of combat (`HONOR_LABLE`, `RETREAT_LABLE`, `TADS_*`), find the functions that contain them, then look for the bind, pass, flush bracket inside `0x14030a6b0` and `0x1403050a0` instead of scanning the 19 and 29 flush sites by hand.
 
 State bytes seen in the first probe run (full table and the run itself: [probe-run-1.md](probe-run-1.md)):

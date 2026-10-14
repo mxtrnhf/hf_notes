@@ -47,6 +47,7 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/findings/probe-run-1.md](docs/findings/probe-run-1.md) | first run of the `hf_probe` debug DLL: input and memory diff in every screen, pinned cursor, mode and state bytes, v1.1 plan |
 | [docs/findings/images-and-sprites.md](docs/findings/images-and-sprites.md) | every image is an `Animation` in `Media/Tex/*.res`, resource getters, sprite object layout, `Render` / `RenderEx` (drawing unconfirmed) |
 | [docs/findings/ui-events-and-screens.md](docs/findings/ui-events-and-screens.md) | probe v2.0 run: log-only hooks for clicks, text keys, sounds and level loads, gold, location and fleet watchers, which dispatcher flag is which screen |
+| [docs/findings/seam-test-run-1.md](docs/findings/seam-test-run-1.md) | probe v2.2 seam test: labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean |
 
 Mods (all on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader)):
 [highfleet-elevation](https://github.com/mxtrnhf/highfleet-elevation), [highfleet-speed](https://github.com/mxtrnhf/highfleet-speed),
