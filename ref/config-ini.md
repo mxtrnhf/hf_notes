@@ -40,3 +40,24 @@ Tags in the dialog files are written in angle brackets, e.g. `<BLUR=0>`.
 `CORE_INIT_LEVEL`, `CORE_PROLOGUE_PASSED`, `CORE_LANGUAGE` (1 on the Russian install), `CORE_AIMING_MODE`, `CORE_LAST_LOADED_VERSION`,
 `GFX_DITHERING_ON`, `binding=<action>|<key code>` (also `bindingMapmode=`, `bindingOther=`), `InputTask::vecPlayerDevices[n]`.
 The keys in the tables above are optional and absent by default; whether each is honoured has not been tested here.
+
+## Key bindings format [file, observed 2026-10-14]
+Lines `binding=<action>|<VK>` (also `bindingMapmode=` and `bindingOther=`); `<VK>` is the Windows virtual-key code (mouse buttons 1, 2, 4 too).
+
+| Action | Key | Action | Key |
+|---|---|---|---|
+| 4096 | 87 W | 4105 | 1 LMB |
+| 4097 | 83 S | 4112 | 2 RMB |
+| 4098 | 65 A | 4113 | 4 MMB |
+| 4099 | 68 D | 4114 | 32 Space |
+| 4100 | 81 Q | 4115 | 67 C |
+| 4101 | 69 E | 4116 | 88 X |
+| 4102 | 16 Shift | 4117 | 70 F |
+| 4103 | 71 G | 4118 | 66 B |
+| 4104 | 84 T | 4119 | 82 R |
+
+`bindingMapmode` 4096..4099 = W S A D, `bindingOther` 4096..4099 = W S A D, `InputTask::vecPlayerDevices[1..3]=-1`. **U (85), P (80) and Backslash (220) are unused**, so the QoL elevation keys do not clash.
+
+## Verbose game log [guess, untested]
+`InitializeAppProperties` (`0x14023e000` region) registers APP properties; the name string at `0x140371d90` is `DBG_LOG_DEPTH`, bound to `dbgLogMode` (`0x1403c0e4c`, value 1 in the dump). The game prints a log line when `level <= dbgLogMode`; the per-frame phase lines are level 3. `Config.ini` stores APP properties as `NAME=value` lines inside the `{ m_classname=APP ... }` block, so `DBG_LOG_DEPTH=3` may give a verbose `client.log` with no mod. Back the file up first; expect a large, slow log. Next to it is `DBG_DOGMODE` (`0x140371da0`): effect unknown, do not touch.
+

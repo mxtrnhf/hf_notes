@@ -44,6 +44,8 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/findings/editor-hints.md](docs/findings/editor-hints.md) | where an in-game editor hint could hook: `_FrameFunc` task order, game-thread input site, text path (partial) |
 | [docs/findings/render-pipeline.md](docs/findings/render-pipeline.md) | how the game draws: frame tasks, scene dispatcher, stock `hgeFont` text path, fonts, hook seam |
 | [docs/findings/fonts.md](docs/findings/fonts.md) | every game font: files, metrics, ASCII-only charsets, what the editor uses, live look of the sampled ones, how a mod draws text |
+| [docs/findings/probe-run-1.md](docs/findings/probe-run-1.md) | first run of the `hf_probe` debug DLL: input and memory diff in every screen, pinned cursor, mode and state bytes, v1.1 plan |
+| [docs/findings/images-and-sprites.md](docs/findings/images-and-sprites.md) | every image is an `Animation` in `Media/Tex/*.res`, resource getters, sprite object layout, `Render` / `RenderEx` (drawing unconfirmed) |
 
 Mods (all on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader)):
 [highfleet-elevation](https://github.com/mxtrnhf/highfleet-elevation), [highfleet-speed](https://github.com/mxtrnhf/highfleet-speed),

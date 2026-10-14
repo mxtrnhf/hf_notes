@@ -119,3 +119,26 @@ The whole bind, labels, flush block is skipped when byte `[0x1403bd09f]` is 0 (`
 
 ## Font decision (2026-10-14) [user decision]
 The first native elevation hint used `dinpro_14_bold`; the user found it too bold and not pixel-like enough (screenshot `/home/maksim/Development/hf_draw_test_build/screenshot_working_2.png`). After a 20-font live sampler ([game], `screenshot_font_test.png` in the same folder) the user picked `fixed_16`; the QoL hint now uses `fixed_16`, white `0xffffffff`, scale 1.0, blend 2, right-aligned at x=1880, y=24. Every game font is ASCII only; see [fonts.md](fonts.md).
+
+## Map and battle renderers: flush sites, state bytes [code]
+Data only; the label-pass equivalents (the bind, labels, flush pattern seen in the editor at `0x140303faf` / `fb4` / `fc2`) are **not found yet** and are the next RE chunk.
+
+* Map renderer `0x14030a6b0` (Ghidra `rep_1402df4f0_New`) calls the flush `0x140083b50` at 19 `E8 rel32` sites: `0x14030bb28`, `0x14030bda8`, `0x14030be50`, `0x14030bf37`, `0x14030c13b`, `0x14030c639`, `0x14030c721`, `0x14030caba`, `0x14030d620`, `0x14030d935`, `0x14030da75`, `0x14030dae4`, `0x14030dc7d`, `0x14030dd61`, `0x14030ddc8`, `0x14030dfd9`, `0x14030e1a6`, `0x14030e25c`, `0x14030e2cf`. The label-gating flag `0x1403bd09f` is read at `0x14030c673` there.
+* Battle renderer `0x1403050a0` (Ghidra `rep_1402da020_...pow`) has 29 flush sites from `0x1403063f7` to `0x140309c17` and only three target binds `0x1400835a0`: `0x14030627e`, `0x14030930c`, `0x140309bf5`.
+* Also: `0x14030e670` (mode parameter 1) and `0x14030f250` (the non-editor branch).
+
+State bytes seen in the first probe run (full table and the run itself: [probe-run-1.md](probe-run-1.md)):
+
+| Address | Meaning | Tag |
+|---|---|---|
+| `0x143a11963` | `VideoTask` skip-one-frame flag, toggles on screen transitions | [code] |
+| `0x143a11964` | 1 in the editor (2 for editor-from-menu) | [code]+[game] |
+| `0x143a11984` | `VideoTask` lighting index, nonzero only on the arcade-battle branch; 0 -> 6 around the TEST drive | [code]+[game] |
+| `0x147fc6fb7` / `0x147fc6f82` | `IS_IN_ARCADE_BATTLE` and a second battle flag | [code] |
+| `0x147fc6fd0` | `IS_IN_CAMPAIGN?` | [code] |
+| `0x147fc6fc4` | stepped `0, 8, 9, 2, 1, 2, 3, 4, 0x64, 2, 0`: a phase id, meaning unknown | [game] |
+| `0x1403bd078` | cycled 1..4 while LMB was held in TEST, meaning unknown | [game] |
+| `0x1403ef304`, `308`, `30c`; `0x1403c0e60`..`67`; `0x143a1197c`..`7f` | per-frame counters and timers: noise | [code]+[game] |
+
+**TEST drive runs the arcade-battle renderer branch** [code]+[game].
+

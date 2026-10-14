@@ -74,3 +74,25 @@ The helper classes of stock HGE are in the game, found by matching offsets and l
 
 The game added a renderer-like object at HGE slot `+0x2e8` (stored as `ArrayLoadedByMedia_res`, called by `Init_HGE`); [guess] it is the D3D11 renderer. The `.fnt` format described above stays valid: the font objects are plain `hgeFont` instances loaded from `Media/Fnt`.
 
+## HGE_Impl input layout and slots 78-89 [code, bytes decoded by hand]
+The tiny input functions are **not defined as functions in Ghidra** (the tool says "no function found"); the bytes were read from memory and decoded. `HGE` is the global `0x143a119e0`, the vtable is `HGEVFTABLE` `0x1403672f0`. Slots are +8 against 1.151 from slot 17 on.
+
+| Slot | Address | Stock method | What it does |
+|---|---|---|---|
+| 78 | `0x140173870` | `Input_GetMousePos` | copies the floats at `HGE+0x9fc` (x) and `HGE+0xa00` (y) to the out pointers |
+| 79 | `0x1401738d0` | `Input_SetMousePos` | floats to int, uses the `HWND` at `HGE+0x300` |
+| 80 | `0x140173890` | `Input_GetMouseWheel` | int at `HGE+0x9f8` |
+| 81 | `0x1401738a0` | `Input_IsMouseOver` | byte at `HGE+0xa04` |
+| 82 | `0x1401738b0` | `Input_KeyDown(key)` | `byte[HGE+0xa06+key] & 1` |
+| 83 | `0x1401738c0` | `Input_KeyUp(key)` | `(byte[HGE+0xa06+key] >> 1) & 1` |
+| 84 | `0x140173850` | key state | calls a Win32 key-state API, returns bit 15 |
+| 85 | `0x140173840` | `Input_GetKeyName` | pointer-table lookup |
+| 86 | `0x140173830` | `Input_GetChar` | int at `HGE+0x9f0` |
+| 87 / 88 | `0x1401737d0` / `0x1401737e0` | (not decoded) | |
+| 89 | `0x14016cbe0` | (not decoded) | |
+
+`GetClientCursorPos` `0x140173c40(HGE_Impl*)` is `GetCursorPos` + `ScreenToClient(HWND at +0x300)`, stores the floats at `+0x9fc/+0xa00` and clears `0x100` bytes at `+0xa06` (the key-state array). A search for `call [reg+0x290]` found one hit, a **Body** vtable call, so the game may read input through direct calls rather than the vtable [unknown]. The probe run saw the OS cursor pinned at client `(960,540)` ([findings/probe-run-1.md](findings/probe-run-1.md)): `HGE+0x9fc/0xa00` is what the HGE layer sees, the game's own virtual cursor is somewhere else [unknown].
+
+## Resource getters [code]
+`GetAnimation` `0x140170230`, `GetFont` `0x1401703e0`, `GetEffect` `0x1401702b0`, `GetTexture` `0x140170420`, `GetDistort?` `0x140170270`; all go through `CopyNameIntoMedia_` `0x140178950` with the stock resource-type enum. Images are `Animation` resources, details in [findings/images-and-sprites.md](findings/images-and-sprites.md).
+

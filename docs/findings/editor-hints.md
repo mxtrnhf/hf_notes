@@ -75,3 +75,7 @@ Option B is now realistic: **draw the hint with `0x14016f290` from a detour insi
 
 ### Font resolved 2026-10-14 [code]
 The editor label pass gets its font from `0x1401a8710("dinpro_14_bold", scale, 2, 0xff73604c)` at `0x1400d445e`; other labels use `dinpro_45_black`, `flash_large`, `vcr_21`. The font is a stock `hgeFont` that the game restyles before every draw. Full table, drawing recipe and hook seam (the call at `0x140300d63`): [render-pipeline.md](render-pipeline.md). Still open: coordinate space and whether the draw call is legal outside the scene.
+
+## The editor's own `"%i %i"` readout [code]
+The two numbers at the top centre of every editor screenshot are printed in the label pass `0x1400d4380`: the format string `"%i %i"` is at `0x14035bdec` (xrefs `0x1400d473d`, `0x1400d4744`), the integers come from `CVTTSS2SI` of a vector filled by `0x140048b10` applied to the object at `[0x1403c0d40]`, and the whole block is gated by the byte `0x1403ef369` (and `[0x143a11964]` being nonzero). A neighbouring string `ED_OBJ` is at `0x14035bde4` (used at `0x1400d4516` and `0x1400d45e1`). What the numbers are (grid or cursor position) is a [guess]; see [probe-run-1.md](probe-run-1.md) for the cursor investigation.
+
