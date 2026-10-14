@@ -92,7 +92,7 @@ The guide adds: gun enables elevation and shifts it +1; bit 19's group enables a
 +0x100 std::list of ships (ship objects via `FUN_14021b070`) · +0x150/+0x154 position · +0x158 speed · +0x15c heading · +0x240 reverse flag ·
 +0x270 the tracked incoming missile or MapCraft [code: also read as a MapCraft-masked pointer in `changeAircraftState_`] · +0x420 `m_refuel_timer` (float), +0x424 `m_refuel_amount` · +0x461/+0x468 flags (+0x468 refuel animation) ·
 +0x498 / +0x4a0 fuel and capacity (doubles) · **+0x50c launch cooldown (float)** [game] · **+0x538/+0x540/+0x548 map launch queue** [game] ·
-callsign/name strings. Ship (Creature) fields used: +0x1638/+0x1640 fuel current/capacity (doubles), +0x1330 part list, +0x13d8/+0x13f0 launch lists, +0x17b0 in-flight limit,
+callsign/name strings. Ship (Creature) fields used: +0x1638/+0x1640 fuel current/capacity (doubles), +0x1330 part list, +0x13d8 anti-ship (Zenith) launch list, +0x13f0 second launch list (AA launchers [guess]), +0xd60 launch cooldown (float), +0xd70 mode, +0x17b0 in-flight limit,
 +0xad4 owner cooldown. Station (location): +0x258 flag, +0x25c type (4 = fuel city), +0x274 fuel stock (float).
 
 ## Map missile (Missile, 0x400000001047), default ctor `FUN_1400e48a0` (no source argument; sets the name "Missile" and the code; the copy ctor is `Missile`, which also references the vtable), vtable `0x14035e998` [game]
@@ -102,7 +102,7 @@ callsign/name strings. Ship (Creature) fields used: +0x1638/+0x1640 fuel current
 
 ## Creature (ship) fields seen in the AI and launch code [code]
 +0xad4 side float (negative non-zero = AI side, positive = player, 0 = neutral; inferred from where the difficulty byte applies [guess]) · +0xbbc..+0xbc0 control flags (+0xbbd drives `FireGuns`, +0xbbe `FUN_14002e7d0`, **+0xbc0 flares**) · +0xc98 per-ship strategic/aircraft launch counter · +0xcb8 / +0xd60 / +0xd64 launch timers and cooldowns ·
-+0x13d8 / +0x13f0 launch lists (stride 0x18, entry +8 = part) · +0x1408..+0x1410 flare launcher list · +0x1840/+0x1844 centre of mass · **+0x1850 bounding radius** (written only in `CalculateStats` `0x14007ffaa`) · +0x1838/+0x183c weapon reach floats · +0x17ec/+0x17f0/+0x17f4 crew present / capacity / needed (int sums) · +0x1638/+0x1640 fuel (doubles).
++0x13d8 anti-ship (Zenith) launch list [game: burst effect of the `FUN_14002ff60` wrapper] / +0x13f0 second launch list (AA launchers [guess]) (stride 0x18, entry +8 = part) · +0xd60 ship launch cooldown (float, 2.0 after a launch), +0xd70 launch mode (2 = per-target budget) · +0x1408..+0x1410 flare launcher list · +0x1840/+0x1844 centre of mass · **+0x1850 bounding radius** (written only in `CalculateStats` `0x14007ffaa`) · +0x1838/+0x183c weapon reach floats · +0x17ec/+0x17f0/+0x17f4 crew present / capacity / needed (int sums) · +0x1638/+0x1640 fuel (doubles).
 Details and addresses: [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md), [findings/ai-flares.md](findings/ai-flares.md), [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
 
 ## Projectile logic ids (Body `+0x3c4`, set from the `Ammo` record's `caliber`) [code]

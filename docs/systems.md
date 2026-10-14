@@ -2,13 +2,20 @@
 
 Addresses are for Steam 1.163. Tags: legend in `../README.md`.
 
-## Combat missile launch [game]
-* `FUN_14002e590(part)` (player) / `FUN_14002e3a0(part, target)` (AI) need a target (`FUN_14006c0e0`/`FUN_14006c440`), the owner (+0xb8), the owner's cooldown (+0xad4) and in-flight
-  limit (owner+0x17b0). They store target/owner refs at part+0x490/+0x4a8, set `+0x3c8`, start a timer, register the part in the owner's active-missile list.
-* The part then detaches in the logic update `FUN_140033b90` (~`0x140037806`): `vtbl+0x68` removes it from its master, `level->vtbl+0x50` adds it to the world.
-* Player input `FUN_14018a530`: code 0x1013 walks the ship's AA list (ship+0x13f0, stride 0x18, entry+8 = part) and launches until one succeeds (one missile per press);
-  0x1012 uses the list at ship+0x13d8 with `FUN_14002ff60`. Lists are rebuilt by the stats routine `FUN_14007fcf0` -> `FUN_140071380`.
-* Only the **low byte** of the return value is the success flag. The AI calls the launch **every frame** until it succeeds (hundreds of failures per fight).
+## Combat missile launch
+Two separate launch paths exist. Full evidence and the ruled-out sites: [findings/combat-missile-launch.md](findings/combat-missile-launch.md).
+
+**Anti-ship missiles (Zenith, stats index 130) [game for the AI path, code for the player key]**
+* `FUN_14002ff60(launcher)` launches them: needs `launcher+0x848 == 0`, an owner (+0xb8) with a target (`owner+0xb00`, not an evac pod), then sets target/owner refs at `+0x490/+0x4a8`, `+0x3c8 = 1`, and registers the part in the owner's active-missile list. The AI tick `FUN_140062f90` calls it at `0x140065edb` over the ship's launch list `+0x13d8`, about a 1% roll per tick, then sets the ship cooldown `+0xd60` = 2.0 s. Whether aircraft/hangars also use it is not established.
+* Player input `FUN_14018a530`: code 0x1012 uses the list at ship+0x13d8 with `FUN_14002ff60` [code, player path not hooked; the detach probe saw the player's Zenith launches]. Lists are rebuilt by the stats routine `FUN_14007fcf0` -> `FUN_140071380`.
+* The part then detaches in the logic update `FUN_140033b90`: the call at `0x140037809` (`call 0x140048fc0`, RCX = the part) is the probe point [game]; disassembled [code]: `0x140037806 MOV RCX,RSI`, `0x140037809 CALL 0x140048fc0`, `0x140037811..0x140037817 CALL [RDX+0x68]` (`vtbl+0x68`, remove from its master), then `level->vtbl+0x50` adds it to the world (the `0x147fc6f88` level node is loaded at `0x14003781a`).
+
+**Anti-air launchers (interceptors, for example S-4 Triumph) [code, not observed for Zenith]**
+* `FUN_14002e590(part)` (player) / `FUN_14002e3a0(part, target)` (AI) need a target (`FUN_14006c0e0`/`FUN_14006c440`), the owner (+0xb8), the owner's cooldown (+0xad4) and in-flight limit (owner+0x17b0). They store target/owner refs at part+0x490/+0x4a8, set `+0x3c8`, start a timer, register the part in the owner's active-missile list. They were hooked at their AI call sites and never ran in three battles that included Zenith launches by both sides; multicharge's Triumph results ([mods/multicharge.md](mods/multicharge.md)) fit the AA reading [guess].
+* Player input `FUN_14018a530`: code 0x1013 walks the ship's second list (ship+0x13f0, stride 0x18, entry+8 = part) and launches until one succeeds (one missile per press) [code].
+* The multicharge page reports that the AI retries every frame (hundreds of failures per fight). That can only hold for ships with AA launchers and a missile or aircraft target: the AI call sites of this pair never ran in the three Zenith battles. It does not describe Zenith, which is rate-limited by the 1% roll and the 2.0 s cooldown [guess].
+
+* Only the **low byte** of the return value is the success flag (both paths).
 * A copy of a part is made like the editor does it: `FUN_1401bfd00` copy, `vtbl+0x80`, `FUN_140280840(c,1)`, set position/angle (`FUN_1400521f0`/`FUN_140051850`, world
   coordinates through the master `vtbl+0xe8/+0xe0`), `FUN_140027f90`, `vtbl+0x88`, count=1, blueprint=0, owner ref, then **add to the level node `*(0x147fc6f88)`** (only objects in the tree are updated).
 
@@ -69,7 +76,7 @@ The ship stats routine `FUN_14007fcf0` computes `powf(TWR - 1, 0.5)` at `0x14008
 
 ## Firing, tactical AI, point defence, flares [code]
 * **Firing chain:** AI weapon controller `FUN_14007a8d0` (and the player's input path) -> `FireGuns` `0x1400559e0` -> `FireGun` `0x140032e60` -> `FireShell` `0x1400300d0` (dispatch on the `Ammo` entry's `index`) -> `Body::BulletImpact__` (cannon shells, all with 1 HP). [findings/firing-and-shells.md](findings/firing-and-shells.md); ammo table: [findings/ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md). Weapon fields of the Body: `+0x858` reserve rounds (int), `+0x860` loaded rounds (float) [structures.md](structures.md).
-* **Tactical AI:** per-ship tick `FUN_140062f90` (stand-off `0.35 x reach`, orbit, ally separation, launch caps), weapon controller `FUN_14007a8d0` (ammo choice, close-range cutoff `radius + radius + 30`): [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md).
+* **Tactical AI:** per-ship tick `FUN_140062f90` (stand-off `0.35 x reach`, orbit, ally separation, launch caps; the Zenith launch is in [findings/combat-missile-launch.md](findings/combat-missile-launch.md)), weapon controller `FUN_14007a8d0` (ammo choice, close-range cutoff `radius + radius + 30`): [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md).
 * **Active protection (KAZ):** `FUN_14002f480` is the close-in burst of the "strides" sprites: it picks an incoming projectile within 60/120 units and 45 degrees, spends one count and damages it with the target's own explosive power; stats categories `0x4000`, `0x8000000`, `0x200000` are excluded. Called from `FUN_14007eb50`. Matches the KAZ category (bit 25) [guess] and `ITEM_KAZ_AMMO` (1.163).
 * **Flares:** the player's input path sets Creature `+0xbc0`, `FUN_14007eb50` then calls the release `FUN_14002eed0` on the `+0x1408` launcher list; nothing sets the flag for AI ships: [findings/ai-flares.md](findings/ai-flares.md). The proximity-fuse crash is not located: [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md).
 * **Bomblets:** cluster and mine bomblets are spawned by `FUN_140032fb0` (TTL is its sixth argument): [findings/cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md).
