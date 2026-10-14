@@ -27,6 +27,8 @@ A function entry has RSP = 8 mod 16 (return address just pushed) while patchy's 
 
 Sound callers include `BuyPartShop`, `BulletImpact`, `DetachShips`, `ElectronicRadarTutorial`, `FUN_140073560` and `FUN_14007eb50`. Level-load callers include `FUN_14012f120`, `FUN_140233710`, `FUN_140240b90`, `Load` `0x140293f90`, `PrepareMainLoop` `0x1401ad5a0`, `loadSeriaForLibraries?` `0x1400d09a0`, `loadShipBackups?` `0x14023cd00` and the wrapper `0x140225c00`.
 
+See also [click-func.md](click-func.md): `FUN_14012f120` is the 1.163 version of the 1.151 function `!ClickFunc`.
+
 ## Clicks [game+code]
 Only clicks the GUI **accepted** are logged: the hook sits on `FUN_14012f120`, called at the end of `GUI::HandleClick` (`0x14012d050`); hooking the hit test would log every miss.
 
