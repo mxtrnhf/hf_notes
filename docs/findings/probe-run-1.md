@@ -57,6 +57,14 @@ So shop and dialogue-like screens run the **battle branch** of the dispatcher [g
 * **The sprite test draws** [game, user-confirmed]. The user marked it with an arrow (a ship built from hazard-sign hull parts) in `20261014133349_1.jpg`: `shpwrk_slide` scaled 0.3, centred at frame `(1300,980)`, is hidden **behind the palette buttons** (bottom bar, frame y about 990-1100). Fragments of the sprite and of its label text are visible in the gaps between the buttons. So `GetAnimation` + `RenderEx` work from the label-pass hook, and the palette buttons are drawn **after** the label pass. See [images-and-sprites.md](images-and-sprites.md).
 * Input source: `SDL_PollEvent` in `InputTask` is only for joysticks in this build (details in [engine-hge.md](../engine-hge.md)); where the game accumulates its virtual cursor is still unknown.
 
+## Run 3 (v2.0, 2026-10-14, 14:21:31) [game]
+First run with the log-only entry hooks and the state watchers; QoL loaded with refuel and speed disabled. All four hooks installed, clean exit, 5432 log lines. Everything about it is in [ui-events-and-screens.md](ui-events-and-screens.md); the headlines:
+* `CLICK`, `TEXT`, `SOUND`, `GOLD`, `LOCATION` and `FLEET` work and turn the memory-diff noise into events in words: which element was clicked, which text keys a screen asks for, which sounds play, when gold changes (validated by three shop purchases), which city the player is in, where the fleet is and how fast its fuel changes.
+* **Correction to the click field name:** v2.0 printed the string at `gui+0xad8` as `action`. Its values (`gui_mil_focus`, `gui_red_opaq`, `gui_hud_white`, `editor_white`, `slider_green`) are **Distortion resource names** from `Media/Dst/distortion.res`, not actions and not Animation names [file]. v2.1 prints it as `fx`.
+* **`LOAD` read the wrong argument:** the path is the second argument (a literal `Libraries/parts.seria` arrived there). Fixed in v2.1 (commit `f094dec`, not yet run in game).
+* **Supersedes** the Run 2 line that shop screens "run the battle branch": the flags now say which screen it is (`bc8` city landing hub, `bc9` supplies / shop, `bd4` flight HUD after leaving the city shipworks, `bb7` combat); see the table in the new note and in [render-pipeline.md](render-pipeline.md).
+* Logs are preserved at `/home/maksim/Development/hf_probe_build/logs/2026-10-14_1421_v2.0/` (`probe.log` is recreated at every game start).
+
 ## Lessons / blind spots [game]
 * **The v1.1 auto-noise filter hid what we hunt.** It suppressed for good any byte that changed in more than 25% of the polls, and a cursor float that moves with the mouse crosses that line within seconds. So the virtual cursor is **not missing from memory; the probe filtered it out**. v1.2 writes a summary of the hidden dwords every 5 s (count, float min..max) and un-hides them when they calm down.
 * 89 `NOISE` lines in the log (v1.2: at most one summary per 5 s).
@@ -69,7 +77,7 @@ So shop and dialogue-like screens run the **battle branch** of the dispatcher [g
 * ~~Whether the sprite test draws at all~~: it does (Run 2), hidden under the palette.
 * The roles of the pointer slots `0x1403c0d58`, `d70`, `d88`, `db8`, `0x1403c0d40`, and whether `db8` is the hovered object (v1.2 resolves them to part names).
 * Whether `DBG_LOG_DEPTH` in `Config.ini` gives a verbose `client.log` (see `../../ref/config-ini.md`).
-* Map and battle HUD seams (flush sites listed in [render-pipeline.md](render-pipeline.md)).
+* Map and battle HUD seams (flush sites listed in [render-pipeline.md](render-pipeline.md)); the `TEXT` callers of run 3 are the shortcut ([ui-events-and-screens.md](ui-events-and-screens.md)).
 
 ## Probe v1.1 plan
 * Automatic noise filtering: hard-exclude `0x1403ef304`-`30f`, `0x1403c0e60`-`67`, `0x143a1197c`-`7f`; suppress addresses that change in more than about 25% of recent polls. F10 stays as an extra.
@@ -77,7 +85,7 @@ So shop and dialogue-like screens run the **battle branch** of the dispatcher [g
 * Readable `MEM` lines (hex / float / int, named globals), a verbose switch, a per-second cap.
 * HGE mouse position (`HGE+0x9fc/0xa00`), wheel (`HGE+0x9f8`) and the key-state array (`HGE+0xa06`) instead of the OS cursor.
 * HUD seams for map and battle after the RE below.
-* Later: log-only entry hooks on the string lookup `0x1401ae090`, `GUI::HandleClick` `0x14012d050`, the sound-play function, `Editor_OnMouseWheel` `0x1400bc5e0`, and text drawn through `hgeFont::Render` as per-frame `+` / `-` differences. Function entries have RSP = 8 mod 16, so the hook needs an alignment wrapper.
+* Done in v2.0 (see Run 3): log-only entry hooks on the string lookup `0x1401ae090`, `GUI::HandleClick` `0x14012d050`, the sound-play function, `Editor_OnMouseWheel` `0x1400bc5e0`, and text drawn through `hgeFont::Render` as per-frame `+` / `-` differences. Function entries have RSP = 8 mod 16, so the hook needs an alignment wrapper.
 
 ## Live-test recipe
 1. Run v1.1 in the editor, then the map, then a battle; press F9 before and after each action and write down what each pair of marks was.

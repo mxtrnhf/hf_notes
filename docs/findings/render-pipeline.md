@@ -129,9 +129,24 @@ Data only; the label-pass equivalents (the bind, labels, flush pattern seen in t
 
 ### Mode timeline and screens (probe run 2) [game]
 Dispatcher branches (`0x140300c20`) seen over about 190 s: other 0.017 s; campaign branch 13.369..13.536 (a loading transition on the way to the main menu); other; editor from 21.774; other 87.667, **battle branch** 87.717 (FIGHT in the TEST panel) until 125.716; editor 125.783; other 127.314; campaign branch 150.988 (strategic map); other 175.718, battle 175.834; other 176.759, campaign 176.793; other 179.727, battle 179.845; other 180.654, editor 180.703; battle 185.375 (**fuel shop**); other 190.078; campaign 190.112. **Every screen change passes through the "other" branch for about 0.05 s** (a loading frame).
-* **Branch names are not screen names.** Main menu = "other" branch (screenshot `133302`, probe t 19 s). Editor and the **TEST panel** ("TESTING GROUND": ENEMIES difficulty slider, SMALL / MID / LARGE / CARRIER, AMMO primary and secondary, FIGHT, LANDING; screenshot `133410`, t 87 s) = editor branch. The **fuel shop** screen (screenshot `133552`, t 189 s) = **battle branch**, so shop and dialogue-like screens run `0x1403050a0` [game+code, by timeline]. Which flags the shop screens set is unknown (probe v1.2 logs the raw flags).
+* **Branch names are not screen names.** Main menu = "other" branch (screenshot `133302`, probe t 19 s). Editor and the **TEST panel** ("TESTING GROUND": ENEMIES difficulty slider, SMALL / MID / LARGE / CARRIER, AMMO primary and secondary, FIGHT, LANDING; screenshot `133410`, t 87 s) = editor branch. The **fuel shop** screen (screenshot `133552`, t 189 s) = **battle branch** [game+code, by timeline]. *Superseded by probe run 3: the branch is right, but the flags now say which screen it is (table below); shop and landing screens are the battle branch with `bc8` / `bc9` set, not a generic "battle".*
 * Screenshot alignment: probe `t = 0` is `13:32:43` (modloader log `Highfleet_2026-10-14_13-32-43.log`); details in [probe-run-1.md](probe-run-1.md).
 * The editor label pass is drawn **under** the palette buttons: a sprite and text drawn from the hook at `0x140303fb4` at frame y about 990-1100 are hidden behind the bottom palette (see [images-and-sprites.md](images-and-sprites.md)).
+
+#### Flag to screen (probe run 3, v2.0) [game]
+Anchored by the clicks logged just before each change; details, text keys and the timeline in [ui-events-and-screens.md](ui-events-and-screens.md). Flags are bytes in the `0x147fc6f80..` region read by the dispatcher.
+
+| Branch and flag | Screen |
+|---|---|
+| other (`0x14030f250`) | title screen and every loading frame (0.05 to 0.3 s between screens) |
+| editor (`IsInEditor` `0x1403ef368` = 1) | ship editor, TEST panel and the city shipworks |
+| battle, `bb7` (`IS_IN_ARCADE_BATTLE` `0x147fc6fb7`) | combat (TEST drive and real fights) |
+| campaign, `campaign_d2` then `campaign_d0` (`0x147fc6fd2`, `0x147fc6fd0`) | strategic map |
+| battle, `bc8` (`0x147fc6fc8`) | landed in a city: landing hub with event / dialogue text |
+| battle, `bc9` (`0x147fc6fc9`) | supplies / shop screen, also the fuel purchase |
+| battle, `bd4` (`0x147fc6fd4`) | flight HUD after `ED_SHPWRK_LAND`: landing / take-off arcade sequence [guess] |
+
+Next for the map and battle seams: take the `TEXT` callers of the map screen (`RADAR_MAP_LABLE`, `FUEL_MAP_LABLE`) and of combat (`HONOR_LABLE`, `RETREAT_LABLE`, `TADS_*`), find the functions that contain them, then look for the bind, pass, flush bracket inside `0x14030a6b0` and `0x1403050a0` instead of scanning the 19 and 29 flush sites by hand.
 
 State bytes seen in the first probe run (full table and the run itself: [probe-run-1.md](probe-run-1.md)):
 
