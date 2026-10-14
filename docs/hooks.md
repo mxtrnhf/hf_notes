@@ -26,7 +26,7 @@ The modloader loads mods in an unspecified order, and a second detour at an alre
 | `0x140052af2` (1.151 `0x140050372`; `MOVAPS XMM1,XMM10` in `BulletImpact__`, the "penetrative > 0 means ttl 1.0" override) | 4-byte NOP (`enable_unblocked_ttl`) | highfleet-qol (logdot) [code, `src/ttl.rs`] |
 
 ### hf_probe hooks (debug only, log-only, never ship)
-Besides the `0x140303fb4` wrapper above, `hf_probe` ([mods/probe.md](mods/probe.md), [findings/probe-run-1.md](findings/probe-run-1.md), [findings/ui-events-and-screens.md](findings/ui-events-and-screens.md)) installs log-only entry hooks that no mod should also patch:
+Besides the `0x140303fb4` wrapper above, `hf_probe` ([mods/probe.md](mods/probe.md), [runs/probe-run-1.md](runs/probe-run-1.md), [runs/ui-events-and-screens.md](runs/ui-events-and-screens.md)) installs log-only entry hooks that no mod should also patch:
 
 | Site | What |
 |---|---|

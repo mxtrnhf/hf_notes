@@ -25,7 +25,7 @@ C and C++ compilers have a built-in `__FILE__` that expands to the full path of 
 | `0x1403771f0` | VideoTask.cpp |
 
 ## What it tells us
-- Frame work is organised as tasks (`InputTask`, `VideoTask`); VideoTask.cpp's string anchors the scene dispatcher, see [render-pipeline.md](render-pipeline.md).
+- Frame work is organised as tasks (`InputTask`, `VideoTask`); VideoTask.cpp's string anchors the scene dispatcher, see [render-pipeline.md](../rendering/render-pipeline.md).
 - Subsystems: `Gui`, `Editor`, `Level`, `FX`, `Body`/`Creature`/`Joint` (physics objects), `AircraftLogic`, `D3DEngine` (a subfolder), `Escadra` = fleet, `Profile` = save/profile.
 - Only files that contain an assert or log call show up, so this is not the full file list.
 
@@ -51,7 +51,7 @@ Read with a read-only Ghidra script. Entry addresses are listed; the current Ghi
 | VideoTask.cpp (`0x1403771f0`) | 12 | `0x1402ed2f0`, `0x1402f6b00`, `0x140300c20` (scene dispatcher), `0x140300db0` (editor renderer), `0x1403050a0` (battle/city renderer), `0x14030a6b0` (map renderer), `0x14030f250` (menu/other renderer), `0x140316230` |
 
 Interpretation:
-- [game] All four screen renderers and the scene dispatcher reference VideoTask.cpp, so the rendering code of [render-pipeline.md](render-pipeline.md) lives in VideoTask.cpp.
+- [game] All four screen renderers and the scene dispatcher reference VideoTask.cpp, so the rendering code of [render-pipeline.md](../rendering/render-pipeline.md) lives in VideoTask.cpp.
 - [game] The flush `0x140083b50` is in D3DEngine.cpp. Ghidra names it `checkD3DEngineStatus?`; it is the engine-status check the assert strings belong to, so "flush" is our working name [guess].
 - [game] The refuel code `0x140111ff0` is in Escadra.cpp (fleet).
 - [game] ClickFunc `0x14012f120` is in Gui.cpp.

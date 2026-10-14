@@ -1,9 +1,9 @@
 # How the game draws a frame, and how a mod draws text or sprites
 
-A plain-language overview for someone who has never done this. It does not re-derive anything: every fact is linked to the note that proved it. Steam 1.163, image base `0x140000000`. Tags: legend in `../../README.md`. Sources: [render-pipeline.md](render-pipeline.md), [fonts.md](fonts.md), [images-and-sprites.md](images-and-sprites.md), [seam-test-run-1.md](seam-test-run-1.md), [editor-hints.md](editor-hints.md), [ui-events-and-screens.md](ui-events-and-screens.md).
+A plain-language overview for someone who has never done this. It does not re-derive anything: every fact is linked to the note that proved it. Steam 1.163, image base `0x140000000`. Tags: legend in `../../README.md`. Sources: [render-pipeline.md](render-pipeline.md), [fonts.md](fonts.md), [images-and-sprites.md](images-and-sprites.md), [seam-test-run-1.md](../runs/seam-test-run-1.md), [editor-frame.md](editor-frame.md), [ui-events-and-screens.md](../runs/ui-events-and-screens.md).
 
 ## 1. The frame in one page
-* **One frame function.** The game registers only a frame function (`_FrameFunc`, `0x1401a8970`) with HGE and no separate render function, so it draws inside the frame function. The last of its seven tasks is the video task `0x140316e20`. [code] ([render-pipeline.md](render-pipeline.md), [editor-hints.md](editor-hints.md))
+* **One frame function.** The game registers only a frame function (`_FrameFunc`, `0x1401a8970`) with HGE and no separate render function, so it draws inside the frame function. The last of its seven tasks is the video task `0x140316e20`. [code] ([render-pipeline.md](render-pipeline.md), [editor-frame.md](editor-frame.md))
 * **One scene dispatcher.** The video task calls the scene dispatcher `0x140300c20`, which looks at the game-mode flags and calls exactly one renderer. [code]
 * **Which renderer draws what.** The dispatcher has five targets; the first (mode parameter 1, `0x14030e670`) has not been matched to any screen. The other four:
 
@@ -14,7 +14,7 @@ A plain-language overview for someone who has never done this. It does not re-de
 | `0x14030f250` | none of the above and `IsInEditor` = 0 | title screen / main menu, difficulty screens, and every loading frame between screens (0.05 to 0.3 s) [game] |
 | `0x140300db0` | none of the above and `IsInEditor` = 1 | ship editor, TEST panel, city shipworks [game] |
 
-  Branch names are not screen names; the flags say which screen it is. Details: [render-pipeline.md](render-pipeline.md) (dispatcher table, flag table), [ui-events-and-screens.md](ui-events-and-screens.md) (how each flag was tied to a screen by the clicks before it).
+  Branch names are not screen names; the flags say which screen it is. Details: [render-pipeline.md](render-pipeline.md) (dispatcher table, flag table), [ui-events-and-screens.md](../runs/ui-events-and-screens.md) (how each flag was tied to a screen by the clicks before it).
 * The fonts and sprites are stock HGE objects (`hgeFont`, `hgeSprite`) modified by the game, so drawing needs no new engine knowledge, only the right moment. [code]
 
 ## 2. What a "seam" is
@@ -46,7 +46,7 @@ A **seam** is the place right after one of those flush calls (an `E8 rel32` call
 **Which seam where** is in section 4. Drawing only shows while a scene is being rendered, so always draw from inside a seam, on the render thread. [code]
 
 ## 4. Best seams per screen
-Seam ids are `M` (map renderer `SEAMS_MAP`, 19 sites), `B` (battle `SEAMS_BATTLE`, 29) and `O` (other `SEAMS_OTHER`, 31); the number is the zero-based index in that array in `hf_probe/src/lib.rs` (addresses below were checked against it) [code]. Evidence: [seam-test-run-1.md](seam-test-run-1.md).
+Seam ids are `M` (map renderer `SEAMS_MAP`, 19 sites), `B` (battle `SEAMS_BATTLE`, 29) and `O` (other `SEAMS_OTHER`, 31); the number is the zero-based index in that array in `hf_probe/src/lib.rs` (addresses below were checked against it) [code]. Evidence: [seam-test-run-1.md](../runs/seam-test-run-1.md).
 
 | Screen | Seam | Call address | Status |
 |---|---|---|---|

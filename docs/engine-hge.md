@@ -28,7 +28,7 @@ Same order as the stock header, except one System_ method is missing between slo
 ## Stock HGE formats used by the game [game]
 * `.res` scripts (`formats.md`): `Include/Texture/Animation/Sound/Font/Particle/...`, parsed by `RScriptParser` (source `src/helpers/parser.cpp`, `resources.cpp`).
 * **Particles `Media/Prt/*.psi`: 144 files, every one exactly 128 bytes** = HGE's `hgeParticleSystemInfo`; editable with HGE's `particleed` (`tools/particleed`, source `src/particleed`).
-* **Fonts `Media/Fnt/*.fnt`:** text `[HGEFONT]`, `Bitmap=...png`, `Char="x",x,y,w,h,pre,post` lines; HGE `fonted`/`fontconv`. 59 `.fnt` files, 58 declared in `Media/Fnt/fonts.res` (`Font <name>` / `{ filename=Media\\Fnt\\<name>.fnt }`); all are ASCII `0x20`-`0x7E` only except three digit-only fonts; glyph bitmaps live in the texture atlases (`Media/Tex/Fnt1.res`, `Fnt2.res`). Full list and metrics: [findings/fonts.md](findings/fonts.md).
+* **Fonts `Media/Fnt/*.fnt`:** text `[HGEFONT]`, `Bitmap=...png`, `Char="x",x,y,w,h,pre,post` lines; HGE `fonted`/`fontconv`. 59 `.fnt` files, 58 declared in `Media/Fnt/fonts.res` (`Font <name>` / `{ filename=Media\\Fnt\\<name>.fnt }`); all are ASCII `0x20`-`0x7E` only except three digit-only fonts; glyph bitmaps live in the texture atlases (`Media/Tex/Fnt1.res`, `Fnt2.res`). Full list and metrics: [rendering/fonts.md](rendering/fonts.md).
 * Atlases are produced by `texasm` (`src/texasm`). Audio goes through BASS (the modloader proxies `bass.dll`).
 
 ## What does NOT go through HGE
@@ -62,7 +62,7 @@ Same order as the stock header, except one System_ method is missing between slo
 * Extra useful hook: `Resource_AttachPack` is slot 19 in 1.151 and **slot 20** in 1.163 (consistent with the table above).
 
 ## HGE helpers compiled into the exe [code]
-The helper classes of stock HGE are in the game, found by matching offsets and logic against `hge_src/src/helpers` (details and offsets: [findings/render-pipeline.md](findings/render-pipeline.md)):
+The helper classes of stock HGE are in the game, found by matching offsets and logic against `hge_src/src/helpers` (details and offsets: [rendering/render-pipeline.md](rendering/render-pipeline.md)):
 
 | Address | Stock counterpart |
 |---|---|
@@ -91,13 +91,13 @@ The tiny input functions are **not defined as functions in Ghidra** (the tool sa
 | 87 / 88 | `0x1401737d0` / `0x1401737e0` | (not decoded) | |
 | 89 | `0x14016cbe0` | (not decoded) | |
 
-`GetClientCursorPos` `0x140173c40(HGE_Impl*)` is `GetCursorPos` + `ScreenToClient(HWND at +0x300)`, stores the floats at `+0x9fc/+0xa00` and clears `0x100` bytes at `+0xa06` (the key-state array). A search for `call [reg+0x290]` found one hit, a **Body** vtable call, so the game may read input through direct calls rather than the vtable [unknown]. The probe run saw the OS cursor pinned at client `(960,540)` ([findings/probe-run-1.md](findings/probe-run-1.md)): `HGE+0x9fc/0xa00` is what the HGE layer sees, the game's own virtual cursor is somewhere else [unknown].
+`GetClientCursorPos` `0x140173c40(HGE_Impl*)` is `GetCursorPos` + `ScreenToClient(HWND at +0x300)`, stores the floats at `+0x9fc/+0xa00` and clears `0x100` bytes at `+0xa06` (the key-state array). A search for `call [reg+0x290]` found one hit, a **Body** vtable call, so the game may read input through direct calls rather than the vtable [unknown]. The probe run saw the OS cursor pinned at client `(960,540)` ([runs/probe-run-1.md](runs/probe-run-1.md)): `HGE+0x9fc/0xa00` is what the HGE layer sees, the game's own virtual cursor is somewhere else [unknown].
 
 ## Resource getters [code]
-`GetAnimation` `0x140170230`, `GetFont` `0x1401703e0`, `GetEffect` `0x1401702b0`, `GetTexture` `0x140170420`, `GetDistort?` `0x140170270`; all go through `CopyNameIntoMedia_` `0x140178950` with the stock resource-type enum. Images are `Animation` resources, details in [findings/images-and-sprites.md](findings/images-and-sprites.md).
+`GetAnimation` `0x140170230`, `GetFont` `0x1401703e0`, `GetEffect` `0x1401702b0`, `GetTexture` `0x140170420`, `GetDistort?` `0x140170270`; all go through `CopyNameIntoMedia_` `0x140178950` with the stock resource-type enum. Images are `Animation` resources, details in [rendering/images-and-sprites.md](rendering/images-and-sprites.md).
 
 ## Input observations from probe run 2 [game] (2026-10-14)
 * **Mouse wheel:** `HGE+0x9f8` (`Input_GetMouseWheel`) reads `-1` or `+1` per notch (53 events during editor palette scrolling) [game].
 * **Mouse floats:** `HGE+0x9fc` / `+0xa00` showed only `-1`, `0`, `1` in the first run, but the probe rounded them to integers; whether they are relative deltas or something else is unknown until exact values are printed (probe v1.2) [guess].
 * **SDL is only for joysticks:** the imports found are `SDL_Init`, `SDL_NumJoysticks`, `SDL_JoystickOpen`, `SDL_JoystickName`, `SDL_JoystickClose`, `SDL_PollEvent`, `SDL_Quit`. `InputTask` `0x14018dbf0` calls `SDL_PollEvent`, but there is no SDL mouse or keyboard path in this build [code]. The input-device manager destructor `FUN_140185ca0` (device table `DAT_1439e9388`, stride `0xf0`, SDL joysticks) is the only caller of the `ClipCursor` wrapper `0x14024c650`, which releases the clip at shutdown [code]; no `SetCursorPos` import was found by name.
-* The Windows cursor stays at client `(960,540)` in a 2560x1440 client; the code that recentres it, and the game's virtual cursor, are not found yet [game+code]. `InputTask` callees: `FUN_1400bc5e0` (editor wheel), `140187100`, `140187260` (reads the held part), `140188300`, `140188570`, `140189ab0`, `140189fa0`, `14018a530`, `14018ac30`, `14018af40`, `14018b310`, `UpdateZoom` `0x14026af80` [code]. See [findings/probe-run-1.md](findings/probe-run-1.md).
+* The Windows cursor stays at client `(960,540)` in a 2560x1440 client; the code that recentres it, and the game's virtual cursor, are not found yet [game+code]. `InputTask` callees: `FUN_1400bc5e0` (editor wheel), `140187100`, `140187260` (reads the held part), `140188300`, `140188570`, `140189ab0`, `140189fa0`, `14018a530`, `14018ac30`, `14018af40`, `14018b310`, `UpdateZoom` `0x14026af80` [code]. See [runs/probe-run-1.md](runs/probe-run-1.md).

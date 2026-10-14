@@ -15,7 +15,7 @@ Question: where can a mod draw its own text (the elevation hints) so it looks na
 | Sound | `0x1402dd890` |
 | Video | `0x140316e20` (takes a "render this frame" bool from a frame-skip heuristic) |
 
-`SomethingVideoTask` calls the **scene dispatcher `0x140300c20`** as `f(DAT_14800ee28, DAT_14800ee20, 0, 0)`. Ghidra calls it `rep_1402d5b50_WriteToClientLog`. It is anchored by the error string `D:\!ESSENTIALS\PROJECTS\HYBRID FLEET 2013EX\VideoTask.cpp` (line `0x2849`) in its branch for an unexpected mode. The scene dispatcher and all four screen renderers reference that string, so this code lives in VideoTask.cpp; see [source-file-names.md](source-file-names.md) for the per-file function cross-reference. It first sets render state on the shader objects (`DAT_143a13960`, `DAT_143a13a20`), then dispatches on `param_4` and the game-mode flags:
+`SomethingVideoTask` calls the **scene dispatcher `0x140300c20`** as `f(DAT_14800ee28, DAT_14800ee20, 0, 0)`. Ghidra calls it `rep_1402d5b50_WriteToClientLog`. It is anchored by the error string `D:\!ESSENTIALS\PROJECTS\HYBRID FLEET 2013EX\VideoTask.cpp` (line `0x2849`) in its branch for an unexpected mode. The scene dispatcher and all four screen renderers reference that string, so this code lives in VideoTask.cpp; see [source-file-names.md](../findings/source-file-names.md) for the per-file function cross-reference. It first sets render state on the shader objects (`DAT_143a13960`, `DAT_143a13a20`), then dispatches on `param_4` and the game-mode flags:
 
 | Condition | Renderer |
 |---|---|
@@ -134,11 +134,11 @@ Data only. The label-pass equivalents of the editor's bind, labels, flush patter
 ### Mode timeline and screens (probe run 2) [game]
 Dispatcher branches (`0x140300c20`) seen over about 190 s: other 0.017 s; campaign branch 13.369..13.536 (a loading transition on the way to the main menu); other; editor from 21.774; other 87.667, **battle branch** 87.717 (FIGHT in the TEST panel) until 125.716; editor 125.783; other 127.314; campaign branch 150.988 (strategic map); other 175.718, battle 175.834; other 176.759, campaign 176.793; other 179.727, battle 179.845; other 180.654, editor 180.703; battle 185.375 (**fuel shop**); other 190.078; campaign 190.112. **Every screen change passes through the "other" branch for about 0.05 s** (a loading frame).
 * **Branch names are not screen names.** Main menu = "other" branch (screenshot `133302`, probe t 19 s). Editor and the **TEST panel** ("TESTING GROUND": ENEMIES difficulty slider, SMALL / MID / LARGE / CARRIER, AMMO primary and secondary, FIGHT, LANDING; screenshot `133410`, t 87 s) = editor branch. The **fuel shop** screen (screenshot `133552`, t 189 s) = **battle branch** [game+code, by timeline]. The flags say which screen it is (table below); shop and landing screens are the battle branch with `bc8` / `bc9` set, not a generic "battle".
-* Screenshot alignment: probe `t = 0` is `13:32:43` (modloader log `Highfleet_2026-10-14_13-32-43.log`); details in [probe-run-1.md](probe-run-1.md).
+* Screenshot alignment: probe `t = 0` is `13:32:43` (modloader log `Highfleet_2026-10-14_13-32-43.log`); details in [probe-run-1.md](../runs/probe-run-1.md).
 * The editor label pass is drawn **under** the palette buttons: a sprite and text drawn from the hook at `0x140303fb4` at frame y about 990-1100 are hidden behind the bottom palette (see [images-and-sprites.md](images-and-sprites.md)).
 
 #### Flag to screen (probe run 3, v2.0) [game]
-Anchored by the clicks logged just before each change; details, text keys and the timeline in [ui-events-and-screens.md](ui-events-and-screens.md). Flags are bytes in the `0x147fc6f80..` region read by the dispatcher.
+Anchored by the clicks logged just before each change; details, text keys and the timeline in [ui-events-and-screens.md](../runs/ui-events-and-screens.md). Flags are bytes in the `0x147fc6f80..` region read by the dispatcher.
 
 | Branch and flag | Screen |
 |---|---|
@@ -151,7 +151,7 @@ Anchored by the clicks logged just before each change; details, text keys and th
 | battle, `bd4` (`0x147fc6fd4`) | flight HUD after `ED_SHPWRK_LAND`: landing / take-off arcade sequence [guess] |
 
 ### Seam test, probe v2.2 (2026-10-14) [game, observed]
-Probe 2.2 wrapped all 79 flush calls (map M00-M18 = sites above in order, battle B00-B28, other O00-O30) and drew a label after each. Full results and recipe in [seam-test-run-1.md](seam-test-run-1.md). Summary:
+Probe 2.2 wrapped all 79 flush calls (map M00-M18 = sites above in order, battle B00-B28, other O00-O30) and drew a label after each. Full results and recipe in [seam-test-run-1.md](../runs/seam-test-run-1.md). Summary:
 * Map renderer `0x14030a6b0` also draws the **story dialogue scenes** (over a blurred map); battle renderer `0x1403050a0` draws combat **and** the city, shop, supplies and repair screens; `0x14030f250` draws the main menu and difficulty screens.
 * Clean screen-space seams (observed): battle and city **B22-B24, B16, B10-B12**; map **M11**. B00-B09 are faded or glitched; **M16 and M17 are inside the glitch distortion pass** (labels glitch); **M08/M09 labels landed at wrong positions** (transformed layer, [guess] world space).
 * **Best map seam decided by run 2 [game]: M11 = flush call `0x14030dae4`** (clean, above the cockpit frame, fixed screen space, also clean on dialogue frames); second M16 = `0x14030e1a6`. M10 (`0x14030da75`) is hidden under the cockpit frame; M13-M15 fire only with the Esc menu. Details in seam-test-run-1.md, Run 2.
@@ -159,7 +159,7 @@ Probe 2.2 wrapped all 79 flush calls (map M00-M18 = sites above in order, battle
 
 Next for the map and battle seams: take the `TEXT` callers of the map screen (`RADAR_MAP_LABLE`, `FUEL_MAP_LABLE`) and of combat (`HONOR_LABLE`, `RETREAT_LABLE`, `TADS_*`), find the functions that contain them, then look for the bind, pass, flush bracket inside `0x14030a6b0` and `0x1403050a0` instead of scanning the 19 and 29 flush sites by hand.
 
-State bytes seen in the first probe run (full table and the run itself: [probe-run-1.md](probe-run-1.md)):
+State bytes seen in the first probe run (full table and the run itself: [probe-run-1.md](../runs/probe-run-1.md)):
 
 | Address | Meaning | Tag |
 |---|---|---|

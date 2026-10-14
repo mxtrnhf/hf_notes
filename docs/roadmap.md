@@ -73,7 +73,7 @@ Same status as above: wish list, partly started (see the markers). What exists t
   variants), not a general editor, but it holds working code for reading and appending `.seria` blocks.
 * `dec`/`enc` (C++ with build script) in `hf_dialog_src`, another language-pack decoder; a `binwalk` binary in `hf_mods_unpack/tools/bin`.
 * Per-mod log files, the modloader 4.1.0 logging SDK (`setup.md`), and Ghidra with an MCP bridge.
-* `hf_probe` ([docs/mods/probe.md](mods/probe.md); log-only debug DLL, local, not a mod to ship): input and memory diff, `MODE`, `CLICK`/`TEXT`/`SOUND`/`LOAD` hooks, ammo dump, `MARK` hotkey (F9), HUD watch panel, and the 1.151/1.163 `BLAST`/`DMG` mode ([findings/probe-run-1.md](findings/probe-run-1.md), [findings/ui-events-and-screens.md](findings/ui-events-and-screens.md)); `hf_draw_test` (throwaway draw test, debug only). Beyond these, work is mostly hand-edited text.
+* `hf_probe` ([docs/mods/probe.md](mods/probe.md); log-only debug DLL, local, not a mod to ship): input and memory diff, `MODE`, `CLICK`/`TEXT`/`SOUND`/`LOAD` hooks, ammo dump, `MARK` hotkey (F9), HUD watch panel, and the 1.151/1.163 `BLAST`/`DMG` mode ([runs/probe-run-1.md](runs/probe-run-1.md), [runs/ui-events-and-screens.md](runs/ui-events-and-screens.md)); `hf_draw_test` (throwaway draw test, debug only). Beyond these, work is mostly hand-edited text.
 Ordered by how much time each would save, not by effort. Tag: **[guess]** is an expected benefit (legend in `../README.md`); other claims are from problems we hit in practice.
 
 ### 1. `.seria` library and CLI (parse, query, patch, diff) *(partial: `apply_data.py` is only a generator)*

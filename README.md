@@ -3,6 +3,8 @@
 Short, topic-based notes behind the Highfleet mods (Steam 1.163 with a 1.151 comparison, image base `0x140000000`).
 Tags (one legend for all docs): **[game]** verified in play, in logs or on the real game files · **[code]** read from the decompilation · **[guide]** community guide, unverified here · **[guess]** inferred · **[tool]** Ghidra fuzzy-match result (a similarity score, not proof) · **[not read]** known gap · **[file]** read from game files. `docs/version-differences.md` adds **[V]** / **[C]** / **[?]** for offset confidence (defined there). Paths in the docs are relative to the workspace root (`$HF_DEV`, e.g. `~/Development_Highfleet`) and the game folder is `<game dir>`.
 
+Layout: `docs/` reference docs; `docs/findings/` one note per question; `docs/rendering/` how the game draws (start at its README); `docs/runs/` dated probe and seam-test reports (evidence, not reference); `docs/data/` tables; `STATUS.md` perishable state.
+
 ## Start here
 | Read | For |
 |---|---|
@@ -24,8 +26,8 @@ Tags (one legend for all docs): **[game]** verified in play, in logs or on the r
 | [docs/hooks.md](docs/hooks.md) | hooking techniques, who owns which patch site, candidate sites |
 | [docs/content.md](docs/content.md) | dialogue, characters, events, textures (study + experiment plan) |
 | [docs/total-conversion-hara-vera.md](docs/total-conversion-hara-vera.md) | study of the "Flight to Hara Vera" total conversion |
-| [docs/mods/](docs/mods/) | one short page per mod: elevation, speed, multicharge, salvo, refuel, and the debug-only `hf_probe` |
-| [ref/](ref/) | Config.ini reference, summaries of community guides and prior art |
+| [docs/mods/](docs/mods) | one short page per mod: elevation, speed, multicharge, salvo, refuel, and the debug-only `hf_probe` |
+| [ref/](ref) | Config.ini reference, summaries of community guides and prior art |
 
 ## Findings (one self-contained note per question; each ends with unknowns or a live-test recipe)
 | Read | For |
@@ -43,15 +45,15 @@ Tags (one legend for all docs): **[game]** verified in play, in logs or on the r
 | [docs/findings/khiva-crash.md](docs/findings/khiva-crash.md) | probable cause of the Khiva end-game crash (unguarded list writes), patch recipe |
 | [docs/findings/flare-crash-hunt.md](docs/findings/flare-crash-hunt.md) | the flare/proximity-fuse crash hunt (site not found) |
 | [docs/findings/mouse-sensitivity.md](docs/findings/mouse-sensitivity.md) | mouse sensitivity path; A220 slowdown not yet located (partial) |
-| [docs/findings/editor-hints.md](docs/findings/editor-hints.md) | where an in-game editor hint could hook: `_FrameFunc` task order, game-thread input site, text path; history of the drawing question, the answer is [render-pipeline.md](docs/findings/render-pipeline.md) |
-| [docs/findings/render-pipeline.md](docs/findings/render-pipeline.md) | how the game draws: frame tasks, scene dispatcher, stock `hgeFont` text path, fonts, hook seam |
-| [docs/findings/fonts.md](docs/findings/fonts.md) | every game font: files, metrics, ASCII-only charsets, what the editor uses, live look of the sampled ones, how a mod draws text |
-| [docs/findings/probe-run-1.md](docs/findings/probe-run-1.md) | runs 1-3 of the `hf_probe` debug DLL (v1.0 to v2.0): input and memory diff in every screen, pinned cursor, mode and state bytes, clicks, gold, location and fleet |
-| [docs/findings/images-and-sprites.md](docs/findings/images-and-sprites.md) | every image is an `Animation` in `Media/Tex/*.res`, resource getters, sprite object layout, `Render` / `RenderEx` (drawing confirmed in game, run 2) |
-| [docs/findings/ui-events-and-screens.md](docs/findings/ui-events-and-screens.md) | probe v2.0 run: log-only hooks for clicks, text keys, sounds and level loads, gold, location and fleet watchers, which dispatcher flag is which screen |
-| [docs/findings/seam-test-run-1.md](docs/findings/seam-test-run-1.md) | seam test runs 1 and 2 (probe v2.2): labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean; map seam M11 chosen |
+| [docs/rendering/editor-frame.md](docs/rendering/editor-frame.md) | where an in-game editor hint could hook: `_FrameFunc` task order, game-thread input site, text path; history of the drawing question, the answer is [render-pipeline.md](docs/rendering/render-pipeline.md) |
+| [docs/rendering/render-pipeline.md](docs/rendering/render-pipeline.md) | how the game draws: frame tasks, scene dispatcher, stock `hgeFont` text path, fonts, hook seam |
+| [docs/rendering/fonts.md](docs/rendering/fonts.md) | every game font: files, metrics, ASCII-only charsets, what the editor uses, live look of the sampled ones, how a mod draws text |
+| [docs/runs/probe-run-1.md](docs/runs/probe-run-1.md) | runs 1-3 of the `hf_probe` debug DLL (v1.0 to v2.0): input and memory diff in every screen, pinned cursor, mode and state bytes, clicks, gold, location and fleet |
+| [docs/rendering/images-and-sprites.md](docs/rendering/images-and-sprites.md) | every image is an `Animation` in `Media/Tex/*.res`, resource getters, sprite object layout, `Render` / `RenderEx` (drawing confirmed in game, run 2) |
+| [docs/runs/ui-events-and-screens.md](docs/runs/ui-events-and-screens.md) | probe v2.0 run: log-only hooks for clicks, text keys, sounds and level loads, gold, location and fleet watchers, which dispatcher flag is which screen |
+| [docs/runs/seam-test-run-1.md](docs/runs/seam-test-run-1.md) | seam test runs 1 and 2 (probe v2.2): labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean; map seam M11 chosen |
 | [docs/findings/level-seria-dispatcher.md](docs/findings/level-seria-dispatcher.md) | `SomethingWithLevelSerias`: the SCR_* scenario dispatcher in 1.151 and 1.163, label addresses, string refs (names only, body unread) |
-| [docs/findings/how-the-game-draws.md](docs/findings/how-the-game-draws.md) | plain-language overview: how a frame is drawn, what a seam is, recipe to draw text and sprites, best seam per screen, how to test a seam |
+| [docs/rendering/README.md](docs/rendering/README.md) | plain-language overview: how a frame is drawn, what a seam is, recipe to draw text and sprites, best seam per screen, how to test a seam |
 | [docs/findings/click-func.md](docs/findings/click-func.md) | the GUI click handler `ClickFunc` (1.151 `0x1401261d0`, 1.163 `0x14012f120`): size, caller, what the probe logs, live-test recipe; also the 252-name element catalog and four decompiled branches (BUY_BUY, FUEL_BUY_SLIDER, MAPMODE_MISSION_*) |
 | [docs/findings/source-file-names.md](docs/findings/source-file-names.md) | the 15 original source-file paths embedded in the exe (`HYBRID FLEET 2013EX`) and what they say about the code layout |
 
