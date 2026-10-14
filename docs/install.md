@@ -34,13 +34,16 @@ python3 tools/apply_data.py "<game folder>"
 Expected output: each section `OL.seria stats : [...]`, `parts.seria body: [...]`, `language packs : {...}`, `shipworks palette: [...]` listing the new ids (`MDL_AA_X3/X2/X1`, `MDL_A101_4..1`), then `done`.
 It makes `.bak` copies once; running it again prints `already present`. A game update overwrites the edited files: run it again.
 
+### QoL fork variant (elevation, speed, refuel)
+The QoL fork (logdot's highfleet-qol plus our ports; upstream PRs #18, #19, #20) provides these three as sections `elevation`, `refuel` and `speed` of `Modloader/config/qol.json`, 1.163 only. **Never install both** a standalone DLL and its QoL section: they patch the same sites ([hooks.md](hooks.md)). With the QoL build, remove `highfleet_elevation.dll` / `elevation.dll`, `speed.dll` and `refuel.dll`; `elevation.ini`, `speed.ini` and `refuel.ini` are no longer read, and config is read at startup only. Expected log lines are quoted in [mods/speed.md](mods/speed.md) (`Speed curve patch prepared at 0x140080699`) and [mods/refuel.md](mods/refuel.md) (`Refuel rate patch prepared at 0x14011521f (200 -> 2000)`); the elevation hint is drawn inside the game (`hint: native`, see [mods/elevation.md](mods/elevation.md)), so the `overlay created` line of the standalone mod appears only with `hint: window`.
+
 ## 5. Settings used for the tests (everything ships at vanilla values)
 | File | Setting | Test value |
 |---|---|---|
 | `salvo.ini` | `map_launch_delay` / `group_missiles` | `3` / `1` (shipped `-1` / `0` = off) |
 | `refuel.ini` | `player_rate_multiplier` | `5` (shipped `1`) |
 | `speed.ini` | `preset` | `classic` for the second half of the speed test (shipped `vanilla`) |
-Restart the game after any change (speed.ini reloads by itself).
+Restart the game after any change (the standalone `speed.ini` also reloads by itself within about 1 s; the QoL port reads its config at startup only).
 
 ## 6. Pass/fail record: what each mod writes when it works
 | Mod | File | Expected lines |

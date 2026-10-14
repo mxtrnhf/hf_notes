@@ -45,7 +45,7 @@ Per frame, inside the fleet update, for a docked fleet (`RSI`), station (`R15`),
   `FUN_140060d80`), adds the total to `fleet+0x498` (snaps to an integer within 0.1), returns it. Other callers: fuel from absorbed ships (`FUN_1400f9460`), scenario setup (5,000,000 once),
   shipworks exit (`FUN_1400d2260`), `FUN_1400a6230`, `FUN_1402017a0`, `FUN_140261a20`, `FUN_140290210`.
 * `fleet+0x420 m_refuel_timer` / `+0x424 m_refuel_amount` are a delayed delivery (counted down in the fleet update, then delivered); they stayed 0 while refueling at a station.
-  `+0x468` = refuel animation flag (`FUN_1400fe8b0`, sounds `refueling_start/loop/stop`); save/load `FUN_1400feb90`. The buy-fuel slider UI (`FUEL_BUY_SLIDER`, `REFUEL_TIME`) is untraced.
+  `+0x468` = refuel animation flag (`FUN_1400fe8b0`, sounds `refueling_start/loop/stop`); save/load `FUN_1400feb90`. The buy-fuel slider (`FUEL_BUY_SLIDER`) and the `MAPMODE_MISSION_FULLTANK` / `HALFTANK` branches are traced in [findings/click-func-branches.md](findings/click-func-branches.md); `REFUEL_TIME` is untraced.
 
 ## Elevation and firing arcs [game unless marked]
 * Solver `FUN_140256a90` sets `m_floor` from `m_floor_type` and neighbours. Bits: `0x01` auto-recompute, `0x02` neighbours must be strictly higher, `0x04`/`0x08` neighbour-count variants,
