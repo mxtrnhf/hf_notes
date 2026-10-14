@@ -35,7 +35,7 @@ Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: the el
 | B | Native: per-frame hook in `InputTask`/`VideoTask` plus a reused or new GUI text element in the `EDITORMODE` group | Looks native, one thread, fullscreen-safe | Needs more RE: GUI text setter, a free label, how keys are read |
 | C | Hybrid: game-thread hook for input and `m_floor` writes, overlay for display | Removes the polling-thread race; no new RE for drawing | Still an overlay window |
 
-Recommendation: ship A or C in the first PR; treat B as follow-up research.
+Recommendation: ship A or C in the first PR; treat B as follow-up research. **Update 2026-10-14: option B (native text) is proven feasible [game]**: a debug DLL drew text in the editor through the game's own font code, hooked at the label-pass call `0x140303fb4`; coordinates are the 1920x1080 virtual frame. See [render-pipeline.md](render-pipeline.md#live-test-2026-10-14-debug-dll-hf_draw_test) and its 'Plan, not built' section.
 
 ## Unknowns
 * Which function sets the text of a GUI label, and which existing editor label is free to reuse.
