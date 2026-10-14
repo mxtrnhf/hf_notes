@@ -22,8 +22,17 @@ The modloader loads mods in an unspecified order, and a second detour at an alre
 | `0x140080699` (a `call powf`), cave `0x140073330` | call-site patch | highfleet-speed; **also** highfleet-qol fork branch `refuel-rate` (patchy `patch_call` over the 5-byte call, no cave). Never install both |
 | editor held-part pointer `0x1403c0d88` (read), `m_floor` writes | polling | highfleet-elevation |
 | `0x140032f22` (gun blocking) and others | detours | highfleet-qol (logdot) |
-| `0x140303fb4` (`E8 C7 03 DD FF`, the call to the label pass `0x1400d4380` inside the editor renderer; wrap = original call, then ours) | trampoline | **hf_draw_test** (debug only, never ship); planned owner: QoL elevation native hint. Never install both. |
+| `0x140303fb4` (`E8 C7 03 DD FF`, the call to the label pass `0x1400d4380` inside the editor renderer; wrap = original call, then ours) | trampoline | **highfleet-qol fork, branch `elevation`** (native hint, commit 95d09cd); **also** hf_probe (debug only: HUD, sprite test) and hf_draw_test (debug only, never ship). Never install more than one of them. |
 | `0x140052af2` (1.151 `0x140050372`; `MOVAPS XMM1,XMM10` in `BulletImpact__`, the "penetrative > 0 means ttl 1.0" override) | 4-byte NOP (`enable_unblocked_ttl`) | highfleet-qol (logdot) [code, `src/ttl.rs`] |
+
+### hf_probe hooks (debug only, log-only, never ship)
+Besides the `0x140303fb4` wrapper above, `hf_probe` ([findings/probe-run-1.md](findings/probe-run-1.md), [findings/ui-events-and-screens.md](findings/ui-events-and-screens.md)) installs log-only entry hooks that no mod should also patch:
+| Site | What |
+|---|---|
+| `0x14012f120` (`ClickFunc`) | `CLICK`: accepted GUI clicks |
+| `0x1401ae090` (localised string lookup) | `TEXT`: string keys a screen asks for |
+| `0x1402e30e0` (`playSFXSound?`), `0x140225930` (`LoadSeriaFile`) | `SOUND`, `LOAD` |
+| explosion routine (1.163 `0x140029b60`, 1.151 `0x140028520`) and the damage calls it makes | `BLAST` / `DMG`, the only hooks that run on 1.151 ([findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md)) |
 
 ### Candidate sites, not owned and not applied (findings only; each needs a version guard)
 | Site | What | Note |
@@ -36,6 +45,6 @@ The modloader loads mods in an unspecified order, and a second detour at an alre
 | `FUN_140032fb0` entry (`0x140032fb0`) | bomblet lifetime (sixth argument) | [findings/cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md) |
 | `0x14002e3a0` (also owned above by multicharge) | AI launch limits per target (1 per second, 10/2/1 in flight) | coordinate with the owner |
 
-Rule for sites that another mod may already have patched (for example `0x140303fb4` with `hf_draw_test` installed): pre-check the expected bytes (the 5 bytes of the original `E8 rel32`) before preparing the patch and skip the feature on a mismatch. With patchy a failed prepare makes `install_permanently` fail and `init` return false, which would take every QoL feature down with it.
+Rule for sites that another mod may already have patched (for example `0x140303fb4` with `hf_draw_test` or `hf_probe` installed): pre-check the expected bytes (the 5 bytes of the original `E8 rel32`) before preparing the patch and skip the feature on a mismatch. With patchy a failed prepare makes `install_permanently` fail and `init` return false, which would take every QoL feature down with it.
 
 New feature wanting a site inside an owned function's first 14 bytes: patch a constant instead, or coordinate with the owner.
