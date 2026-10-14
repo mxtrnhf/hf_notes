@@ -42,6 +42,7 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/findings/flare-crash-hunt.md](docs/findings/flare-crash-hunt.md) | the flare/proximity-fuse crash hunt (site not found) |
 | [docs/findings/mouse-sensitivity.md](docs/findings/mouse-sensitivity.md) | mouse sensitivity path; A220 slowdown not yet located (partial) |
 | [docs/findings/editor-hints.md](docs/findings/editor-hints.md) | where an in-game editor hint could hook: `_FrameFunc` task order, game-thread input site, text path (partial) |
+| [docs/findings/render-pipeline.md](docs/findings/render-pipeline.md) | how the game draws: frame tasks, scene dispatcher, stock `hgeFont` text path, fonts, hook seam |
 
 Mods (all on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader)):
 [highfleet-elevation](https://github.com/mxtrnhf/highfleet-elevation), [highfleet-speed](https://github.com/mxtrnhf/highfleet-speed),

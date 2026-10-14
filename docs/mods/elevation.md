@@ -8,3 +8,5 @@ highfleet-qol's restored gun-arc blocking you can design guns that fire over you
 * Mechanism: reads the editor's held-part pointer (global `0x1403c0d88`; editor-active flag `0x1403ef368`), clears bit `0x01` of `m_floor_type` (+0x9b0) and writes `m_floor` (+0x9b8). Polling, no detour.
 * A ship saved with manual floors loads the same without the mod (the game honours saved values).
 * Status: works [game]. Overlay is a separate transparent window (may not show in exclusive fullscreen). Other editor functions: wheel `FUN_1400bc5e0`, rotate `FUN_1400bdad0`, place `FUN_1400bbbf0`.
+* **QoL port (2026-10-14, fork branch `elevation`, commit `835232e`, not pushed upstream):** section `elevation` of `qol.json` (`enabled`, `max_floor`, `sync_children`, `child_offset`, `overlay`, `keys.raise`/`lower`/`auto` as key names such as `U`, `F5`, `Backslash`). 1.163 only. The user installed the DLL and reported it works [game]. It is still a polling thread plus a GDI overlay window; the native in-game hint is a follow-up ([findings/render-pipeline.md](../findings/render-pipeline.md)). Remove the standalone `elevation.dll` when using it; `elevation.ini` is no longer read.
+

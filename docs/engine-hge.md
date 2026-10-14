@@ -60,3 +60,17 @@ Same order as the stock header, except one System_ method is missing between slo
   (`System_Launch`, `System_Snapshot`). Which one is still unnamed.
 * All named slots match the HGE 1.8 header order, consistent with the notes' claim that the game uses a lightly modified stock HGE.
 * Extra useful hook: `Resource_AttachPack` is slot 19 in 1.151 and **slot 20** in 1.163 (consistent with the table above).
+
+## HGE helpers compiled into the exe [code]
+The helper classes of stock HGE are in the game, found by matching offsets and logic against `hge_src/src/helpers` (details and offsets: [findings/render-pipeline.md](findings/render-pipeline.md)):
+
+| Address | Stock counterpart |
+|---|---|
+| `0x14016eb40` | `hgeFont::Render` (modified: `@` line break, rotation argument, width/height outputs) |
+| `0x14016f290` | `hgeFont::printf` |
+| `0x14016f120` / `0x14016f0c0` | `hgeFont::SetColor` / `hgeFont::SetBlendMode` |
+| `0x1401703e0` | `hgeResourceManager::GetFont` (`RES_FONT` = 9) |
+| `0x140172aa0` / `0x1401725c0` | `hgeSprite::RenderEx` / `Render` [likely] |
+
+The game added a renderer-like object at HGE slot `+0x2e8` (stored as `ArrayLoadedByMedia_res`, called by `Init_HGE`); [guess] it is the D3D11 renderer. The `.fnt` format described above stays valid: the font objects are plain `hgeFont` instances loaded from `Media/Fnt`.
+
