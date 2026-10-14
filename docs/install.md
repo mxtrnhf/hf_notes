@@ -13,7 +13,7 @@ Facts below come from our own installs; the Proton launch options are the part o
 The Wine prefix (`~/.local/share/Steam/steamapps/compatdata/1434950`) survives an uninstall and already has `gdiplus.dll`; no launch options are set on our machine and everything works.
 
 ## 2. Modloader 4.1.0 (logdot)
-Download `Artifacts.zip` from the latest release, extract into the game folder. You must end up with **`bass.dll` (the loader) and `bass.dll_` (the original)** next to `Highfleet.exe`.
+Download `Modloader.zip` from the latest release (v4.1.0; the asset was called `Artifacts.zip` in older releases and the upstream README still says so). The zip contains **only the loader `bass.dll`** (about 2.3 MB), no `bass.dll_`. **First rename the game's own `bass.dll` (257,536 bytes, the real BASS audio library) to `bass.dll_`, then copy the loader's `bass.dll` in**; the loader loads `<its own path>_` and forwards audio calls to it, and nothing renames the original for you. You must end up with **`bass.dll` (the loader) and `bass.dll_` (the original)** next to `Highfleet.exe`. If you copied first, Steam's 'Verify integrity of game files' restores the original. [game, checked on the 2026-10-14 install; loader source `src/lib.rs`]
 Start the game once and close it: `Modloader/` appears with `logs/`, `config/logging.json`, `mods/`. Its newest log (`Modloader/logs/Highfleet_<date>.log`) must say `Highfleet version: Steam 1.163`.
 
 ## 3. Companion mods (drop DLLs in `Modloader/mods`, configs in `Modloader/config`)
