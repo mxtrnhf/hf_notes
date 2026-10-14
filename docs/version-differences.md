@@ -85,8 +85,7 @@ The shift therefore climbs through the zones (0, +4, +0x10, +0x14, then +0x30 at
 | `count` | 0x798 | 0x7a8 | +0x10 | [V] (`m_count`) |
 | `isLoot`, `isBlueprint`, `isWheel`, `isLeg` | 0x79c, 0x79d, 0x79f, 0x7a0 | 0x7ac, 0x7ad, 0x7af, 0x7b0 | +0x10 | [V] (blueprint flag 0x7ad) |
 | `m_mdl_fuel` | 0x7e8 | 0x7f8 | +0x10 | [C] |
-| `mdl_fuel` (double, copied as two words) | 0x7f0 | 0x800 (second word 0x804) | +0x10 | [C]; our notes' "current fuel +0x804" is the upper word of this double [?] |
-| `mdl_fss` | 0x7f8 | 0x808 | +0x10 | [C] |
+| ~~`mdl_fuel` double at 0x800, `mdl_fss` at 0x808~~ | | | | **wrong**, see the resolution below: fuel double `0x7f8`, `m_mdl_fss` float `0x800`, `m_mdl_crew` int `0x804` [code] |
 | `m_mdl_pump`, `field_0x82c` | 0x828, 0x82c | 0x838, 0x83c | +0x10 | [C] copy-order pairing |
 | `mdl_turbine` | 0x834 | **0x848** | **+0x14** | [C]; **0x848 is the field `UpdateEngineCovered` writes and the missile launch tests** (see below) |
 | `field_0x838` | 0x838 | 0x84c | +0x14 | [C] |
@@ -108,7 +107,7 @@ The shift therefore climbs through the zones (0, +4, +0x10, +0x14, then +0x30 at
   (`0x828..0x880` in 1.151) and the `aircraftLogic`/lighting tail need individual attention.
 * **The notes' offsets are self-consistent with this table** at every anchor I could cross-check (health, count/blueprint, logic, sectors, floor, edRotate, covered, weapon ammo): good
   evidence that `structures.md` is right for 1.163 and that the stale part is the Ghidra struct, not the notes.
-* **Open: Body `+0x800`/`+0x804`.** The 1.151 name `mdl_fuel` is a **double** copied as two words (0x800/0x804) in 1.163, yet the ship stats loop adds `Body +0x804` as a 32-bit integer into the crew total (see [findings/sensors-and-crew.md](findings/sensors-and-crew.md)). The two readings conflict; `structures.md` lists `+0x804` with both readings and flags the conflict. Settle it by reading a fuel part and a crewed module in game.
+* **Resolved 2026-10-14 (blind re-derivation, two agents): Body `+0x7f8` is the part's current fuel (double, key `m_mdl_fuel`), `+0x800` is `m_mdl_fss` (float), `+0x804` is `m_mdl_crew` (int).** The ship-level sums agree: `0x140071380` adds part `+0x7f8` (double) into ship `+0x1638` and part `+0x804` (int) into ship `+0x17ec`. The two table rows below that put the `mdl_fuel` double at `0x800` and `mdl_fss` at `0x808` are wrong (the 1.151-name pairing was off by one slot). Not read in game. Old text kept for the record: **Open: Body `+0x800`/`+0x804`.** The 1.151 name `mdl_fuel` is a **double** copied as two words (0x800/0x804) in 1.163, yet the ship stats loop adds `Body +0x804` as a 32-bit integer into the crew total (see [findings/sensors-and-crew.md](findings/sensors-and-crew.md)). The two readings conflict; `structures.md` lists `+0x804` with both readings and flags the conflict. Settle it by reading a fuel part and a crewed module in game.
 
 ### Weapon and ammo fields, resolved with `FireGun` (1.151 `0x140032fa0`, 1.163 `0x140032e60`) [code]
 The two versions of `FireGun` use the same fields in the same roles, so each field pairs exactly:

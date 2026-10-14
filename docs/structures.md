@@ -20,7 +20,7 @@ Tags: legend in `../README.md`. Offsets are hex byte offsets. What moved between
 
 **Codes nest as bit sets.** The code tests membership with a mask, for example `(code & 0x147) == 0x147` for a fleet and `(code & 0x800000001047) == 0x800000001047` for a MapCraft
 [code], and `& 0x4000f`, `& 0x2f` for Body-like objects. The values themselves look like an inheritance chain: 0x7 (Node) -> 0xf (Body) -> 0x1f (Frame) / 0x2f (Creature), 0x7 -> 0x47 ->
-0x147 (Escadra) / 0xc7 (location), and 0x1047 as the common base of Missile (0x400000001047) and MapCraft (0x800000001047) [guess]. Practical rule: to test "is this a X", mask and compare; do not compare equal to the code.
+0x147 (Escadra) / 0xc7 (location), and 0x1047 as the common base of Missile (0x400000001047) and MapCraft (0x800000001047) [guess]. Practical rule: to test "is this a X", mask and compare. Caveat [code, 2026-10-14 check]: fleet tests are masks (`AND EAX,0x147` at many sites) but Body tests are exact equality (`CMP qword [x+0x28],0xf` at `0x14001d3f9`, `0x14004a227`, `0x14004c4af`), so "never compare equal" holds for the higher classes, not for plain Body checks.
 
 Source of the sizes [code]: the copy routine `FUN_1401bfd00` (`CopyObject`, one `New(size)` per code) for every row **except** `0x800000001047`. That code has no case in the copy routine;
 its 0x340 comes from the default-construction factory (entry `0x1402024e0`, Ghidra name `Panel::Constructor`; a switch on the code, `New(0x340)` then `FUN_1400e4530`, which
@@ -46,7 +46,7 @@ builds on the `Mark` constructor). The same factory gives the same sizes for the
 | +0x848 | `m_mdl_covered` (1.0 when the engine cone is blocked); also a cooldown test in the launch [code] |
 | +0x84c / +0x850 / +0x854 / +0x858 / +0x85c | saved weapon keys (matched in `bodySecondaryInit`): `m_weapon_type`, `m_weapon_ammo` (the ammo index `FireShell` dispatches on), `m_weapon_ammo_extra`, **`m_weapon_ammo_amount` = reserve rounds (int)**, `m_weapon_ammo_extra_amount` [code, key strings] |
 | +0x860 / +0x864 / +0x868 | runtime, no save key: **loaded** rounds (float; `FireGun` decrements it, needs >= 1) / reload step timer / rounds the current reload step adds (1 if the reserve was non-empty, else 0). `FUN_140054fb0` moves rounds reserve -> loaded one step at a time. Magazine size = Stats `+0x148`, reload time = Stats `+0x14c` [code] |
-| +0x800 / +0x804 | 1.151 name `mdl_fuel` (double, two words); but the ship stats loop sums `Body +0x804` as an int next to crew (crew present?). Conflicting readings, open: [version-differences.md](version-differences.md) [code] |
+| +0x7f8 / +0x800 / +0x804 | `m_mdl_fuel` (double, current fuel of a tank part), `m_mdl_fss` (float), `m_mdl_crew` (int, crew in the part; summed into ship `+0x17ec`) [code, save keys in `bodySecondaryInit` and the sums in `0x140071380`; blind re-derivation 2026-10-14; resolves the old `+0x804` fuel-or-crew conflict] |
 | +0x8d8 `m_stage` (not elevation), +0x90c `m_z` [code] |
 | +0x9b0 / +0x9b8 | `m_floor_type` bitmask / `m_floor` = **elevation** [game] |
 | +0xa28 | `m_ed_rotate` [code] |
