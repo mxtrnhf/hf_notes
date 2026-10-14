@@ -8,9 +8,11 @@ Facts below come from our own installs; the Proton launch options are the part o
 * Steam may install a newer build than 1.163. Check after step 2: `error.log` starts with `HIGHFLEET v.1.163`, and later the modloader log says `Highfleet version: Steam 1.163`. Our DLLs refuse to run on any other build.
 
 ## 1. Clean reinstall
-1. Steam: uninstall Highfleet. 2. Delete what is left of the folder (`Modloader/`, `modloader/`, `shipworksext/`, `hge/` clones, `bass.dll.bak`...). The game folder must show only Steam's files.
-3. Install through Steam, then **verify the game files** once. 4. Restore `Saves/`, `SavesSkirmish/`, `Ships/`, `Config.ini` from the backup (`Modloader/config/` only after step 3 has created it) *while the game is closed*.
-The Wine prefix (`~/.local/share/Steam/steamapps/compatdata/1434950`) survives an uninstall and already has `gdiplus.dll`; no launch options are set on our machine and everything works.
+1. Steam: uninstall Highfleet. 
+2. Delete what is left of the folder. The game folder must show only Steam's files.
+3. Install through Steam, then **verify the game files** once.
+4. Restore `Saves/`, `SavesSkirmish/`, `Ships/`, `Config.ini` from the backup (`Modloader/config/` only after step 3 has created it) *while the game is closed*.
+-# Linux only: The Wine prefix (`~/.local/share/Steam/steamapps/compatdata/1434950`) survives an uninstall and already has `gdiplus.dll`; no launch options are set on our machine and everything works.
 
 ## 2. Modloader 4.1.0 (logdot)
 Download `Modloader.zip` from the latest release (v4.1.0; the asset was called `Artifacts.zip` in older releases and the upstream README still says so). The zip contains **only the loader `bass.dll`** (about 2.3 MB), no `bass.dll_`. **First rename the game's own `bass.dll` (257,536 bytes, the real BASS audio library) to `bass.dll_`, then copy the loader's `bass.dll` in**; the loader loads `<its own path>_` and forwards audio calls to it, and nothing renames the original for you. You must end up with **`bass.dll` (the loader) and `bass.dll_` (the original)** next to `Highfleet.exe`. If you copied first, Steam's 'Verify integrity of game files' restores the original. [game, checked on the 2026-10-14 install; loader source `src/lib.rs`]
