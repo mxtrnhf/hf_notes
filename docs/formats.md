@@ -8,6 +8,14 @@ Tags: see the legend in `../README.md` (**[game]**, **[code]**, **[guide]**, **[
 * The numeric header is the class code (`m_code`): 15 Body, 31 Frame, 47 Creature, 7 Node, 199 location, 327 escadra, 515 intel (see `structures.md`).
 * Serializer `FUN_14004f010`, Body field loader `FUN_140025240`.
 
+## Check the game's own data files before guessing [guide]
+The game folder (`~/.local/share/Steam/steamapps/common/HighFleet/`) is ground truth for anything that is data and not code. Before reasoning from the decompilation or from probe logs, grep the `.seria` files there:
+* `Libraries/OL.seria`: per-part **stats** (price, crew/power/ammo needs, armor, `m_missile_explosive`, `m_missile_ap`, `m_weapon_load_time`, ...). Example: the blast "strength" in the probe's `BLAST` lines is the missile's `m_missile_ap`, and the Zenith warhead (`MDL_MISSILE_01`) is `m_missile_explosive` 200 in 1.151 and 300 in 1.163, found by diffing the two files.
+* `Libraries/parts.seria`: **bodies** (`m_health`, `m_health_max`, density, mass, meshes) per `m_oid`.
+* `Data/Dialogs/*.seria_enc`: part names (`MDL_MISSILE_01` is "R-5 ZENITH"); decode with the cipher below. `Ships/*.seria` and saves: real ship layouts with part HP.
+* **The folder holds whichever version is installed.** Switching the Steam branch overwrites these files, so copy `Libraries/` (and `Data/Dialogs/`) to a versioned folder (for example `hf_notes/ref/game-data-1.151/`) while the other version is installed, then diff. The 1.151 `OL.seria` was seen once and not kept; the 1.163 copies are `~/Downloads/OL.seria`, `~/Downloads/parts.seria`, `hf_aa_missile/backup/*.orig`.
+* Quick checks: `grep -n "m_oid=MDL_MISSILE_01" -A40 Libraries/OL.seria`, or load the file with a small script and compare the stats of two versions field by field (what the explosion finding did).
+
 ## Part libraries (`Libraries/`)
 * `OL.seria`: `m_stats=2051` records, one per part id `m_oid`: price, category, crew/power/ammo needs, weapon and missile stats
   (`m_weapon_load_amount/time/rate/caliber`, `m_launched_speed/range`, `m_missile_explosive/ap`, ...; offsets in `structures.md`).
