@@ -325,3 +325,5 @@ These are handled by something other than a plain `stringCompLengthAndContent` a
 ## Unknowns
 - Which branch (if any) in the decompilation each catalog name leads to; only the test address is known.
 - How the 21 non-catalog names are matched.
+
+See also [click-func-branches.md](click-func-branches.md) for decompiled branches of BUY_BUY, FUEL_BUY_SLIDER and the MAPMODE_MISSION fuel presets.

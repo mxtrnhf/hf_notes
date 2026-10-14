@@ -34,7 +34,7 @@ All [observed], from a read-only Ghidra script.
 | Distinct string constants referenced | 476 |
 | Distinct callees | 294 |
 
-Decompiled C (8,589 lines, default decompiler settings): 941 `if`, 121 `else`, 5 `else if`, 0 `switch`, 0 `case`, 324 `goto`, 67 labels, 48 while/do, 30 for. Maximum nesting is about 79 levels (indent measured as leading spaces / 2).
+Decompiled C (8,589 lines, default decompiler settings): 941 `if`, 121 `else`, 5 `else if`, 0 `switch`, 0 `case`, 324 `goto`, 67 labels, 48 while/do, 30 for. Nesting, real brace-depth measurement [observed, read-only Ghidra script]: maximum depth **40** (first reached at decompiled line 6838), final depth 0. Lines per depth cluster at depth 4 (610 lines), 5 (551), 12-14 (about 500-560 each), 33 (421) and 35 (588); `if` statements per depth go up to 140 (at depth 4). The earlier figure "maximum nesting about 79 levels" was measured from leading spaces and is **inflated** by the indentation of wrapped-line continuations; ignore it. The `if (name == X) {..}` tests are siblings in the chain at the same level (observed in the four branches in [click-func-branches.md](click-func-branches.md)). The deep clusters (depth 12-14, 33, 35) are not yet explained; whether the editor tests are nested under "no match yet" conditions is unchecked.
 
 Most-called callees (names in `?` are Ghidra database names, a [guess] about meaning):
 | Address | Name | Calls |
@@ -55,7 +55,7 @@ Most-called callees (names in `?` are Ghidra database names, a [guess] about mea
 
 Interpretation [code, from the numbers above]: this is one huge chain of independent `if (name == "...")` style tests plus deeply nested logic, not a switch and not a table; it reaches its single return through gotos. A click walks the tests until its element name matches; the cost is negligible. The Ghidra names (Get_Profile?, copyIntoEscadraName?, diffArrayDivBy24, multElementsBy24) are guesses [guess], but they suggest the handler does fleet/profile work directly (shop, fleet naming, etc.), i.e. it contains game logic, not only UI dispatch. (Giant if-chain functions like this are common in other games too.)
 
-Next step: done, see [click-func-elements.md](click-func-elements.md) (catalog of 252 element names, 43 seen in probe logs).
+Next step: done, see [click-func-elements.md](click-func-elements.md) (catalog of 252 element names, 43 seen in probe logs). Decompiled example branches (BUY_BUY, fuel slider, mission fuel presets): [click-func-branches.md](click-func-branches.md).
 
 ## What the probe knows about it
 `hf_probe` hooks its entry (26 stolen bytes) and logs `CLICK` lines. Arguments: RCX = ctx, RDX = `gui*`, R8D = button, R9 = `[gui+0xa80]`. The GUI element name is at `gui+0xa40`, its class string at `+0x8`, the fx/distortion name at `+0xad8`. Verified detail is in [ui-events-and-screens.md](ui-events-and-screens.md); not copied here.
