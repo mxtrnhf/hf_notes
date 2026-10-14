@@ -55,7 +55,7 @@ Most-called callees (names in `?` are Ghidra database names, a [guess] about mea
 
 Interpretation [code, from the numbers above]: this is one huge chain of independent `if (name == "...")` style tests plus deeply nested logic, not a switch and not a table; it reaches its single return through gotos. A click walks the tests until its element name matches; the cost is negligible. The Ghidra names (Get_Profile?, copyIntoEscadraName?, diffArrayDivBy24, multElementsBy24) are guesses [guess], but they suggest the handler does fleet/profile work directly (shop, fleet naming, etc.), i.e. it contains game logic, not only UI dispatch. (Giant if-chain functions like this are common in other games too.)
 
-Next step: dump the 476 strings (element names vs other strings) as a catalog and match them against `CLICK` lines in the probe logs (`hf_probe_build/logs/*/probe.log`) to list clickable elements never seen yet.
+Next step: done, see [click-func-elements.md](click-func-elements.md) (catalog of 252 element names, 43 seen in probe logs).
 
 ## What the probe knows about it
 `hf_probe` hooks its entry (26 stolen bytes) and logs `CLICK` lines. Arguments: RCX = ctx, RDX = `gui*`, R8D = button, R9 = `[gui+0xa80]`. The GUI element name is at `gui+0xa40`, its class string at `+0x8`, the fx/distortion name at `+0xad8`. Verified detail is in [ui-events-and-screens.md](ui-events-and-screens.md); not copied here.
