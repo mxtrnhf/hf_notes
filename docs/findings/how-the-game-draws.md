@@ -77,7 +77,7 @@ Not seen at all: B14, B15, B18, B25-B28 never fired. [observed]
 * **Virtual 1920x1080 frame**: the coordinate space of `x`/`y` for text and sprites, scaled to the real window. [observed]
 
 ## 6. Testing a seam with the hf_probe seam test
-The seam test is in `hf_probe` v2.2 (`/home/maksim/Development/hf_probe`; built DLL `hf_probe_build/versions/hf_probe_v2.2.dll`). It wraps the flush calls and draws the seam id (for example `M11`) in `fixed_16`, white, after each one. The highest visible label in a screenshot is the topmost seam. [code]
+The seam test is in `hf_probe` v2.2 (`/home/maksim/Development_Highfleet/hf_probe`; built DLL `hf_probe_build/versions/hf_probe_v2.2.dll`). It wraps the flush calls and draws the seam id (for example `M11`) in `fixed_16`, white, after each one. The highest visible label in a screenshot is the topmost seam. [code]
 1. Put the DLL in `Modloader/mods/` and a `Modloader/config/probe.json` next to the others. Keys: `seam_test`, `seam_map`, `seam_battle`, `seam_other` (group switches) and `seam_only` (a list such as `["M10","M11","M16"]`; empty means all enabled groups); `seam_key` defaults to `F7`. The example used for the map run is `hf_probe_build/run_map_clean/Modloader/config/probe.json`: `{"seam_battle": false, "seam_other": false, "seam_only": ["M10","M11","M12","M13","M14","M15","M16"], "sprite_test": false}`. [code][observed]
 2. Start the game, go to the screen under test, and take screenshots with nothing else open (no dialogue unless that is the case under test).
 3. **F7 toggles drawing** on and off (`SEAM drawing on/off` in `probe.log`), so an A/B screenshot pair shows exactly what the labels cover. [code]

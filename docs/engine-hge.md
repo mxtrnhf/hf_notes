@@ -1,6 +1,6 @@
 # The engine: HGE (Haaf's Game Engine)
 
-The game is built on **HGE 1.8** (open source; stock copy in `~/Development/hge_src`, GitHub masonm12/HGE, with core source, helpers, and the tools). The game's build is **modified** (64-bit, extra log lines,
+The game is built on **HGE 1.8** (open source; stock copy in `~/Development_Highfleet/hge_src`, GitHub masonm12/HGE, with core source, helpers, and the tools). The game's build is **modified** (64-bit, extra log lines,
 64-bit minizip) but keeps HGE's structure, which explains much of what we found by hand (`.res` scripts, `hge.log`, `.fnt`, `.psi`, BASS audio).
 
 ## Evidence [code, Ghidra on the dump]

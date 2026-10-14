@@ -4,7 +4,7 @@ Order matters in two places: the modloader before any mod, and the game must hav
 Facts below come from our own installs; the Proton launch options are the part of this page you may not need (see "Proton").
 
 ## 0. Before the reinstall
-* Back up `Saves/`, `SavesSkirmish/`, `Ships/`, `Config.ini`, `Modloader/config/` (a tarball of these plus `Modloader/config` is in `~/Development/hf_game_backup`).
+* Back up `Saves/`, `SavesSkirmish/`, `Ships/`, `Config.ini`, `Modloader/config/` (a tarball of these plus `Modloader/config` is in `~/Development_Highfleet/hf_game_backup`).
 * Steam may install a newer build than 1.163. Check after step 2: `error.log` starts with `HIGHFLEET v.1.163`, and later the modloader log says `Highfleet version: Steam 1.163`. Our DLLs refuse to run on any other build.
 
 ## 1. Clean reinstall

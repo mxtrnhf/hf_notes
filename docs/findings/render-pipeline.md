@@ -70,9 +70,9 @@ Fonts defined in the game's `Media/Fnt/fonts.res` (**58 declared plus one undecl
 4. Seam: wrap the `E8 rel32` call at **`0x140303fb4`** (bytes `E8 C7 03 DD FF`, calls the label pass `0x1400d4380`) with a `patchy::Trampoline` (`absolute_call` the original, `preserved_call` ours, `relative_jump` to `0x140303fb9`). Never use `save_overwritten` on a rel32 call (patchy copies the bytes verbatim). **Correction:** an earlier version of this note recommended wrapping the call at `0x140300d63`; that seam is wrong, see attempt 1 below.
 
 ## Live test 2026-10-14 (debug DLL `hf_draw_test`)
-Crate `/home/maksim/Development/hf_draw_test` (local git, commit `45b477c`, no remote; built DLL in `hf_draw_test_build/Modloader/mods/`), Rust + `patchy::Trampoline`, installed by the user on the Steam 1.163 install next to `highfleet_qol.dll`. Per editor frame it draws four yellow lines with `dinpro_45_black`: font from `GetFont` `0x1401703e0` on `Media.res` `0x143a119e8` (that pointer is the resource manager and works), style via `0x1401a8710(name, 0.5, 2, 0xffffff00)`, text via `0x14016eb40 Render(font, x, y, align, text, null, null, 0, 0.0)`, then the style is restored from the saved `+0x100c`/`+0x1020`/`+0x1028`. Lines: `QOL TEST left (100,100)` align 0, `QOL TEST centre (960,540)` align 2, `QOL TEST right (1820,1000)` align 1, `frame N` at (100,200).
+Crate `/home/maksim/Development_Highfleet/hf_draw_test` (local git, commit `45b477c`, no remote; built DLL in `hf_draw_test_build/Modloader/mods/`), Rust + `patchy::Trampoline`, installed by the user on the Steam 1.163 install next to `highfleet_qol.dll`. Per editor frame it draws four yellow lines with `dinpro_45_black`: font from `GetFont` `0x1401703e0` on `Media.res` `0x143a119e8` (that pointer is the resource manager and works), style via `0x1401a8710(name, 0.5, 2, 0xffffff00)`, text via `0x14016eb40 Render(font, x, y, align, text, null, null, 0, 0.0)`, then the style is restored from the saved `+0x100c`/`+0x1020`/`+0x1028`. Lines: `QOL TEST left (100,100)` align 0, `QOL TEST centre (960,540)` align 2, `QOL TEST right (1820,1000)` align 1, `frame N` at (100,200).
 
-**Attempt 1: hook at `0x140300d63` (the call to the editor renderer `0x140300db0`; original call first, then ours).** Screenshot `/home/maksim/Development/hf_draw_test_build/Screenshot_20261014_123328.png`.
+**Attempt 1: hook at `0x140300d63` (the call to the editor renderer `0x140300db0`; original call first, then ours).** Screenshot `/home/maksim/Development_Highfleet/hf_draw_test_build/Screenshot_20261014_123328.png`.
 * Log: `hook installed at 0x140300d63`, `first editor frame, font 0x1b93b780, scale 1, colour 0xff73604c, blend 2` [game]. The hook ran, the font was found and already carries the editor's own style (colour `0xff73604c`, blend 2).
 * **No test text visible** [game]. The QoL GDI overlay is visible top-left and reads `ELEVATION  U up  P down  Backslash auto` (the configurable keys work).
 * Likely reason [guess]: the editor labels are drawn into an offscreen target that is flushed and composited inside `0x140300db0`, so output issued after it returns is lost.
@@ -87,7 +87,7 @@ Crate `/home/maksim/Development/hf_draw_test` (local git, commit `45b477c`, no r
 
 The whole bind, labels, flush block is skipped when byte `[0x1403bd09f]` is 0 (`JZ` at `0x140303f9d`). That byte has only **read** xrefs (`0x140303f96` in the editor renderer, `0x14030c673` in the campaign renderer `0x14030a6b0`, `0x1403124b8` in `0x14030f250`), no writer, and is 1 in the process dump together with its neighbours `0x1403bd098`..`0x1403bd0a3` (all 1) [code]. So it is a static "layer enabled" flag, not a UI-hide toggle, and the block runs in the editor every frame; the neighbouring flags are probably per-layer switches [guess].
 
-**Attempt 2: hook at `0x140303fb4` (the call to the label pass; original call first, then ours).** Screenshot `/home/maksim/Development/hf_draw_test_build/screenshot_working.png` (2560x1440, 16:9).
+**Attempt 2: hook at `0x140303fb4` (the call to the label pass; original call first, then ours).** Screenshot `/home/maksim/Development_Highfleet/hf_draw_test_build/screenshot_working.png` (2560x1440, 16:9).
 * Log: `hook installed at 0x140303fb4`, `first editor frame, font 0x1ae0c820, scale 1, colour 0xff73604c, blend 2` [game].
 * All markers visible and sharp, `frame N` counting (345 in the shot) [game].
 
@@ -118,7 +118,7 @@ The whole bind, labels, flush block is skipped when byte `[0x1403bd09f]` is 0 (`
 2. Log-only detour on `0x14016eb40` printing font, `x`, `y`, align and text for editor frames.
 
 ## Font decision (2026-10-14) [user decision]
-The first native elevation hint used `dinpro_14_bold`; the user found it too bold and not pixel-like enough (screenshot `/home/maksim/Development/hf_draw_test_build/screenshot_working_2.png`). After a 20-font live sampler ([game], `screenshot_font_test.png` in the same folder) the user picked `fixed_16`; the QoL hint now uses `fixed_16`, white `0xffffffff`, scale 1.0, blend 2, right-aligned at x=1880, y=24. Every game font is ASCII only; see [fonts.md](fonts.md).
+The first native elevation hint used `dinpro_14_bold`; the user found it too bold and not pixel-like enough (screenshot `/home/maksim/Development_Highfleet/hf_draw_test_build/screenshot_working_2.png`). After a 20-font live sampler ([game], `screenshot_font_test.png` in the same folder) the user picked `fixed_16`; the QoL hint now uses `fixed_16`, white `0xffffffff`, scale 1.0, blend 2, right-aligned at x=1880, y=24. Every game font is ASCII only; see [fonts.md](fonts.md).
 
 ## Map and battle renderers: flush sites, state bytes [code]
 Data only; the label-pass equivalents (the bind, labels, flush pattern seen in the editor at `0x140303faf` / `fb4` / `fc2`) are **not found yet** and are the next RE chunk.
