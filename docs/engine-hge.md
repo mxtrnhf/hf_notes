@@ -28,7 +28,7 @@ Same order as the stock header, except one System_ method is missing between slo
 ## Stock HGE formats used by the game [game]
 * `.res` scripts (`formats.md`): `Include/Texture/Animation/Sound/Font/Particle/...`, parsed by `RScriptParser` (source `src/helpers/parser.cpp`, `resources.cpp`).
 * **Particles `Media/Prt/*.psi`: 144 files, every one exactly 128 bytes** = HGE's `hgeParticleSystemInfo`; editable with HGE's `particleed` (`tools/particleed`, source `src/particleed`).
-* **Fonts `Media/Fnt/*.fnt`:** text `[HGEFONT]`, `Bitmap=...png`, `Char="x",x,y,w,h,pre,post` lines; HGE `fonted`/`fontconv`. 59 files.
+* **Fonts `Media/Fnt/*.fnt`:** text `[HGEFONT]`, `Bitmap=...png`, `Char="x",x,y,w,h,pre,post` lines; HGE `fonted`/`fontconv`. 59 `.fnt` files, 58 declared in `Media/Fnt/fonts.res` (`Font <name>` / `{ filename=Media\\Fnt\\<name>.fnt }`); all are ASCII `0x20`-`0x7E` only except three digit-only fonts; glyph bitmaps live in the texture atlases (`Media/Tex/Fnt1.res`, `Fnt2.res`). Full list and metrics: [findings/fonts.md](findings/fonts.md).
 * Atlases are produced by `texasm` (`src/texasm`). Audio goes through BASS (the modloader proxies `bass.dll`).
 
 ## What does NOT go through HGE
