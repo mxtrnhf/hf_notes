@@ -1,6 +1,6 @@
 # File formats
 
-Tags: see the legend in `../README.md` (**[game]**, **[code]**, **[guide]**, **[guess]**).
+Tags: legend in `../README.md`.
 
 ## `.seria` (parts, ships, saves, levels, config)
 * Nested nodes `header=number` + `{` ... `}`; braces alone on their own line; **never indent** (breaks the file). Defaults are omitted.

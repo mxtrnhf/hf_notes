@@ -3,7 +3,7 @@
 A debug-only DLL that records what the game does while the user presses keys, hovers, clicks and drives. Goal: find the unknown variables (hover, selection, mode, cursor) by observation. **Not part of QoL.**
 
 ## The probe
-* Crate `/home/maksim/Development_Highfleet/hf_probe` (local git, commit `7e7a0c0`), DLL `/home/maksim/Development_Highfleet/hf_probe_build/Modloader/mods/hf_probe.dll`, test steps in `hf_probe_build/TEST.md`. Output: `Modloader/probe.log` in the game dir (`/home/maksim/.local/share/Steam/steamapps/common/HighFleet/Modloader/probe.log`), written by its own buffered thread.
+* Crate `$HF_DEV/hf_probe` (local git, commit `7e7a0c0`), DLL `$HF_DEV/hf_probe_build/Modloader/mods/hf_probe.dll`, test steps in `hf_probe_build/TEST.md`. Output: `Modloader/probe.log` in the game dir (`<game dir>/Modloader/probe.log`), written by its own buffered thread.
 * A 15 ms poll thread that works in **every screen** while the game window has focus: key and mouse-button edges (`GetAsyncKeyState`), the cursor (`GetCursorPos` + `ScreenToClient`, mapped to the 1920x1080 frame), and a memory diff of regions: `editor_flags` `0x1403ef300`+0x100, `held_and_zoom` `0x1403c0d00`+0x180, `layer_flags` `0x1403bd000`+0x200, `mode_globals` `0x143a11960`+0x40, `mode_flags` `0x147fc6f80`+0x80, and the held part's whole `0xa40`-byte `Body`.
 * `HELD` lines: the held-part pointer `0x1403c0d88`, gated by the editor flag `0x1403ef368`. Optional raise of `dbgLogMode`.
 * **Editor only:** a HUD (right side, `x=1890`, `y=120`, right aligned, `fixed_16`) and a one-sprite test, drawn from the label-pass hook `0x140303fb4` (see [render-pipeline.md](render-pipeline.md)).
@@ -38,7 +38,7 @@ User actions: opened the ship editor, hovered palette widgets, picked and held p
 * Per-byte `MEM` lines are unreadable (3144 of 3257 lines).
 
 ## Run 2 (v1.1, 2026-10-14) [game]
-* Installed probe: v1.1 (`hf_probe.dll`, 407,040 bytes, SHA-256 starts `d8f70b24`, the `hf_probe_build` copy) [file]. Log: `/home/maksim/.local/share/Steam/steamapps/common/HighFleet/Modloader/probe.log`, **1356 lines** (`MEM` 835, `MOUSE` 212, `KEY` 110, `NOISE` 89, `WHEEL` 53, `HELD` 29, `MODE` 21, `FOCUS` 4, `SPRITE` 1), about 190 s of play. Screenshots (2560x1440, Steam names carry the wall-clock time): `/home/maksim/Development_Highfleet/hf_probe_build/2026101413xxxx_N.jpg`.
+* Installed probe: v1.1 (`hf_probe.dll`, 407,040 bytes, SHA-256 starts `d8f70b24`, the `hf_probe_build` copy) [file]. Log: `<game dir>/Modloader/probe.log`, **1356 lines** (`MEM` 835, `MOUSE` 212, `KEY` 110, `NOISE` 89, `WHEEL` 53, `HELD` 29, `MODE` 21, `FOCUS` 4, `SPRITE` 1), about 190 s of play. Screenshots (2560x1440, Steam names carry the wall-clock time): `$HF_DEV/hf_probe_build/2026101413xxxx_N.jpg`.
 * **Aligning screenshots with the log.** Probe `t = 0` is the wall-clock time of the probe's `running` line in the modloader log `Highfleet_2026-10-14_13-32-43.log`, i.e. `13:32:43`. A screenshot named `1333xx` is then at `t = xx - 43 s` (plus minutes). This is how the screens below were tied to `MODE` lines.
 
 | Screenshot (wall clock / probe t) | Screen | Dispatcher branch at that time |
@@ -63,12 +63,12 @@ First run with the log-only entry hooks and the state watchers; QoL loaded with 
 * **Correction to the click field name:** v2.0 printed the string at `gui+0xad8` as `action`. Its values (`gui_mil_focus`, `gui_red_opaq`, `gui_hud_white`, `editor_white`, `slider_green`) are **Distortion resource names** from `Media/Dst/distortion.res`, not actions and not Animation names [file]. v2.1 prints it as `fx`.
 * **`LOAD` read the wrong argument:** the path is the second argument (a literal `Libraries/parts.seria` arrived there). Fixed in v2.1 (commit `f094dec`, not yet run in game).
 * **Supersedes** the Run 2 line that shop screens "run the battle branch": the flags now say which screen it is (`bc8` city landing hub, `bc9` supplies / shop, `bd4` flight HUD after leaving the city shipworks, `bb7` combat); see the table in the new note and in [render-pipeline.md](render-pipeline.md).
-* Logs are preserved at `/home/maksim/Development_Highfleet/hf_probe_build/logs/2026-10-14_1421_v2.0/` (`probe.log` is recreated at every game start).
+* Logs are preserved at `$HF_DEV/hf_probe_build/logs/2026-10-14_1421_v2.0/` (`probe.log` is recreated at every game start).
 
 ## Lessons / blind spots [game]
 * **The v1.1 auto-noise filter hid what we hunt.** It suppressed for good any byte that changed in more than 25% of the polls, and a cursor float that moves with the mouse crosses that line within seconds. So the virtual cursor is **not missing from memory; the probe filtered it out**. v1.2 writes a summary of the hidden dwords every 5 s (count, float min..max) and un-hides them when they calm down.
 * 89 `NOISE` lines in the log (v1.2: at most one summary per 5 s).
-* Per-byte output was unreadable. v1.1 groups dwords with hex, int and float and names known globals; **v1.2** also resolves pointers to part names (`ptr->MDL_...`) and adds a HUD **watch panel**: the pointers `d58`, `d70`, `held`, `db8` as part names, and the floats `0x1403c0dc0`..`0xcc`, `0x1403c0d60` / `64`, `0x1403ef380`..`8c`, next to the game's own `%i %i` readout. v1.2: commit `a999689` in `/home/maksim/Development_Highfleet/hf_probe`, built to `hf_probe_build` (hash starts `1537b0dd`); the sprite test moves to `(1500,700)` in free space.
+* Per-byte output was unreadable. v1.1 groups dwords with hex, int and float and names known globals; **v1.2** also resolves pointers to part names (`ptr->MDL_...`) and adds a HUD **watch panel**: the pointers `d58`, `d70`, `held`, `db8` as part names, and the floats `0x1403c0dc0`..`0xcc`, `0x1403c0d60` / `64`, `0x1403ef380`..`8c`, next to the game's own `%i %i` readout. v1.2: commit `a999689` in `$HF_DEV/hf_probe`, built to `hf_probe_build` (hash starts `1537b0dd`); the sprite test moves to `(1500,700)` in free space.
 * The F9 / F10 keys must not be required: noise handling has to work unattended.
 
 ## Unknowns

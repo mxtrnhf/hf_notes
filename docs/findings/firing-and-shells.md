@@ -1,6 +1,6 @@
 # Firing: `FireGun`, `FireShell` and how a cannon shell is set up (1.151 read, 1.163 mapped)
 
-Status: **read from both decompilations; nothing run in game.** Tags as in `../../README.md`: **[game]** verified on the real game files or in play · **[code]** read from the decompilation · **[tool]** produced by Ghidra's fuzzy matcher (a similarity score, not proof) · **[guess]** inferred · **[not read]** known gap.
+Status: **read from both decompilations; nothing run in game.** Tags: legend in `../../README.md`.
 The ammo table itself and the 1.151 to 1.163 value changes are in [ammo-1151-vs-1163.md](ammo-1151-vs-1163.md). Weapon fields of the Body (`+0x850`..`+0x874`) are in [../version-differences.md](../version-differences.md).
 
 ## `FireShell`, the projectile factory (1.151 `0x1400307f0`, 1.163 `0x1400300d0`) [code]

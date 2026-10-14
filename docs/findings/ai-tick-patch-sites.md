@@ -1,6 +1,6 @@
 # Tactical AI: close-range cutoff, stand-off, ammo choice (1.163) and their patch sites
 
-Status: **read from the decompilation; none of the patches applied or run in game.** Tags as in `../../README.md`: **[game]** verified on the real game files · **[code]** read from the decompilation · **[guess]** inferred · **[not read]** known gap.
+Status: **read from the decompilation; none of the patches applied or run in game.** Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap tactical AI items ("closing to very short range disables all weapons", "AI consistently gives way to the player", "AP only at extremely short range / LG and INC not used").
 
 ## Where the AI lives

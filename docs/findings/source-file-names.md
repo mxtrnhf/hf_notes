@@ -5,7 +5,7 @@ The exe contains the developers' source paths. Searching the v1.163 program for 
 ## Where such strings come from
 C and C++ compilers have a built-in `__FILE__` that expands to the full path of the file being compiled. Assert and error-log macros print it (with `__LINE__`), so the path ends up as a string in the exe. It costs nothing to read and gives a free map of the source layout and of which subsystems exist.
 
-## The 15 strings (v1.163) [observed]
+## The 15 strings (v1.163) [game]
 | String address | File |
 |---|---|
 | `0x1403525f8` | AircraftLogic.cpp |
@@ -29,7 +29,7 @@ C and C++ compilers have a built-in `__FILE__` that expands to the full path of 
 - Subsystems: `Gui`, `Editor`, `Level`, `FX`, `Body`/`Creature`/`Joint` (physics objects), `AircraftLogic`, `D3DEngine` (a subfolder), `Escadra` = fleet, `Profile` = save/profile.
 - Only files that contain an assert or log call show up, so this is not the full file list.
 
-## Cross-reference: functions that reference each `__FILE__` string (v1.163) [observed]
+## Cross-reference: functions that reference each `__FILE__` string (v1.163) [game]
 Read with a read-only Ghidra script. Entry addresses are listed; the current Ghidra name is given only where one is known, and Ghidra names here are often misleading `rep_...` labels, so treat them as guesses. "Undefined code" means the reference sits in bytes that are not part of any defined function.
 
 | File (string address) | Refs | Functions (entry) |
@@ -51,10 +51,10 @@ Read with a read-only Ghidra script. Entry addresses are listed; the current Ghi
 | VideoTask.cpp (`0x1403771f0`) | 12 | `0x1402ed2f0`, `0x1402f6b00`, `0x140300c20` (scene dispatcher), `0x140300db0` (editor renderer), `0x1403050a0` (battle/city renderer), `0x14030a6b0` (map renderer), `0x14030f250` (menu/other renderer), `0x140316230` |
 
 Interpretation:
-- [observed] All four screen renderers and the scene dispatcher reference VideoTask.cpp, so the rendering code of [render-pipeline.md](render-pipeline.md) lives in VideoTask.cpp.
-- [observed] The flush `0x140083b50` is in D3DEngine.cpp. Ghidra names it `checkD3DEngineStatus?`; it is the engine-status check the assert strings belong to, so "flush" is our working name [guess].
-- [observed] The refuel code `0x140111ff0` is in Escadra.cpp (fleet).
-- [observed] ClickFunc `0x14012f120` is in Gui.cpp.
+- [game] All four screen renderers and the scene dispatcher reference VideoTask.cpp, so the rendering code of [render-pipeline.md](render-pipeline.md) lives in VideoTask.cpp.
+- [game] The flush `0x140083b50` is in D3DEngine.cpp. Ghidra names it `checkD3DEngineStatus?`; it is the engine-status check the assert strings belong to, so "flush" is our working name [guess].
+- [game] The refuel code `0x140111ff0` is in Escadra.cpp (fleet).
+- [game] ClickFunc `0x14012f120` is in Gui.cpp.
 
 ## Earlier attempt (superseded)
 An earlier query said the VideoTask.cpp xrefs were not usable (only DATA references from `rep_...` regions, `0x1402ed7ad`-`0x140316722`, and nothing for the other 14 strings). That was incomplete: the table above, read with a script, resolves them to the functions listed. [guess] The `rep_...` regions are probably parts of those same functions (the address ranges overlap), not checked.

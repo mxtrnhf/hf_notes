@@ -11,16 +11,16 @@ The function that decides what an accepted GUI click does. It is huge, and it is
 | Only caller | `?HandleClick` at `0x140124300` | `?HandleClick` at `0x14012d050` |
 | String reference | "GL_CLICK_AND_CLOSE" (`0x1403383c8`) at `0x1401262ba` | "GL_CLICK_AND_CLOSE" (`0x140364618`) at `0x14012f207` |
 
-[observed] in Ghidra, read-only. Same shape, same caller name and same string, so `FUN_14012f120` is the 1.163 version of `ClickFunc` [code, strong; matched by shape, not a byte-for-byte diff]. Suggested name for the 1.163 database: `ClickFunc`. Renaming is left to the user (the database is treated as read-only here).
+[game] in Ghidra, read-only. Same shape, same caller name and same string, so `FUN_14012f120` is the 1.163 version of `ClickFunc` [code, strong; matched by shape, not a byte-for-byte diff]. Suggested name for the 1.163 database: `ClickFunc`. Renaming is left to the user (the database is treated as read-only here).
 
 Size [observed, v1.163, read-only Ghidra script]: decompiling `FUN_14012f120` gives **8,589 lines** of C, **538,685 characters**, from a function body of 62,272 addresses. The user had heard "10,000+ lines"; Ghidra's line count depends on decompiler width settings, so this is the same order of magnitude. The decompiler needed its payload limit raised (default fails with "Response buffer size exceeded"); it took about 45 s with max payload 1000 MB.
 
-Source file [observed]: the string xref shows Gui.cpp's `__FILE__` string (`0x140363628`) is referenced from `FUN_14012f120` (`0x14012f120`), so ClickFunc lives in Gui.cpp. See [source-file-names.md](source-file-names.md).
+Source file [game]: the string xref shows Gui.cpp's `__FILE__` string (`0x140363628`) is referenced from `FUN_14012f120` (`0x14012f120`), so ClickFunc lives in Gui.cpp. See [source-file-names.md](source-file-names.md).
 
 How to decompile a huge function through the Ghidra MCP [observed that it worked]: scripting enabled with `GHIDRA_MCP_ALLOW_SCRIPTS=1` when starting Ghidra, then a Java script with `DecompileOptions.setMaxPayloadMBytes(1000)` and `DecompInterface.setOptions`.
 
 ## Structure (measured 2026-10-14, v1.163 FUN_14012f120 = ClickFunc)
-All [observed], from a read-only Ghidra script.
+All [game], from a read-only Ghidra script.
 
 | Measure | Value |
 |---|---|

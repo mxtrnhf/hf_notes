@@ -19,12 +19,7 @@
 * Whether `CORE_LAST_LOADED_VERSION` recompute also fixes ships saved with old part data in our mods' situations.
 * Config.ini optional keys (`ref/config-ini.md`) are untested.
 
-## Release
-* Run the reinstall checklist; README follow-ups (troubleshooting, a worked "add a part" guide); optional move to the modloader's logging SDK; LICENSE names are set (`mxtrnhf`).
-* **Release plan: one monolith, the QoL mod.** Elevation, refuel and speed go into logdot's highfleet-qol by pull request (#18 pin, #19 refuel and speed, #20 elevation draft; none accepted yet). The standalone repos (`highfleet-elevation`, `highfleet-speed` public; `hf_refuel`, `hf_multicharge`, `hf_salvo`, `hf_multimissile` local only) are the pre-merge versions; salvo is postponed. `hf_probe` and `hf_draw_test` are debug-only, local, not released.
-* QoL build break (found 2026-10-14): `highfleet-qol` depends on `highfleet-rs` by git URL with no pinned revision and `Cargo.lock` is gitignored, so a fresh build or CI run resolves the newest `highfleet-rs`. Commit `cfa6ae28` (2026-10-13, 'Rename and document 1.163 ammo fields') removed `Ammo::unknown_180h`, which `src/plane_guns.rs:271` (`ammo_max_load`) still uses, so `cargo check --features 1_163` fails. Pinning `highfleet` to `3f6b54b3` in a local lockfile builds. Fix upstream: rename the field use, or commit `Cargo.lock`. Pinned in PR #18 ("Pin highfleet-rs to the last revision that builds", open); CI on PRs #19 and #20 stays red until #18 merges.
-* The modloader README still says the release zip is `Artifacts.zip` and yields both `bass.dll` and `bass.dll_`; v4.1.0's `Modloader.zip` has only the loader `bass.dll`, so users must rename the original themselves (see [install.md](install.md)).
-* Longer term: inject names/descriptions and part definitions at runtime instead of editing game files (removes the Python step and the update-overwrite problem).
+Release plan, open PRs and build breaks: [../STATUS.md](../STATUS.md).
 
 ## Static analysis: findings that still need a live test or a second read
 Each finding note ends with a live-test recipe. Open items:

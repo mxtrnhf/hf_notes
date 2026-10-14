@@ -1,6 +1,6 @@
 # How a ship combines its parts' sensors, and the `+0xd4` crew-capacity question (1.163)
 
-Status: **read from the 1.163 ship stats recompute; not run in game.** Tags as in `../../README.md`: **[game]** verified on the real game files or in play · **[code]** read from the decompilation · **[tool]** produced by Ghidra's fuzzy matcher (a similarity score, not proof) · **[guess]** inferred · **[not read]** known gap.
+Status: **read from the 1.163 ship stats recompute; not run in game.** Tags: legend in `../../README.md`.
 
 Read in the 1.163 ship stats recompute (inside `rep_14006db30_GetValue`, Ghidra name wrong; the stats loop around `0x140072200`-`0x140072614`) and its helper `FUN_140061260`.
 

@@ -1,6 +1,6 @@
 # How the game draws: frame, video task, scene dispatcher, text
 
-Question: where can a mod draw its own text (the elevation hints) so it looks native and lands in the same pass as the game's labels? Steam 1.163, image base `0x140000000`. Tags: [code] decompiled or searched in Ghidra, [guess] inferred. Ghidra stayed read-only.
+Question: where can a mod draw its own text (the elevation hints) so it looks native and lands in the same pass as the game's labels? Steam 1.163, image base `0x140000000`. Tags: legend in `../../README.md`. Ghidra stayed read-only.
 
 ## Frame and video task [code]
 `Init_HGE` (`0x1401ad080`) registers only `HGE_FRAMEFUNC` = `_FrameFunc` (`0x1401a8970`); there is no `HGE_RENDERFUNC`, so the game renders inside the frame function. Task order in `_FrameFunc`:
@@ -70,9 +70,9 @@ Fonts defined in the game's `Media/Fnt/fonts.res` (**58 declared plus one undecl
 4. Seam: wrap the `E8 rel32` call at **`0x140303fb4`** (bytes `E8 C7 03 DD FF`, calls the label pass `0x1400d4380`) with a `patchy::Trampoline` (`absolute_call` the original, `preserved_call` ours, `relative_jump` to `0x140303fb9`). Never use `save_overwritten` on a rel32 call (patchy copies the bytes verbatim). **Correction:** an earlier version of this note recommended wrapping the call at `0x140300d63`; that seam is wrong, see attempt 1 below.
 
 ## Live test 2026-10-14 (debug DLL `hf_draw_test`)
-Crate `/home/maksim/Development_Highfleet/hf_draw_test` (local git, commit `45b477c`, no remote; built DLL in `hf_draw_test_build/Modloader/mods/`), Rust + `patchy::Trampoline`, installed by the user on the Steam 1.163 install next to `highfleet_qol.dll`. Per editor frame it draws four yellow lines with `dinpro_45_black`: font from `GetFont` `0x1401703e0` on `Media.res` `0x143a119e8` (that pointer is the resource manager and works), style via `0x1401a8710(name, 0.5, 2, 0xffffff00)`, text via `0x14016eb40 Render(font, x, y, align, text, null, null, 0, 0.0)`, then the style is restored from the saved `+0x100c`/`+0x1020`/`+0x1028`. Lines: `QOL TEST left (100,100)` align 0, `QOL TEST centre (960,540)` align 2, `QOL TEST right (1820,1000)` align 1, `frame N` at (100,200).
+Crate `$HF_DEV/hf_draw_test` (local git, commit `45b477c`, no remote; built DLL in `hf_draw_test_build/Modloader/mods/`), Rust + `patchy::Trampoline`, installed by the user on the Steam 1.163 install next to `highfleet_qol.dll`. Per editor frame it draws four yellow lines with `dinpro_45_black`: font from `GetFont` `0x1401703e0` on `Media.res` `0x143a119e8` (that pointer is the resource manager and works), style via `0x1401a8710(name, 0.5, 2, 0xffffff00)`, text via `0x14016eb40 Render(font, x, y, align, text, null, null, 0, 0.0)`, then the style is restored from the saved `+0x100c`/`+0x1020`/`+0x1028`. Lines: `QOL TEST left (100,100)` align 0, `QOL TEST centre (960,540)` align 2, `QOL TEST right (1820,1000)` align 1, `frame N` at (100,200).
 
-**Attempt 1: hook at `0x140300d63` (the call to the editor renderer `0x140300db0`; original call first, then ours).** Screenshot `/home/maksim/Development_Highfleet/hf_draw_test_build/Screenshot_20261014_123328.png`.
+**Attempt 1: hook at `0x140300d63` (the call to the editor renderer `0x140300db0`; original call first, then ours).** Screenshot `$HF_DEV/hf_draw_test_build/Screenshot_20261014_123328.png`.
 * Log: `hook installed at 0x140300d63`, `first editor frame, font 0x1b93b780, scale 1, colour 0xff73604c, blend 2` [game]. The hook ran, the font was found and already carries the editor's own style (colour `0xff73604c`, blend 2).
 * **No test text visible** [game]. The QoL GDI overlay is visible top-left and reads `ELEVATION  U up  P down  Backslash auto` (the configurable keys work).
 * Likely reason [guess]: the editor labels are drawn into an offscreen target that is flushed and composited inside `0x140300db0`, so output issued after it returns is lost.
@@ -87,7 +87,7 @@ Crate `/home/maksim/Development_Highfleet/hf_draw_test` (local git, commit `45b4
 
 The whole bind, labels, flush block is skipped when byte `[0x1403bd09f]` is 0 (`JZ` at `0x140303f9d`). That byte has only **read** xrefs (`0x140303f96` in the editor renderer, `0x14030c673` in the campaign renderer `0x14030a6b0`, `0x1403124b8` in `0x14030f250`), no writer, and is 1 in the process dump together with its neighbours `0x1403bd098`..`0x1403bd0a3` (all 1) [code]. So it is a static "layer enabled" flag, not a UI-hide toggle, and the block runs in the editor every frame; the neighbouring flags are probably per-layer switches [guess].
 
-**Attempt 2: hook at `0x140303fb4` (the call to the label pass; original call first, then ours).** Screenshot `/home/maksim/Development_Highfleet/hf_draw_test_build/screenshot_working.png` (2560x1440, 16:9).
+**Attempt 2: hook at `0x140303fb4` (the call to the label pass; original call first, then ours).** Screenshot `$HF_DEV/hf_draw_test_build/screenshot_working.png` (2560x1440, 16:9).
 * Log: `hook installed at 0x140303fb4`, `first editor frame, font 0x1ae0c820, scale 1, colour 0xff73604c, blend 2` [game].
 * All markers visible and sharp, `frame N` counting (345 in the shot) [game].
 
@@ -122,7 +122,7 @@ Shipped in the QoL fork `elevation` branch (commits 95d09cd, 9c8acac; [../mods/e
 2. Log-only detour on `0x14016eb40` printing font, `x`, `y`, align and text for editor frames.
 
 ## Font decision (2026-10-14) [user decision]
-The first native elevation hint used `dinpro_14_bold`; the user found it too bold and not pixel-like enough (screenshot `/home/maksim/Development_Highfleet/hf_draw_test_build/screenshot_working_2.png`). After a 20-font live sampler ([game], `screenshot_font_test.png` in the same folder) the user picked `fixed_16`; the QoL hint now uses `fixed_16`, white `0xffffffff`, scale 1.0, blend 2, right-aligned at x=1880, y=24. Every game font is ASCII only; see [fonts.md](fonts.md).
+The first native elevation hint used `dinpro_14_bold`; the user found it too bold and not pixel-like enough (screenshot `$HF_DEV/hf_draw_test_build/screenshot_working_2.png`). After a 20-font live sampler ([game], `screenshot_font_test.png` in the same folder) the user picked `fixed_16`; the QoL hint now uses `fixed_16`, white `0xffffffff`, scale 1.0, blend 2, right-aligned at x=1880, y=24. Every game font is ASCII only; see [fonts.md](fonts.md).
 
 ## Map and battle renderers: flush sites, state bytes [code]
 Data only; the label-pass equivalents (the bind, labels, flush pattern seen in the editor at `0x140303faf` / `fb4` / `fc2`) are **not found yet** and are the next RE chunk.
@@ -154,7 +154,7 @@ Anchored by the clicks logged just before each change; details, text keys and th
 Probe 2.2 wrapped all 79 flush calls (map M00-M18 = sites above in order, battle B00-B28, other O00-O30) and drew a label after each. Full results and recipe in [seam-test-run-1.md](seam-test-run-1.md). Summary:
 * Map renderer `0x14030a6b0` also draws the **story dialogue scenes** (over a blurred map); battle renderer `0x1403050a0` draws combat **and** the city, shop, supplies and repair screens; `0x14030f250` draws the main menu and difficulty screens.
 * Clean screen-space seams (observed): battle and city **B22-B24, B16, B10-B12**; map **M11**. B00-B09 are faded or glitched; **M16 and M17 are inside the glitch distortion pass** (labels glitch); **M08/M09 labels landed at wrong positions** (transformed layer, [guess] world space).
-* **Best map seam decided by run 2 [observed]: M11 = flush call `0x14030dae4`** (clean, above the cockpit frame, fixed screen space, also clean on dialogue frames); second M16 = `0x14030e1a6`. M10 (`0x14030da75`) is hidden under the cockpit frame; M13-M15 fire only with the Esc menu. Details in seam-test-run-1.md, Run 2. (Replaces the earlier "not decided" note.)
+* **Best map seam decided by run 2 [game]: M11 = flush call `0x14030dae4`** (clean, above the cockpit frame, fixed screen space, also clean on dialogue frames); second M16 = `0x14030e1a6`. M10 (`0x14030da75`) is hidden under the cockpit frame; M13-M15 fire only with the Esc menu. Details in seam-test-run-1.md, Run 2. (Replaces the earlier "not decided" note.)
 * [code] After flush M05 (`0x14030c639`) the gate flag `0x1403bd09f` is read at `0x14030c673`; if set, one global sprite is drawn (`0x1401725c0`) and flush M06 (`0x14030c721`) runs. The map uses the bind variant `0x1400834e0`, not `0x1400835a0`.
 
 Next for the map and battle seams: take the `TEXT` callers of the map screen (`RADAR_MAP_LABLE`, `FUEL_MAP_LABLE`) and of combat (`HONOR_LABLE`, `RETREAT_LABLE`, `TADS_*`), find the functions that contain them, then look for the bind, pass, flush bracket inside `0x14030a6b0` and `0x1403050a0` instead of scanning the 19 and 29 flush sites by hand.

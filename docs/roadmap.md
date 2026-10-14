@@ -59,6 +59,9 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 * **[Mod Scope]** Acceleration and top-velocity modification for rockets (A220). *(partial: constants located, no mod)*
   * Rocket speed lives partly in the `Ammo` record (`speed` 150) and partly in the guidance branch of `creatureLogic` (logic id 130); `FireShell` sets `logicF2 = 1.5`: [findings/firing-and-shells.md](findings/firing-and-shells.md).
 
+### Content pipeline
+* Inject names/descriptions and part definitions at runtime instead of editing game files (removes the Python step and the update-overwrite problem).
+
 ### Physics engine
 * **[Physics]** Limited acceleration restricts the turn rate of missiles (Zenith) and aircraft; capped top speeds restrict projectile velocity. *(open)*
 

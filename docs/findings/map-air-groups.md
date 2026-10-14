@@ -1,6 +1,6 @@
 # Map aircraft groups, map-level intercepts and the fleet update (1.151 read, 1.163 mapped)
 
-Status: **read from the 1.151 annotated decompilation and matched to 1.163; nothing run in game.** Tags as in `../../README.md`: **[game]** verified on the real game files or in play · **[code]** read from the decompilation · **[tool]** produced by Ghidra's fuzzy matcher (a similarity score, not proof) · **[guess]** inferred · **[not read]** known gap.
+Status: **read from the 1.151 annotated decompilation and matched to 1.163; nothing run in game.** Tags: legend in `../../README.md`.
 1.151 names are logdot's. Addresses are 1.163 (image base `0x140000000`) unless marked 1.151. Offset shifts between versions: [../version-differences.md](../version-differences.md).
 
 ## `CreateMapAircraftGroup` (1.151 `0x140109de0`, 1.163 `0x14010f8e0`) settles what `0x800000001047` is [code]

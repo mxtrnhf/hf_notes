@@ -1,6 +1,6 @@
 # Cluster and mine bomblet lifetime: the spawn function and its call sites (1.163, partial)
 
-Status: **spawn function and two call sites (`0x140036c68`, `0x140036886`) found; the source of the TTL argument at the second call site is not traced. Nothing run in game.** Tags as in `../../README.md`: **[game]** · **[code]** read from the decompilation · **[guess]** · **[not read]**.
+Status: **spawn function and two call sites (`0x140036c68`, `0x140036886`) found; the source of the TTL argument at the second call site is not traced. Nothing run in game.** Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap Mod Scope item "adjustable TTL for cluster munitions and mine bomblets".
 
 ## The spawn function [code]

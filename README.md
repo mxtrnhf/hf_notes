@@ -1,7 +1,7 @@
 # Highfleet 1.163 reverse-engineering notes (with 1.151 comparison)
 
 Short, topic-based notes behind the Highfleet mods (Steam 1.163 with a 1.151 comparison, image base `0x140000000`).
-Tags (one legend for all docs): **[game]** verified in play or on the real game files · **[code]** read from the decompilation · **[guide]** community guide, unverified here · **[guess]** inferred.
+Tags (one legend for all docs): **[game]** verified in play, in logs or on the real game files · **[code]** read from the decompilation · **[guide]** community guide, unverified here · **[guess]** inferred · **[tool]** Ghidra fuzzy-match result (a similarity score, not proof) · **[not read]** known gap · **[file]** read from game files. `docs/version-differences.md` adds **[V]** / **[C]** / **[?]** for offset confidence (defined there). Paths in the docs are relative to the workspace root (`$HF_DEV`, e.g. `~/Development_Highfleet`) and the game folder is `<game dir>`.
 
 ## Start here
 | Read | For |
@@ -10,6 +10,7 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/setup.md](docs/setup.md) | tools, modloader, building, pitfalls, safe-edit rules, comparing with the 1.151 program |
 | [docs/porting-1151-1163.md](docs/porting-1151-1163.md) | **porting a mod between 1.151 and 1.163**: what changed, how to guard builds, step-by-step site porting, anchor addresses, what each of our mods would need |
 | [docs/open-questions.md](docs/open-questions.md) | what is unknown or undecided, and the list of Ghidra fixes to raise with logdot |
+| [STATUS.md](STATUS.md) | release plan, open pull requests, known build breaks (the only file with perishable state) |
 | [docs/roadmap.md](docs/roadmap.md) | long-term mod wish list (bugs, QoL, AI, mod scope) and wanted modder tooling; not scheduled, do not act on it unasked |
 
 ## Reference (how the game is built)
@@ -59,4 +60,4 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 Mods (all on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader)):
 [highfleet-elevation](https://github.com/mxtrnhf/highfleet-elevation), [highfleet-speed](https://github.com/mxtrnhf/highfleet-speed),
 highfleet-multicharge, highfleet-salvo, highfleet-refuel.
-The QoL fork of logdot's highfleet-qol carries the refuel, speed and elevation ports (upstream PR #19 refuel and speed, PR #20 elevation draft; #18 pins highfleet-rs so CI builds). `hf_probe` is a debug-only DLL, not a QoL mod: [docs/mods/probe.md](docs/mods/probe.md).
+The QoL fork of logdot's highfleet-qol carries the refuel, speed and elevation ports (open pull requests: [STATUS.md](STATUS.md)). `hf_probe` is a debug-only DLL, not a QoL mod: [docs/mods/probe.md](docs/mods/probe.md).

@@ -1,6 +1,6 @@
 # Fonts: what the game ships and how to draw with them
 
-Everything about the game's bitmap fonts: where they are defined, every font's metrics, what the editor uses, what they look like on screen, and how a mod draws text with them. Steam 1.163, image base `0x140000000`. Tags: **[game]** seen on screen or in a log by the user, **[code]** read from files or the decompilation, **[guess]** inferred.
+Everything about the game's bitmap fonts: where they are defined, every font's metrics, what the editor uses, what they look like on screen, and how a mod draws text with them. Steam 1.163, image base `0x140000000`. Tags: legend in `../../README.md`.
 
 ## Where fonts are defined [code]
 * `Media/Fnt/fonts.res` declares **58 fonts**: `Font <name>`, then `{ filename=Media\Fnt\<name>.fnt }`. `media.res` includes `Media/Tex/Fnt1.res` and `Fnt2.res`; the glyph bitmaps live in the texture atlases, not as PNGs in `Media/Fnt`.
@@ -90,7 +90,7 @@ The editor label pass (`0x1400d4380`) asks `0x1401a8710` for these fonts, all at
 | `dinpro_80_black` | `0x0cffffff` | `0x1400d6f70`: the big faint `DOCK A` background text ([game]: visible in screenshots) |
 
 ## What they look like (live sampler) [game]
-2026-10-14: the debug DLL `hf_draw_test` (`/home/maksim/Development_Highfleet/hf_draw_test`, commit `0383a69`, local git) drew one line per font, right-aligned at x=1900 (1920x1080 frame), y = 90 + 40 i, white `0xffffffff`, scale 1.0, blend 2, text `<fontname>   ELEVATION  U up  P down  holding: ITEM_GUN_30  floor=2 (manual)`. Screenshot (2560x1440): `/home/maksim/Development_Highfleet/hf_draw_test_build/screenshot_font_test.png`. 20 fonts were sampled; the other 38 are **visual: pending** (a second sampler, all remaining fonts normalised to about 24 px height through `fHeight`, is being built). The first elevation hint (bold `dinpro_14_bold`) is in `/home/maksim/Development_Highfleet/hf_draw_test_build/screenshot_working_2.png`, next to the lighter DIN-style stats panel.
+2026-10-14: the debug DLL `hf_draw_test` (`$HF_DEV/hf_draw_test`, commit `0383a69`, local git) drew one line per font, right-aligned at x=1900 (1920x1080 frame), y = 90 + 40 i, white `0xffffffff`, scale 1.0, blend 2, text `<fontname>   ELEVATION  U up  P down  holding: ITEM_GUN_30  floor=2 (manual)`. Screenshot (2560x1440): `$HF_DEV/hf_draw_test_build/screenshot_font_test.png`. 20 fonts were sampled; the other 38 are **visual: pending** (a second sampler, all remaining fonts normalised to about 24 px height through `fHeight`, is being built). The first elevation hint (bold `dinpro_14_bold`) is in `$HF_DEV/hf_draw_test_build/screenshot_working_2.png`, next to the lighter DIN-style stats panel.
 
 | Font | Look | Used by the editor |
 |---|---|---|

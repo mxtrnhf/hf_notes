@@ -1,6 +1,6 @@
 # Editor hints: can the elevation mod draw inside the game? (1.163; history, superseded for drawing)
 
-Status: **superseded for drawing: the native hint is built and shipped (see [render-pipeline.md](render-pipeline.md), [fonts.md](fonts.md), [../mods/elevation.md](../mods/elevation.md)). This file keeps the `_FrameFunc` task order, the input-slot search, the `"%i %i"` / `ED_OBJ` readout and the text-lookup path.** The first pass (below) found a game-thread per-frame hook site but no callable "draw text at x,y" function; the later 'Update' sections found it. Ghidra stayed read-only (decompile, xrefs, instruction search only). Tags as in `../../README.md`: **[game]** · **[code]** · **[guide]** · **[guess]**.
+Status: **superseded for drawing: the native hint is built and shipped (see [render-pipeline.md](render-pipeline.md), [fonts.md](fonts.md), [../mods/elevation.md](../mods/elevation.md)). This file keeps the `_FrameFunc` task order, the input-slot search, the `"%i %i"` / `ED_OBJ` readout and the text-lookup path.** The first pass (below) found a game-thread per-frame hook site but no callable "draw text at x,y" function; the later 'Update' sections found it. Ghidra stayed read-only (decompile, xrefs, instruction search only). Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: the elevation mod shows its hint in a separate GDI window (`mods/elevation.md`); the question is whether a native in-game hint is feasible and where the seam is.
 
 ## What is established [code]

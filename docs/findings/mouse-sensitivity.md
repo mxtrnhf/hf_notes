@@ -1,6 +1,6 @@
 # Mouse sensitivity path and the A220 slowdown (1.163, partial)
 
-Status: **partial. The sensitivity path is read; the code that lowers it while A220 rockets are selected is NOT found. Nothing run in game.** Tags as in `../../README.md`: **[game]** · **[code]** read from the decompilation · **[guess]** · **[not read]**.
+Status: **partial. The sensitivity path is read; the code that lowers it while A220 rockets are selected is NOT found. Nothing run in game.** Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap QoL item "remove the mechanic by which rockets (A220) lower mouse sensitivity globally".
 
 ## What is established [code]

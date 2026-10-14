@@ -1,6 +1,6 @@
 # Flares and the proximity-fuse crash hunt (1.163, partial: the crash site was NOT found)
 
-Status: **partial; read from the decompilation, nothing run in game.** Tags as in `../../README.md`: **[game]** verified on the real game files or in play · **[code]** read from the decompilation · **[tool]** produced by Ghidra's fuzzy matcher (a similarity score, not proof) · **[guess]** inferred · **[not read]** known gap.
+Status: **partial; read from the decompilation, nothing run in game.** Tags: legend in `../../README.md`.
 Why AI ships never use flares (a different question, solved): [ai-flares.md](ai-flares.md).
 
 Roadmap item: "a proximity-fused missile colliding with flares crashes the game". What the read established, and what it did not:

@@ -1,6 +1,6 @@
 # The Khiva end-game crash: unguarded list writes (1.163, probable cause)
 
-Status: **probable cause found in the code; not reproduced in game; no patch applied.** Tags as in `../../README.md`: **[game]** verified on the real game files · **[code]** read from the decompilation · **[guess]** inferred · **[not read]** known gap.
+Status: **probable cause found in the code; not reproduced in game; no patch applied.** Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe) unless marked 1.151. Origin: roadmap bug "capturing all cities around Khiva before the end-game event causes a crash loop / infinite loading".
 
 ## Short answer

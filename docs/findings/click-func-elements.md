@@ -8,7 +8,7 @@ The GUI element names that `ClickFunc` (`FUN_14012f120`, see [click-func.md](cli
 - "Seen" counts are the number of `CLICK` lines with that element name in the 4 probe logs (`hf_probe_build/logs/*/probe.log`) plus the game's current `probe.log`.
 - Groups below are by name prefix; within a group rows keep the function's address order (the tests run roughly title/menu, map, landing/city, shop/supplies, shipworks, editor). Group assignment is by prefix, not by verified screen [guess].
 
-## Numbers [observed]
+## Numbers [game]
 - 256 compare calls, 252 unique names (names repeat where the same element is tested twice: `ED_SHPWRK_EXIT` x3, `KEY_SPACE` x2, `KEY_ESC` x2, etc.; the table shows the first address and `(xN)`).
 - One test at `0x140135d75` had no readable string nearby: listed as `<none>`.
 - 43 of the 252 names appear in the CLICK logs; 209 were never seen.
@@ -311,7 +311,7 @@ Bold "yes" in the last column marks names relevant to mod ideas (buy/refuse, sup
 | `0x140130969` | `PreselectSkirmish.seria` | - |  |
 Note: `EDC_TEST_LANDING` is listed under City / landing and `LOADGAME_SLOT` under Quit/save/load because of prefix rules; both sit near the editor part of the function by address.
 
-## Seen in CLICK logs but not in this catalog [observed]
+## Seen in CLICK logs but not in this catalog [game]
 `?`, `BUY_SLIDER`, `EDC_SAVELOAD`, `EDC_TEST`, `EDC_TEST_DIF`, `ED_CREATE`, `ED_IMAGE_MASK`, `ED_IMAGE_SCALEX`, `ED_OBJECT`, `ED_OBJECT_PANEL`, `ED_OBJ_IMAGE`, `ED_OBJ_MESH`, `ED_OBJ_PROP`, `ED_OBJ_SLOTS`, `ED_SAVELOAD`, `GL_LIST_BUTTON`, `INV_SLIDER`, `INV_SLOT`, `LOOT_BOX`, `MAPMODE_LAND`, `pN#8`.
 
 These are handled by something other than a plain `stringCompLengthAndContent` against a literal (prefix test, `FindGuiElement` lookup, `memcmp`, or a pointer compare) [guess]. Several look like containers, sliders or lists (`*_SLIDER`, `*_SLOT`, `ED_OBJ_*`, `*_PANEL`), which fits a different matching path.

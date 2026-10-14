@@ -1,6 +1,6 @@
 # Why AI ships never use flares, and how to give them flares (1.163)
 
-Status: **finding, no mod written, nothing run in game.** Tags as in `../../README.md`: **[game]** verified on the real game files · **[code]** read from the 1.163 decompilation · **[guess]** inferred · **[not read]** known gap.
+Status: **finding, no mod written, nothing run in game.** Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap item "the AI cannot deploy flares" (`roadmap.md`, AI, Tactical).
 
 ## Short answer

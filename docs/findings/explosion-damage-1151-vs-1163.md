@@ -1,6 +1,6 @@
 # Explosion damage, 1.151 vs 1.163: why missile hits reach deeper into a ship
 
-Status: **the rule changes are confirmed on both versions at run time (static decompile + `hf_probe` logs, incl. a controlled run on each version).** How much deeper a blast reaches in play depends on the target's parts (see the controlled run); the earlier uncontrolled 'parts per blast' numbers were target-dependent and are superseded. Tags as in `../../README.md`: **[game]** seen in play or in logs · **[code]** read from the decompilation · **[guess]**.
+Status: **the rule changes are confirmed on both versions at run time (static decompile + `hf_probe` logs, incl. a controlled run on each version).** How much deeper a blast reaches in play depends on the target's parts (see the controlled run); the earlier uncontrolled 'parts per blast' numbers were target-dependent and are superseded. Tags: legend in `../../README.md`.
 Addresses are image base `0x140000000`. Origin: report that 1.163 "feels like more spalling": explosions penetrate deeper and damage components more easily.
 
 ## Short answer

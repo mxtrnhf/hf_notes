@@ -1,6 +1,6 @@
 # The end game: `spawnEndgameShips_` and what it sets (1.151 read, 1.163 located)
 
-Status: **read from the 1.151 decompilation; 1.163 counterpart located (see [khiva-crash.md](khiva-crash.md)); not run in game.** Tags as in `../../README.md`: **[game]** verified on the real game files or in play · **[code]** read from the decompilation · **[tool]** produced by Ghidra's fuzzy matcher (a similarity score, not proof) · **[guess]** inferred · **[not read]** known gap.
+Status: **read from the 1.151 decompilation; 1.163 counterpart located (see [khiva-crash.md](khiva-crash.md)); not run in game.** Tags: legend in `../../README.md`.
 
 Present in 1.151 as a named function; **not matched** by the fuzzy tool, **located by hand in 1.163 as `FUN_140261a20` (khiva-crash.md)**. It is the scripted collapse that begins the "nuclear war" and closes the campaign. Read from the
 1.151 decompilation (very long: three-way list sorting plus spawns).
