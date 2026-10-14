@@ -1,6 +1,6 @@
 # Explosion damage, 1.151 vs 1.163: why missile hits reach deeper into a ship
 
-Status: **cause found and confirmed on both versions at run time (static decompile + matched `hf_probe` logs).** The size of the effect is measured on two uncontrolled battles per version, so the percentages below are indicative. Tags as in `../../README.md`: **[game]** seen in play or in logs · **[code]** read from the decompilation · **[guess]**.
+Status: **the rule changes are confirmed on both versions at run time (static decompile + `hf_probe` logs, incl. a controlled run on each version).** How much deeper a blast reaches in play depends on the target's parts (see the controlled run); the earlier uncontrolled 'parts per blast' numbers were target-dependent and are superseded. Tags as in `../../README.md`: **[game]** seen in play or in logs · **[code]** read from the decompilation · **[guess]**.
 Addresses are image base `0x140000000`. Origin: report that 1.163 "feels like more spalling": explosions penetrate deeper and damage components more easily.
 
 ## Short answer
@@ -35,14 +35,31 @@ Routine: 1.151 `handleExplosionSFX?` `0x140028520`, 1.163 `FUN_140029b60` (calle
 | explosive power | 200 | 300 |
 | damage per part at the centre (enemy, k 0.66) | 93 | 114 |
 | first armored part, chain hit | 30 | 60 |
-| first battles (not the same fight): chain parts per budget-15 blast, 24 vs 25 blasts | 2.6 | 2.7 |
-| first battles: chain damage per budget-15 blast | 29.5 | 38.6 |
-| Kormoran runs: parts hit per ship-hitting Zenith blast (area + chain), 7 vs 10 blasts | 4.0 | 9.3 |
-| Kormoran runs: area damage per hitting blast | 248 | 359 |
 
-The chain length is short in both versions because few parts are in range; the difference shows most on armor hits and on chains that pass through low-HP modules. The 15-23 part blasts in the 1.163 Kormoran run probably include non-ship bodies [guess]. A replay of 12 logged 1.163 chains under the 1.151 rule gave 41 vs 56 parts and 576 vs 843 damage, but it assumes the same parts in the same order, so treat it as an upper bound.
+A replay of 12 logged 1.163 chains under the 1.151 rule gave 41 vs 56 parts and 576 vs 843 damage; it assumes the same parts in the same order and is an upper bound. The uncontrolled battles (different fights, different targets) gave 2.6 vs 2.7 chain parts and 29.5 vs 38.6 chain damage per budget-15 blast, and the Kormoran runs 4.0 vs 9.3 parts per blast; **the controlled run below does not reproduce a parts-per-blast difference, so do not use those figures.**
 
 **Gun shells:** 180mm HE (explosive 82, strength 0): 90 max damage per part, no chain, in both versions (26 blasts in 1.151, 71 in 1.163). [game]
+
+## Controlled run (same ship, same order of events on each version) [game]
+Ship `Lightning_Sarmat` (Lightning with 2x180mm), battle 1 against weak ships with the cannons, battle 2 with 4 Zenith hits. Logs: `probe_v2.4_1.151_controlled_sarmat_zenith.log.gz`, `probe_v2.4_1.163_controlled_sarmat_zenith.log.gz`.
+
+| | 1.151 | 1.163 |
+|---|---|---|
+| 180mm shell blasts | 4, E 82, str 0, max 90 per part, 3-6 area parts, no chain | 6, E 82, str 0, max 90 per part, 4-12 area parts, no chain |
+| Zenith blasts on ships | 4 (#18-#21): E 200, str 30, max **93** per part | 4 (#33-#36): E 300, str 30, max **114** per part |
+| Zenith area parts per blast | 10, 9, 14, 14 | 21, 12, 3, 7 |
+| Zenith chain parts per blast | 5, 3, 3, 6 | 11, 3, 3, 2 |
+
+Every chain matches the rule of its version exactly:
+* 1.151 #21: craft 15 (first target), deck 15 (costs 5), truss 10 (free), cannon mount 10 (costs 5), truss 5 (free), quarters 5. #20: truss 15, engine 15 (costs 5), armor 10 (costs 10 -> 0). Flat 5 everywhere, armor 10, trusses free.
+* 1.163 #33: deck 15 (costs 5), trusses 10 (free), generator 10 (80 HP, costs 4), truss 6, FSS 6 (costs 0.5), trusses 5.5, ammo box 5.5 (costs 1), leg 4.5 (costs 4), fuel tank 0.5 (400 HP). 11 parts. Under the 1.151 rule this chain would have ended after 6 parts with 55 total damage instead of 78.5.
+* 1.163 #36: leg 15 (costs 4), armor 11 (-10). Hardpoint `MDL_HARD1X1_01` seems free (budget stays 15 into the next part in #34) [guess].
+
+What the controlled run shows, honestly:
+* **Confirmed:** per-part blast damage x1.22 (93 -> 114; predicted sqrt(300/200) = 1.2247); `maxHP/20` cost vs flat 5; trusses free in both; 180mm shells identical.
+* **Design-dependent:** the cost change only matters when the chain meets parts with less than 100 HP (ammo, fuel, FSS, generator, legs, quarters, small armor). Most chain parts in the 1.151 run were 100-HP parts, where `maxHP/20` = 5 = the old flat cost, so those chains are the same under both rules. Only #33 (11 parts) shows the big effect.
+* **Not exercised:** the armor-hit x2 -> x4 change (no armored *first* part in either controlled run; it was seen earlier in the uncontrolled battles as 30 vs 60).
+* **Not shown:** more parts hit per blast. Area-part counts are about the same (11.75 vs 10.75 average); with 22% more radius I expected more, but the targets differed (no distance is logged, so the radius effect itself is unverified) [open].
 
 ## Live-test recipe (controlled version)
 1. Same ship (e.g. Kormoran), same fight setup, same target ship with an armor plate in front of soft modules.
