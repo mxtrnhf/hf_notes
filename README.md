@@ -52,9 +52,7 @@ Tags (one legend for all docs): **[game]** verified in play, in logs or on the r
 | [docs/findings/seam-test-run-1.md](docs/findings/seam-test-run-1.md) | seam test runs 1 and 2 (probe v2.2): labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean; map seam M11 chosen |
 | [docs/findings/level-seria-dispatcher.md](docs/findings/level-seria-dispatcher.md) | `SomethingWithLevelSerias`: the SCR_* scenario dispatcher in 1.151 and 1.163, label addresses, string refs (names only, body unread) |
 | [docs/findings/how-the-game-draws.md](docs/findings/how-the-game-draws.md) | plain-language overview: how a frame is drawn, what a seam is, recipe to draw text and sprites, best seam per screen, how to test a seam |
-| [docs/findings/click-func.md](docs/findings/click-func.md) | the GUI click handler `ClickFunc` (1.151 `0x1401261d0`, 1.163 `0x14012f120`): size, caller, what the probe logs, live-test recipe |
-| [docs/findings/click-func-elements.md](docs/findings/click-func-elements.md) | catalog of the 252 GUI element names `ClickFunc` (1.163) compares against, with first test address and whether the probe has seen them; lower bound, 209 never seen |
-| [docs/findings/click-func-branches.md](docs/findings/click-func-branches.md) | four decompiled `ClickFunc` (1.163) branches, cleaned: BUY_BUY (slider = target total, delta buy/sell), FUEL_BUY_SLIDER (compares Location `+0x274`), MAPMODE_MISSION_FULLTANK/HALFTANK |
+| [docs/findings/click-func.md](docs/findings/click-func.md) | the GUI click handler `ClickFunc` (1.151 `0x1401261d0`, 1.163 `0x14012f120`): size, caller, what the probe logs, live-test recipe; also the 252-name element catalog and four decompiled branches (BUY_BUY, FUEL_BUY_SLIDER, MAPMODE_MISSION_*) |
 | [docs/findings/source-file-names.md](docs/findings/source-file-names.md) | the 15 original source-file paths embedded in the exe (`HYBRID FLEET 2013EX`) and what they say about the code layout |
 
 Mods (all on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader)):
