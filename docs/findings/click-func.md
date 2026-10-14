@@ -13,7 +13,11 @@ The function that decides what an accepted GUI click does. It is huge, and it is
 
 [observed] in Ghidra, read-only. Same shape, same caller name and same string, so `FUN_14012f120` is the 1.163 version of `ClickFunc` [code, strong; matched by shape, not a byte-for-byte diff]. Suggested name for the 1.163 database: `ClickFunc`. Renaming is left to the user (the database is treated as read-only here).
 
-Size: the user reports it is 10,000+ lines of decompiled C. **Line count not verified** (Ghidra scripting is disabled here); 62 KB of x86 makes it plausible.
+Size [observed, v1.163, read-only Ghidra script]: decompiling `FUN_14012f120` gives **8,589 lines** of C, **538,685 characters**, from a function body of 62,272 addresses. The user had heard "10,000+ lines"; Ghidra's line count depends on decompiler width settings, so this is the same order of magnitude. The decompiler needed its payload limit raised (default fails with "Response buffer size exceeded"); it took about 45 s with max payload 1000 MB.
+
+Source file [observed]: the string xref shows Gui.cpp's `__FILE__` string (`0x140363628`) is referenced from `FUN_14012f120` (`0x14012f120`), so ClickFunc lives in Gui.cpp. See [source-file-names.md](source-file-names.md).
+
+How to decompile a huge function through the Ghidra MCP [observed that it worked]: scripting enabled with `GHIDRA_MCP_ALLOW_SCRIPTS=1` when starting Ghidra, then a Java script with `DecompileOptions.setMaxPayloadMBytes(1000)` and `DecompInterface.setOptions`.
 
 ## What the probe knows about it
 `hf_probe` hooks its entry (26 stolen bytes) and logs `CLICK` lines. Arguments: RCX = ctx, RDX = `gui*`, R8D = button, R9 = `[gui+0xa80]`. The GUI element name is at `gui+0xa40`, its class string at `+0x8`, the fx/distortion name at `+0xad8`. Verified detail is in [ui-events-and-screens.md](ui-events-and-screens.md); not copied here.
@@ -24,5 +28,5 @@ Size: the user reports it is 10,000+ lines of decompiled C. **Line count not ver
 3. Each accepted click gives one `CLICK` line in `probe.log` with the element name; that name is a case label (or string compare) inside this function. Use it to find the branch for a given button in the decompilation.
 
 ## Unknowns
-- Dispatch structure (string compares vs. switch) and the line count.
+- Dispatch structure (string compares vs. switch).
 - Whether other callers appear in 1.163 through indirect calls (only the static caller is known).
