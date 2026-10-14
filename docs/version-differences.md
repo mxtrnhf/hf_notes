@@ -275,3 +275,6 @@ Reading the list by theme (names only; contents not yet opened except where mark
   (`0x14002f6f0`; flares and the flare crash in the roadmap).
 * **HGE interface:** `Resource_*`, `System_*`, `Input_*`, `Channel_*`, `Effect_*`, `Stream_*`, `Timer_*`, `Random_*`, `Ini_*` (the whole HGE vtable, 1.163 only has `setupHGEFunctionPointers` named): `engine-hge.md` interface table.
 
+
+## Gameplay differences confirmed at run time
+* **Explosion damage** (2026-10-14): Zenith-class warhead 200 -> 300, first armored part in the blast chain x2 -> x4, ordinary part cost flat 5 -> `maxHP/20` (trusses free, armor 10 in both); 180mm gun shells unchanged. Details and evidence: [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md).
