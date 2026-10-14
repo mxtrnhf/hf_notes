@@ -65,6 +65,8 @@ The GUI element names that `ClickFunc` compares a clicked element against: 252 u
 
 **Numbers [game]:** 43 of the 252 names appear in the CLICK logs of the 4 probe runs (`hf_probe_build/logs/*/probe.log`) plus the current `probe.log`; 209 were never seen. The function also calls `FindGuiElement` x89, `memcmp` x42 and `FUN_140006d70` x185, so other elements are matched by other means (prefix compares or similar) [guess].
 
+`EDC_TEST_LANDING` is listed under City / landing and `LOADGAME_SLOT` under Quit/save/load because of the prefix rules; both sit near the editor part of the function by address.
+
 Names relevant to mod ideas (buy/refuse, supplies, landing, map, test buttons):
 
 | First test | Name | Seen |
