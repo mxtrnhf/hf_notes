@@ -27,12 +27,13 @@ The modloader loads mods in an unspecified order, and a second detour at an alre
 
 ### hf_probe hooks (debug only, log-only, never ship)
 Besides the `0x140303fb4` wrapper above, `hf_probe` ([findings/probe-run-1.md](findings/probe-run-1.md), [findings/ui-events-and-screens.md](findings/ui-events-and-screens.md)) installs log-only entry hooks that no mod should also patch:
+
 | Site | What |
 |---|---|
 | `0x14012f120` (`ClickFunc`) | `CLICK`: accepted GUI clicks |
 | `0x1401ae090` (localised string lookup) | `TEXT`: string keys a screen asks for |
 | `0x1402e30e0` (`playSFXSound?`), `0x140225930` (`LoadSeriaFile`) | `SOUND`, `LOAD` |
-| explosion routine (1.163 `0x140029b60`, 1.151 `0x140028520`) and the damage calls it makes | `BLAST` / `DMG`, the only hooks that run on 1.151 ([findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md)) |
+| explosion code: routine 1.163 `0x140029b60` (1.151 `0x140028520`) and its damage calls | `BLAST` / `DMG`, the only hooks that run on 1.151 ([findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md)) |
 
 ### Candidate sites, not owned and not applied (findings only; each needs a version guard)
 | Site | What | Note |

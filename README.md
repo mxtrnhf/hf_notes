@@ -59,4 +59,4 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 Mods (all on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader)):
 [highfleet-elevation](https://github.com/mxtrnhf/highfleet-elevation), [highfleet-speed](https://github.com/mxtrnhf/highfleet-speed),
 highfleet-multicharge, highfleet-salvo, highfleet-refuel.
-The QoL fork of logdot's highfleet-qol carries the refuel, speed and elevation ports (upstream PRs #18, #19, #20). `hf_probe` is a debug-only DLL, not a QoL mod; see [docs/findings/probe-run-1.md](docs/findings/probe-run-1.md). `docs/mods/` has no page for either yet.
+The QoL fork of logdot's highfleet-qol carries the refuel, speed and elevation ports (upstream PR #19 refuel and speed, PR #20 elevation draft; #18 pins highfleet-rs so CI builds). `hf_probe` is a debug-only DLL, not a QoL mod; see [docs/findings/probe-run-1.md](docs/findings/probe-run-1.md). `docs/mods/` has no page for either yet.

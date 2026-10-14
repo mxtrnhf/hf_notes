@@ -52,7 +52,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 * **[Mod Scope]** Wider ship-roster modification (additional ship variants, adjustable composition ratio). *(open)*
 * **[Mod Scope]** Editing the repair-part composition menu (hull, armor, landing gear, etc.). *(open)*
 * **[Mod Scope]** Adjustable time-to-live (TTL) for cluster munitions and mine bomblets. *(partial: spawn function and call sites found)*
-  * Spawn function and its two call sites (`0x140036c68`, `0x140036886`) found (sixth argument): [cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md). TTL source at the call site not traced; not applied or run in game.
+  * Spawn function and its two call sites (`0x140036c68`, `0x140036886`) found (sixth argument): [cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md). TTL source at the second call site not traced; not applied or run in game.
 * **[Mod Scope]** Damage model: calibers above 30 mm should not destroy missiles (Zenith), aircraft, rockets (A220) or cannon shells in a single shot. *(partial: mechanism pieces located, no mod)*
   * Starts from the `Ammo` fields (`explosivePower`, `penetrativePower`, `apDrag`) and `BulletImpact__`: [findings/firing-and-shells.md](findings/firing-and-shells.md), [findings/ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md).
   * 1.163 multiplies area damage x5 on bodies with an aircraft-logic pointer (aircraft and missiles) [code, not live-tested]: [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md).
