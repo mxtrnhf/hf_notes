@@ -1,6 +1,6 @@
-# Highfleet 1.163 reverse-engineering notes
+# Highfleet 1.163 reverse-engineering notes (with 1.151 comparison)
 
-Short, topic-based notes behind the Highfleet mods (Steam 1.163, image base `0x140000000`).
+Short, topic-based notes behind the Highfleet mods (Steam 1.163 with a 1.151 comparison, image base `0x140000000`).
 Tags (one legend for all docs): **[game]** verified in play or on the real game files · **[code]** read from the decompilation · **[guide]** community guide, unverified here · **[guess]** inferred.
 
 ## Start here
@@ -32,7 +32,7 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/findings/ai-aircraft-launch.md](docs/findings/ai-aircraft-launch.md) | why the strategic AI launches all aircraft at once, launch conditions, patch sites |
 | [docs/findings/ai-flares.md](docs/findings/ai-flares.md) | why AI ships never use flares (missing trigger, not missing parts) and a mod design |
 | [docs/findings/ai-tick-patch-sites.md](docs/findings/ai-tick-patch-sites.md) | the tactical AI in 1.163: close-range cutoff, stand-off retreat, ammo choice, launch limits, byte-exact patch sites |
-| [docs/findings/ammo-1151-vs-1163.md](docs/findings/ammo-1151-vs-1163.md) | the ammo table (built in code), the `Ammo` record, every value change between versions |
+| [docs/findings/ammo-1151-vs-1163.md](docs/findings/ammo-1151-vs-1163.md) | the ammo table (built in code), the `Ammo` record, every value change between versions, live ammo-table dump |
 | [docs/findings/explosion-damage-1151-vs-1163.md](docs/findings/explosion-damage-1151-vs-1163.md) | why 1.163 missile hits reach deeper into a ship: Zenith warhead 200 to 300, armor hit x2 to x4, part cost flat 5 to maxHP/20; 180mm shells unchanged; run-time evidence from both versions |
 | [docs/findings/firing-and-shells.md](docs/findings/firing-and-shells.md) | `FireShell` dispatch, shell HP and lifetime, where projectile constants live |
 | [docs/findings/cluster-bomblet-ttl.md](docs/findings/cluster-bomblet-ttl.md) | cluster/mine bomblet spawn function, its two call sites, the TTL patch site (partial) |
@@ -42,13 +42,13 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/findings/khiva-crash.md](docs/findings/khiva-crash.md) | probable cause of the Khiva end-game crash (unguarded list writes), patch recipe |
 | [docs/findings/flare-crash-hunt.md](docs/findings/flare-crash-hunt.md) | the flare/proximity-fuse crash hunt (site not found) |
 | [docs/findings/mouse-sensitivity.md](docs/findings/mouse-sensitivity.md) | mouse sensitivity path; A220 slowdown not yet located (partial) |
-| [docs/findings/editor-hints.md](docs/findings/editor-hints.md) | where an in-game editor hint could hook: `_FrameFunc` task order, game-thread input site, text path (partial) |
+| [docs/findings/editor-hints.md](docs/findings/editor-hints.md) | where an in-game editor hint could hook: `_FrameFunc` task order, game-thread input site, text path; history of the drawing question, the answer is [render-pipeline.md](docs/findings/render-pipeline.md) |
 | [docs/findings/render-pipeline.md](docs/findings/render-pipeline.md) | how the game draws: frame tasks, scene dispatcher, stock `hgeFont` text path, fonts, hook seam |
 | [docs/findings/fonts.md](docs/findings/fonts.md) | every game font: files, metrics, ASCII-only charsets, what the editor uses, live look of the sampled ones, how a mod draws text |
-| [docs/findings/probe-run-1.md](docs/findings/probe-run-1.md) | first run of the `hf_probe` debug DLL: input and memory diff in every screen, pinned cursor, mode and state bytes, v1.1 plan |
-| [docs/findings/images-and-sprites.md](docs/findings/images-and-sprites.md) | every image is an `Animation` in `Media/Tex/*.res`, resource getters, sprite object layout, `Render` / `RenderEx` (drawing unconfirmed) |
+| [docs/findings/probe-run-1.md](docs/findings/probe-run-1.md) | runs 1-3 of the `hf_probe` debug DLL (v1.0 to v2.0): input and memory diff in every screen, pinned cursor, mode and state bytes, clicks, gold, location and fleet |
+| [docs/findings/images-and-sprites.md](docs/findings/images-and-sprites.md) | every image is an `Animation` in `Media/Tex/*.res`, resource getters, sprite object layout, `Render` / `RenderEx` (drawing confirmed in game, run 2) |
 | [docs/findings/ui-events-and-screens.md](docs/findings/ui-events-and-screens.md) | probe v2.0 run: log-only hooks for clicks, text keys, sounds and level loads, gold, location and fleet watchers, which dispatcher flag is which screen |
-| [docs/findings/seam-test-run-1.md](docs/findings/seam-test-run-1.md) | probe v2.2 seam test: labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean |
+| [docs/findings/seam-test-run-1.md](docs/findings/seam-test-run-1.md) | seam test runs 1 and 2 (probe v2.2): labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean; map seam M11 chosen |
 | [docs/findings/level-seria-dispatcher.md](docs/findings/level-seria-dispatcher.md) | `SomethingWithLevelSerias`: the SCR_* scenario dispatcher in 1.151 and 1.163, label addresses, string refs (names only, body unread) |
 | [docs/findings/how-the-game-draws.md](docs/findings/how-the-game-draws.md) | plain-language overview: how a frame is drawn, what a seam is, recipe to draw text and sprites, best seam per screen, how to test a seam |
 | [docs/findings/click-func.md](docs/findings/click-func.md) | the GUI click handler `ClickFunc` (1.151 `0x1401261d0`, 1.163 `0x14012f120`): size, caller, what the probe logs, live-test recipe |
@@ -59,3 +59,4 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 Mods (all on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader)):
 [highfleet-elevation](https://github.com/mxtrnhf/highfleet-elevation), [highfleet-speed](https://github.com/mxtrnhf/highfleet-speed),
 highfleet-multicharge, highfleet-salvo, highfleet-refuel.
+The QoL fork of logdot's highfleet-qol carries the refuel, speed and elevation ports (upstream PRs #18, #19, #20). `hf_probe` is a debug-only DLL, not a QoL mod; see [docs/findings/probe-run-1.md](docs/findings/probe-run-1.md). `docs/mods/` has no page for either yet.
