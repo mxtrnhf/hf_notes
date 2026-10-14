@@ -101,13 +101,17 @@ The whole bind, labels, flush block is skipped when byte `[0x1403bd09f]` is 0 (`
 | `Media.res` `0x143a119e8` works as the resource manager for `GetFont`; `[0x143a13950]` is the renderer object passed to bind and flush | [game] / [code] |
 | Style and restore every frame did not visibly change the game's own labels (stats panel colours normal in attempt 1) | [game], weak evidence |
 
-## Plan, not built: native elevation hint
-* Draw in the `0x140303fb4` hook with `dinpro_14_bold` (the editor's own label font; the editor styles it with its own scale, blend 2, colour `0xff73604c`) at scale 1, in a free region (top-right looked free in the screenshots; avoid the top-left SAVE/LOAD row and the bottom palette).
-* Do the key edge detection and the `m_floor` writes in the same game-thread hook, which retires the polling thread, the race and the GDI window (keep `overlay` as an optional fallback switch).
+## Built: native elevation hint (2026-10-14)
+Shipped in the QoL fork `elevation` branch (commits 95d09cd, 9c8acac; [../mods/elevation.md](../mods/elevation.md)). The original plan is kept below with what changed.
+* Draw in the `0x140303fb4` hook with a game font at scale 1, in a free region. The plan was `dinpro_14_bold` (the editor's own label font; the editor styles it with its own scale, blend 2, colour `0xff73604c`); the shipped hint uses `fixed_16` instead (see 'Font decision' below and [fonts.md](fonts.md)). Region: top-right looked free in the screenshots; avoid the top-left SAVE/LOAD row and the bottom palette.
+* Do the key edge detection and the `m_floor` writes in the same game-thread hook, which retires the polling thread, the race and the GDI window (done in `hint: native`; the window stays as the `hint: window` fallback).
 * `GetAsyncKeyState` is global, so also check that the game window is in the foreground.
 * Pre-check the 5 bytes at `0x140303fb4` before preparing the patch and skip the hint on a mismatch (see `../hooks.md`).
 
 ## Unknowns
+* Whether the label-pass hook behaves the same when the editor is entered from the main menu versus the hangar (the hint was seen in all editor states of one session, [../mods/elevation.md](../mods/elevation.md)).
+* Whether the composite description of `0x140083450` (table above, `[guess]`) is right.
+* Whether restyling and restoring a shared font disturbs the game's own labels (screenshots looked normal; weak evidence).
 * Coordinate space on screens that are not 16:9 (it is the 1920x1080 virtual frame on 2560x1440 [game]); VideoTask letterboxes when screen and frame sizes differ, text should follow the frame target but is unproven.
 * Whether every game caller restyles the font before use.
 * Whether any state drops draws when no scene is open (stock HGE batches quads and drops them outside a scene; this game's renderer is unknown).

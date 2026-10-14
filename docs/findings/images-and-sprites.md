@@ -1,6 +1,6 @@
 # Images and sprites
 
-How the game stores and draws images (Steam 1.163). Sprite **drawing is not yet confirmed in game**: `GetAnimation` returned a non-null pointer in the probe run ([probe-run-1.md](probe-run-1.md)), nothing more.
+How the game stores and draws images (Steam 1.163). Sprite **drawing is confirmed in game** (probe run 2, see "Sprite drawing confirmed" below); a sprite drawn from the editor label-pass hook is hidden behind the palette buttons ([probe-run-1.md](probe-run-1.md)).
 
 ## Every image is an `Animation` resource [code+file]
 Image definitions live in `Media/Tex/*.res` (included from `media.res`). A `Texture` resource names the atlas, then each image is an `Animation` (stock `hgeAnimation`, a sprite subclass):

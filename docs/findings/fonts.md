@@ -176,7 +176,7 @@ The editor label pass (`0x1400d4380`) asks `0x1401a8710` for these fonts, all at
 * How fonts get their atlas rectangles (`Fnt1.res` / `Fnt2.res` not read).
 * `fHeight` semantics (max cell height versus the value at `font+0x1008`; check at runtime).
 * Whether `Render` clips at the frame edge.
-* The look of the blurred and shadow variants (`*_blured`, `*_shadow`).
+* The look of the blurred and shadow variants (`*_blured`, `*_shadow`) and of the 38 fonts not yet sampled on screen.
 
 ## Live-test recipe
 1. Second sampler: all 38 remaining fonts, each scaled to about 24 px height (`24 / *(float*)(font+0x1008)`), two columns; photograph it and fill in the `visual: pending` rows.

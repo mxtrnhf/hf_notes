@@ -1,6 +1,6 @@
-# Editor hints: can the elevation mod draw inside the game? (1.163, partial)
+# Editor hints: can the elevation mod draw inside the game? (1.163; history, superseded for drawing)
 
-Status: **partial. A game-thread per-frame hook site is found; a callable "draw text at x,y" function is NOT. Nothing run in game.** Ghidra stayed read-only (decompile, xrefs, instruction search only). Tags as in `../../README.md`: **[game]** · **[code]** · **[guide]** · **[guess]**.
+Status: **superseded for drawing: the native hint is built and shipped (see [render-pipeline.md](render-pipeline.md), [fonts.md](fonts.md), [../mods/elevation.md](../mods/elevation.md)). This file keeps the `_FrameFunc` task order, the input-slot search, the `"%i %i"` / `ED_OBJ` readout and the text-lookup path.** The first pass (below) found a game-thread per-frame hook site but no callable "draw text at x,y" function; the later 'Update' sections found it. Ghidra stayed read-only (decompile, xrefs, instruction search only). Tags as in `../../README.md`: **[game]** · **[code]** · **[guide]** · **[guess]**.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: the elevation mod shows its hint in a separate GDI window (`mods/elevation.md`); the question is whether a native in-game hint is feasible and where the seam is.
 
 ## What is established [code]
@@ -28,22 +28,16 @@ Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: the el
 * `call qword ptr [reg+0x2a0]`: `FUN_14011c880` at `0x14011c94e` and `FUN_14021b240` at `0x14021b3a0`; **not inspected yet**.
 * So no obvious direct HGE `KeyDown` use was found, and the slot arithmetic is unverified. The elevation mod itself polls the global `GetAsyncKeyState` on its own thread (`mods/elevation.md`).
 
-## Options
-| | Idea | For | Against |
-|---|---|---|---|
-| A | Keep the GDI overlay, port it to Rust (`windows-sys`) | Works; the user confirmed it is visible under Proton (C++ version) [game] | Separate window, may not show in exclusive fullscreen, own thread |
-| B | Native: per-frame hook in `InputTask`/`VideoTask` plus a reused or new GUI text element in the `EDITORMODE` group | Looks native, one thread, fullscreen-safe | Needs more RE: GUI text setter, a free label, how keys are read |
-| C | Hybrid: game-thread hook for input and `m_floor` writes, overlay for display | Removes the polling-thread race; no new RE for drawing | Still an overlay window |
+## Options (history)
+Three options were weighed: **A** keep the GDI overlay and port it to Rust (works; the user confirmed it is visible under Proton with the C++ version [game]; separate window, may not show in exclusive fullscreen, own thread), **B** native text through a per-frame hook plus a reused or new GUI text element (looks native, fullscreen-safe; needed a GUI text setter, a free label and the key path), **C** a hybrid with a game-thread hook for input and `m_floor` writes and the overlay for display. The recommendation then was to ship A or C in the first PR and treat B as follow-up research. **Update 2026-10-14: option B (native text) is proven feasible [game]** (a debug DLL drew text in the editor through the game's own font code, hooked at the label-pass call `0x140303fb4`; coordinates are the 1920x1080 virtual frame; [render-pipeline.md](render-pipeline.md#live-test-2026-10-14-debug-dll-hf_draw_test)) **and shipped** (its 'Built: native elevation hint' section); the window overlay remains as the `hint: window` fallback.
 
-Recommendation: ship A or C in the first PR; treat B as follow-up research. **Update 2026-10-14: option B (native text) is proven feasible [game]**: a debug DLL drew text in the editor through the game's own font code, hooked at the label-pass call `0x140303fb4`; coordinates are the 1920x1080 virtual frame. See [render-pipeline.md](render-pipeline.md#live-test-2026-10-14-debug-dll-hf_draw_test) and its 'Plan, not built' section.
-
-## Unknowns
-* Which function sets the text of a GUI label, and which existing editor label is free to reuse.
+## Unknowns (after the native hint shipped)
+* ~~Which function sets the text of a GUI label, and which existing editor label is free to reuse.~~ Moot: the hint calls the game's label draw `0x14016f290` from the label-pass hook (Update sections below).
 * How the editor reads keys (`FUN_14011c880` / `FUN_14021b240` not inspected; the `+0x290`/`+0x2a0` slot mapping unconfirmed).
 * What `0x1402326b0` really does, and whether `_HINT` is a hover-hint mechanism.
 * Whether `SomethingInputTask` runs on every frame in the editor (frame-skip applies to video, not confirmed for input).
 
-## Live-test recipe
+## Live-test recipe (original; step 2 is replaced by the recipe further down, and the hint no longer depends on these)
 1. Log-only detour on `SomethingInputTask` entry (`0x14018dbf0`): count calls per second while the editor is open; confirms a per-frame game-thread site.
 2. Log-only detour on `FindGuiElement` (`0x1401a9170`): list the element names requested while the editor is open, to find a reusable label.
 3. Read-only Ghidra: inspect `FUN_14011c880` and `FUN_14021b240`, then xref the GUI text setter from a known label such as `EDITOR_TOTAL_REPAIR_TIME`.

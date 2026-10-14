@@ -1,4 +1,4 @@
-# Probe run 1 (debug DLL `hf_probe`, 2026-10-14)
+# Probe runs 1-3 (debug DLL `hf_probe`, 2026-10-14)
 
 A debug-only DLL that records what the game does while the user presses keys, hovers, clicks and drives. Goal: find the unknown variables (hover, selection, mode, cursor) by observation. **Not part of QoL.**
 

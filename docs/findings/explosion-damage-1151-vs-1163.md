@@ -11,6 +11,8 @@ Four things stack on every ship-attacking missile hit (the player's "Zenith"; pa
    How much each of these is felt depends on the target: the cost change only lengthens chains through parts under 100 HP; the x4 and the warhead change apply to every Zenith hit (see the controlled run).
 4. Unchanged: armor still costs 10, parts with category bit `0x80` (trusses `MDL_FERMA*`) are free in both versions, gun-shell blasts have no chain at all.
 
+Rocket warheads changed too (`ITEM_AMMO_220MM` 90 -> 180, `ITEM_AMMO_300MM` 90 -> 500): [ammo-1151-vs-1163.md](ammo-1151-vs-1163.md).
+
 The 180mm gun shells are **identical** in both versions (explosive 82, 90 damage per part at the centre, no chain). So the extra spalling is a missile-hit effect; guns are not the cause. [game]
 
 ## How an explosion works (both versions) [code]

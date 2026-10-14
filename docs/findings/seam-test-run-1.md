@@ -1,4 +1,4 @@
-# Seam test, run 1 (probe v2.2, 2026-10-14 18:01) [game, observed unless marked]
+# Seam test, runs 1 and 2 (probe v2.2, 2026-10-14; run 1 at 18:01) [game, observed unless marked]
 
 Goal: find where extra text can be drawn on the map, battle/city and menu screens, as the editor label pass (`0x140303fb4`) allows in the editor. Log: `hf_probe_build/logs/2026-10-14_1801_v2.2/probe.log`, probe `t = 0` is `18:01:09`.
 
