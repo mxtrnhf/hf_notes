@@ -8,6 +8,7 @@ Four things stack on every ship-attacking missile hit (the player's "Zenith"; pa
 1. **Warhead explosive power 200 (1.151) -> 300 (1.163)**. Blast radius = sqrt(explosive): 14.1 -> 17.3 (+22%). [game + code]
 2. **First armored part hit by the blast chain: damage = budget x2 (1.151) -> x4 (1.163)**; 30 -> 60 for a budget-15 blast. [game + code]
 3. **Cost of an ordinary part along the chain: flat 5 (1.151) -> `maxHealth / 20` (1.163)**. Fragile modules (ammo 20 HP = 1, fuel 30 HP = 1.5, FSS 10 HP = 0.5, truss 25 HP = 1.25) barely slow the blast. [game + code]
+   How much each of these is felt depends on the target: the cost change only lengthens chains through parts under 100 HP; the x4 and the warhead change apply to every Zenith hit (see the controlled run).
 4. Unchanged: armor still costs 10, parts with category bit `0x80` (trusses `MDL_FERMA*`) are free in both versions, gun-shell blasts have no chain at all.
 
 The 180mm gun shells are **identical** in both versions (explosive 82, 90 damage per part at the centre, no chain). So the extra spalling is a missile-hit effect; guns are not the cause. [game]
