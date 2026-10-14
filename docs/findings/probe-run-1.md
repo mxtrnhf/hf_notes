@@ -22,7 +22,7 @@ User actions: opened the ship editor, hovered palette widgets, picked and held p
 | Finding | Evidence | Tag |
 |---|---|---|
 | After the first click, `GetCursorPos` + `ScreenToClient` returns client `(960,540)` on every poll in a 2560x1440 client: the OS cursor is pinned, so the `MOUSE` positions in the log are meaningless | log | [game] |
-| The game warps the cursor itself and keeps its own virtual cursor | inference | [guess] |
+| The game warps the cursor itself and keeps its own virtual cursor | inference | [guess] until the recentring code or the virtual cursor global is found |
 | `0x1403ef304`, `0x1403ef308`, `0x1403ef30c` are zeroed at the start of every `VideoTask`: per-frame counters, pure noise (they changed in about 3000 snapshots) | decompile + log | [code] |
 | `0x1403c0e60`..`67` (a 10.0f timer and neighbours) and `0x143a1197c`..`7f` (a timer 0..9.8) also change by themselves | log | [game] |
 | `0x143a11963` is `VideoTask`'s skip-one-frame flag and toggles on screen transitions | decompile + log | [code] |
@@ -33,14 +33,41 @@ User actions: opened the ship editor, hovered palette widgets, picked and held p
 | `0x1403bd00c` flips at screen changes; `IS_IN_CAMPAIGN?` is `0x147fc6fd0` | log + symbol | [game]/[code] |
 | `0x1403c0dc8` / `0x1403c0dcc` are floats that changed continuously (about -40..85) while the mouse moved | log | [guess]: candidate virtual cursor or grid position |
 
-## Design flaws found (fix in v1.1)
+## Design flaws found in run 1 (fixed in v1.1; more in Run 2 below)
 * The noise filter relied on F10, which was never pressed.
 * Per-byte `MEM` lines are unreadable (3144 of 3257 lines).
+
+## Run 2 (v1.1, 2026-10-14) [game]
+* Installed probe: v1.1 (`hf_probe.dll`, 407,040 bytes, SHA-256 starts `d8f70b24`, the `hf_probe_build` copy) [file]. Log: `/home/maksim/.local/share/Steam/steamapps/common/HighFleet/Modloader/probe.log`, **1356 lines** (`MEM` 835, `MOUSE` 212, `KEY` 110, `NOISE` 89, `WHEEL` 53, `HELD` 29, `MODE` 21, `FOCUS` 4, `SPRITE` 1), about 190 s of play. Screenshots (2560x1440, Steam names carry the wall-clock time): `/home/maksim/Development/hf_probe_build/2026101413xxxx_N.jpg`.
+* **Aligning screenshots with the log.** Probe `t = 0` is the wall-clock time of the probe's `running` line in the modloader log `Highfleet_2026-10-14_13-32-43.log`, i.e. `13:32:43`. A screenshot named `1333xx` is then at `t = xx - 43 s` (plus minutes). This is how the screens below were tied to `MODE` lines.
+
+| Screenshot (wall clock / probe t) | Screen | Dispatcher branch at that time |
+|---|---|---|
+| `133302` / 19 s | main menu (title "HIGHFLEET, DEUS in NOBIS"; campaign, settings, editor, credits, exit) | "other" branch, renderer `0x14030f250` |
+| `133308`..`133349` / 25..66 s | ship editor, HUD visible | editor branch, `0x140300db0` |
+| `133410` / 87 s | ship editor with the **TEST panel** open ("TESTING GROUND": ENEMIES difficulty slider, SMALL / MID / LARGE / CARRIER, AMMO primary and secondary icons, FIGHT, LANDING) | editor branch; FIGHT then switched to the battle branch at 87.717 s |
+| `133552` / 189 s | **fuel shop** (title "ТОПЛИВО", liquefied methane, 125000 gold, tonne slider, a city map, a gas-masked character, an exit button) | **battle branch**, `0x1403050a0` (between `MODE` battle at 185.375 s and menu at 190.078 s) |
+
+So shop and dialogue-like screens run the **battle branch** of the dispatcher [game+code, by timeline]. The `MODE` names used by v1.1 (`map/campaign`, `battle/arcade`, `menu/hangar`) are **branch names, not screen names**. Example: at 13.369 s `map/campaign` fired for 0.17 s on the way to the main menu, a loading transition. v1.2 prints the renderer address and the raw flag bytes instead.
+
+* **`MODE` timeline** (see also [render-pipeline.md](render-pipeline.md)): other 0.017; campaign branch 13.369..13.536 (transition); other 13.536; editor from 21.774; other 87.667, battle branch 87.717 (FIGHT in TEST) until 125.716; other then editor 125.783; other 127.314; campaign branch 150.988 (strategic map); other 175.718; battle 175.834; other 176.759; campaign 176.793; other 179.727; battle 179.845; other 180.654; editor 180.703; battle 185.375 (fuel shop); other 190.078; campaign 190.112. **Every screen change passes through the "other" branch for about 0.05 s** (a loading frame).
+* **Mouse wheel works** [game]: `WHEEL` was read from `HGE+0x9f8` as `-1` or `+1` per notch, 53 times (editor palette scrolling). First time the wheel has been observed.
+* `HGE+0x9fc` / `+0xa00` printed only `-1`, `0` or `1` in v1.1, but the probe formatted them with `{:.0}` (rounding), so "these are relative mouse deltas" is only a **[guess]** until v1.2 prints three decimals. The Windows cursor stayed at client `(960,540)` in a 2560x1440 client [game].
+* **Pointer slots** [game; 32-bit matches of `MEM` values against the `HELD` pointers of the same log]: the dwords at `0x1403c0d58` and `0x1403c0d70` held the same pointer value as `held_part` `0x1403c0d88` (39 and 39 matches for `MDL_FERMA1X1_01`, 18 and 18 for `MDL_FERMA2X1_01`; `d88` itself 34 and 10). So `d58`, `d70` and `d88` are three part-pointer slots set when a part is picked (selected / target / held; roles unresolved). `0x1403c0db8` changed 249 times with heap pointers and matched a held pointer only 6 times: probably the **object under the cursor** [guess]. `0x1403c0d40` (`obj_c0d40`, 57 changes) is the object the editor's coordinate readout uses [guess]. The most-changing dwords overall: `0x1403c0db8`, `d58`, `dc0`, `dc4`, `d70`, `d60`, `d64`, `layer_078` (`0x1403bd078`), `0x1403c0d40`, `0x1403ef380` / `388`, `0x1403c0d48` / `4c`, `0x147fc6fc4`.
+* **The sprite test draws** [game, user-confirmed]. The user marked it with an arrow (a ship built from hazard-sign hull parts) in `20261014133349_1.jpg`: `shpwrk_slide` scaled 0.3, centred at frame `(1300,980)`, is hidden **behind the palette buttons** (bottom bar, frame y about 990-1100). Fragments of the sprite and of its label text are visible in the gaps between the buttons. So `GetAnimation` + `RenderEx` work from the label-pass hook, and the palette buttons are drawn **after** the label pass. See [images-and-sprites.md](images-and-sprites.md).
+* Input source: `SDL_PollEvent` in `InputTask` is only for joysticks in this build (details in [engine-hge.md](../engine-hge.md)); where the game accumulates its virtual cursor is still unknown.
+
+## Lessons / blind spots [game]
+* **The v1.1 auto-noise filter hid what we hunt.** It suppressed for good any byte that changed in more than 25% of the polls, and a cursor float that moves with the mouse crosses that line within seconds. So the virtual cursor is **not missing from memory; the probe filtered it out**. v1.2 writes a summary of the hidden dwords every 5 s (count, float min..max) and un-hides them when they calm down.
+* 89 `NOISE` lines in the log (v1.2: at most one summary per 5 s).
+* Per-byte output was unreadable. v1.1 groups dwords with hex, int and float and names known globals; **v1.2** also resolves pointers to part names (`ptr->MDL_...`) and adds a HUD **watch panel**: the pointers `d58`, `d70`, `held`, `db8` as part names, and the floats `0x1403c0dc0`..`0xcc`, `0x1403c0d60` / `64`, `0x1403ef380`..`8c`, next to the game's own `%i %i` readout. v1.2: commit `a999689` in `/home/maksim/Development/hf_probe`, built to `hf_probe_build` (hash starts `1537b0dd`); the sprite test moves to `(1500,700)` in free space.
+* The F9 / F10 keys must not be required: noise handling has to work unattended.
 
 ## Unknowns
 * Where the game keeps its **virtual cursor** (the arrow it draws). See the HGE input layout in [engine-hge.md](../engine-hge.md): `HGE+0x9fc/0xa00` is what the game's HGE layer sees, not necessarily the arrow.
 * Meaning of `0x147fc6fc4` and `0x1403bd078`.
-* Whether the sprite test draws at all.
+* ~~Whether the sprite test draws at all~~: it does (Run 2), hidden under the palette.
+* The roles of the pointer slots `0x1403c0d58`, `d70`, `d88`, `db8`, `0x1403c0d40`, and whether `db8` is the hovered object (v1.2 resolves them to part names).
 * Whether `DBG_LOG_DEPTH` in `Config.ini` gives a verbose `client.log` (see `../../ref/config-ini.md`).
 * Map and battle HUD seams (flush sites listed in [render-pipeline.md](render-pipeline.md)).
 

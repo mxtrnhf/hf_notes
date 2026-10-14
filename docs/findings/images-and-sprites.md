@@ -52,13 +52,18 @@ Drawing:
 * `RenderEx(sprite, x, y, rot, hscale, vscale)` is `0x140172aa0`: a sinf/cosf helper, then the same `+0x2e0` call. The decompiler lost its parameters; they are as in the stock helper [guess].
 * Animations are shared objects: save and restore the vertex colour if you tint.
 
+## Sprite drawing confirmed [game, 2026-10-14]
+The probe's sprite test **draws**: `GetAnimation("shpwrk_slide")` (`0x140170230`) returned a non-null object and `RenderEx` (`0x140172aa0`) with scale 0.3 and a centre hotspot, called from the editor label-pass hook `0x140303fb4`, put it on screen. The user confirmed it from screenshot `/home/maksim/Development/hf_probe_build/20261014133349_1.jpg`: at frame `(1300,980)` it is **hidden behind the editor's palette buttons** (bottom bar, frame y about 990-1100), with fragments of the sprite and of its label text visible in the gaps between the buttons. Draw order: the **label pass is drawn under the palette buttons**, which are drawn afterwards. Probe v1.2 moves the test to `(1500,700)` for a clean look.
+The editor screen itself (palette of 14 category buttons, SAVE/LOAD / RESET / TEST at the top left, the `DOCK A` watermark, the stats panel, the TEST panel) uses the same `Animation` resources; their names are unknown (see `Editor1.res`, `Desk1.res`).
+
 ## Unknowns
-* Whether `RenderEx` on `shpwrk_slide` really draws (the probe draws it at scale 0.3 at `(1300,980)` with a centre hotspot; no screenshot yet).
+* Parameter types of `RenderEx`: it draws with `(sprite, x, y, rot, hscale, vscale)` as in the stock helper (works), but the decompiler still lost them.
+* Names of the Animations behind the editor palette, panels and buttons.
 * Whether a type-7 sprite getter exists anywhere.
 * What `0x140172ee0` does (called around glyph rendering with `(sprite, char, -1)`).
 * Animations with more than one frame: `frames` and how `hgeAnimation` advances them.
 
 ## Live-test recipe
-1. Run the probe with `sprite_test` on in the editor and screenshot the bottom right.
-2. If it draws, draw a few small Animations (`Desk1`, `Mapmode7`) in a gallery with their names to document what each looks like.
+1. Done (Run 2): the sprite draws. Next, check the v1.2 position `(1500,700)` for an unobstructed look.
+2. Draw a few small Animations (`Desk1`, `Mapmode7`) in a gallery with their names to document what each looks like.
 3. Try tinting through `0x140172ae0` and restoring afterwards.

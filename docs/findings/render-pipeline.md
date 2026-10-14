@@ -127,6 +127,12 @@ Data only; the label-pass equivalents (the bind, labels, flush pattern seen in t
 * Battle renderer `0x1403050a0` (Ghidra `rep_1402da020_...pow`) has 29 flush sites from `0x1403063f7` to `0x140309c17` and only three target binds `0x1400835a0`: `0x14030627e`, `0x14030930c`, `0x140309bf5`.
 * Also: `0x14030e670` (mode parameter 1) and `0x14030f250` (the non-editor branch).
 
+### Mode timeline and screens (probe run 2) [game]
+Dispatcher branches (`0x140300c20`) seen over about 190 s: other 0.017 s; campaign branch 13.369..13.536 (a loading transition on the way to the main menu); other; editor from 21.774; other 87.667, **battle branch** 87.717 (FIGHT in the TEST panel) until 125.716; editor 125.783; other 127.314; campaign branch 150.988 (strategic map); other 175.718, battle 175.834; other 176.759, campaign 176.793; other 179.727, battle 179.845; other 180.654, editor 180.703; battle 185.375 (**fuel shop**); other 190.078; campaign 190.112. **Every screen change passes through the "other" branch for about 0.05 s** (a loading frame).
+* **Branch names are not screen names.** Main menu = "other" branch (screenshot `133302`, probe t 19 s). Editor and the **TEST panel** ("TESTING GROUND": ENEMIES difficulty slider, SMALL / MID / LARGE / CARRIER, AMMO primary and secondary, FIGHT, LANDING; screenshot `133410`, t 87 s) = editor branch. The **fuel shop** screen (screenshot `133552`, t 189 s) = **battle branch**, so shop and dialogue-like screens run `0x1403050a0` [game+code, by timeline]. Which flags the shop screens set is unknown (probe v1.2 logs the raw flags).
+* Screenshot alignment: probe `t = 0` is `13:32:43` (modloader log `Highfleet_2026-10-14_13-32-43.log`); details in [probe-run-1.md](probe-run-1.md).
+* The editor label pass is drawn **under** the palette buttons: a sprite and text drawn from the hook at `0x140303fb4` at frame y about 990-1100 are hidden behind the bottom palette (see [images-and-sprites.md](images-and-sprites.md)).
+
 State bytes seen in the first probe run (full table and the run itself: [probe-run-1.md](probe-run-1.md)):
 
 | Address | Meaning | Tag |
