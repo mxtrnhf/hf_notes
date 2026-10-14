@@ -4,7 +4,7 @@ Status: **the rule changes are confirmed on both versions at run time (static de
 Addresses are image base `0x140000000`. Origin: report that 1.163 "feels like more spalling": explosions penetrate deeper and damage components more easily.
 
 ## Short answer
-Four things stack on every ship-attacking missile hit (the player's "Zenith"; part `MDL_MISSILE_01` is the 300 warhead in 1.163 `OL.seria`, the Zenith = `MDL_MISSILE_01` link is [guess]):
+Four things stack on every ship-attacking missile hit (the player's "R-5 ZENITH" = `MDL_MISSILE_01`: name from the language pack, warhead 200 in the 1.151 `OL.seria` and 300 in the 1.163 one [game, data files]):
 1. **Warhead explosive power 200 (1.151) -> 300 (1.163)**. Blast radius = sqrt(explosive): 14.1 -> 17.3 (+22%). [game + code]
 2. **First armored part hit by the blast chain: damage = budget x2 (1.151) -> x4 (1.163)**; 30 -> 60 for a budget-15 blast. [game + code]
 3. **Cost of an ordinary part along the chain: flat 5 (1.151) -> `maxHealth / 20` (1.163)**. Fragile modules (ammo 20 HP = 1, fuel 30 HP = 1.5, FSS 10 HP = 0.5, truss 25 HP = 1.25) barely slow the blast. [game + code]
@@ -19,7 +19,7 @@ The 180mm gun shells are **identical** in both versions (explosive 82, 90 damage
 Routine: 1.151 `handleExplosionSFX?` `0x140028520`, 1.163 `FUN_140029b60` (called from `+0x240dd` / `+0x231ac` in the log). Explosion object fields (1.163; 1.151 is `0x10` lower from `+0x2b0` on, and the radius `+0x20c` is `+0x208`): `+0x148/+0x14c` position, `+0x2c0` (1.151 `+0x2b0`) float, `+0x2dc` `explosive`, `+0x2e0` `strength`, `+0x2e4` kind (int), `+0x20c` stored radius.
 * **Two separate damage mechanisms run in the same call:**
   * **Area damage** (1.151 `0x14002dca0`, 1.163 `FUN_14002cdc0`, caller seen in the log at `+0x2de8b` / `+0x2d01a`): for every body whose edge is inside `R = sqrt(explosive)`: `damage = floor(5 * k * 2*sqrt(explosive) * (1 - d/R)^2)`, `k` = 1.0 for the player's own explosions and **0.66 for other owners** (`Get_Profile().player_owner` test; 1.163 also folds in a profile flag at `+0x165` [guess on its meaning]). Seen: 180mm shell (E 82, player's) 90 at the centre = 5 * 2*sqrt(82); Zenith E 200 -> 93, E 300 -> 114 (= 5 * 0.66 * 2*sqrt(E)), so the factor 0.66 applies to Zenith blasts in both versions, **including the player's own missiles** (controlled 1.163 run: own Zenith hit = 114 at the centre; own 300mm rocket E 500 = 147 = 5 * 0.66 * 2*sqrt(500)), while own gun shells use 1.0. Missiles/rockets therefore seem to carry no player-owner link in that test [guess]; the `k` is not a reliable who-fired signal. [code + game]
-  * **The budget chain (the "spalling"):** `budget = min(1, field(+0x2c0) + 0.5) * strength(+0x2e0)`; a Zenith has strength 30 and field 0, so budget 15. Gun shells have strength 0, so no chain. The routine walks the parts near the impact point nearest first and calls the Body damage slot on each with `damage = remaining budget`; then it lowers the budget:
+  * **The budget chain (the "spalling"):** `budget = min(1, field(+0x2c0) + 0.5) * strength(+0x2e0)`; **`strength` is the missile's `m_missile_ap` from `OL.seria`**: 30 for the Zenith (`MDL_MISSILE_01`) and the R-6 Nadir (`MDL_MISSILE_02`), none (0) for the R-9 Sprint (`MDL_MISSILE_03`), the cluster missile and every gun shell, so only AP-30 missiles chain. A Zenith has field 0, so budget 15. Gun shells have strength 0, so no chain. The routine walks the parts near the impact point nearest first and calls the Body damage slot on each with `damage = remaining budget`; then it lowers the budget:
     * armored part (`ShipPart.category & 2`): `-10` (both versions);
     * any other part, unless `category & 0x80`: **`-5` (1.151) / `-maxHealth/20` (1.163)**;
     * the **first** part of the chain, when armored, is hit for `budget x 2` (1.151, `0x1400290dc`/`0x14002913c` area) or `budget x 4` (1.163, `0x14002a7a8`...).
@@ -74,9 +74,10 @@ What the controlled run shows, honestly:
 ## A mod that restores 1.151 behaviour (not written) [code]
 Three byte patches in 1.163 would do it: the multiplier `4.0` at the first-armor call, the `maxHP/20` cost (`MOVSS XMM0,[RBX+0x2cc]; DIVSS XMM0,XMM9` at `0x14002ab1d`) replaced by a constant 5, and the Zenith `m_missile_explosive` in `OL.seria` (a data change, no code). Sites: loop unarmored cost `0x14002ab1d`..`0x14002ab2a`; armored `-10` at `0x14002a9ef`/`0x14002aa0c` (`ADDSS XMM11,XMM7`).
 
+## Data files (OL.seria diff, 1.151 vs 1.163) [game]
+The 1.151 `Libraries/OL.seria` was inspected while the Steam folder held 1.151 (not kept; see [../formats.md](../formats.md) on copying per version). Of the missiles, only `MDL_MISSILE_01` (Zenith) changed its warhead: `m_missile_explosive` 200 -> 300. Nadir 400, Sprint 100, cluster 200 are the same in both; `m_missile_ap` (30 on Zenith and Nadir) is the same in both. In 1.163 the nuke conversions (`MDL_NUKE_*_CONV`) went `m_missile_explosive` 500 -> 700 and gained `m_missile_ap` 100 (so they now have a chain, budget 50 at field 0) [not seen in a fight]. Zenith `m_mdl_sectors_threshold` 0.5 -> 0.3 and new `m_mdl_sectors_shift` 1. Part HP in `parts.seria` is unchanged.
+
 ## Open
-* Confirm the 1.151 Zenith warhead (200) from the 1.151 `OL.seria` (we only saw it in blast logs; the 1.163 data file says `MDL_MISSILE_01` 300, `MDL_MISSILE_CLUSTER_SFW_01` 200, `MDL_MISSILE_02` 400, `MDL_MISSILE_03` 100).
-* Which part name the game's UI "Zenith" is. [guess] `MDL_MISSILE_01`.
-* The 15-23 part blasts in the 1.163 log: ships or other bodies?
 * The x5 aircraft/missile multiplier and the /5 armor reduction in the area routine, and the `+0x165` profile flag in the 0.66 factor, were read but not exercised.
-* A 1.163 mod reading 1.151 values would need the matching `m_missile_explosive` and the 2x/flat-5 behaviour; not decided whether it is worth shipping.
+* The blast radius (+22% predicted) is not measured: the `DMG` lines do not log distance.
+* A 1.163 mod reading 1.151 values would need the matching `m_missile_explosive` (data) and the 2x/flat-5 behaviour (code); not decided whether it is worth shipping.

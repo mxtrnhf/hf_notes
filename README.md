@@ -23,7 +23,7 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 | [docs/hooks.md](docs/hooks.md) | hooking techniques, who owns which patch site, candidate sites |
 | [docs/content.md](docs/content.md) | dialogue, characters, events, textures (study + experiment plan) |
 | [docs/total-conversion-hara-vera.md](docs/total-conversion-hara-vera.md) | study of the "Flight to Hara Vera" total conversion |
-| [docs/mods/](docs/mods/) | one short page per mod: elevation, speed, multicharge, salvo, refuel |
+| [docs/mods/](docs/mods/) | one short page per mod: elevation, speed, multicharge, salvo, refuel, and the debug-only `hf_probe` |
 | [ref/](ref/) | Config.ini reference, summaries of community guides and prior art |
 
 ## Findings (one self-contained note per question; each ends with unknowns or a live-test recipe)
@@ -59,4 +59,4 @@ Tags (one legend for all docs): **[game]** verified in play or on the real game 
 Mods (all on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader)):
 [highfleet-elevation](https://github.com/mxtrnhf/highfleet-elevation), [highfleet-speed](https://github.com/mxtrnhf/highfleet-speed),
 highfleet-multicharge, highfleet-salvo, highfleet-refuel.
-The QoL fork of logdot's highfleet-qol carries the refuel, speed and elevation ports (upstream PR #19 refuel and speed, PR #20 elevation draft; #18 pins highfleet-rs so CI builds). `hf_probe` is a debug-only DLL, not a QoL mod; see [docs/findings/probe-run-1.md](docs/findings/probe-run-1.md). `docs/mods/` has no page for either yet.
+The QoL fork of logdot's highfleet-qol carries the refuel, speed and elevation ports (upstream PR #19 refuel and speed, PR #20 elevation draft; #18 pins highfleet-rs so CI builds). `hf_probe` is a debug-only DLL, not a QoL mod: [docs/mods/probe.md](docs/mods/probe.md).
