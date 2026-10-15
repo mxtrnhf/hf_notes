@@ -1,0 +1,346 @@
+func163	func151	name163	cc	ret	intended_ret	params(name|type|intended_type)	fell_back
+140004a70	140004590	stringCompLengthAndContent	__fastcall	bool	bool	param_1|undefined8|pointer;param_2|char *|char *	1
+140004d90	140004870	CopyEscadraName	__fastcall	void *	EscadraName *	dst|void *|EscadraName *;src|void *|EscadraName *	3
+140004e70	140004950	createGroundDefenseCreatures??	__fastcall	undefined	undefined	param_1|void *|AADefense *;xPosition|undefined4|undefined4;param_3|float|float	1
+140006b40	1400065e0	AircraftLogic	__fastcall	void *	AircraftLogic *	param_1|void *|AircraftLogic *	2
+140009920	140009340	compareEscadraString	__fastcall	int	int	a|void *|EscadraName *;b|void *|EscadraName *	2
+14000ac30	14000a3a0	retPosOrNegPiDividedByThree	__fastcall	float	float	param_1|undefined8|undefined8;param_2|longlong|longlong	0
+14000dda0	14000dfd0	vectorCalculateAngles?	__fastcall	undefined	undefined	param_1|Vec2 *|Vec2 *	0
+1400064d0	1400128d0	vec_realloc_insert	__fastcall	undefined	undefined	pVec|void *|StdVec *;pInsertPos|undefined8|undefined8;ppNewElem|undefined8|undefined8	1
+140017d90	140017eb0	stringCopyWithMemoryFree	__fastcall	undefined	undefined	left|void *|EscadraName *;right|void *|EscadraName *	2
+140017e70	140017f60	copyOverBody	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|void *|Body *	2
+140019ab0	140019c30	Add	__fastcall	undefined	undefined	this|void *|Body *;param_2|undefined8|undefined8;param_3|undefined8|undefined8;param_4|undefined1|undefined1	1
+14001c300	14001bc90	handleBodyMesh?	__fastcall	undefined	undefined	body|void *|Body *;vertex_count?|undefined4|undefined4;xDir?|undefined4|undefined4;yDir?|undefined4|undefined4	1
+140023940	140022a00	escadraStringToStr?	__fastcall	char *	char *	param_1|void *|EscadraName *	1
+140048130	140045e10	displayDescriptionOfPart?	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|void *|EscadraName *	2
+1400482b0	140045f90	tutorialForPartName	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|void *|EscadraName *	2
+140048410	1400460f0	calcDMGPercentage	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4	1
+1400486e0	1400463c0	returnMass	__fastcall	undefined	undefined	param_1|void *|Body *	1
+1400488d0	140046580	GetMissileFuzeType	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140048930	1400465e0	get_screen_pos	__fastcall	float *	float *	body|void *|Body *;out_pos?|float *|float *;temp_clear_gui?|bool|bool	1
+140048c30	1400468e0	repairPartsStats	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140048fc0	140046c70	traverseLinkedListCreature?	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+14004b010	140048c50	Reflect	__fastcall	undefined	undefined	this|void *|Body *	1
+14004b880	1400494c0	relink	__fastcall	bool	bool	this|void *|Body *;parent|undefined8|undefined8	1
+14004ba00	140049640	remove	__fastcall	undefined	undefined	this|void *|Body *;param_2|void *|Body *	2
+14004be50	140049a90	allocateMemoryForStruct	__fastcall	int	int	param_1|longlong|longlong;param_2|int|int	0
+1400514d0	14004f040	SerializeProperty	__fastcall	undefined	undefined	oStream|undefined8|undefined8;string|undefined8|undefined8;param_3|undefined8|pointer	1
+1400559e0	140053940	FireGuns	__fastcall	bool	bool	param_1|void *|Body *	1
+140055af0	140053a50	get_world_pos	__fastcall	undefined	undefined	body|void *|Body *;in_out_pos?|undefined8|undefined8	1
+14005c0b0	140059f30	CreateTriggerVal	__fastcall	float *	float *	param_1|undefined8|undefined8;param_2|undefined8|undefined8;param_3|void *|EscadraName *	1
+14006b4e0	140067e90	setCreature7f0ToZero?	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+14006b540	140067ef0	playCombatRocketNoises	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+14006f150	14006b900	calculateShipClasses?	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined8|undefined8;param_3|undefined1|undefined1	1
+1400712d0	14006da80	shipTonnageToColor?	__fastcall	int	int	param_1|void *|Creature *	1
+140161aa0	14006f960	hasTWRStat?	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+140074080	1400704d0	somethingEvacPods	__fastcall	bool	bool	param_1|void *|Creature *	1
+14007c400	140077b60	shipCardsMainStatsDisp?	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined8|undefined8;param_3|undefined4|undefined4	1
+1400860c0	140081870	WINDOW_140081870	__fastcall	undefined	undefined	param_1|void *|astruct *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	1
+1400a0b10	14009c2e0	writeTimeToLog?	__fastcall	undefined	undefined	param_1|char *|char *	0
+1400a3180	14009f430	clearLinkedList??	__fastcall	void	void	param_1|DLL<Body> *|DLL<Body> *	0
+1400ba310	1400b63e0	makeBadConditionedBomb?	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|void *|EscadraName *	2
+1400e47e0	1400df180	Missile	__fastcall	Missile *	Missile *	param_1|Missile *|Missile *;param_2|longlong|longlong	0
+1400e48a0	1400df240	secondMissileInit	__fastcall	undefined	undefined	param_1|Missile *|Missile *	0
+1400e7d40	1400e26c0	someSortOfFreeMem	__fastcall	void *	void *	param_1|undefined8 *|undefined8 *;param_2|ulonglong|ulonglong	0
+1400e8ee0	1400e3860	traverseEscadraMissiles?	__fastcall	undefined	undefined	param_1|void *|Escadra *	1
+1400f11b0	1400eba90	handleMissileIntercepts	__fastcall	undefined	undefined	param_1|Missile *|Missile *;param_2|undefined4|undefined4;param_3|float|float	0
+1400f8000	1400f2810	displayLaunchedMissile?	__fastcall	undefined	undefined	param_1|void *|Mark *	1
+140104690	1400fed90	createMissileOnMap?	__fastcall	undefined	undefined	param_1|Missile *|Missile *	0
+140110470	14010a830	AddAmmoToLocation	__fastcall	undefined	undefined	param_1|Location *|Location *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	0
+14011ba00	140115b10	WriteCharArray	__fastcall	basic_ostream<char,struct_std::char_traits<char>_> *	basic_ostream<char,struct_std::char_traits<char>_> *	oStream|basic_ostream<char,struct_std::char_traits<char>_> *|basic_ostream<char,struct_std::char_traits<char>_> *;writeArray|char *|char *;length|int|int	0
+14011eb20	140118c70	CreateFX	__fastcall	FX *	FX *	this|FX *|FX *	0
+14012a910	140121c30	GUI_2	__fastcall	void *	GUI *	param_1|void *|GUI *;param_2|undefined|undefined	2
+14012b0d0	1401223f0	ObjectList	__fastcall	void *	ObjectList *	this|void *|ObjectList *	2
+14012b230	140122550	Constructor	__fastcall	undefined	undefined	param_1|void *|Panel *	1
+140159440	14014e140	variousRadioIRSTPanels?	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|void *|GUI *;param_3|undefined4|undefined4	1
+14015f870	140154410	getStatsPowerPriority	__fastcall	undefined	undefined	param_1|void *|Body *	1
+14016f120	140163630	setfield_0x1020SideEffects?	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|float|float	1
+14016fd30	140164240	MediaClassConstructor	__fastcall	undefined	undefined	mediaClass|undefined8|undefined8;Path|char *|char *	0
+140170230	140164740	loadMediaByName?	__fastcall	void *	void *	param_1|void *|MediaClass *;param_2|char *|char *	1
+1401703e0	1401648f0	LoadNameIntoMedia	__fastcall	undefined	undefined	media|void *|MediaClass *;name|char *|char *	1
+140172ae0	140166ff0	setSpriteFields	__fastcall	undefined	undefined	param_1|void *|Sprite *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	1
+140173620	140167b30	Ini_GetString	__fastcall	char *	char *	this|void *|HGE_Impl *;section|undefined8|undefined8;name|undefined8|undefined8;def_val|undefined8|undefined8	1
+1401737e0	140167cf0	Input_GetEvent	__fastcall	bool	bool	this|void *|HGE_Impl *;param_2|void *|hgeInputEvent *	2
+140173c40	140168150	GetClientCursorPos	__fastcall	undefined	undefined	this|void *|HGE_Impl *	1
+140173cb0	1401681c0	UpdateMouse	__fastcall	undefined	undefined	param_1|void *|HGE_Impl *	1
+1401741c0	1401686d0	GetBatteryLife	__fastcall	undefined	undefined	param_1|void *|HGE_Impl *	1
+1401744e0	140168890	Resource_AttachPack	__fastcall	bool	bool	this|void *|HGE_Impl *;filename|char *|char *;password|char *|char *	1
+1401745f0	1401689a0	Resource_EnumFiles	__fastcall	char *	char *	this|void *|HGE_Impl *;wildcard|char *|char *	1
+1401746e0	140168a90	Resource_EnumFolders	__fastcall	undefined	undefined	this|void *|HGE_Impl *;wildcard|char *|char *	1
+140174bd0	140168fe0	Resource_RemoveAllPacks	__fastcall	undefined	undefined	this|void *|HGE_Impl *	1
+140178950	14016cd60	CopyNameIntoMedia?	__fastcall	undefined	undefined	media|void *|MediaClass *;length|undefined4|undefined4;name|undefined8|undefined8	1
+14017a620	14016ea30	ParseResourceFile?	__fastcall	undefined	undefined	param_1|void *|MediaClass *;param_2|longlong|longlong;path|char *|char *	1
+14017c140	140170550	Channel_IsSliding	__fastcall	bool	bool	param_1|longlong|longlong;param_2|undefined4|undefined4;param_3|undefined4|undefined4	0
+14017c630	140170a40	Effect_Play	__fastcall	undefined8	HCHANNEL	this|void *|HGE_Impl *;eff|undefined4|HEFFECT	3
+14017c810	140170c20	Music_Load	__fastcall	undefined8	HMUSIC	this|void *|HGE_Impl *;param_2|char *|char *;size|int|int	2
+14017c8e0	140170cf0	moreBass	__fastcall	undefined	undefined	this|void *|HGE_Impl *;param_2|undefined4|undefined4;param_3|undefined1|undefined1	1
+14017c9f0	140170e00	Stream_Free	__fastcall	undefined	undefined	this|void *|HGE_Impl *;stream|undefined4|HSTREAM	2
+14017ca80	140170e90	Stream_Load	__fastcall	undefined8	HSTREAM	this|void *|HGE_Impl *;filename|char *|char *;size|undefined4|undefined4	2
+14017cc30	140171040	Stream_Play	__fastcall	undefined8	HSTREAM	this|void *|HGE_Impl *;stream|undefined4|HSTREAM;loop|bool|bool;volume|int|int	3
+14017ecc0	1401730b0	CreateHGE	__fastcall	void *	HGE *	initCode|undefined4|undefined4	1
+14018f260	140181730	GetUntil?	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|undefined8|undefined8;param_3|char|char	0
+14018f6f0	140181bc0	Property	__fastcall	undefined	undefined	param_1|Property *|Property *	0
+140192460	140184930	AddProperty	__fastcall	undefined	undefined	param_1|void *|ObjectsLibrary *;param_2|Property *|Property *	1
+140194de0	140187120	SetLink	__fastcall	undefined	undefined	this|Link *|Link *;node|void *|Body *	1
+140194fb0	1401872f0	RemoveNodeLink	__fastcall	bool	bool	node|Node *|Node *;link|Link *|Link *	0
+140196660	1401889a0	AddPlane	__fastcall	undefined	undefined	param_1|void *|TLLContainer *;param_2|void *|TLL *;plane_string|void *|ItemMunition *	3
+140197e50	140189e70	loadItemIntoLoadout	__fastcall	void *	EscadraName *	param_1|void *|ItemMunition *;offset|longlong|longlong;itemMunition|void *|ItemMunition *	3
+1401a3940	140195000	CreateWeirdLoadout	__fastcall	undefined	undefined	param_1|void *|WeirdLoadout *;param_2|char * *|char * *;param_3|void *|Loadout *	2
+1401b1fb0	1401a2080	PlayRadioSound?	__fastcall	void *	void *	soundName|char *|char *;min|ulonglong|ulonglong;max|int|int;stringLength|longlong|longlong	0
+1401bfd00	1401af8c0	CopyObject	__fastcall	void *	void *	param_1|void *|Body *	1
+1401ff5a0	1401e5100	renderDocksProcedurally?	__fastcall	undefined	undefined	param_1|Location *|Location *	0
+14020c650	1401f12e0	displayTraitsByLevel?	__fastcall	undefined	undefined	param_1|undefined8|undefined8;dispChooser|int|int;param_3|undefined4|undefined4;param_4|undefined4|undefined4	0
+14020ea60	1401f3740	manipulateHouse?	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+140216140	1401fa190	GetGameVersionString	__fastcall	void *	EscadraName *	outGameVersion|void *|EscadraName *	2
+140219980	1401fc630	retCreature154c?	__fastcall	undefined	undefined	param_1|char *|char *	0
+14021abb0	1401fd860	FindAmmoIndex	__fastcall	int	int	ammoToFind|char *|char *	0
+14021b070	1401fdd20	GetPropertyLinkedObject	__fastcall	Missile *	Missile *	param_1|Property *|Property *	0
+14021b190	1401fde40	DefinePart	__fastcall	void *	Body *	allPartLibrary|void *|Body *;moid|char *|char *;categoryLibrary|Node *|Node *;count|int|int	2
+14021f3d0	140201f90	maincpp	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|void *|Creature *	1
+140225930	140207d50	LoadSeriaFile	__fastcall	bool	bool	container|ISerializable *|ISerializable *;pathToSeria|char *|char *	0
+140228e60	14020b1f0	handlePauseUnpause	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|int|int	0
+14022a690	14020ca20	APP:MoveVolume	__fastcall	undefined	undefined	param_1|void *|Profile *;param_2|undefined8|undefined8	1
+140241940	1402228e0	DeleteAllFilesInFolderMatchingPattern?	__fastcall	undefined	undefined	folder|undefined8|undefined8;pattern|char *|char *	0
+14024f330	14022dc30	handleRadioactiveToxicDebris?	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|void *|Body *;param_3|undefined4|undefined4	1
+14025d340	14023b4f0	somethingRadio	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|void *|Escadra *;param_3|undefined8|undefined8	1
+140263540	1402414c0	LoadCity?	__fastcall	undefined	undefined	param_1|void *|Escadra *	1
+14027f620	14025d370	copyNode?	__fastcall	undefined	undefined	param_1|Node *|Node *;param_2|Node *|Node *	0
+14027f970	14025d6c0	add	__fastcall	Node *	Node *	this|Node *|Node *;param_2|Node *|Node *;param_3|Node *|Node *;param_4|undefined1|undefined1	0
+140280080	14025ddd0	RecursiveFindByID	__fastcall	Node *	Node *	this|Node *|Node *;id|undefined8|undefined8	0
+140280370	14025e0c0	RecursiveSearchChildren	__fastcall	Node *	Node *	this|Node *|Node *;moid|char *|char *	0
+140280840	14025e590	AssignRandomId	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined1|undefined1	1
+1402813c0	14025f110	?FUN_14025f110	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|void *|Creature *	1
+1402894c0	140266990	PM	__fastcall	undefined	undefined	this|void *|PM *	1
+140292db0	140270120	GetNpcFromProfile	__fastcall	NPC *	NPC *	profile|void *|Profile *;npcLabel|void *|EscadraName *	2
+140295250	140272510	validateNpc?	__fastcall	bool	bool	param_1|void *|Profile *;param_2|void *|EscadraName *	2
+1402a19c0	14027e000	displayAmountOfHPDMG?	__fastcall	undefined	undefined	param_1|void *|Profile *;param_2|float *|float *	1
+1402a8ae0	140284db0	somethingAddMapMark?	__fastcall	undefined	undefined	param_1|void *|Profile *	1
+1402ab8c0	140287940	createVideoTaskThread?	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|char *|char *	0
+1402dfef0	1402b4a40	SpriteLoad?	__fastcall	undefined	undefined	param_1|void *|Sprite *	1
+1402eab80	1402bf650	setupHGEFunctionPointers	__fastcall	undefined	undefined	param_1|void *|code *	1
+14031a610	1402ef620	SuperBigConstructor	__fastcall	undefined	undefined	param_1|void *|SuperBig *;param_2|undefined8 *|undefined8 *	1
+140004b00	1400045e0	LinkVec_EmplaceReallocate	__fastcall	undefined	undefined	vector|void *|LinkVec *;position|undefined8|undefined8;source|undefined8|undefined8	1
+1400052b0	140004d90	rep_140004d90_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn	__fastcall	undefined	undefined	param_1|Link * *|Link * *	0
+140005390	140004e70	rep_140004e70_GetStats	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|void *|Body *	1
+1400054e0	140004fc0	rep_140004fc0_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|void *|AADefense *;param_2|undefined8|undefined8	1
+140005fb0	140005aa0	rep_140005aa0_VCRUNTIME140.DLL::memcmp	__fastcall	bool	bool	param_1|undefined8 *|undefined8 *;param_2|undefined8 *|undefined8 *	0
+140006270	140005e10	rep_140005e10_VCRUNTIME140.DLL::memmove	__fastcall	undefined	undefined	param_1|void *|Sprite *;param_2|void *|Body * *;param_3|undefined8|undefined8	2
+14000ea20	14000ec20	configure_plane_gun	__fastcall	undefined	undefined	this|void *|AircraftLogic *;ammo_name|void *|EscadraName *	2
+14000fbc0	14000f890	aircraftStateHandler	__fastcall	undefined	undefined	param_1|void *|AircraftLogic *	1
+140013390	140013310	rep_140013310_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+140013660	1400135e0	rep_1400135e0_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|void *|Body * *;param_3|void *|Body * *	3
+1400141a0	140014120	rep_140014120_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|void *|Body *;param_3|undefined8|undefined8;param_4|void *|Body *	3
+140017c90	140017dc0	rep_140017dc0_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn	__fastcall	undefined	undefined	param_1|NPC *|NPC *	0
+140018ce0	140018dd0	normalizeVectors	__fastcall	undefined	undefined	param_1|float *|float *;param_2|undefined8|undefined8	0
+140018f00	140018ff0	NormalizeVectorAndGetLength	__fastcall	float	float	param_1|Vec2 *|Vec2 *	0
+14001b5d0	14001b0d0	rep_14001b0d0_FastFail?	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+140028030	140026a10	CalculateVectorDistance	__fastcall	float	float	param_1|Vec2 *|Vec2 *;param_2|Vec2 *|Vec2 *	0
+14002e7d0	14002f1b0	rep_14002f1b0_Get_Profile?	__fastcall	undefined	undefined	param_1|float *|float *	0
+140045700	1400435f0	rep_1400435f0_API-MS-WIN-CRT-MATH-L1-1-0.DLL::floorf	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+1400475a0	1400452d0	rep_1400452d0_New	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4;param_3|undefined8|undefined8	1
+140047fc0	140045ca0	rep_140045ca0_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4	1
+140048080	140045d60	rep_140045d60_FastFail?	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140048bf0	1400468a0	rep_1400468a0_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140048c70	140046920	rep_140046920_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140048e50	140046b00	rep_140046b00_API-MS-WIN-CRT-MATH-L1-1-0.DLL::sqrtf	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	1
+140049470	140047960	checkShipPartFlagActive	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4	1
+140049c30	1400477f0	rep_1400477f0_MakeGlobal?	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4	1
+140049d00	1400478c0	rep_1400478c0_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140049da0	1400479a0	rep_1400479a0_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *	1
+14004a1c0	140047dc0	calc_angle_cache	__fastcall	undefined	undefined	param_1|void *|Body *	1
+14004af60	140048ba0	rep_140048ba0_playSFXSound?	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|float|float;param_3|float|float	1
+14004e870	14004c3e0	rep_14004c3e0_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140051760	14004f2d0	rep_14004f2d0_WriteToClientLog	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4	1
+140051e20	14004f900	rep_14004f900_WriteToClientLog	__fastcall	undefined	undefined	param_1|void *|Body *;vel_x|undefined4|undefined4;vel_y|undefined4|undefined4	1
+1400520b0	14004fb90	setXposYpos	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|Vec2 *|Vec2 *	1
+1400521f0	14004fcd0	safeSetBodyPosition	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	1
+1400533f0	140050be0	rep_140050be0_GetStats	__fastcall	bool	bool	param_1|void *|Body *;param_2|int *|int *	1
+140053690	140050e80	rep_140050e80_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+140054720	140051f30	rep_140051f30_API-MS-WIN-CRT-MATH-L1-1-0.DLL::sqrtf	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140054bf0	140052ac0	rep_140052ac0_MakeGlobal?	__fastcall	undefined	undefined	param_1|void *|Body *	1
+1400586d0	1400566c0	rep_1400566c0_VCRUNTIME140.DLL::memcmp	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|void *|EscadraName *;param_3|void *|EscadraName *;param_4|undefined8|undefined8	2
+140058e60	140056e50	rep_140056e50_API-MS-WIN-CRT-MATH-L1-1-0.DLL::sqrtf	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|void *|Creature * *;param_3|undefined8|undefined8;param_4|undefined8|undefined8	1
+140060b80	14005e820	rep_14005e820_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4	1
+140060d80	14005ea20	Creature::add_fuel	__fastcall	double	double	this|void *|Creature *;_value|double|double	1
+140065fa0	140063000	rep_140063000_CopyEscadraName	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined8|undefined8	1
+14006d930	14006a210	rep_14006a210_GetStats	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+14006e090	14006a970	rep_14006a970_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140073200	14006f720	rep_14006f720_New	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+140081670	14007ce20	rep_14007ce20_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *	1
+1400a39e0	14009fc90	rep_14009fc90_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn	__fastcall	undefined	undefined	param_1|char *|char *;param_2|undefined8|undefined8;param_3|undefined8|undefined8	0
+1400a60c0	1400a2320	rep_1400a2320_CopyString	__fastcall	undefined	undefined	param_1|NPC *|NPC *	0
+1400e41f0	1400deb90	rep_1400deb90_AlwaysReturn1	__fastcall	undefined	undefined	param_1|Location *|Location *;param_2|Location *|Location *	0
+1400e4940	1400df2e0	rep_1400df2e0_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn	__fastcall	undefined	undefined	param_1|EscadraVFTABLE *|EscadraVFTABLE *	0
+1400e7e80	1400e2800	rep_1400e2800_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn	__fastcall	undefined	undefined	this|Location *|Location *;param_2|undefined4|undefined4	0
+1400e81d0	1400e2b50	rep_1400e2b50_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|Missile *|Missile *;param_2|undefined8|undefined8	0
+1400ea980	1400e5310	rep_1400e5310_API-MS-WIN-CRT-MATH-L1-1-0.DLL::floor	__fastcall	undefined	undefined	param_1|void *|Escadra *;param_2|undefined8|undefined8	1
+1400ec440	1400e6e00	CheckMapMotionEncounter	__fastcall	bool	bool	param_1|void *|Body *;param_2|undefined8|undefined8;stepTime|float|float	1
+1400ed6e0	1400e8040	rep_1400e8040_MakeGlobal?	__fastcall	undefined	undefined	param_1|void *|Body *	1
+1400ef910	1400ea210	TryLaunchAiAircraftGroup	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+1400f2de0	1400ed6c0	rep_1400ed6c0_API-MS-WIN-CRT-MATH-L1-1-0.DLL::sqrtf	__fastcall	undefined	undefined	this|void *|Escadra *;param_2|undefined8|undefined8;param_3|undefined8|undefined8;param_4|undefined8|undefined8	1
+1400f3c10	1400ee4f0	rep_1400ee4f0_validateMissileFloats?	__fastcall	undefined	undefined	param_1|Missile *|Missile *;param_2|undefined8|undefined8;param_3|undefined4|undefined4;param_4|undefined8|undefined8	0
+1400f4c40	1400ef4e0	rep_1400ef4e0_New	__fastcall	undefined	undefined	param_1|void *|Escadra *;param_2|undefined8|undefined8;param_3|undefined4|undefined4;param_4|undefined8|undefined8	1
+1400f8370	1400f2b80	rep_1400f2b80_CopyString	__fastcall	undefined	undefined	param_1|Node *|Node *	0
+140110e20	14010b1e0	rep_14010b1e0_MakeGlobal?	__fastcall	undefined	undefined	param_1|longlong|longlong;param_2|undefined4|undefined4	0
+1401195d0	140113710	rep_140113710_API-MS-WIN-CRT-MATH-L1-1-0.DLL::_fdclass	__fastcall	undefined	undefined	param_1|Missile *|Missile *;param_2|undefined4|undefined4	0
+14011a150	140114280	rep_140114280_GetStats	__fastcall	undefined	undefined	param_1|void *|Body *	1
+14011f010	140118f50	rep_140118f50_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn	__fastcall	undefined	undefined	param_1|float *|float *	0
+140120470	14011a3a0	rep_14011a3a0_API-MS-WIN-CRT-MATH-L1-1-0.DLL::atan2f	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	1
+140123c00	14011d5a0	rep_14011d5a0_CopyString	__fastcall	undefined	undefined	param_1|ISerializable *|ISerializable *	0
+140123e70	14011d7f0	rep_14011d7f0_New	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+140124c00	14011e2c0	rep_14011e2c0_New	__fastcall	undefined	undefined	param_1|FX *|FX *	0
+140124c80	14011e340	rep_14011e340_New	__fastcall	undefined	undefined	param_1|FX *|FX *;param_2|undefined8|undefined8	0
+14012ec60	140125d20	rep_140125d20_CopyString	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined8|undefined8	1
+14015cc30	140151880	rep_140151880_CopyString	__fastcall	undefined	undefined	param_1|void *|GUI *	1
+140161660	140156230	rep_140156230_CopyString	__fastcall	undefined	undefined	param_1|void *|Panel *	1
+140161ae0	140156670	rep_140156670_API-MS-WIN-CRT-MATH-L1-1-0.DLL::ceilf	__fastcall	undefined	undefined	param_1|void *|GUI *;param_2|undefined8|undefined8;param_3|undefined8|undefined8	1
+1401626e0	140157270	rep_140157270_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined8|undefined8;param_3|undefined8|undefined8	1
+140163000	140157b90	rep_140157b90_?BuyPartShop	__fastcall	undefined	undefined	this|void *|ObjectList *;param_2|undefined8|undefined8;param_3|undefined4|undefined4	1
+1401636d0	140158250	rep_140158250_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined8|undefined8	1
+140167310	14015bdf0	rep_14015bdf0_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+140169420	14015df00	rep_14015df00_API-MS-WIN-CRT-MATH-L1-1-0.DLL::sinf	__fastcall	undefined	undefined	param_1|void *|GUI *;param_2|undefined8|undefined8;param_3|undefined4|undefined4	1
+14016cd50	140161260	rep_140161260_USER32.DLL::MessageBoxA	__fastcall	undefined	undefined	param_1|void *|HGE_Impl *;param_2|undefined8|undefined8;param_3|undefined4|undefined4;param_4|undefined1|undefined1	1
+14016f290	1401637a0	rep_1401637a0_API-MS-WIN-CRT-STDIO-L1-1-0.DLL::__stdio_common_vsprintf	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|float|float;param_3|float|float;param_4|undefined4|undefined4;param_5|undefined8|undefined8	0
+14017a2e0	14016e6f0	rep_14016e6f0_API-MS-WIN-CRT-CONVERT-L1-1-0.DLL::atoi	__fastcall	undefined	undefined	param_1|void *|MediaClass *;param_2|undefined8|undefined8;param_3|undefined8|undefined8;param_4|undefined8|undefined8	1
+140190660	140182b30	DeserializeDynamic	__fastcall	undefined	undefined	this|void *|VProperty *;ObjectCode|void *|EscadraName *;Stream|basic_istream<char,struct_std::char_traits<char>_> *|basic_istream<char,struct_std::char_traits<char>_> *	2
+140190790	140182c60	rep_140182c60_API-MS-WIN-CRT-CONVERT-L1-1-0.DLL::atoi	__fastcall	undefined	undefined	param_1|Property *|Property *;param_2|undefined8|undefined8	0
+140190ae0	140182fb0	rep_140182fb0_WriteString	__fastcall	undefined	undefined	param_1|void *|FProperty *;buffer|undefined8|undefined8	1
+140191b90	140184060	rep_140184060_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|void *|EscadraName *	1
+140191df0	1401842c0	rep_1401842c0_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|void *|MiiProperty *	1
+140192250	140184720	rep_140184720_API-MS-WIN-CRT-CONVERT-L1-1-0.DLL::_atoi64	__fastcall	undefined	undefined	param_1|char *|char *;param_2|undefined8|undefined8	0
+1401922b0	140184780	rep_140184780_CopyEscadraName	__fastcall	undefined	undefined	this|ISerializable *|ISerializable *;param_2|undefined8|undefined8;param_3|undefined8|undefined8	0
+1401924e0	1401849b0	rep_1401849b0_VCRUNTIME140.DLL::memmove	__fastcall	undefined	undefined	param_1|ISerializable *|ISerializable *	0
+140195b50	140187e90	rep_140187e90_WriteToClientLog	__fastcall	undefined	undefined	param_1|undefined4|undefined4;param_2|undefined4|undefined4;param_3|undefined4|undefined4;param_4|char *|char *	0
+140197b60	140189b80	EscadraInsertVector	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|undefined8|undefined8;param_3|void *|EscadraName *	1
+14019a790	14018c7a0	rep_14018c7a0_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|void *|TLL *;param_2|undefined8|undefined8;param_3|undefined8|undefined8	1
+14019cb20	14018e860	rep_14018e860_GetStats	__fastcall	undefined	undefined	param_1|void *|Body * *;param_2|void *|Body * *;param_3|undefined8|undefined8	2
+1401a24a0	140193b60	rep_140193b60_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|void *|TLL *;param_2|undefined8|undefined8	1
+1401a26f0	140193db0	rep_140193db0_API-MS-WIN-CRT-MATH-L1-1-0.DLL::ceilf	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|EscadraVFTABLE *|EscadraVFTABLE *;param_3|undefined8|undefined8	0
+1401a2bd0	140194290	rep_140194290_compData	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|undefined8|undefined8;param_3|char *|char *	0
+1401a4710	140195ea0	rep_140195ea0_CopyString	__fastcall	undefined	undefined	param_1|void *|Loadout *;string1|undefined8|undefined8;string2|undefined8|undefined8;param_4|float|float	1
+1401a5e40	140197480	rep_140197480_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|void *|Loadout *	1
+1401a5fc0	140197600	rep_140197600_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|NPC *|NPC *	0
+1401a8710	140198e70	rep_140198e70_LoadNameIntoMedia	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|float *|float *;param_3|undefined4|undefined4;param_4|undefined4|undefined4	0
+1401b20f0	1401a21c0	rep_1401a21c0_FastFail?	__fastcall	undefined	undefined	param_1|void *|EscadraName *;param_2|undefined8|undefined8	1
+1402024e0	1401e8000	DynNewSerializable	__fastcall	ISerializable *	ISerializable *	creatureDecider?|EObjectCode|EObjectCode	0
+14020fb80	1401f47f0	magnitudeCreatureBodyVector	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|void *|Body *	2
+140216d00	1401fad50	rep_1401fad50_GetStats	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|void *|Body *	1
+140222510	140204c60	rep_140204c60_API-MS-WIN-CRT-MATH-L1-1-0.DLL::sinf	__fastcall	undefined	undefined	param_1|void *|Body * *;param_2|undefined1|undefined1;param_3|undefined1|undefined1	1
+14023f880	140220840	rep_140220840_AddProperty	__fastcall	undefined	undefined	this|Item *|Item *	0
+140269850	140247b90	rep_140247b90_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|GUIVFTABLE *|GUIVFTABLE *	0
+14027e9e0	14025c730	Mesh	__fastcall	PhysicsFixture *	PhysicsFixture *	param_1|PhysicsFixture *|PhysicsFixture *	0
+14027f0e0	14025ce30	rep_14025ce30_New	__fastcall	undefined	undefined	param_1|Node *|Node *;param_2|undefined8|undefined8	0
+14027f310	14025d060	rep_14025d060_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|Node *|Node *	0
+14027f930	14025d680	rep_14025d680_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|Node *|Node *;param_2|uint|uint	0
+1402801c0	14025df10	rep_14025df10_New	__fastcall	undefined	undefined	param_1|Node *|Node *;param_2|undefined8|undefined8;param_3|undefined8|undefined8	0
+1402804b0	14025e200	rep_14025e200_New	__fastcall	undefined	undefined	this|Node *|Node *	0
+1402805e0	14025e330	rep_14025e330_New	__fastcall	bool	bool	this|void *|Body *;param_2|undefined1|undefined1	1
+14028bb70	140269580	rep_140269580_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|void *|Profile *;param_2|undefined8|undefined8	1
+14028d200	14026abe0	rep_14026abe0_New	__fastcall	undefined	undefined	param_1|void *|Profile *	1
+140295220	1402724e0	rep_1402724e0_GetNpcFromProfile	__fastcall	bool	bool	param_1|void *|Profile *;param_2|void *|EscadraName *	2
+1402ab180	140287200	rep_140287200_New	__fastcall	undefined	undefined	param_1|void *|_tiddata *;param_2|undefined8|undefined8;param_3|undefined1|undefined1	1
+1402c8fd0	1402a2110	rep_1402a2110_New	__fastcall	undefined	undefined	param_1|Missile * *|Missile * *;param_2|Missile *|Missile *;param_3|undefined8|undefined8;param_4|undefined8|undefined8	0
+1402cbc60	1402a4d20	rep_1402a4d20_API-MS-WIN-CRT-MATH-L1-1-0.DLL::sqrtf	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+1402dcbc0	1402b1710	rep_1402b1710_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	__fastcall	undefined	undefined	param_1|ISerializable *|ISerializable *;param_2|undefined8|undefined8;param_3|undefined8|undefined8	0
+1402ddcb0	1402b2800	rep_1402b2800_ISerializable::ISerializable	__fastcall	undefined	undefined	param_1|void *|Sprite *;param_2|undefined1|undefined1	1
+1402def10	1402b3a60	rep_1402b3a60_New	__fastcall	undefined	undefined	param_1|void *|Sprite *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	1
+1402e2030	1402b6b80	setBodyOwnerString	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8;param_3|undefined1|undefined1	1
+140334de0	140309e40	rep_140309e40___sse2_sinf4@@16	__fastcall	undefined	undefined	param_1|double|double	0
+1400071c0	140006c80	copyBody?	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|void *|Body *	2
+140008500	140007fd0	setCreatureLocationFromSprite	__fastcall	bool	bool	sprite|void *|Sprite *	1
+140008540	140008010	checkAircraftOutOfBounds	__fastcall	bool	bool	param_1|void *|AircraftLogic *;param_2|undefined8|undefined8;param_3|undefined4|undefined4	1
+14000fa30	14000f700	FUN_14000fa30	__fastcall	undefined	undefined	param_1|void *|Sprite *	1
+140011510	140011330	FUN_140011510	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|undefined8|undefined8;param_3|float|float	0
+140011710	140011530	FUN_140011710	__fastcall	undefined8	undefined8	param_1|undefined8|undefined8;appendString|char *|char *;param_3|float *|float *	0
+140016fe0	1400170e0	Color_CharToFloatArray	__fastcall	undefined	undefined	param_1|void *|GUI *;param_2|undefined4|undefined4	1
+14001c0d0	14001ba60	FUN_14001c0d0	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+14001cec0	14001c200	FUN_14001cec0	__fastcall	undefined	undefined	param_1|void *|Profile *;param_2|undefined8|undefined8	1
+1400250a0	140023a80	FUN_1400250a0	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined8|undefined8;param_3|undefined1|undefined1;param_4|undefined4|undefined4	1
+140048b80	140046830	GetValue	__fastcall	int	int	part|void *|Body *	1
+140048f90	140046c40	FUN_140048f90	__fastcall	char *	char *	param_1|longlong|longlong;param_2|int|int	0
+140049ea0	140047aa0	FUN_140049ea0	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140049fa0	140047ba0	teardownCreatureSprite	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+14004a040	140047c40	Load	__fastcall	undefined	undefined	param_1|void *|Body *	1
+14004f010	14004cb80	SerializeHeader	__fastcall	undefined	undefined	this|void *|Body *;pOStream|undefined8|undefined8	1
+140051850	14004f3c0	cosf	__fastcall	undefined	undefined	param_1|EscadraVFTABLE *|EscadraVFTABLE *;angle?|undefined4|undefined4	0
+140054b20	1400529f0	FUN_140054b20	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4	1
+14006bf60	1400687e0	FUN_14006bf60	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined1|undefined1	1
+140079b20	140075560	FUN_140079b20	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined4|undefined4	1
+140079ed0	140075920	FUN_140079ed0	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined4|undefined4;param_3|undefined4|undefined4;param_4|undefined4|undefined4	1
+1400812a0	14007ca50	FUN_1400812a0	__fastcall	undefined	undefined	param_1|double *|double *	0
+1400863c0	140081b70	FUN_1400863c0	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+140088340	140083af0	FUN_140088340	__fastcall	Effect *	Effect *	param_1|Effect *|Effect *	0
+140088460	140083c10	FUN_140088460	__fastcall	undefined	undefined	param_1|Effect *|Effect *;param_2|undefined8|undefined8;param_3|undefined4|undefined4	0
+140088650	140083e00	FUN_140088650	__fastcall	bool	bool	param_1|Effect *|Effect *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	0
+140088700	140083eb0	FUN_140088700	__fastcall	Effect *	Effect *	param_1|Effect *|Effect *	0
+140088830	140083fe0	FUN_140088830	__fastcall	Effect *	Effect *	param_1|Effect *|Effect *;param_2|undefined8|undefined8;param_3|undefined8|undefined8	0
+140088920	1400840d0	FUN_140088920	__fastcall	undefined	undefined	param_1|Effect *|Effect *;param_2|undefined8|undefined8	0
+14008ee80	14008a630	FUN_14008ee80	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+14008f1e0	14008a990	FUN_14008f1e0	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+14008f570	14008ad20	FUN_14008f570	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+14008f8e0	14008b090	FUN_14008f8e0	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+140092a80	14008e230	FUN_140092a80	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|undefined8|undefined8	0
+1400a0270	14009ba40	FUN_1400a0270	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined8|undefined8	1
+1400b8d30	1400b4e10	FUN_1400b8d30	__fastcall	undefined	undefined	param_1|void *|EscadraName * *;param_2|undefined8|undefined8	1
+1400f5490	1400efd30	FUN_1400f5490	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|float|float;param_3|float|float;param_4|float|float	1
+14011f550	140119490	FUN_14011f550	__fastcall	undefined	undefined	param_1|FX *|FX *;param_2|undefined4|undefined4;param_3|undefined8|undefined8	0
+14011f5b0	1401194f0	FUN_14011f5b0	__fastcall	undefined	undefined	param_1|FX *|FX *;param_2|undefined4|undefined4;param_3|undefined4|undefined4;param_4|undefined1|undefined1	0
+140123e10	14011d7b0	FUN_140123e10	__fastcall	bool	bool	param_1|longlong|longlong	0
+14012d600	140124850	FUN_14012d600	__fastcall	undefined	undefined	param_1|void *|GUI *;param_2|undefined8|undefined8	1
+14012ee40	140125f00	FUN_14012ee40	__fastcall	undefined8	undefined8	param_1|void *|GUI *;param_2|undefined4|undefined4;param_3|undefined8|undefined8	1
+14016d820	140161d30	FUN_14016d820	__fastcall	undefined	undefined	param_1|float *|float *	0
+14016da50	140161f60	FUN_14016da50	__fastcall	undefined	undefined	param_1|float *|float *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	0
+14016e9f0	140162f00	FUN_14016e9f0	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined8|undefined8;param_3|undefined1|undefined1	1
+140170e30	140165340	rep__FileSearch_140165340_KERNEL32.DLL::FindClose	__fastcall	undefined	undefined	media|void *|MediaClass *;path?|char *|char *;array|void *|pointer *	2
+1401725c0	140166ad0	FUN_1401725c0	__fastcall	undefined	undefined	param_1|void *|Sprite *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	1
+140172b10	140167020	FUN_140172b10	__fastcall	undefined	undefined	param_1|ulonglong|ulonglong;param_2|undefined1|undefined1;param_3|undefined1|undefined1;param_4|undefined1|undefined1	0
+1401912a0	140183770	Serialize?	__fastcall	bool	bool	this|void *|VProperty *;buffer|undefined8|undefined8	1
+1401949d0	140186d10	FUN_1401949d0	__fastcall	undefined	undefined	param_1|Link *|Link *;param_2|undefined4|undefined4;param_3|undefined4|undefined4	0
+140194b80	140186ec0	Link_CopyConstructor	__fastcall	undefined	undefined	dst|Link *|Link *;src|Link *|Link *	0
+140194bd0	140186f10	Link_ConstructFromBody	__fastcall	Link *	Link *	param_1|Link *|Link *;param_2|Node *|Node *	0
+140194d20	140187060	freeLinkMemory?	__fastcall	undefined	undefined	link|Link *|Link *	0
+140194d80	1401870c0	ReassignLinkNode	__fastcall	undefined	undefined	oldLink|undefined8|undefined8;newLink|Link *|Link *	0
+140194ef0	140187230	AddNodeLink	__fastcall	void	void	node|Node *|Node *;link|Link *|Link *	0
+1401a3070	140194730	rep_wrap_0_rep_140188780_compData	__fastcall	undefined	undefined	param_1|void *|TLL *;param_2|undefined8|undefined8;param_3|undefined8|undefined8	1
+1401bcab0	1401ac6d0	FUN_1401bcab0	__fastcall	undefined	undefined	param_1|Link *|Link *;param_2|float|float	0
+14022bc90	14020dd30	FUN_14022bc90	__fastcall	undefined	undefined	param_1|Link *|Link *;param_2|undefined4|undefined4	0
+14022bea0	14020df40	FUN_14022bea0	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|float|float	1
+14022c010	14020e0b0	FUN_14022c010	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined1|undefined1	1
+140233110	140214fe0	FUN_140233110	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|Node *|Node *	1
+140237600	140219570	FUN_140237600	__fastcall	undefined	undefined	param_1|char *|char *;param_2|undefined8|undefined8	0
+140280c70	14025e9c0	Relink	__fastcall	bool	bool	this|Node *|Node *;param_2|Node *|Node *	0
+1402810a0	14025edf0	SerializeHeader	__fastcall	undefined	undefined	param_1|Node *|Node *;param_2|undefined8|undefined8	0
+1402815d0	14025f320	initStats1	__fastcall	undefined	undefined	param_1|void *|ShipPart *;param_2|undefined8|undefined8	1
+140281e00	14025fb50	GetStats	__fastcall	void *	ShipPart *	partOID|int|int	1
+140286100	140263960	FUN_140286100	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140289020	140266520	Item	__fastcall	undefined	undefined	param_1|Item *|Item *	0
+140296530	140273a30	FUN_140296530	__fastcall	undefined	undefined	param_1|NPC *|NPC *;param_2|undefined1|undefined1	0
+1402aba30	140287ab0	FUN_1402aba30	__fastcall	undefined	undefined	param_1|void *|_tiddata *	1
+1402abf00	140288fa0	140288fa0-creature-linked-list	__fastcall	undefined	undefined	param_1|void *|Creature *	1
+1402ee0c0	1402c2c30	FUN_1402ee0c0	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|void *|Creature *;param_3|undefined8|undefined8	2
+140319f80	1402eef90	FUN_140319f80	__fastcall	undefined	undefined	physics_body?|InnerMesh *|InnerMesh *	0
+14031a290	1402ef2a0	FUN_14031a290	__fastcall	undefined	undefined	param_1|undefined8|undefined8;param_2|undefined8|undefined8;param_3|float|float	0
+14031a910	1402ef920	FUN_14031a910	__fastcall	undefined	undefined	param_1|void *|Creature *;param_2|undefined8|undefined8	1
+14031c110	1402f1120	FUN_14031c110	__fastcall	undefined	undefined	param_1|Link *|Link *;param_2|undefined1|undefined1	0
+140006d70	140006830	FUN_140006d70	__fastcall	void	void	param_1|char * *|char * *	0
+1400894d0	140084c80	FUN_1400894d0	__fastcall	ShaderBackground *	ShaderBackground *	param_1|ShaderBackground *|ShaderBackground *;param_2|undefined8|undefined8;param_3|undefined8|undefined8;param_4|undefined8|undefined8;param_5|undefined8|undefined8;param_6|undefined8|undefined8	0
+140089d60	140085510	FUN_140089d60	__fastcall	ShaderBloom *	ShaderBloom *	param_1|ShaderBloom *|ShaderBloom *;param_2|undefined8|undefined8;param_3|undefined8|undefined8;param_4|undefined8|undefined8;param_5|undefined8|undefined8;param_6|undefined8|undefined8	0
+14008a740	140085ef0	FUN_14008a740	__fastcall	ShaderBlur *	ShaderBlur *	param_1|ShaderBlur *|ShaderBlur *;param_2|undefined8|undefined8;param_3|undefined8|undefined8;param_4|undefined8|undefined8;param_5|undefined8|undefined8;param_6|undefined8|undefined8	0
+140096060	140091810	FUN_140096060	__fastcall	ShaderMapPostProcessing *	ShaderMapPostProcessing *	param_1|ShaderMapPostProcessing *|ShaderMapPostProcessing *;param_2|undefined8|undefined8;param_3|undefined8|undefined8;param_4|undefined8|undefined8;param_5|undefined8|undefined8;param_6|undefined8|undefined8	0
+140099d30	1400954e0	FUN_140099d30	__fastcall	ShaderRadialBlur *	ShaderRadialBlur *	param_1|ShaderRadialBlur *|ShaderRadialBlur *;param_2|undefined8|undefined8;param_3|undefined8|undefined8;param_4|undefined8|undefined8;param_5|undefined8|undefined8;param_6|undefined8|undefined8	0
+140292ce0	140270050	FUN_140292ce0	__fastcall	undefined	undefined	param_1|void *|Profile *;param_2|void *|EscadraName *	2
+1400076d0	1400071a0	FUN_1400076d0	__fastcall	undefined	undefined	container|void *|TLLC<Str, Void> *;prev|void *|TLL<Str, Void> *;next|void *|TLL<Str, Void> *	3
+140055fd0	140053f30	FUN_140055fd0	__fastcall	undefined	undefined	param_1|void *|ItemMunition *;param_2|undefined8|undefined8	1
+140006020	1400115a0	FUN_140006020	__fastcall	undefined	undefined	param_1|void *|Loadout *;param_2|undefined8|undefined8	1
+1400457d0	1400436c0	FUN_1400457d0	__fastcall	undefined	undefined	param_1|void *|Body *	1
+140006940	140006340	FUN_140006940	__fastcall	undefined	undefined	param_1|FILE *|FILE *;param_2|FILE *|FILE *;param_3|FILE *|FILE *	0
+14016fed0	1401643e0	FUN_14016fed0	__fastcall	undefined	undefined	param_1|void *|ItemMunition *	1
+140018930	140018a00	subtractFloats	__fastcall	Vec2 *	Vec2 *	vecA|Vec2 *|Vec2 *;vecResult|Vec2 *|Vec2 *;vecB|Vec2 *|Vec2 *	0
+14018f8a0	140181d70	FUN_14018f8a0	__fastcall	undefined	undefined	param_1|Property *|Property *	0
+140048b60	140046810	FUN_140048b60	__fastcall	undefined	undefined	param_1|void *|GUI *;param_2|undefined8|undefined8	1
+140033b50	140033570	FUN_140033b50	__fastcall	undefined	undefined	param_1|void *|Body *;param_2|undefined4|undefined4	1
+140088c00	1400843b0	FUN_140088c00	__fastcall	VShader *	VShader *	param_1|VShader *|VShader *;param_2|undefined8|undefined8	0
+14020ff80	1401f4b30	FUN_14020ff80	__fastcall	float	float	param_1|longlong|longlong;param_2|longlong|longlong	0
+14031c910	1402f1920	FUN_14031c910	__fastcall	undefined	undefined	param_1|Link *|Link *;param_2|undefined4|undefined4	0
+14031c8c0	1402f18d0	FUN_14031c8c0	__fastcall	undefined	undefined	param_1|Link *|Link *;param_2|undefined4|undefined4	0
+14028d730	14026b110	FUN_14028d730	__fastcall	undefined	undefined	param_1|void *|Ammo *	1
