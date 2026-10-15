@@ -1,0 +1,17 @@
+func163	name	param	applied_v16	new	reason
+1400f11b0	handleMissileIntercepts	param_1	Missile *	void *	offhash-differs
+14017c630	Effect_Play	<ret>	undefined8	undefined4	ret-size-fix
+14017c810	Music_Load	<ret>	undefined8	undefined4	ret-size-fix
+14017ca80	Stream_Load	<ret>	undefined8	undefined4	ret-size-fix
+14017cc30	Stream_Play	<ret>	undefined8	undefined4	ret-size-fix
+1401ff5a0	renderDocksProcedurally?	param_1	Location *	void *	offhash-differs
+14021b190	DefinePart	categoryLibrary	Node *	void *	offhash-differs
+140292db0	GetNpcFromProfile	<ret>	NPC *	void *	offhash-differs
+140123c00	rep_14011d5a0_CopyString	param_1	ISerializable *	void *	offhash-differs
+140269850	rep_140247b90_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free	param_1	GUIVFTABLE *	void *	offhash-differs
+140051850	cosf	param_1	EscadraVFTABLE *	void *	offhash-differs
+1401949d0	FUN_1401949d0	param_1	Link *	void *	offhash-differs
+1401bcab0	FUN_1401bcab0	param_1	Link *	void *	offhash-differs
+14022bc90	FUN_14022bc90	param_1	Link *	void *	offhash-differs
+140233110	FUN_140233110	param_2	Node *	void *	offhash-differs
+140296530	FUN_140296530	param_1	NPC *	void *	offhash-differs

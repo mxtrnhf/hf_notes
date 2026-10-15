@@ -90,6 +90,9 @@ Tables. (`docs/data/`)
 | [docs/data/clickfunc-elements.tsv](docs/data/clickfunc-elements.tsv) | the `ClickFunc` element catalog as a table: group, first-test address, name, times seen, mod idea (companion to [click-func.md](docs/findings/click-func.md)) |
 | [docs/data/port-1151-1163-functions.tsv](docs/data/port-1151-1163-functions.tsv) | the 1.151 to 1.163 function names ported in Ghidra: new name, both addresses, evidence tier, old 1.163 name (includes the skipped `prop-skip` rows) |
 | [docs/data/port-1151-1163-matches.json](docs/data/port-1151-1163-matches.json) | the 1.151 to 1.163 function address map used for the port (before the fuzzy tier) |
+| [docs/data/port-1151-1163-signatures.tsv](docs/data/port-1151-1163-signatures.tsv) | the 345 function signatures ported (calling convention, return and parameter types as applied, and the type 1.151 had where a stale struct was replaced by `void *`: `intended_type`) |
+| [docs/data/port-1151-1163-signatures-v17-fixes.tsv](docs/data/port-1151-1163-signatures-v17-fixes.tsv) | the 16 signature corrections of version 17 (types reverted to `void *`, return sizes) |
+| [docs/data/port-1151-1163-thiscall.tsv](docs/data/port-1151-1163-thiscall.tsv) | the 16 `__thiscall` signatures ported (function, class, return, parameters) |
 | [docs/data/port-1151-1163-variables.tsv](docs/data/port-1151-1163-variables.tsv) | the 28 parameter and local-variable names ported (function, storage, old and new name) |
 | [docs/data/port-1151-1163-labels.tsv](docs/data/port-1151-1163-labels.tsv) | the 40 data labels ported, with reference votes |
 | [docs/data/port-1151-1163-labels-review.tsv](docs/data/port-1151-1163-labels-review.tsv) | data labels not ported: already named the same, conflicting, or no reference |

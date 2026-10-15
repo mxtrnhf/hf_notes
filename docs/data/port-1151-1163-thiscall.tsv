@@ -1,0 +1,16 @@
+1400e46f0	Mark			Mark
+140174260	HGE_Impl	void		UpdatePowerStatus
+14017ce20	HGE_Impl	bool		SoundInit
+14017dbd0	HGE_Impl	void	format|char *	System_Log
+14017dc60	HGE_Impl	void	state|undefined4;value|bool	System_SetStateBool
+14017e080	HGE_Impl	char		System_Start
+14018f4e0	ISerializable			ISerializable
+140191e90	VProperty	void		Clear
+14027f200	Node			Node
+140281500	ObjectsLibrary			ObjectsLibrary
+14027fc70	Node	void	memberName|EscadraName *;memberValue|undefined8;param_3|undefined8	rep_14025d9c0_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free
+14018fa40	ISerializable	void	Stream|basic_istream<char,struct_std::char_traits<char>_> *	Deserialize
+140190820	ISerializable	bool	buffer|void *	Serialize
+140192950	ISerializable	void	stream|void *	SerializeHeader
+140195010	Link	bool	node|Node *	Relink
+1402807e0	Node	bool		Load
