@@ -44,7 +44,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/sensors-and-crew.md](docs/findings/sensors-and-crew.md) | how sensors combine (max vs sum), crew capacity vs fuel capacity |
 | [docs/findings/end-game.md](docs/findings/end-game.md) | the scripted end game: phases, `endWar`, escalation |
 | [docs/findings/khiva-crash.md](docs/findings/khiva-crash.md) | probable cause of the Khiva end-game crash (unguarded list writes), patch recipe |
-| [docs/findings/flare-crash-hunt.md](docs/findings/flare-crash-hunt.md) | the flare/proximity-fuse crash hunt (site not found) |
+| [docs/findings/flare-crash-hunt.md](docs/findings/flare-crash-hunt.md) | the flare/proximity-fuse crash: fixed upstream by highfleet-qol (site and null pointer), plus the flare release path and flare body layout |
 | [docs/findings/mouse-sensitivity.md](docs/findings/mouse-sensitivity.md) | mouse sensitivity path; A220 slowdown not yet located (partial) |
 | [docs/findings/level-seria-dispatcher.md](docs/findings/level-seria-dispatcher.md) | `SomethingWithLevelSerias`: the SCR_* scenario dispatcher in 1.151 and 1.163, label addresses, string refs (names only, body unread) |
 | [docs/findings/click-func.md](docs/findings/click-func.md) | the GUI click handler `ClickFunc` (1.151 `0x1401261d0`, 1.163 `0x14012f120`): size, caller, what the probe logs, live-test recipe; also the 252-name element catalog and four decompiled branches (BUY_BUY, FUEL_BUY_SLIDER, MAPMODE_MISSION_*) |

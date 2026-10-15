@@ -1,6 +1,6 @@
 # Why AI ships never use flares, and how to give them flares (1.163)
 
-Status: **finding, no mod written, nothing run in game.** Tags: legend in `../../README.md`.
+Status: **mod written (fork branch `ai-flares`, `src/ai_flares.rs`), built and deployed, not yet run in game.** Design below was changed during implementation, see "Implementation". Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap item "the AI cannot deploy flares" (`roadmap.md`, AI, Tactical).
 
 ## Short answer
@@ -28,4 +28,21 @@ Follows the conventions in `hooks.md` (function-entry detour with version guard;
 * What the link at `+0x498` points at for a missile aimed at a ship: the ship root, a part, or the bridge. A log line when the trigger fires answers it.
 * How a missile seeker reacts to a flare body (logic `0x44c`). That is in `creatureLogic` (`0x140033b90`), which could not be decompiled in one piece [not read]. The player uses flares successfully, so an AI-released flare should behave the same.
 * Whether a flaring AI ship should also manoeuvre. Not addressed by this design.
-* The related roadmap bug "a proximity-fused missile colliding with flares crashes the game" is **not located** ([flare-crash-hunt.md](flare-crash-hunt.md)); an AI that uses flares more often could hit it more often, so test with that bug in mind.
+* The related roadmap bug "a proximity-fused missile colliding with flares crashes the game" is fixed upstream by highfleet-qol `enable_flare_crash_fix` ([flare-crash-hunt.md](flare-crash-hunt.md)); an AI that uses flares more often could hit it more often, so run with that fix on.
+
+## Implementation (fork branch `ai-flares`)
+* **Do not set `+0xbc0` for AI ships** [code]: the flag-on branch ends in `0x140271200`, which (in arcade battle) redraws the player's flare HUD from the ship's first launcher and resets the HUD fade timer, so an AI ship with the flag on would overwrite the player's HUD. The hook calls the release `0x14002eed0(launcher)` itself instead, so no flare sound plays yet.
+* **Hook** at `0x14007f864` (the `cmp byte [rsi+0xbc0],0`, `rsi` = creature, RSP aligned) rather than the function entry: at an entry RSP is 8 mod 16, which patchy's `preserved_call` does not handle.
+* **Side** [code]: `creature+0xad4` negative and non-zero = AI; confirmed by the AI-only launch limits in `FUN_14002e3a0`.
+* **Threat** [code]: that function's `param_1` is the missile itself; `SetLink(param_1+0x490, target)` puts the target at `body+0x498`. Class by `0x140281e00(body+0x188)->+0xb0` equal to `0x4000` or `0x8000000` (the point-defence routine excludes exactly these). The mod accepts a link that is the ship itself or an object whose `+0xb8` is the ship, and logs which form it saw (settles the first unknown). Distance from `0x14020fb80(creature, body)`. Timers use the game clock `f64` at `0x143a119c0`.
+* Unknowns that remain: how a seeker reacts to an AI-released flare, and the sound.
+
+### Evasion (added later, same branch)
+* **Where the AI steers** [code]: `FUN_140062f90` ends its steering by storing a waypoint 200 units from the ship along the wanted direction at `creature+0xbf0/+0xbf4` (`0x140064a8d`; xmm9/xmm10 = waypoint x/y, xmm12/xmm14 = ship x/y = `creature+0x1840/+0x1844`), then re-derives the direction from it, so changing xmm9/xmm10 there changes the thrust request. The ship's own velocity is `traverseLinkedListCreature_(creature)+0x130/+0x134`.
+* The hook pulls that direction towards a sidestep perpendicular to the line to the nearest locked-on missile (position `body+0x128/+0x12c`, as the point-defence routine reads it), plus half as much retreat, flipping side every `jink_seconds` x 0.6..1.4. Thrust magnitude is not touched.
+* Not run in game: whether the thrusters can actually turn the ship fast enough, and whether `+0x128/+0x12c` is the missile's world position in the same frame as `+0x1840` (the point-defence routine mixes it with the launcher's `vtable+0xe8` position, so probably yes).
+
+### Boost (player Shift) and the panic evasion
+* **Player boost** [code]: the control list in `setPlayerControls` (`0x1401d60ac`) maps action ids to names: `0x1000` up .. `0x1005` roll right, **`0x1006` `TITLE_CTRL_BOOST` = Shift (binding 4102)**, `0x1009`/`0x1010` fire 1/2 (LMB/RMB), `0x1015` flares (F). The input event switch (jump table at `0x140189a50`, case code `0x1401897ee`) handles boost by setting `creature+0xba8 = 2.0f` (`0x14018a76b` resets it to `1.0f`). The player control code (`0x1402a972b`/`0x1402a97de`) copies `+0xba8` into the strength field (`+4`) of the engine commands `0x66` and `0x67` (`{code, strength, ..., 999, angle}`) sent to each engine part with `0x1400533f0(part, &cmd)`. The flares action `0x1015` is the one that sets `+0xbbf/+0xbc0/+0xbc1`.
+* **AI** builds the same commands on the stack in the AI tick (`0x1400656d9`..: `rbp+0x28` for `0x66`, `rbp+0x48` for `0x67`; strength at `+4` is the thrust fraction, normally 1.0 at most). The mod raises it during a panic evasion at `0x140065744`. Fuel use of a boosted engine and any extra effects (the boost HUD or sound) were not checked.
+* Elevation overlay: set `elevation.hint` to `"off"` (the keys still work, nothing is drawn).

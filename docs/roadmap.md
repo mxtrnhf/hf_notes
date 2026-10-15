@@ -9,8 +9,8 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 ## Items
 
 ### Bugs and QoL
-* **[Bug]** A proximity-fused missile colliding with flares crashes the game. *(open)*
-  * Not located; what is known about the flare body and how to get the crash address: [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md).
+* **[Bug]** A proximity-fused missile colliding with flares crashes the game. *(done upstream: highfleet-qol `enable_flare_crash_fix`, 1.163 only; nothing to build here)*
+  * Site and null pointer (property link at `0x14021b070`, hook `0x140036bb5` in `creatureLogic`), plus the flare body and release path: [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md).
 * **[QoL]** Remove the mechanic by which rockets (A220) lower mouse sensitivity globally for all weapon systems. *(partial: path mapped, cause not found)*
   * Partial: the sensitivity path is mapped and the slowdown is shown NOT to be a write to the device scale or global; location still unknown: [mouse-sensitivity.md](findings/mouse-sensitivity.md).
 * **[QoL / Bug]** Changing an A220 rocket's weapon priority (to change hotkey grouping) removes the extended aiming reticle for rocket weapons. *(open)*

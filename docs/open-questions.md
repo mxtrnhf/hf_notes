@@ -25,7 +25,6 @@ Release plan, open PRs and build breaks: [../STATUS.md](../STATUS.md).
 Each finding note ends with a live-test recipe. Open items:
 * A220 mouse-sensitivity slowdown: path to the delta mapped, cause not found: [findings/mouse-sensitivity.md](findings/mouse-sensitivity.md).
 * Cluster/mine bomblet TTL: two call sites found; the TTL at the second is a register not traced: [findings/cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md).
-* Proximity-fuse crash with flares: site not located: [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md).
 * Khiva crash: cause is a reading of the code, not reproduced: [findings/khiva-crash.md](findings/khiva-crash.md). The three-flag gate in the `SCR_MAP` handler (profile `+0x2ec`, `+0x2e9`, global `0x147fc6fca`) and the two Profile names are unresolved.
 * AI: where the per-ship launch counter at `+0xc98` resets, what the second launch list at `+0x13f0` holds (`+0x13d8` is the Zenith list; `+0x13f0` is probably AA [guess]), the meaning of the mode flags `DAT_147fc6fe0` / `BOOL_147fc6fdb` and of the creature flags at `+0xc06`..`+0xc77` that choose AP/proximity ammo: [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md). A seeker's reaction to a flare body (logic `0x44c`) is in `creatureLogic`, which cannot be decompiled in one piece.
 * Body `+0x7f8` fuel (double) is live-confirmed; `+0x800` is `m_mdl_fss` (float) and `+0x804` `m_mdl_crew` (int); only the crew half is unconfirmed live (it read 0 on every part): [version-differences.md](version-differences.md).

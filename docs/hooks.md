@@ -23,7 +23,11 @@ The modloader loads mods in an unspecified order, and a second detour at an alre
 | editor held-part pointer `0x1403c0d88` (read), `m_floor` writes | polling | highfleet-elevation |
 | `0x140032f22` (gun blocking) and others | detours | highfleet-qol (logdot) |
 | `0x140303fb4` (`E8 C7 03 DD FF`, the call to the label pass `0x1400d4380` inside the editor renderer; wrap = original call, then ours) | trampoline | **highfleet-qol fork, branch `elevation`** (native hint, commit 95d09cd); **also** hf_probe (debug only: HUD, sprite test) and hf_draw_test (debug only, never ship). Never install more than one of them. |
+| `0x14007f864` (`cmp byte [rsi+0xbc0],0` in the per-creature update `0x14007eb50`, 7 bytes, stack aligned; hook calls the flare release `0x14002eed0` for AI ships) | trampoline | **highfleet-qol fork, branch `ai-flares`** ([findings/ai-flares.md](findings/ai-flares.md)) |
+| `0x140064a8d` (`movss [r14+0xbf0],xmm9` in the AI tick `0x140062f90`: the desired waypoint store; xmm9/xmm10 = waypoint, xmm12/xmm14 = ship position; 9 bytes, resume `0x140064a96`, also a jump target from `0x1400648a7`) | trampoline | **highfleet-qol fork, branch `ai-flares`** (evasion) |
+| `0x140065744` (12 bytes: `mov rdi,rbx` + 9-byte nop before the engine-command loop of the AI tick `0x140062f90`; resume `0x140065750`) | trampoline | **highfleet-qol fork, branch `ai-flares`** (panic boost) |
 | `0x140052af2` (1.151 `0x140050372`; `MOVAPS XMM1,XMM10` in `BulletImpact__`, the "penetrative > 0 means ttl 1.0" override) | 4-byte NOP (`enable_unblocked_ttl`) | highfleet-qol (logdot) [code, `src/ttl.rs`] |
+| `0x140036bb5` (`MOV RBX,RAX; MOV RCX,RSI`, 6 bytes `48 8b d8 48 8b ce` in `creatureLogic`, right after `CALL 0x14021b070`; null-check trampoline, resume `0x140036bbb`, null exit `0x140036ca2`; 1.163 only) | trampoline (`enable_flare_crash_fix`) | highfleet-qol (logdot) [code, `src/flare_crash.rs`]; [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md) |
 
 ### hf_probe hooks (debug only, log-only, never ship)
 Besides the `0x140303fb4` wrapper above, `hf_probe` ([mods/probe.md](mods/probe.md), [runs/probe-run-1.md](runs/probe-run-1.md), [runs/ui-events-and-screens.md](runs/ui-events-and-screens.md)) installs log-only entry hooks that no mod should also patch:
@@ -41,7 +45,6 @@ Besides the `0x140303fb4` wrapper above, `hf_probe` ([mods/probe.md](mods/probe.
 | `0x14007b021`, disp32 at `0x14007b025` | close-range cutoff margin (`30.0` operand) | operand repoint; [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md) |
 | `0x1400631a6`, `0x1400631ec`, `0x14006320d`, `0x1400631fe`, `0x140064723` | AI stand-off knobs (`0.35`, `1000`, `660`, `600`) | operand repoints; same note |
 | `0x140262226` (84 bytes) | unguarded list-head writes (Khiva crash) | entry-style detour; [findings/khiva-crash.md](findings/khiva-crash.md) |
-| `0x14007eb50` | per-creature update, sets flares via `+0xbc0` | detour for AI flares; [findings/ai-flares.md](findings/ai-flares.md) |
 | `0x1400efa2a`, `0x1400ef9fb` | AI aircraft launch group size | [findings/ai-aircraft-launch.md](findings/ai-aircraft-launch.md) |
 | `FUN_140032fb0` entry (`0x140032fb0`) | bomblet lifetime (sixth argument) | [findings/cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md) |
 | `0x14002e3a0` (also owned above by multicharge) | AI launch limits per target (1 per second, 10/2/1 in flight) | coordinate with the owner |
