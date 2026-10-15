@@ -70,6 +70,7 @@ Dated probe and seam-test reports: evidence, not reference. (`docs/runs/`)
 | [docs/runs/probe-run-1.md](docs/runs/probe-run-1.md) | runs 1-3 of the `hf_probe` debug DLL (v1.0 to v2.0): input and memory diff in every screen, pinned cursor, mode and state bytes, clicks, gold, location and fleet |
 | [docs/runs/ui-events-and-screens.md](docs/runs/ui-events-and-screens.md) | probe v2.0 run: log-only hooks for clicks, text keys, sounds and level loads, gold, location and fleet watchers, which dispatcher flag is which screen |
 | [docs/runs/seam-test-run-1.md](docs/runs/seam-test-run-1.md) | seam test runs 1 and 2 (probe v2.2): labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean; map seam M11 chosen |
+| [docs/runs/ally-probe-run-1.md](docs/runs/ally-probe-run-1.md) | `hf_ally` v0.3.1 probe: ally against nearest enemy over three campaign battles (speed, ammo spent, targets); the ally is not slower than the enemy |
 
 ## Mods
 One short page per mod, and the debug-only `hf_probe`. (`docs/mods/`)
