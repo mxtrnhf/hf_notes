@@ -124,7 +124,7 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
   (the MapCraft size was wrong for a while).
 * Game-file fingerprint (hash of `Libraries/`, `Data/`, exe) stored with each report, so a bug report says which build it came from.
 
-### 6. Ghidra side (for the sync work between versions) *(partial: 1.151 function names and data labels ported to 1.163 on 2026-10-15, see setup.md; types, structs and signatures not done)*
+### 6. Ghidra side (for the sync work between versions) *(partial: 1.151 function names and data labels ported to 1.163 on 2026-10-15, see setup.md; 340 signatures ported too; types and structs not done)*
 * Export names, signatures and structs of a program to text in this repo (and import them back), so annotations live in git and can be reviewed. Complements Version Tracking
   for carrying 1.151 work to 1.163 and gives the second person a diffable view of changes.
 * A checked-in list of named functions with address, and a script to flag the ones whose bytes differ between builds.

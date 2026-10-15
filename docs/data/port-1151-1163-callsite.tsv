@@ -1,0 +1,10 @@
+addr163	newname	tier	addr151	evidence	old163name
+1400487e0	GetThrust	callsite	1400464c0	callpos	FUN_1400487e0
+1400487b0	GetPowerNeedStat	callsite	140046490	callpos	FUN_1400487b0
+1400486f0	GetAmmoBoxNeed	callsite	1400463d0	callpos	FUN_1400486f0
+1401b4670	badArrayException	callsite	1401a4700	callpos	FUN_1401b4670
+14025f7f0	updateGlobalFloats_1	callsite	14023d8d0	callpos	FUN_14025f7f0
+140018990	AddVectors	callsite	140018a60	callpos	FUN_140018990
+140018910	ScaleVector	callsite	1400189e0	callpos	FUN_140018910
+140018960	vector2InvertSigns	callsite	140018a30	callpos	FUN_140018960
+140018a30	vector2Scale_copy1	callsite	140018b20	callpos	FUN_140018a30
