@@ -1,0 +1,479 @@
+addr151	name151	addr163	reason	detail
+140326220	LinkVFTABLE	140352310	already-same	LinkVFTABLE
+140326230	AADefenseVFTABLE	140352320	already-same	AADefenseVFTABLE
+140326420	IPropertyVFTABLE	140352518	already-same	IPropertyVFTABLE
+140326448	FPropertyVFTABLE	140352540	already-same	FPropertyVFTABLE
+1403264b0	AircraftLogicVFTABLE	1403525a8	already-same	AircraftLogicVFTABLE
+1403266d0	d1.0	1403527e0	already-same	d1.0
+14032673c	DAT_14395a798	14035284c	already-same	DAT_14395a798
+140326798	Singleton<AITask>VFTABLE	1403528a8	already-same	Singleton<AITask>VFTABLE
+1403267e0	AITaskVFTABLE	1403528f0	already-same	AITaskVFTABLE
+140326920	BodyVFTABLE		novote	
+140327d5c	BlankLine	140353fc4	already-same	BlankLine
+14032876c	NUKE_LIMIT	1403548e8	already-same	NUKE_LIMIT
+1403288f0	I64PropertyVFTABLE	140354a70	already-same	I64PropertyVFTABLE
+140328918	BPropertyVFTABLE	140354a98	already-same	BPropertyVFTABLE
+140328940	DPropertyVFTABLE	140354ac0	already-same	DPropertyVFTABLE
+140328968	SPropertyVFTABLE	140354ae8	already-same	SPropertyVFTABLE
+140328990	OPropertyVFTABLE	140354b10	already-same	OPropertyVFTABLE
+140328a08	VIPropertyVFTABLE		novote	
+140328a30	HistoryDesignVFTABLE	140354bb0	already-same	HistoryDesignVFTABLE
+140328a78	CreatureVFTABLE		novote	
+14032a2f0	DEFAULT_ESCRADANAME_VALUES	140356650	already-same	DEFAULT_ESCRADANAME_VALUES
+14032a4b8	GlobalOStream	140356818	already-same	GlobalOStream
+14032a4c0	initDirectXPTR?	140356820	already-same	initDirectXPTR?
+14032a6a8	EffectVFTABLE	140356a08	already-same	EffectVFTABLE
+14032ab40	ShaderCloudsVFTABLE	140356ea0	already-same	ShaderCloudsVFTABLE
+14032f820	Singleton<Editor>VFTABLE	14035b998	already-same	Singleton<Editor>VFTABLE
+14032f868	EditorVFTABLE	14035b9e0	already-same	EditorVFTABLE
+140331d78	VPropertyVFTABLE	14035df28	already-same	VPropertyVFTABLE
+140331e48	IntelVFTABLE	14035dff8	already-same	IntelVFTABLE
+140331e90	MarkVFTABLE	14035e040	already-same	MarkVFTABLE
+140332328	EscadraVFTABLE	14035e4e0	already-same	EscadraVFTABLE
+1403324b8	LocationVFTABLE	14035e670	already-same	LocationVFTABLE
+140332650	LaunchedVFTABLE	14035e808	already-same	LaunchedVFTABLE
+1403327e0	MissileVFTABLE	14035e998	already-same	MissileVFTABLE
+140334880	FXVFTABLE	140360a70	already-same	FXVFTABLE
+1403348c8	Singleton<FX>VFTABLE		novote	
+140334910	FXVFTABLE		novote	
+140334a00	Singleton<GameTask>VFTABLE	140360bd8	already-same	Singleton<GameTask>VFTABLE
+140334a48	GameTaskVFTABLE	140360c20	already-same	GameTaskVFTABLE
+140334ce8	UiPropertyVFTABLE	140360eb0	already-same	UiPropertyVFTABLE
+140334d10	GuiVFTABLE	140360ed8	already-same	GuiVFTABLE
+140335b20	ObjectListVFTABLE	140361d08	already-same	ObjectListVFTABLE
+140335ea8	PanelVFTABLE	140362098	already-same	PanelVFTABLE
+14033ae28	HGEVFTABLE	1403672f0	already-same	HGEVFTABLE
+14033b730	rep_crypto_constant_zlib_zinflate_lengthExtraBits		novote	
+14033b7b0	rep_crypto_constant_zlib_zinflate_distanceExtraBits		novote	
+14033bfd0	Singleton<InputTask>VFTABLE		novote	
+14033c018	InputTaskVFTABLE		novote	
+14033c488	IObjectVFTable	140368958	already-same	IObjectVFTable
+14033c4a0	PropertyVFTABLE	140368970	already-same	PropertyVFTABLE
+14033c4c8	ISerializableVFTable	140368998	already-same	ISerializableVFTable
+14033c510	ui64PropertyVFTABLE	1403689e0	already-same	ui64PropertyVFTABLE
+14033cb20	ioStream	140369000	already-same	ioStream
+14033cb28	istream	140369008	already-same	istream
+14033cdd8	ItemVFTABLE	1403692d8	already-same	ItemVFTABLE
+14033ce68	Singleton<APP>VFTABLE		novote	
+14033ceb8	APPVFTABLE		novote	
+14033cfb8	NPCVFTABLE	1403694b8	already-same	NPCVFTABLE
+140345410	NodeVFTABLE	140372a40	already-same	NodeVFTABLE
+140345918	ShipPartVFTABLE	140372f48	already-different	StatsVFTABLE
+140345960	Singleton<ObjectsLibrary>VFTABLE	140372f90	already-same	Singleton<ObjectsLibrary>VFTABLE
+1403459a8	ObjectsLibraryVTABLE	140372fd8	already-same	ObjectsLibraryVTABLE
+140345e30	Singleton<PhysicTask>VFTABLE	140373498	already-same	Singleton<PhysicTask>VFTABLE
+140345e78	PhysicTaskSingletonVFTABLE	1403734e0	already-same	PhysicTaskSingletonVFTABLE
+140345f28	Singleton<PreTask>VFTABLE	140373590	already-same	Singleton<PreTask>VFTABLE
+140345f70	PreTaskVFTABLE	1403735d8	already-same	PreTaskVFTABLE
+140346068	ProfileVFTABLE		novote	
+140346748	SINGLETON_PM_VFTABLE	140373e50	already-same	SINGLETON_PM_VFTABLE
+140346790	PM_VFTABLE	140373e98	already-same	PM_VFTABLE
+1403485f0	LevelVFTABLE	140375b50	already-same	LevelVFTABLE
+140348ce8	Singleton<SoundTask>VFTABLE	140376218	already-same	Singleton<SoundTask>VFTABLE
+140348d30	SoundTaskVFTABLE	140376260	already-same	SoundTaskVFTABLE
+140348da8	SpriteVFTABLE	1403762d8	already-same	SpriteVFTABLE
+140349078	Singleton<SX>VFTABLE	1403765a8	already-same	Singleton<SX>VFTABLE
+1403490c0	SXVFTABLE	1403765f0	already-same	SXVFTABLE
+14034bfd0	IObjectClassDescriptor		novote	
+14034c070	ISerializableClassDescriptor		novote	
+14034c1b8	NodeClassDescriptor		novote	
+14034c2b0	PropertyBaseClassDescriptor		novote	
+14034c700	BodyClassDescriptor		novote	
+14034c9d0	SPropertyBaseClassDescriptor		novote	
+14034cbf8	CreatureObjectLocator		novote	
+14034cc68	CreatureClassDescriptor		novote	
+14034d3e0	EffectClassDescriptor		novote	
+14034d408	ShaderClassDescriptor		novote	
+140350318	MarkClassDescriptor		novote	
+1403503b0	EscadraClassDescriptor		novote	
+1403504e8	MissileClassDescriptor		novote	
+140350510	LaunchedClassDescriptor		novote	
+140350d58	GUIObjectLocator		novote	
+140350d80	GuiHierarchyDescriptor		novote	
+140350dc8	GuiClassDescriptor		novote	
+140350fa8	PanelClassDescriptor		novote	
+140352c20	BaseClassArray		novote	
+140353190	ProfileClassDescriptor		novote	
+14038d004	stateSelectorAircraft?	1403bd008	already-same	stateSelectorAircraft?
+14038d040	sprite_unset	1403bd040	already-same	sprite_unset
+14038d0e8	dialougeCompString?		novote	
+14038d118	npcHireChar?		novote	
+14038d120	ADDRESS_14038d120		novote	
+14038d15c	dossierFearCount?		novote	
+14038d160	dossierNoFearCount?		novote	
+14038d1d4	somethingEventIndicator?	1403bd1b4	already-same	somethingEventIndicator?
+14038d1d8	filmIndicator?	1403bd1b8	already-same	filmIndicator?
+14038d1d9	alarmMuteBool?		novote	
+14038d1da	ramIndicator?		novote	
+14038d1da	blurZoomAmount?		novote	
+14038d1db	mouseTrackIndicator?		novote	
+14038d1e0	somethingBackgroundString?		novote	
+14038d200	blurAmountIndicator?		novote	
+14038d204	blurZoomIndicator?		novote	
+14038d208	blurFocusAmount?		novote	
+14038d20c	blurMinAmount?		novote	
+14038d210	blurPosStuffX?		novote	
+14038d214	blurPosStuffY?		novote	
+14038d220	someKindOfGUIPointer		novote	
+14038d260	somethingMusicString?		novote	
+14038d280	STR_14038d280		novote	
+14038d2a8	someKindOfDLL	1403bd288	already-same	someKindOfDLL
+14038d2c4	somethingTarkhanFFF		novote	
+14038d2d0	somethingNPC?	1403bd2b0	already-same	somethingNPC?
+14038d2d8	fontSizeEscadra?		novote	
+14038d330	somethingSeperator?		novote	
+14038d360	escadraNameFromQWORD	1403bd340	already-same	escadraNameFromQWORD
+14038d390	somethingEscadraPointers?	1403bd370	already-same	somethingEscadraPointers?
+14038d39b	noSpeakIndicator?		novote	
+14038d39c	illustrationNumberInt?		novote	
+14038d3b0	INI_14038d3b0		novote	
+14038d3b8	spriteAddStr?		novote	
+14038d3dc	greetingStartedTarkhan		novote	
+14038d3de	noThemeReactionData?		novote	
+14038d3f8	ShopDisplayString?	1403bd3d8	already-same	ShopDisplayString?
+14038d408	SHOP_14038d408	1403bd3e8	already-same	SHOP_14038d408
+14038d418	HULL_LINK	1403bd3f8	already-same	HULL_LINK
+14038d420	EditorLibraryHull	1403bd400	already-same	EditorLibraryHull
+14038d430	ARMOR_LINK	1403bd410	already-same	ARMOR_LINK
+14038d438	EditorLibraryArmor	1403bd418	already-same	EditorLibraryArmor
+14038d448	FUEL_LINK	1403bd428	already-same	FUEL_LINK
+14038d450	EditorLibraryFuel	1403bd430	already-same	EditorLibraryFuel
+14038d460	AMMO_LINK	1403bd440	already-same	AMMO_LINK
+14038d468	EditorLibraryAmmo	1403bd448	already-same	EditorLibraryAmmo
+14038d478	LEG_LINK	1403bd458	already-same	LEG_LINK
+14038d480	LegLibrary	1403bd460	already-same	LegLibrary
+14038d490	ENGINE_LINK	1403bd470	already-same	ENGINE_LINK
+14038d498	EngineLibrary	1403bd478	already-same	EngineLibrary
+14038d4a8	GUN_LINK	1403bd488	already-same	GUN_LINK
+14038d4b0	GunLibrary	1403bd490	already-same	GunLibrary
+14038d4c0	SENSOR_LINK	1403bd4a0	already-same	SENSOR_LINK
+14038d4c8	SensorLibrary	1403bd4a8	already-same	SensorLibrary
+14038d4d8	EXPENDABLE_LINK	1403bd4b8	already-same	EXPENDABLE_LINK
+14038d4e0	ExpendablesLibrary	1403bd4c0	already-same	ExpendablesLibrary
+14038d4f0	CRAFT_LINK	1403bd4d0	already-same	CRAFT_LINK
+14038d4f8	CraftLibrary	1403bd4d8	already-same	CraftLibrary
+14038d508	DEFENCE_LINK	1403bd4e8	already-same	DEFENCE_LINK
+14038d510	DefenceLibrary	1403bd4f0	already-same	DefenceLibrary
+14038d520	GENERATOR_LINK	1403bd500	already-same	GENERATOR_LINK
+14038d528	GeneratorLibrary	1403bd508	already-same	GeneratorLibrary
+14038d538	QUARTER_LINK	1403bd518	already-same	QUARTER_LINK
+14038d540	QuartersLibrary	1403bd520	already-same	QuartersLibrary
+14038d550	EMERGENCY_LINK	1403bd530	already-same	EMERGENCY_LINK
+14038d558	EditorLibraryEmergency	1403bd538	already-same	EditorLibraryEmergency
+14038d568	s_Testproject		novote	
+14038d618	contaminationShipName?	1403bd5f8	already-same	contaminationShipName?
+14038d638	fuelAmountFloat?	1403bd618	already-same	fuelAmountFloat?
+14038d6c0	PoweredByHGE	1403bd6a0	already-same	PoweredByHGE
+14038e100	somethingRelish	1403be0e0	already-same	somethingRelish
+14038e110	G_KEY_NAMES		novote	
+14038ecf0	rep_crypto_constant_CRC32_CRC32_m_tab_le	1403becd0	already-same	rep_crypto_constant_CRC32_CRC32_m_tab_le
+14038f0f0	rep_crypto_constant_CRC32_ms_pst_crc32_table_0	1403bf0d0	already-same	rep_crypto_constant_CRC32_ms_pst_crc32_table_0
+14038f4f0	rep_crypto_constant_CRC32_ms_pst_crc32_table_1	1403bf4d0	already-same	rep_crypto_constant_CRC32_ms_pst_crc32_table_1
+14038f8f0	rep_crypto_constant_CRC32_ms_pst_crc32_table_2	1403bf8d0	already-same	rep_crypto_constant_CRC32_ms_pst_crc32_table_2
+14038fcf0	rep_crypto_constant_CRC32_CRC32_m_tab_be		novote	
+14038fcf0	rep_crypto_constant_CRC32_lzma_crc32_table_0		novote	
+1403900f0	rep_crypto_constant_CRC32_lzma_crc32_table_1		novote	
+1403904f0	rep_crypto_constant_CRC32_lzma_crc32_table_2		novote	
+1403908f0	rep_crypto_constant_CRC32_lzma_crc32_table_3		novote	
+140391098	MouseSpeed	1403c1290	already-same	MouseSpeed
+1403910a0	MouseInfo	1403c1298	already-same	MouseInfo
+1403910ac	GameVersionFloat	1403c0de0	already-same	GameVersionFloat
+1403910b0	coreFrameRateFlt?		novote	
+1403910b8	coreTimeWrap?	1403c0dec	already-same	coreTimeWrap?
+1403910bc	useSleepString?		novote	
+1403910bd	coreInitRiStr?		novote	
+1403910bf	clearScreenIndicator?		novote	
+1403910c0	mouseSpeed0		novote	
+1403910c4	mouseSpeed1		novote	
+1403910c8	mouseSpeed2		novote	
+1403910cc	mouseSpeed3		novote	
+1403910d0	mouseSpeed4		novote	
+1403910d4	mouseOverall		novote	
+1403910d8	mouseWheel	1403c0e0c	already-same	mouseWheel
+1403910dc	coreG		novote	
+1403910e0	0.05	1403c0e10	already-same	0.05
+1403910e8	subtextTimeout		novote	
+1403910ec	coreLanguage	1403c0e1c	already-same	coreLanguage
+1403910f0	mouseTrackSelected?	1403c0e20	already-same	mouseTrackSelected?
+1403910f2	DEBUG_SOUND		novote	
+1403910f4	22000	1403c0e24	already-same	22000
+1403910f8	7000	1403c0e28	already-same	7000
+1403910fc	float_5000	1403c0e2c	already-same	float_5000
+140391110	dbgLogMode	1403c0e4c	already-same	dbgLogMode
+140391118	inputSensitivityPad		novote	
+14039111e	graphicsDiterhingOn		novote	
+140391138	graphicsQuality	1403c0e74	already-same	graphicsQuality
+14039113c	graphicsBrightness		novote	
+140391140	gfxFlash?		novote	
+140391144	graphicsScreenMode	1403c0e80	already-same	graphicsScreenMode
+140391148	GFX_DSCREEN_WIDTH		novote	
+14039114c	graphicsDscreenHeight		novote	
+140391150	ScreenBPP	1403c11c0	already-same	ScreenBPP
+140391154	ZOOM_LEVEL	1403c11c4	already-same	ZOOM_LEVEL
+140391158	DESIRED_ZOOM	1403c11c8	already-same	DESIRED_ZOOM
+14039115c	ZOOM_LEVEL	1403c11cc	already-same	ZOOM_LEVEL
+140391160	MAX_ZOOM_LEVEL		novote	
+140391164	specialVolumeMaster		novote	
+140391168	specialVolumeSounds		novote	
+140391178	specialVolumeMusic		novote	
+1403911a8	INITIALIZE_1403911a8		novote	
+140391290	SeriaToLoad		novote	
+1403912b0	LoadedSeria		novote	
+1403912d0	LastLoadedGameVersion		novote	
+140391600	sixDividedBy85		novote	
+140391608	twoDiv17		novote	
+140391614	eightDivBy17		novote	
+140391618	48DivBy85		novote	
+14039161c	FLOAT_14039161c_valSetToOne		novote	
+140391724	61Div85		novote	
+140392be0	lvlRenderBackgroundVal?		novote	
+140392be4	landscapeSize		novote	
+140392be8	lvlLandscapeL1		novote	
+140392bec	landscapeZero		novote	
+140392bf0	FLOAT_140392bf0_soundSuccess?	1403c2b78	already-same	FLOAT_140392bf0_soundSuccess?
+140392c18	locationDescriptor		novote	
+140392c38	lvlHighXHighY	1403c2bc0	already-same	lvlHighXHighY
+140392c40	lvlLowXLowY	1403c2bc8	already-same	lvlLowXLowY
+140392c58	LVL_BACKGROUND_LEN?	1403c2be0	already-same	LVL_BACKGROUND_LEN?
+140392dc0	someSortOfShipStrikeSelection	1403c2d40	already-same	someSortOfShipStrikeSelection
+140392dc1	someKindOfShipStrikeSelection2	1403c2d41	already-same	someKindOfShipStrikeSelection2
+140393e18	returnCode	1403c2e38	already-same	returnCode
+140394620	CreatureTypeDescriptor		novote	
+140397208	ISerializable??		novote	
+140397218	someKindOfProfile?		novote	
+140397250	AITaskSingleton	1403c63c8	already-same	AITaskSingleton
+1403ac5b0	57mmExplosivePower		novote	
+1403ac5b4	100mmExplosivePower		novote	
+1403ac5b8	130mmExplosivePower		novote	
+1403ac5bc	180mmExplosivePower		novote	
+1403ac5c0	203mmExplosivePower		novote	
+1403ac5c8	loadRocketGlowRed?		novote	
+1403ac650	explosivePower?		novote	
+1403ac654	ammo_reticle		novote	
+1403ac6e0	newProperty?	1403ef0c8	already-same	newProperty?
+1403ac938	GameEndFreeLoopStart	1403ef338	already-same	GameEndFreeLoopStart
+1403ac940	GameEndFreeLoopEnd	1403ef340	already-same	GameEndFreeLoopEnd
+1403ac950	someKindOfTickMicro?	1403ef350	already-same	someKindOfTickMicro?
+1403ac968	IsInEditor	1403ef368	already-same	IsInEditor
+1403ac969	IN_MENU?	1403ef369	already-same	IN_MENU?
+1403ac96a	LOAD_CONSTRUCTOR_OR_EDITOR	1403ef36a	already-same	LOAD_CONSTRUCTOR_OR_EDITOR
+1403acad8	PARTS_CONSTRUCTOR_SERIA	1403ef4f8	already-same	PARTS_CONSTRUCTOR_SERIA
+1403acb00	EditorSingleton	1403ef550	already-same	EditorSingleton
+1403acb98	loadedEmpSprite?	1403ef5e8	already-same	loadedEmpSprite?
+14391a920	FXSingleton		novote	
+14391a938	GameTaskSingleton	1439e6050	already-same	GameTaskSingleton
+14391c8e0	KEYBOARD_LAYOUT?	1439e8000	already-same	KEYBOARD_LAYOUT?
+14391c8f8	globalAstruct		novote	
+14391cf50	AnotherHGE?	1439e8660	already-same	AnotherHGE?
+14391cf60	newValidHGE	1439e8670	already-same	newValidHGE
+14391cf78	g_seed		novote	
+14391cf80	AnotherHGE2	1439e8690	already-same	AnotherHGE2
+14391cfb0	BASS_SampleLoad	1439e8788	already-same	BASS_SampleLoad
+14391cfb8	BASS_SampleCreate	1439e8790	already-same	BASS_SampleCreate
+14391cfc0	BASS_SampleFree	1439e8798	already-same	BASS_SampleFree
+14391cfd8	BASS_SampleGetInfo	1439e87b0	already-same	BASS_SampleGetInfo
+14391cfe8	BASS_SampleGetChannel	1439e87c0	already-same	BASS_SampleGetChannel
+14391d008	BASS_StreamCreateFile	1439e87e0	already-same	BASS_StreamCreateFile
+14391d020	BASS_StreamFree	1439e87f8	already-same	BASS_StreamFree
+14391d040	BASS_MusicLoad	1439e8818	already-same	BASS_MusicLoad
+14391d048	BASS_MusicFree	1439e8820	already-same	BASS_MusicFree
+14391d0a0	BASS_ChannelBytes2Seconds	1439e8878	already-same	BASS_ChannelBytes2Seconds
+14391d0a8	BASS_ChannelSeconds2Bytes	1439e8880	already-same	BASS_ChannelSeconds2Bytes
+14391d0c0	BASS_ChannelIsActive	1439e8898	already-same	BASS_ChannelIsActive
+14391d0c8	BASS_ChannelGetInfo	1439e88a0	already-same	BASS_ChannelGetInfo
+14391d0d8	BASS_ChannelFlags	1439e88b0	already-same	BASS_ChannelFlags
+14391d0f0	BASS_ChannelPlay	1439e88c8	already-same	BASS_ChannelPlay
+14391d0f8	BASS_ChannelStop	1439e88d0	already-same	BASS_ChannelStop
+14391d100	BASS_ChannelPause	1439e88d8	already-same	BASS_ChannelPause
+14391d110	BASS_ChannelSetAttribute	1439e88e8	already-same	BASS_ChannelSetAttribute
+14391d118	BASS_ChannelGetAttribute	1439e88f0	already-same	BASS_ChannelGetAttribute
+14391d120	BASS_ChannelSlideAttribute	1439e88f8	already-same	BASS_ChannelSlideAttribute
+14391d128	BASS_ChannelIsSliding	1439e8900	already-same	BASS_ChannelIsSliding
+14391d160	BASS_ChannelGetLength	1439e8938	already-same	BASS_ChannelGetLength
+14391d168	BASS_ChannelSetPosition	1439e8940	already-same	BASS_ChannelSetPosition
+14391d170	BASS_ChannelSetPosition	1439e8948	already-same	BASS_ChannelSetPosition
+14391d188	BASS_ChannelGetData	1439e8960	already-same	BASS_ChannelGetData
+14391d1c0	BASS_ChannelSetFX	1439e8998	already-same	BASS_ChannelSetFX
+14391d1c8	BASS_ChannelRemoveFX	1439e89a0	already-same	BASS_ChannelRemoveFX
+14391d1d0	BASS_FXSetParameters	1439e89a8	already-same	BASS_FXSetParameters
+14391d1f0	BASS_SetConfig	1439e8698	already-same	BASS_SetConfig
+14391d210	BASS_GetVersion	1439e86b8	already-same	BASS_GetVersion
+14391d218	BASS_ErrorGetCode	1439e86c0	already-same	BASS_ErrorGetCode
+14391d220	BASS_GetDeviceInfo	1439e86c8	already-same	BASS_GetDeviceInfo
+14391d228	BASS_Init	1439e86d0	already-same	BASS_Init
+14391d230	BASS_Free	1439e86d8	already-same	BASS_Free
+14391d250	BASS_Start	1439e86f8	already-same	BASS_Start
+14391d258	BASS_Stop	1439e8700	already-same	BASS_Stop
+14391d260	BASS_Pause	1439e8708	already-same	BASS_Pause
+14391d2b8	nRef	1439e89c8	already-same	nRef
+14391d2c0	pHGE	1439e89d0	already-same	pHGE
+14391dbb0	GetRawInputDeviceList		novote	
+14391dbb8	GetRawInputData		novote	
+14391dbc0	GetRawInputDeviceInfoA		novote	
+14391dbc8	RegisterRawInputDevices		novote	
+14391dbd0	GetRawInputBuffer		novote	
+14391dbd8	DefRawInputProc		novote	
+14391dbe8	entityListStart		novote	
+14391dbf0	entityListEnd		novote	
+14391dc48	bindingOther	1439e9358	already-same	bindingOther
+14391dcb8	binding	1439e93e8	already-same	binding
+14391dd18	bindingMapmode	1439ef208	already-same	bindingMapmode
+14391dd30	InputTaskSingleton		novote	
+14391dd60	oStream1	1439ef250	already-same	oStream1
+14391dd68	Error.logStream	1439ef258	already-same	Error.logStream
+14391fe70	oStream2	1439f1360	already-same	oStream2
+14391fe78	Client.logStream	1439f1368	already-same	Client.logStream
+14391ff88	someNewCreature		novote	
+14391ffb8	elintLevel	143a11898	already-same	elintLevel
+14391ffc8	Sqrt_Cache	143a118a8	already-same	Sqrt_Cache
+14391fff0	someKindOfSpeedIndSS?		novote	
+143920004	DAT_Statsfielda8		novote	
+143921f5c	someTimeInMicroseconds?		novote	
+143921f60	lpRect	143a119a8	already-same	lpRect
+143921f70	HGE	143a119e0	already-same	HGE
+143921f78	Media.res	143a119e8	already-same	Media.res
+143921f80	SuperBig	143a119f0	already-same	SuperBig
+143921fa0	ArrayLoadedByMedia.res	143a13950	already-same	ArrayLoadedByMedia.res
+1439220ac	coreShowAux?		novote	
+1439220ad	ProlougePassed?		novote	
+1439220af	loadAircraftMaps?	143a11902	already-same	loadAircraftMaps?
+1439220b0	coreDifficulty?		novote	
+1439220b4	mouseLast		novote	
+1439220c8	StartTickCount		novote	
+1439220cc	saveSelector		novote	
+1439220d0	aimingMode		novote	
+1439220e4	breathAcceleration?		novote	
+1439220e8	isShipLandedshipworksTest?	143a11923	already-same	isShipLandedshipworksTest?
+1439220ec	USED_CITY_NAMES		novote	
+1439220f0	CURRENT_LOCATION	143a11940	already-same	CURRENT_LOCATION
+1439220f8	RADIO_1439220f8	1439f147c	already-same	RADIO_1439220f8
+1439220fc	deathBadgeScore?		novote	
+14392214e	graphicsStretchOn		novote	
+14392214f	graphicsGlitchLow		novote	
+143942530	ZOOM_OVERRIDE?	143a1199c	already-same	ZOOM_OVERRIDE
+143942538	MIN_ZOOM_LEVEL		novote	
+143942550	hourCount?	143a119c8	already-same	hourCount?
+143942568	ALL_PARTS	143a139f0	already-same	ALL_PARTS
+143942590	newNode?	143a13a70	already-same	newNode?
+1439425d8	GUI_ELEMENTS	143a13ac8	already-same	GUI_ELEMENTS
+1439425e0	someKindOfGUICount	143a13ad0	already-same	someKindOfGUICount
+143942690	currentTimeData?	143a13b90	already-same	currentTimeData?
+1439426b0	CALLSIGN_LIST	143a13bb0	already-same	CALLSIGN_LIST
+1439426b8	CALLSIGN_LIST_END	143a13bb8	already-same	CALLSIGN_LIST_END
+1439426e0	AmmoDefList	143a13be0	already-same	AMMO_LIST_BEGIN
+1439426e8	AmmoDefListEnd	143a13be8	already-same	AMMO_LIST_END
+1439426f0	ammoEndCurrent?		novote	
+143942740	PLANE_TLL	143a13c50	already-same	PLANE_TLL
+143942748	COUNT		novote	
+143942768	GUILinkedList?	143a13c78	already-same	GUILinkedList?
+143942798	ESCADRA_NAME_LIST	143a13cb8	already-same	ESCADRA_NAME_LIST
+1439427a0	ESCADRA_NAME_LIST_END	143a13cc0	already-same	ESCADRA_NAME_LIST_END
+1439428a0	ESCADRA_NAME_LIST_3	143a13dc0	already-same	ESCADRA_NAME_LIST_3
+1439428a8	(ESCADRA_NAME_LIST_END_3	143a13dc8	already-same	(ESCADRA_NAME_LIST_END_3
+1439428d0	somekindofIndexCount?	143a13df0	already-same	somekindofIndexCount?
+1439428f8	bodyLink?		novote	
+143942928	someKindOfFileIO?	143a13e48	already-same	someKindOfFileIO?
+143942938	ScreenHeight	143a13e58	already-same	ScreenHeight
+14394293c	graphicsFrameHeight	143a13e5c	already-same	graphicsFrameHeight
+143942988	globalProfileVar?	143a13ea8	already-same	globalProfileVar?
+143942990	PLAYER_ESCADRA?	143a13eb0	already-same	PLAYER_ESCADRA?
+1439429a0	ESCADRA_NAME_LIST_2	143a13ec0	already-same	ESCADRA_NAME_LIST_2
+1439429a8	ESCADRA_NAME_LIST_END_2	143a13ec8	already-same	ESCADRA_NAME_LIST_END_2
+1439429f0	someStatsOffset1	143a13f10	already-same	someStatsOffset1
+143942c50	hullPartsString		novote	
+143942c70	itemHullString		novote	
+143942ed0	armorPartsString		novote	
+143942ef0	itemArmorString		novote	
+143943150	fuelPartsString		novote	
+143943170	itemFuelString		novote	
+1439433d0	ammoPartsString		novote	
+1439433f0	itemAmmoString		novote	
+143943650	legPartsString		novote	
+143943670	itemLegString		novote	
+1439438d0	powerPartsString		novote	
+1439438f0	MDLGeneratorString		novote	
+143944378	link_143944378		novote	
+1439443d8	ScreenWidth	143a158f8	already-same	ScreenWidth
+1439443dc	graphicsFrameWidth	143a158fc	already-same	graphicsFrameWidth
+143944410	Global_143944410	143a15948	already-same	Global_143944410
+143944440	Atan_Cache		novote	
+143944448	somethingAtanCacheLoc		novote	
+143944470	GLOBAL_143944470	143a159a8	already-same	GLOBAL_143944470
+143944490	LINK_143944490	143a159c8	already-same	LINK_143944490
+1439444f0	EscadraName_1439444f0	143a15a28	already-same	EscadraName_1439444f0
+143944500	PI//2_Cash		novote	
+143944528	PLANE_LOADOUTS	143a15a60	already-same	PLANE_LOADOUTS
+14394ad28	CITY_NAME_LIST		novote	
+14394ad30	CITY_NAME_LIST_END		novote	
+14394ae30	lvlHighY	143a1c368	already-same	lvlHighY
+14394ae38	lvlLowY	143a1c370	already-same	lvlLowY
+14394ae50	lvlHighX	143a1c388	already-same	lvlHighX
+14394ae58	lvlLowX	143a1c390	already-same	lvlLowX
+14394aed0	SoundTaskSingleton	143a1c408	already-same	SoundTaskSingleton
+14394aed8	PhysicTaskSingleton	143a1c410	already-same	PhysicTaskSingleton
+14394aee0	PreTaskSingleton	143a1c418	already-same	PreTaskSingleton
+14394aee8	ObjectsLibrarySingleton	143a1c428	already-same	ObjectsLibrarySingleton
+14394aef0	PM_SINGLETON	143a1c430	already-same	PM_SINGLETON
+14394aef8	LevelSingleton	143a1c438	already-same	LevelSingleton
+14394af00	SXSingleton	143a1c440	already-same	SXSingleton
+143952d4c	NUM_USED_ESCADRA_NAMES	143a2bfe4	already-same	NUM_USED_ESCADRA_NAMES
+143952d50	NUM_USED_ESCADRA_NAMES_2	143a2bfe8	already-same	NUM_USED_ESCADRA_NAMES_2
+143952d54	NUM_USED_ESCADRA_NAMES_3	143a2bfec	already-same	NUM_USED_ESCADRA_NAMES_3
+143952d58	NUM_USED_CALLSIGNS	143a2bff0	already-same	NUM_USED_CALLSIGNS
+143954908	ALL_NODES?	143a2ddf8	already-same	ALL_NODES?
+143954910	ListLength?	143a2de00	already-same	ListLength?
+14395a700	ShipParts	143a33bf0	already-different	StatListBase
+14395a708	StatListMax	143a33bf8	already-same	StatListMax
+14395a710	StatListCapacity		novote	
+143ed10e0	loopVar10e0?	143faa5e0	already-same	loopVar10e0?
+147eed368	DAT_141_VAL	147fc6868	already-same	DAT_141_VAL
+147eed370	ProfileNumber		novote	
+147eed398	ProfileListStart	147fc68b8	already-same	ProfileListStart
+147eed3a0	ProfileListEnd	147fc68c0	already-same	ProfileListEnd
+147eed468	LA29Sprite		novote	
+147eed470	T7Sprite		novote	
+147eed478	GPBSprite		novote	
+147eed480	NARSprite		novote	
+147eed488	AAMSprite		novote	
+147eed914	LandingHeightNumber		novote	
+147eed960	GlobalNode?	147fc6f88	already-same	GlobalNode?
+147eed968	GlobalNodeElectricBoogaloo	147fc6f90	already-same	GlobalNodeElectricBoogaloo
+147eed97a	LvLruins		novote	
+147eed97c	levelLandscapeSeed		novote	
+147eed980	landscapeHill		novote	
+147eed984	landscapeCitySize		novote	
+147eed98c	landscapeClouds		novote	
+147eed990	lvlNoman		novote	
+147eed992	isBoughtIndicator?	147fc6fb4	already-same	isBoughtIndicator?
+147eed993	retryIndicator?		novote	
+147eed99c	resHydrogen		novote	
+147eed9a6	gameOverByPlayerFail?	147fc6fcc	already-same	gameOverByPlayerFail?
+147eed9a9	loadTitleScreenIndicator?		novote	
+147eed9aa	petr_Support?	147fc6fd0	already-different	IS_IN_CAMPAIGN?
+147eed9ec	crewNumberReg	147fc7014	already-same	crewNumberReg
+147eed9f0	crewNumberNegLogic		novote	
+147eed9f4	shipCombatValDMG?		novote	
+147eedd80	listLengthProperty?	147fc73b8	already-same	listLengthProperty?
+147eedf30	somethingAudio	147fc7660	already-same	somethingAudio
+147f43dd0	VideoTask_tid	147fc76b8	already-same	VideoTask_tid
+147f43dd8	VideoTask-1_tid	14800e9d0	already-same	VideoTask-1_tid
+147f43de0	VideoTask-2_tid	14800e9d8	already-same	VideoTask-2_tid
+147f43de8	VideoTask-3_tid	14800e9e0	already-same	VideoTask-3_tid
+147f43df0	VideoTask-4.1_tid	14800e9e8	already-same	VideoTask-4.1_tid
+147f43df8	VideoTask-4.2_tid	14800e9f0	already-same	VideoTask-4.2_tid
+147f43e00	VideoTask-5_tid	14800e9f8	already-same	VideoTask-5_tid
+147f43e08	VideoTask-6_tid	14800ea00	already-same	VideoTask-6_tid
+147f43e10	VideoTask-7_tid	14800ea08	already-same	VideoTask-7_tid
+147f43e70	slotPinSlave	14800ea68	already-same	slotPinSlave
+147f44138	flagSquadron?	14800ed30	already-same	flagSquadron?
+147f441c0	citySave?	14800edb8	already-same	citySave?
+147f441c8	nukedCity	14800edc0	already-same	nukedCity
+147f9c464	TARGET_SCREEN_Y?	148075cec	already-same	TARGET_SCREEN_Y?
+147f9c478	YANK_SHAKE_X		novote	
+147f9c47c	YANK_SHAKE_Y		novote	
+147f9c480	CAM_X		novote	
+147f9c484	CAM_Y		novote	
+147f9c488	CAM_X_2		novote	
+147f9c48c	CAM_Y_2		novote	
+147f9c490	g_CameraOffsetX		novote	
+147f9c494	g_CameraOffsetY		novote	

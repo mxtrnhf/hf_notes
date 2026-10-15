@@ -31,7 +31,7 @@ Each finding note ends with a live-test recipe. Open items:
 * Sensors: the roadmap's "accumulative" claim is not confirmed by the code (max per type, only jammers sum); the later stage that turns the arrays into a range was not read: [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
 * Body tail: the bool cluster `0x86a..0x87c`, the lighting fields and the unnamed ~60% of the 1.151 struct are mapped by zone only.
 
-## Ghidra: fixes and questions to raise with logdot (no program has been edited)
+## Ghidra: fixes and questions to raise with logdot (1.163 edited on 2026-10-15: names ported from 1.151, see [setup.md](setup.md); 1.151 untouched; struct and type fixes still not done)
 Resolved items are removed; evidence is in [version-differences.md](version-differences.md).
 1. Ghidra's 1.163 `Body` struct is 0xa08 bytes and is the 1.151 layout; the object is 0xa40. `Escadra` is 0x600 (real 0x618), `Creature` 6358 (real 0x1a50), `Profile` is the stale 1.151 layout (vectors moved +0x48; endgame flags +0x58). `ShipPart` (stats record, 0x188 in 1.163) and `HGEVFTABLE` exist only in the 1.151 program.
 2. `.conflict` duplicate types in the 1.163 program (`Body.conflict`, `BodyVFTABLE.conflict`, `DLL<Body>.conflict`, ...): delete after checking references.

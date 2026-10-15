@@ -9,7 +9,7 @@ Porting a mod? Start with the guide: [porting-1151-1163.md](porting-1151-1163.md
 | Functions | 5,200 | 5,115 |
 | Symbols | 91,554 | 39,089 |
 | Data types | 1,449 | 535 |
-| Hand-named functions (not `FUN_`, `rep_`, `CFUN_`), from the function lists (each list was ~95% complete) | ~875 | ~560 |
+| Hand-named functions (not `FUN_`, `rep_`, `CFUN_`), from the function lists (each list was ~95% complete) | 935 | 609 (2026-10-15, before the name port; 109 more after) |
 | Of those names present in both programs | 535 | 535 |
 | Names only in 1.151 / only in 1.163 | 354 / 25 | |
 | Image base | `0x140000000` | `0x140000000` |

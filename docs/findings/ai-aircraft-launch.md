@@ -4,7 +4,7 @@ Status: **read from the decompilation and disassembly (re-checked in this pass);
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap AI item "the AI launches all its aircraft when it detects the player within strike range, so none are left for defensive interception".
 
 ## The function [code]
-`TryLaunchAiAircraftGroup` at `0x1400ef910` (Ghidra name is the machine-propagated `rep_1400ea210_...`; the 1.151 twin is `0x1400ea210`). `RCX` = AI fleet, `RDX` = detected target. Returns 1 if it launched.
+`TryLaunchAiAircraftGroup` at `0x1400ef910` (Ghidra name was the machine-propagated `rep_1400ea210_...`, now `TryLaunchAiAircraftGroup` after the 2026-10-15 name port; the 1.151 twin is `0x1400ea210`). `RCX` = AI fleet, `RDX` = detected target. Returns 1 if it launched.
 
 Launch conditions, all required [code]:
 | Test | Instruction | Value |
