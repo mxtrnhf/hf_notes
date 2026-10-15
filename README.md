@@ -96,7 +96,7 @@ Tables. (`docs/data/`)
 | [docs/data/port-1151-1163-callsite.tsv](docs/data/port-1151-1163-callsite.tsv) | the 9 function names ported by call position (tag `PORTED_1151_CALLSITE`) |
 | [docs/data/port-1151-1163-signature-measure.tsv](docs/data/port-1151-1163-signature-measure.tsv) | per function: decompiler placeholder counts at Ghidra v15 (before the signature port), v18 and final |
 | [docs/data/port-1151-1163-signature-reverts.tsv](docs/data/port-1151-1163-signature-reverts.tsv) | the 22 signatures made automatic again, with the prototype they had |
-| [docs/data/port-1151-1163-writestring-fix.tsv](docs/data/port-1151-1163-writestring-fix.tsv) | the `WriteString` unused-parameter fix: old prototype and placeholder counts of its 30 callers |
+| [docs/data/port-1151-1163-writestring-fix.tsv](docs/data/port-1151-1163-writestring-fix.tsv) | the `WriteString` unused-parameter fix: placeholder counts of its 30 callers before and after the fix (old prototype: see `docs/setup.md`) |
 | [docs/data/port-1151-1163-variables.tsv](docs/data/port-1151-1163-variables.tsv) | the 28 parameter and local-variable names ported (function, storage, old and new name) |
 | [docs/data/port-1151-1163-labels.tsv](docs/data/port-1151-1163-labels.tsv) | the 40 data labels ported, with reference votes |
 | [docs/data/port-1151-1163-labels-review.tsv](docs/data/port-1151-1163-labels-review.tsv) | data labels not ported: already named the same, conflicting, or no reference |

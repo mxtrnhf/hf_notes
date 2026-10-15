@@ -1,4 +1,3 @@
-old_prototype	basic_ostream<char,struct_std::char_traits<char>_> * __thiscall WriteString(void * Line?, char * Str)
 caller	name	before	after
 140195c10	WriteToClientLog	0	0
 1401954f0	rep_140187830_WriteString	0	0
