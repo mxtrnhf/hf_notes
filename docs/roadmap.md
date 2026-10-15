@@ -27,6 +27,8 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
   * Partly done by hf_salvo: `map_launch_delay` lets a volley leave together (AI fleets too) and `group_missiles` merges a salvo into one fight (3-4 missiles verified [game]): [mods/salvo.md](mods/salvo.md). The AI's per-target salvo caps are untouched.
 * **[Feature, missing]** A functional crew-requirement system. *(partial: research only)*
   * The per-ship totals already exist (`+0x17ec` present, `+0x17f0` capacity, `+0x17f4` needed); what consumes them was not looked for: [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
+* **[Feature / Mod Scope]** The missile drum `m_oid=MDL_MISSILE_DRUM_01`: see how it works, figure out multi-charge for it, and restore the cut content. *(open: only noted so far)*
+  * Known so far: the stats record is new in 1.163 (absent from 1.151), listed in [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md); `structures.md` lists a "missile drum" among the ammo-category parts. Nothing else has been read. Steps: (1) how it launches and what the player sees (stats record, part body, launch path); (2) whether the multicharge approach ([mods/multicharge.md](mods/multicharge.md): charge level = part id) carries over to it; (3) find the cut content (unused ids, stats, text or assets left in the files) and restore it. Related: `MDL_MISSILE_CLUSTER_SFW_01`, `MDL_TORPEDO_300` are also new in 1.163.
 * **[Feature]** Tracking of ballistic missiles in the terminal phase (near the target) on the strategic map. *(open)*
 * **[Feature]** Editing of new enemy ship spawning events. *(open: saved strike groups can be rewritten, see `content.md`)*
 
