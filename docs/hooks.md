@@ -28,6 +28,7 @@ The modloader loads mods in an unspecified order, and a second detour at an alre
 | `0x140065744` (12 bytes: `mov rdi,rbx` + 9-byte nop before the engine-command loop of the AI tick `0x140062f90`; resume `0x140065750`) | trampoline | **highfleet-qol fork, branch `ai-flares`** (panic boost) |
 | `0x140052af2` (1.151 `0x140050372`; `MOVAPS XMM1,XMM10` in `BulletImpact__`, the "penetrative > 0 means ttl 1.0" override) | 4-byte NOP (`enable_unblocked_ttl`) | highfleet-qol (logdot) [code, `src/ttl.rs`] |
 | `0x140036bb5` (`MOV RBX,RAX; MOV RCX,RSI`, 6 bytes `48 8b d8 48 8b ce` in `creatureLogic`, right after `CALL 0x14021b070`; null-check trampoline, resume `0x140036bbb`, null exit `0x140036ca2`; 1.163 only) | trampoline (`enable_flare_crash_fix`) | highfleet-qol (logdot) [code, `src/flare_crash.rs`]; [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md) |
+| `0x14006bf60` (Creature add-to-level / remove, 10 stolen bytes `48 89 5c 24 08 57 48 83 ec 40`, entry hook) | log-only entry hook | **hf_ally** (debug/prototype; [findings/battle-ally.md](findings/battle-ally.md)) |
 
 ### hf_probe hooks (debug only, log-only, never ship)
 Besides the `0x140303fb4` wrapper above, `hf_probe` ([mods/probe.md](mods/probe.md), [runs/probe-run-1.md](runs/probe-run-1.md), [runs/ui-events-and-screens.md](runs/ui-events-and-screens.md)) installs log-only entry hooks that no mod should also patch:
