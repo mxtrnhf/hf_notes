@@ -1,33 +1,14 @@
-# The pre-combat screen: where an "ally yes/no" control would go
+# The pre-combat screen: structure, the ALLY buttons built on it, and the native selectors
 
-Steam 1.163, image base `0x140000000`. Why it matters: `hf_ally` needs a player choice ("do I want an ally in this fight"), and the beta clip the player showed (a per-ship ORDER button with a bomb/shell icon list) suggests the same kind of screen once existed for roles. Tags as in [../../README.md](../../README.md). Written 2026-10-16. Updated the same day with the first live result (section "Live result"): **the screen real fights use is `FUN_1402d73a0`, not `0x1402d7620`**.
+Steam 1.163, image base `0x140000000`. This screen is where `hf_ally` puts its per-ship "this ship may come as an ally" buttons (v0.6 to v0.8, in play since 2026-10-16). Tags as in [../../README.md](../../README.md): **[game]** seen in play or in a log, **[code]** read in Ghidra, **[guess]** inferred. How to create and click a GUI element (the recipe, the pitfalls, the click trap): [../rendering/gui-elements.md](../rendering/gui-elements.md). Screenshots and dated run reports: [../runs/ally-runs.md](../runs/ally-runs.md). Raw GUI dump: [../data/gui-dump-precombat-ammo-2026-10-16.txt](../data/gui-dump-precombat-ammo-2026-10-16.txt).
 
 ## The screen exists in campaign fights [game]
 The probe logs of 2026-10-14 show `PRECOMBAT_OK` clicked twice per run: once after `EDC_TEST_FIGHT` (the editor test fight) and once after `MAP_LOCATION` / `MAP_ESCADRA` clicks (a campaign engagement), e.g. `hf_probe_build/logs/2026-10-14_1801_v2.2/probe.log` lines 868 and 4024. So every fight passes through it. Its GUI strings: `PRECOMBAT_BACK`, `PRECOMBAT_OK`, `PRECOMBAT_LEVEL`, `PRECOMBAT_PLAYER_1..4`, `PRECOMBAT_A/B`, `PRECOMBAT_SPAWN(_NUM)`, `PRECOMBAT_MAP`; sprites `precombat_back`, `precombat_front`, `precombat_button`, `precombat_up_01`, `precombat_drop(_01)`, `precombat_slide`, `precombat_capital` (strings at `0x14035af18` .. `0x14036ebc8`).
 
-## The builder: `FUN_1402d7620` [code]
-Decompiled (read-only). It is the 1.163 function that **builds the whole screen in code**; there is no layout file. Other GUI-building variants reference the same strings (`FUN_1401e8da0`, `FUN_1401ea500`, `mainMap` at `0x14014332c`): not read yet, probably the skirmish and PvP versions. No static caller: it is reached through a pointer.
-
-What it does, in order:
-1. `DAT_147fc6fd3 = 1`; frees the old GUI objects; creates the background GUI named `PRECOMBAT_BACK` with the sprites `precombat_back` / `precombat_front`.
-2. Creates **`PRECOMBAT_OK`**, the start button (sprite `precombat_button`).
-3. When `BOOL_147fc6f80` or `DAT_147fc6f81` is set it creates `PRECOMBAT_LEVEL`, a text with "Level: N" in a coloured string.
-4. Lays out one **card per player side** (`DAT_143a158e0..e8`, 0x18-byte entries; up to 4), each card a column of ship preview objects (`PRECOMBAT_PLAYER_<n>`); positions start at x = -800 and step by the object width; y depends on the number of sides (350, 300 or 250 apart). The ships shown come from the per-side lists at `0x147fc7510 + 0x10*n`, filled from the player's profile.
-5. Ends with `CopyString("cursor_main")`, `SetBackground_(... "PRECOMBAT")`, `SetLink(0x143a1c260, 0)` (clears the controlled-ship link), zoom levels 1/1/1, then `TarkhanGUIDispatchOperator()` (`0x140275850`, call at **`0x1402d88bb`**, bytes `E8 90 CF F9 FF`).
-
-## How a GUI element is made [code, from the disassembly of the PRECOMBAT_OK block, `0x1402d78c3`..`0x1402d798f`]
-```
-gui = New(0xe70)                      ; operator new, 0x140334094, ECX = 0xe70 (size of GUI)
-gui = GUI_2(gui, 0)                   ; constructor, 0x14012a910 (RCX = memory, EDX = 0)
-gui->vtable[0x2c0](gui, "NAME")       ; set the element name (what ClickFunc reads at gui+0xa40)
-node = *(0x147fc6f88)                 ; the global node every GUI is added to
-node->vtable[0x50](node, gui, 0, 0)   ; add to the node
-SetBackground_(gui, 0, "sprite", xmm3 = -1.0 ...)   ; 0x14001be50, sprite name in R8, float args in XMM2/XMM3 and on the stack
-gui->vtable[0x88](gui)                ; finish/refresh
-0x14015cc30(gui)                      ; (CopyString-like helper, role not confirmed)
-setXposYpos(gui, Vec2*)               ; position, virtual 1920x1080 coordinates (the card code uses x -800.., y -50..)
-```
-Text on an element: `gui->vtable[0x2d8](gui, std::string)` as in `PRECOMBAT_LEVEL`. Names in this database are guesses [guess]: the sequence is what matters.
+## The two builders [code + game]
+* **`buildSquadPrecombatScreen` = `FUN_1402d73a0` is the screen every fight uses** [game: `hf_ally` `log_precombat`, sites B1 `0x1402d752a` and B2 `0x1402d75f2` fire on every campaign fight, test fight and ship swap]. It calls `secondaryPrecombatButtons`, `FUN_1401e8d80` (which jumps to `FUN_1401e8da0` or `FUN_1401ea500`) and the GUI dispatcher `0x140275850` twice.
+* **`buildPrecombatScreen` = `0x1402d7620` never fires** in test or campaign fights [game]. It builds `PRECOMBAT_BACK` / `PRECOMBAT_OK` / `PRECOMBAT_LEVEL`, `PRECOMBAT_PLAYER_n` columns, and calls `FUN_14026f990` (the native ammo selector per card). Probably another mode (skirmish or PvP) [guess]. Its `PRECOMBAT_OK` block is where the GUI recipe was read.
+* **The click on `PRECOMBAT_OK`** goes to `precombatOk` `0x1402d89c0` (from `ClickFunc`): with ships on both sides it bubble-sorts the card links at `0x147fc7430` by their X position (`+0x128`, ascending), then moves, for each card in turn, the list node of `0x147fc73b0` whose property (`node+0x18`) equals the card's ship link (`card +0xbc0`) to the back of that list: **the squad list is rebuilt in card order, left to right** [code]. So the reserve order at battle time equals the order of the cards on screen, the card link `+0xbc0` is an exact identity key for a ship, and after OK the first ship becomes the flagship. Live support: ship 3 switched on, ships 2 and 4 off, the third card's ship came as the ally [game]. With one side empty it sets the result code and loads `Map.seria` / `Editor.seria` (the fight is skipped).
 
 ## Live result (hf_ally v0.5.2 `log_precombat`, log `Highfleet_2026-10-16_13-33-55.log`) [game]
 * The builder `buildPrecombatScreen` `0x1402d7620` (site A) **never fired** in a test fight, a campaign fight or after swapping ships. Every pre-combat screen came from **`FUN_1402d73a0`** (`secondaryPrecombatButtons`, `FUN_1401e8d80` -> `FUN_1401e8da0` / `FUN_1401ea500`): its two `TarkhanGUIDispatchOperator` calls fire in pairs, **B1 `0x1402d752a`** (after the buttons exist) then **B2 `0x1402d75f2`** (end). `0x1402d7620` is probably another mode (skirmish or PvP, [guess]).
@@ -36,20 +17,25 @@ Text on an element: `gui->vtable[0x2d8](gui, std::string)` as in `PRECOMBAT_LEVE
 * `PRECOMBAT_OK` (`c=0x1b7e6280` etc., vtable RVA `0x360ed8`, active flag +0x48 = 2): float fields `+0x128 = 21.0`, `+0x12c = 421.0` (its position), `+0x218 = +0x21c = 85.0` (its size, an 85 x 85 button); `+0x120` was 0 or -1 (varies). Use these as the layout reference when placing a neighbour.
 * So the ORDER menu is **not** where the player picks a role before a normal fight. The beta clip's screen (brown ship-card page with `ORDER UNSET` buttons, then a bombing mission with `DAMAGE BEFORE RETREAT`) is probably the **strike-group planning** of the map (`MAPMODE_MISSION_*`, `addShipsToSilentStrikeGRP`); `mainMap` references `ORDER_SELECT` [guess, not read].
 
-## Where the toggle would go (updated)
-Add the element at **B2** (and re-add on every rebuild), placed next to `PRECOMBAT_OK` (x 21, y 421, 85 x 85): sprite `precombat_button` or a smaller existing one, name `ALLY_TOGGLE`; catch the click through the `ClickFunc` entry as described above.
+## Native selectors on this screen [game, from `gui_inspect` dumps]
+* **Ammo selector** (built by `ammoSelectButtonPress?` `0x14026f880` through `0x14026e240`; fires when the screen is entered from the map): per ship card one `AMMO_SELECT` (70 x 70, position (0,-100), value `+0xc00` = ammo type, link = the ship), one `AMMO_SELECT2` (70 x 70, (0,-60): the other choices, stacked), one `AMMO_SELECT_TXT` (70 x 107, (0,0)). Positions look relative to the card [guess]. Seen only for ships with a choice of ammo [observed on two fights; the four-Lightning fight had none].
+* **Ship number** labels `MINIFIG_NUMBER` (90 x 90) are children at about (0,-165), a pool larger than the squad (2 enemies + the squad, sometimes up to 9 or more); their positions are not usable at build time (all (0,-160)).
+* **Cards**: `PRECOMBAT_A` x N (player; 174 x 103, tall ships such as the Volna 150 x 190 and a different y), `PRECOMBAT_B` (enemy), `MES_APP` (10 x 10 morale text anchor at the card position). Card positions: x -713, -529, -345, -173 for four ships (184 apart), y -101 (-145 for a tall ship).
+* **The role menu** (`ORDER_SELECT`, `ORDER_SELECT2`, `ORDER_SELECT_TXT`) is the same three-part pattern built by `orderSelect1` `0x1401e82f0` and is **not shown on this screen**; see [battle-ally.md](battle-ally.md) "Roles".
 
-## What a mod would need [guess, design only]
-1. **A seam**: (use B2 `0x1402d75f2` of `FUN_1402d73a0`, see above) wrap the call at `0x1402d88bb` (after every control exists, before the dispatcher runs the screen) with a patchy trampoline, check the 5 bytes first, and there create an own GUI with the sequence above (name `ALLY_TOGGLE`, sprite `precombat_button`, a position next to `PRECOMBAT_OK`, text "ALLY: ON/OFF").
-2. **A click catch**: hook `ClickFunc` (`0x14012f120`, entry, the same 26 stolen bytes the probe uses; arguments RCX = ctx, RDX = `gui*`, R8D = button; name at `gui+0xa40`). If the name is `ALLY_TOGGLE`, flip the setting, update the text, and return without running the original; otherwise run the original. No new branch inside the 62 kB function is needed.
-3. **The setting** is a static read by the battle hook (`spawn_ally` becomes "default for the toggle"; remembered between fights, optionally persisted in `ally.json`).
-Risks: the GUI object layout (`0xe70` bytes) and the vtable slots are read from one block, so the first build should log every step and only create the element when a prologue check of `GUI_2`, `SetBackground_` and `setXposYpos` passes; text rendering of a custom string and the click hit-box (sized by the sprite) are untested. The screen is rebuilt on every entry, so the element must be created on every pass.
+## What `hf_ally` builds on it (v0.8.x) [code in `hf_ally/src/lib.rs`; works in play unless marked]
+* **Seam**: B2 `0x1402d75f2` (a trampoline around the dispatcher call; B1 `0x1402d752a` and the old site `0x1402d88bb` are only logged). One `ALLY_TOGGLE_n` GUI element per ship card except the first (the flagship), n = the ship number 2 to 9, created or re-shown on every build.
+* **Placement**: x = card x + 70, y = -275 (right of the ship number, clear of the ammo column). Earlier tries and why they failed: the number labels' own positions (all identical: stacked buttons), card-relative y (tall ships raised their button), centre of the card column (overlapped the ammo selector).
+* **State** per ship number (a bitmask, session only): ON = `order_support_on`, OFF = `order_unset`; one click toggles once (the game delivers it twice: debounce). The hit box is set to 64 x 64.
+* **Effect at battle start**: the next ship switched on (not yet brought) is moved to the front of the reserve list and deployed with the vanilla deploy; `max_allies` allows several at once; a lost ally frees its place for the next ship switched on. The reserve index of ship n = n - 2 minus the lower-numbered ships already deployed [code reading above makes this exact as long as nothing else pops the reserve; a vanilla redeploy of an OFF ship as a new flagship would shift it, [guess] untested].
+* **Cleanup**: the buttons are hidden (`+0x48 = 0`) when `PRECOMBAT_OK` or `PRECOMBAT_BACK` is clicked and when a battle runs.
+* Not yet tested in play: several allies at once, replacement when an ally is lost.
 
 ## The beta clip (what the player showed)
 A beta-era screen: four "WANDERER MK2 / ARTILLERY FRIGATE" ship cards, each with a round **ORDER UNSET** button; clicking it opens an icon list (shells, bomb, possibly more), after which every ship shows the chosen icon. The mission HUD then reads **DAMAGE BEFORE RETREAT** and shows HP tags on ground installations (`1200 HP`, `NO POWER`, `POWER 92%`). So the beta had a per-ship role order chosen before the fight. **1.163 still holds it** (found 2026-10-16): `orderSelect1` `0x1401e82f0` builds the per-ship ORDER menu from a role table (1 unset, 2 bombing, 3 support) stored in ship `+0xd70`, `ClickFunc` handles `ORDER_SELECT` / `ORDER_SELECT2`, and `PRESELECT_BORDER_ROLES` / `ORDER_SELECT_TXT` are present; the menu is probably switched off by data or a flag. Details: [battle-ally.md](battle-ally.md) "Roles". Where it is shown (`mainMap` references `ORDER_SELECT` at `0x14014309c`) is not read.
 
 ## Open
-* `FUN_1401e8da0`, `FUN_1401ea500`, `mainMap` references (other versions of the screen).
-* Role of `0x14015cc30`, the extra stack arguments of `SetBackground_` (`0x14001be50`), the hit-box size source.
-* Whether `ClickFunc` can be intercepted before the probe's hook (hf_probe owns that site: [../hooks.md](../hooks.md); the ally mod would need the probe off or a shared hook).
+* `FUN_1401e8da0` / `FUN_1401ea500` (what they lay out), the `mainMap` references (map-mode versions of the ORDER and AMMO selectors), `FUN_14026f990` (builds the ammo selector per card in the other builder).
+* Text on a custom element (`vtable +0x2d8(gui, std::string)` as in `PRECOMBAT_LEVEL` and the `*_SELECT_TXT` elements): not tried; our buttons use icons only.
+* The ally-button states are per ship number, not per ship: after a swap the state stays with the slot. The card link `+0xbc0` (see "The two builders") would key it to the ship.
 * The battle-side ship status panels (bottom left own ship, bottom right enemy) for a health readout: a separate rendering job, see [../rendering/README.md](../rendering/README.md) seams B21 to B24.

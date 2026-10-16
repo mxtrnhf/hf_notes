@@ -174,3 +174,10 @@ Interpretation [guess from names]: mission-planning fuel-load presets for a stri
 ## Unknowns
 * Dispatch structure is resolved (string-compare chain, no switch). Still unknown: which of the 476 strings are element names, which branch each catalog name leads to (only the test address is known), and how the 21 non-catalog names are matched.
 * Whether other callers appear in 1.163 through indirect calls (only the static caller is known).
+
+## Added 2026-10-16 (from `hf_ally`) [code + game]
+* **The caller ignores the return value**: `GUI::_HandleClick` `0x14012d050` ends with `ClickFunc(...); return 1`, so an entry hook can skip the original (return early) without side effects. A working trampoline and the byte layout: [../rendering/gui-elements.md](../rendering/gui-elements.md).
+* **Branches seen**: `PRECOMBAT_OK` (string reference at `0x140138250`) calls `precombatOk` `0x1402d89c0`; `ORDER_SELECT` (`0x140137f87`) and `ORDER_SELECT2` (`0x140137fe4`) write `ship +0xd70 = gui +0xc00` (the chosen role value 1 / 2 / 3) and call `orderSelect1` `0x1401e82f0`, which rebuilds the menu; `AMMO_SELECT` / `AMMO_SELECT2` have the same pattern (string references at `0x140137cde`, `0x140137e27`).
+* **One physical click reaches `ClickFunc` twice** (same element, same button, a few ms apart) [observed in the `hf_ally` and `gui_inspect` logs; press plus release is a guess].
+* **`gui_inspect`** (`hf_ally`): logs the whole GUI element list on every click and when the ammo selector is rebuilt; useful to find the element names a screen carries: [../data/gui-dump-precombat-ammo-2026-10-16.txt](../data/gui-dump-precombat-ammo-2026-10-16.txt).
+
