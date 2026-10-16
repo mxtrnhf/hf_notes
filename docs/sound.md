@@ -42,6 +42,11 @@ Argument 6 is stored in the sound object (`+0x88`). The per-frame updater (`0x14
 * Other -1.0 causes [code]: the `DEBUG_SOUND` flag is off, the kind's channel limit (`DAT_1403c2cc0[kind]`) is reached, HGE fails to start the channel. Per-kind tables: channel limit `DAT_1403c2cc0`, falloff radius `DAT_1403c2c88`, replace mode `DAT_147fc7668`; their values are **[not read]**.
 * `hf_probe` (`hook_sounds`) detours this entry; a mod with a 15-byte precheck (`hf_ally`) then turns its sounds off. The hook list is in [hooks.md](hooks.md).
 
+## Your own sounds: a file path is a valid name [code], `hf_voice` v0.1.0 [game: pending]
+`playSFXSound_` resolves `name` with `CopyNameIntoMedia` (`0x1401702b0`): first the `Media_res` sound table; **if the name is not there it calls HGE `Effect_Load(name, 0)` (`AnotherHGE_` vtable `+0x138`), which loads it as a file path, and registers the handle under that name** (later calls hit the table). So a loose `.wav` plays with no `.res` edit and no vanilla file touched: pass `Media\Snd\custom\quite_sure.wav` (backslashes as in `sound.res`; the name is copied into a ~150-byte buffer). Put mod sounds in their own folder, `<game dir>/Media/Snd/custom/` (vanilla has `RADIO`, `RADIO_ENG`, `taunts`, `INTER`, `MUSIC`, `worm`). Format: the game's own are 16-bit stereo 44.1 kHz; BASS should take any PCM, `hf_voice` is testing an 8-bit mono 11.025 kHz one. Alternative if a named resource is ever needed: add a `Sound <name>` block to a script reached by an `Include` (formats.md), at the cost of editing a vanilla `.res`.
+
+The call must run on the **game thread**. A per-frame, always-running site that works: `SomethingInputTask` `0x14018dbf0` (entry `48 8b c4 48 89 58 08 48 89 70 10`, 11 bytes), used by `hf_voice` through `patch_call` (call first, then the stolen bytes). Poll keys with `GetAsyncKeyState` there and only while the game window is foreground, or the key fires while typing in another program. See [mods/voice.md](mods/voice.md).
+
 ## The stock radio, for reuse [code]
 * `PlayRadioSounds_` (`0x1402d5910`, `(int* code, float* out)`): a 35-case table from a code to a radio line (`0` death, `1` evac, `3` stall, `0x10..0x14` lost energy/generator/leg/missile/engine, `0x15..0x19` craft launch/lost, `0x1b` kill, `0x1d..0x21` go0..go4 ...), then the call above with `*out = result`. Only its caller list is odd (one bogus Ghidra caller); it is reached through a function pointer or jump table.
 * `PlayRadioSound_` (`0x1401b1fb0`, `(base, rand?, bound, sep)`) builds `base` + separator + zero-padded number; the random pick calls an HGE vtable function whose arguments the decompiler dropped, so "random in 1..bound" is a [guess]. Mods that want a specific file just call `playSFXSound_` with the exact name.
@@ -56,5 +61,5 @@ Argument 6 is stored in the sound object (`+0x88`). The per-frame updater (`0x14
 | ally destroyed | `radio_stall_01` or `radio_lost_energy_01`, one at random | v0.10.1 (trigger: state 6/7 in the roster) **did not fire** when an ally died [game]: a destroyed ship is not flagged 6/7, it leaves the roster with state still 1. v0.10.2 triggers on leaving the roster unless the last state was 2 (retreating) or 6/7, the ally was extracted, or no enemy was left; **untested** |
 
 ## Open
-* The language choice (`_eng`), the kind tables, arguments 7-11 and 13, other threads, NULL for argument 6.
+* Is the 8-bit mono 11 kHz file audible and at the right level; the language choice (`_eng`), the kind tables, arguments 7-11 and 13, other threads, NULL for argument 6.
 * Roadmap item "audio cue when aircraft intercept" ([roadmap.md](roadmap.md)) now has its play recipe: `radio_kill_06` through this call.
