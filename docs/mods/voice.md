@@ -20,5 +20,9 @@ Standalone modloader DLL (crate `hf-voice`, `hf_voice`, local git, no remote; bu
 ## Log lines
 `hf_voice vX config: ...`, `hf_voice: hook installed on the input task`, then one `VOICE <path> -> 1` per press (1 = queued, -1 = dropped). A bad path logs `ERR: SX::play failed to get effect = <path>` in `client.log`.
 
+## Two ways to name a sound
+* **File path** (`Media\\Snd\\custom\\quite_sure.wav`): no `.res` edit, relies on the fallback in `CopyNameIntoMedia` ([../sound.md](../sound.md)).
+* **Resource name** (`hf_quite_sure`): a `Sound` block appended to `Media/Snd/sound.res` (backup kept next to it).
+
 ## Status
 v0.1.0 and v0.1.1 crashed (misaligned stack, above). v0.1.2 (2026-10-17): F9 = `quite_sure.wav`, F10 = `radio_stall_01` (a `sound.res` name, to tell a bad file-path load from a bad call): **in-game result pending**.
