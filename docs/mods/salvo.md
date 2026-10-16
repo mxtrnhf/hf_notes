@@ -1,4 +1,4 @@
-# highfleet-salvo  (repo `hf_salvo`)
+# highfleet-salvo  (repo `old_standalone/hf_salvo`)
 
 Two independent options for strategic missiles on the map (`salvo.ini`):
 

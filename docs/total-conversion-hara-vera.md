@@ -1,6 +1,6 @@
 # Total conversion study: "Flight to Hara Vera" 2.0.1
 
-A story/content total conversion for Steam 1.163, distributed as a 933 MB installer (`Flight to Hara Vera FINAL-16-2-0-1-...exe`, default folder = the Steam HighFleet folder).
+A story/content total conversion for Steam 1.163, distributed as a 933 MB installer (`Flight to Hara Vera FINAL-16-2-0-1-...exe`, default folder = the Steam HighFleet folder). The installer was deleted on 2026-10-16 after unpacking (all blocks matched to the end of the file); the unpacked files are in `hf_mods_unpack/hara_vera/`, re-download the installer if it is ever needed again.
 Analysed **statically**: the installer was never run. Credits in its README: story/sprites/modules/dialog by Shieldbearer, 2.0 by Duumvir, modloader by logdot, character and background art by Midjourney.
 Its README says: it does not change the core of the game; it needs the modloader ("the ONLY way to mod highfleet to this degree, most of the game is hardcoded"); **GOG is not supported**; uninstall = run the uninstaller, then verify game files in Steam.
 

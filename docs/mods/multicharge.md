@@ -1,4 +1,4 @@
-# highfleet-multicharge  (repo `hf_multicharge`)
+# highfleet-multicharge  (repo `old_standalone/hf_multicharge`)
 
 Parts that launch several times before they are used up. **Charge level = part id**: `MDL_AA_X3 > X2 > X1` (S-4 Triumph, combat AA) and `MDL_A101_4 .. _1` (A-101, four launches of the A-100, map).
 

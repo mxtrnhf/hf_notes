@@ -23,8 +23,8 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
   * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [khiva-crash.md](findings/khiva-crash.md). Not reproduced in game.
 
 ### New features
-* **[Feature]** Cruise-missile barrage mechanic (for example salvos of 4 simultaneous incoming cruise missiles). *(partial: hf_salvo)*
-  * Partly done by hf_salvo: `map_launch_delay` lets a volley leave together (AI fleets too) and `group_missiles` merges a salvo into one fight (3-4 missiles verified [game]): [mods/salvo.md](mods/salvo.md). The AI's per-target salvo caps are untouched.
+* **[Feature]** Cruise-missile barrage mechanic (for example salvos of 4 simultaneous incoming cruise missiles). *(partial: old_standalone/hf_salvo)*
+  * Partly done by old_standalone/hf_salvo: `map_launch_delay` lets a volley leave together (AI fleets too) and `group_missiles` merges a salvo into one fight (3-4 missiles verified [game]): [mods/salvo.md](mods/salvo.md). The AI's per-target salvo caps are untouched.
 * **[Feature, missing]** A functional crew-requirement system. *(partial: research only)*
   * The per-ship totals already exist (`+0x17ec` present, `+0x17f0` capacity, `+0x17f4` needed); what consumes them was not looked for: [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
 * **[Feature / Mod Scope]** The missile drum `m_oid=MDL_MISSILE_DRUM_01`: see how it works, figure out multi-charge for it, and restore the cut content. *(open: only noted so far)*

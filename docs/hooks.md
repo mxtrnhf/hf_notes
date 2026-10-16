@@ -17,9 +17,9 @@ The modloader loads mods in an unspecified order, and a second detour at an alre
 | `0x14002e590`, `0x14002e3a0` (combat launch), `0x1400eced0` (map launch) | entry detours | highfleet-multicharge |
 | `0x14025afd0` (level loader) | entry detour | highfleet-salvo |
 | `0x1400ed59e` (300.0 launch-cooldown immediate) | data patch | highfleet-salvo |
-| `0x14011521f`, `0x140115240`, `0x14011529c` (refuel rate `MULSS`) | operand repoint | highfleet-refuel; **also** highfleet-qol fork branch `refuel-rate` (patchy `patch_call`, `ReturnType::Xmm0`, replaces the 8-byte `MULSS` with a hook that returns `dt * base * mult`). Never install both |
+| `0x14011521f`, `0x140115240`, `0x14011529c` (refuel rate `MULSS`) | operand repoint | highfleet-refuel; **also** highfleet-qol (PR #19, merged) (patchy `patch_call`, `ReturnType::Xmm0`, replaces the 8-byte `MULSS` with a hook that returns `dt * base * mult`). Never install both |
 | `0x1400ea980` (add-fuel routine), only with `log_calls=1` | logging detour | highfleet-refuel |
-| `0x140080699` (a `call powf`), cave `0x140073330` | call-site patch | highfleet-speed; **also** highfleet-qol fork branch `refuel-rate` (patchy `patch_call` over the 5-byte call, no cave). Never install both |
+| `0x140080699` (a `call powf`), cave `0x140073330` | call-site patch | highfleet-speed; **also** highfleet-qol (PR #19, merged) (patchy `patch_call` over the 5-byte call, no cave). Never install both |
 | editor held-part pointer `0x1403c0d88` (read), `m_floor` writes | polling | highfleet-elevation |
 | `0x140032f22` (gun blocking) and others | detours | highfleet-qol (logdot) |
 | `0x140303fb4` (`E8 C7 03 DD FF`, the call to the label pass `0x1400d4380` inside the editor renderer; wrap = original call, then ours) | trampoline | **highfleet-qol fork, branch `elevation`** (native hint, commit 95d09cd); **also** hf_probe (debug only: HUD, sprite test) and hf_draw_test (debug only, never ship). Never install more than one of them. |

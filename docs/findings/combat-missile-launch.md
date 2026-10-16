@@ -22,7 +22,7 @@ A probe wrapping the call at `0x140037809` logged every part leaving a ship: all
 * The only writers of `target+0x8b0` in the exe are those two stores [code, instruction search].
 * The map-level launch (`FUN_1400eced0`, timer `fleet+0x50c` = 300.0, store at `0x1400ed598`) is strategic-map missiles only and does not affect combat launches.
 
-## Our patch: burst (qol fork branch `ai-missile-dump`, local only)
+## Our patch: burst (qol fork branch `ai-flares`, local only; the original branch is kept as tag `old/ai-missile-dump`)
 `ai_missile_dump_chance` (0.0 = vanilla). Replaces the 5-byte call at `0x140065edb` with a patchy `patch_call` wrapper (`ReturnType::Rax`, arguments pass through) that calls `FUN_14002ff60` and, when the launcher's owner has side < 0 (`owner+0xad4`) and a random roll is below the chance, returns 0 although the launch succeeded. The loop then goes on to the next launcher in the same tick. **Confirmed in game: a ship launched 4 missiles at the same moment.** Caveats: a burst that uses the whole list never starts the 2.0 s cooldown; no cap on burst size. Site owner: highfleet-qol fork, branch `ai-missile-dump`.
 
 ## Method notes
