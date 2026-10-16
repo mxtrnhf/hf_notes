@@ -64,4 +64,4 @@ Rule for sites that another mod may already have patched (for example `0x140303f
 New feature wanting a site inside an owned function's first 14 bytes: patch a constant instead, or coordinate with the owner.
 
 * **`playSFXSound_` `0x1402e30e0`** (sound player, 15-byte entry `48 8b c4 48 89 58 08 ...`): detoured by `hf_probe` (`hook_sounds`); *called* (not hooked) by `hf_ally` v0.10+ behind a 15-byte precheck, so with the probe's sound hook loaded the ally sounds switch off. Call recipe: [sound.md](sound.md).
-* **`SomethingInputTask` `0x14018dbf0`** (per-frame, game thread, entry `48 8b c4 48 89 58 08 48 89 70 10`): `hf_voice` (`patch_call`, call first). Also read by the editor held-part code; no other mod hooks the entry.
+* **`SomethingInputTask` `0x14018dbf0`** (per-frame, game thread, entry `48 8b c4 48 89 58 08 48 89 70 10`): `hf_voice` (padded trampoline: `sub rsp,8` / call / `add rsp,8` / stolen bytes). Also read by the editor held-part code; no other mod hooks the entry.
