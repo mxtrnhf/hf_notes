@@ -49,7 +49,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/level-seria-dispatcher.md](docs/findings/level-seria-dispatcher.md) | `SomethingWithLevelSerias`: the SCR_* scenario dispatcher in 1.151 and 1.163, label addresses, string refs (names only, body unread) |
 | [docs/findings/click-func.md](docs/findings/click-func.md) | the GUI click handler `ClickFunc` (1.151 `0x1401261d0`, 1.163 `0x14012f120`): size, caller, what the probe logs, live-test recipe; also the 252-name element catalog and four decompiled branches (BUY_BUY, FUEL_BUY_SLIDER, MAPMODE_MISSION_*) |
 | [docs/findings/source-file-names.md](docs/findings/source-file-names.md) | the 15 original source-file paths embedded in the exe (`HYBRID FLEET 2013EX`) and what they say about the code layout |
-| [docs/findings/battle-ally.md](docs/findings/battle-ally.md) | an AI-run, player-side ship in battle (`hf_ally` prototype, run in game): what makes a Creature AI-run, how the vanilla reserve/deploy machinery spawns the ally, run results, why retreat vanishes with an ally and the extraction call, the super-alpha checklist |
+| [docs/findings/battle-ally.md](docs/findings/battle-ally.md) | the AI ally in battle (`hf_ally`, running in game): what makes a Creature AI-run, how the vanilla deploy spawns the ally, the retreat point and extraction (why a promoted ship could not retreat), the ORDER role table in `+0xd70` (1 unset, 2 bombing, 3 support), checklist, AI plan |
 | [docs/findings/precombat-screen.md](docs/findings/precombat-screen.md) | the pre-combat screen (`FUN_1402d7620`): built in code, the GUI-creation call sequence, the seam at `0x1402d88bb` and a `ClickFunc` catch for an "ally yes/no" control; the beta role-order clip (design only, nothing built) |
 
 ## Rendering
@@ -72,6 +72,7 @@ Dated probe and seam-test reports: evidence, not reference. (`docs/runs/`)
 | [docs/runs/ui-events-and-screens.md](docs/runs/ui-events-and-screens.md) | probe v2.0 run: log-only hooks for clicks, text keys, sounds and level loads, gold, location and fleet watchers, which dispatcher flag is which screen |
 | [docs/runs/seam-test-run-1.md](docs/runs/seam-test-run-1.md) | seam test runs 1 and 2 (probe v2.2): labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean; map seam M11 chosen |
 | [docs/runs/ally-probe-run-1.md](docs/runs/ally-probe-run-1.md) | `hf_ally` v0.3.1 probe: ally against nearest enemy over three campaign battles (speed, ammo spent, targets); the ally is not slower than the enemy |
+| [docs/runs/ally-runs.md](docs/runs/ally-runs.md) | dated `hf_ally` run reports v0.1 to v0.4: spawn, strike run, mode 0, retreat key, auto-retreat, handover |
 
 ## Mods
 One short page per mod, and the debug-only `hf_probe`. (`docs/mods/`)
