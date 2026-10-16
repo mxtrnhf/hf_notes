@@ -52,6 +52,7 @@ Argument 6 is stored in the sound object (`+0x88`). The per-frame updater (`0x14
 |---|---|---|
 | ally deployed into the battle | `mission_start_01..03`, random | log `ALLY sound (ally joins)`, all three variants, audible [game] |
 | F8 retreat order given (at least one ally ordered) | `mission_danger_01` | log `ALLY sound (retreat key)`, audible [game] |
+| ally retreated alive (left the roster after state 2, or extracted with the flagship) | `mission_end_01..03`, random | v0.10.3, **untested**; a ship shot down while flying out would also trigger it |
 | ally destroyed | `radio_stall_01` or `radio_lost_energy_01`, one at random | v0.10.1 (trigger: state 6/7 in the roster) **did not fire** when an ally died [game]: a destroyed ship is not flagged 6/7, it leaves the roster with state still 1. v0.10.2 triggers on leaving the roster unless the last state was 2 (retreating) or 6/7, the ally was extracted, or no enemy was left; **untested** |
 
 ## Open
