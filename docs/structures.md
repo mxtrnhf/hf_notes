@@ -118,3 +118,16 @@ Relayed by the probe session; one run, not re-checked here.
 * **Location** (global `CURRENT_LOCATION` `0x143a11940`, a pointer, null on the map screens; code `0xc7`, size `0x370`): `+0x8` class-name string, `+0xc8` city name (`UR`, `ZEMARAIM`), `+0x130` a second name (`SARGAS`, `VEGA`; faction or region [guess]), `+0x210` `MARK_INIT`, `+0x288` `City_generated.seria`, `+0x25c` i32 city type (1 UR, 5 ZEMARAIM: matches QoL's shop city types), `+0x274` f32 station fuel stock (our refuel formula in `systems.md`; read 0.0 on the first visit and 552106.88 on the second to ZEMARAIM, so it is filled on a visit).
 * **Player fleet** (`PLAYER_ESCADRA` `0x143a13eb0` -> the Escadra): `+0x150/+0x154` position (0, 11000 at the start), `+0x158` speed (30.484 moving, 0 stopped), `+0x15c` heading (rad), `+0x498` / `+0x4a0` fuel / capacity doubles (5.4e6 / 10.88e6 at the start; **vanilla refuel baseline** with the refuel mod off: fuel fell about 277,000 per second while moving and rose about 267k to 413k per second docked), which confirms the fleet fuel offsets in the Fleet section.
 * **GUI objects** (click hook `FUN_14012f120(ctx, gui*, button, id)`): `+0x8` class string (`Gui`, `List`, `Slider`), `+0xa40` element name (what `FindGuiElement` compares), `+0xa80` 4-byte value, `+0xad8` a Distortion resource name. A findings page on UI events is being written separately.
+
+## Creature fields found by the ally work (2026-10-16)
+| Offset | Meaning |
+|---|---|
+| `+0xad4` | side float: negative = enemy AI, positive = the player's side, 0 neutral |
+| `+0xaf8` / `+0xb00` | the target Link and its node (the node can be a creature or a part of an enemy ship) |
+| `+0xb28` | seconds until the next retarget (3.0 after a choice) |
+| `+0xbd4` | AI flag: non-zero = not flown by the player (the flown ship has 0) |
+| `+0xbdc` | driver state (1 and 2 run the AI tick, 2 = leave, 6 and 7 = dead) |
+| `+0xc19` | **prize flag** (`m_prize`): the ship may be captured and sold after the battle; set by name for `Pollux` and `Kadesh Mk1` in the ship loader `0x1401b08a0`, or by a byte argument of the spawn function `0x140209b00` |
+| `+0xc74` / `+0xc75` / `+0xc76` | ammo-choice flags re-rolled every 30 s from the target's stats by `FUN_140079810` (`+0xc78` is its 30 s timer); the weapon controller turns them into AP / proximity / plain shell |
+| `+0xd70` | the ORDER **role**: 1 unset, 2 bombing (the strike run), 3 support (no code behind it); the enemies use 0; the battle manager treats 1 as "the ship the player flies" (this replaces the older "launch mode (2 = per-target budget)" reading: the budget map belongs to role 2) |
+| node `+0x28` | class code (Creature 47, Body 15, Frame 31, Node 7); node `+0x88` = master (parent); `+0xb8` = owner pointer (a part's creature); node `+0x48` = active flag |

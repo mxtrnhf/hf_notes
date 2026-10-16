@@ -1,6 +1,6 @@
 # Why AI ships never use flares, and how to give them flares (1.163)
 
-Status: **mod written (fork branch `ai-flares`, `src/ai_flares.rs`), built and deployed, not yet run in game.** Design below was changed during implementation, see "Implementation". Tags: legend in `../../README.md`.
+Status (2026-10-16): **running in game** (fork branch `ai-flares`, `src/ai_flares.rs`; the working source is still UNCOMMITTED in the fork). Enemy AI ships drop flares and dodge missiles; since 2026-10-16 the new option `ai_flares.allies` makes AI-run ships of the player's side do the same: confirmed in play ("allied ships now use flares"). Design below was changed during implementation, see "Implementation". Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap item "the AI cannot deploy flares" (`roadmap.md`, AI, Tactical).
 
 ## Short answer
@@ -46,3 +46,6 @@ Follows the conventions in `hooks.md` (function-entry detour with version guard;
 * **Player boost** [code]: the control list in `setPlayerControls` (`0x1401d60ac`) maps action ids to names: `0x1000` up .. `0x1005` roll right, **`0x1006` `TITLE_CTRL_BOOST` = Shift (binding 4102)**, `0x1009`/`0x1010` fire 1/2 (LMB/RMB), `0x1015` flares (F). The input event switch (jump table at `0x140189a50`, case code `0x1401897ee`) handles boost by setting `creature+0xba8 = 2.0f` (`0x14018a76b` resets it to `1.0f`). The player control code (`0x1402a972b`/`0x1402a97de`) copies `+0xba8` into the strength field (`+4`) of the engine commands `0x66` and `0x67` (`{code, strength, ..., 999, angle}`) sent to each engine part with `0x1400533f0(part, &cmd)`. The flares action `0x1015` is the one that sets `+0xbbf/+0xbc0/+0xbc1`.
 * **AI** builds the same commands on the stack in the AI tick (`0x1400656d9`..: `rbp+0x28` for `0x66`, `rbp+0x48` for `0x67`; strength at `+4` is the thrust fraction, normally 1.0 at most). The mod raises it during a panic evasion at `0x140065744`. Fuel use of a boosted engine and any extra effects (the boost HUD or sound) were not checked.
 * Elevation overlay: set `elevation.hint` to `"off"` (the keys still work, nothing is drawn).
+
+## Allied AI ships: the `allies` option (2026-10-16) [code, game]
+The module decided "AI ship" with `side < 0` (`+0xad4`), so a friendly AI-run ship (side > 0, brought in by `hf_ally`) never used flares or evasion. `is_ai` in `src/ai_flares.rs` now also accepts a ship with `side > 0` and the AI flag `+0xbd4 != 0` when the config `ai_flares.allies` is `true` (default `false`); the ship the player flies has `+0xbd4 == 0` and is never affected. The three call sites (flare trigger, evasion waypoint, panic spin) are unchanged: only the test changed. Build archived as `hf_qol_fork_build/archive/highfleet_qol_ai-flares-v6-allies.dll`; the user's `qol.json` has `"allies": true` (the file was rewritten with indent 2).

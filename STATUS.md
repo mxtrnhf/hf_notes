@@ -15,3 +15,9 @@ Volatile state: what is released, what is open upstream, what is broken. Everyth
 
 ## Modloader quirk
 The modloader README still says the release zip is `Artifacts.zip` and yields both `bass.dll` and `bass.dll_`; v4.1.0's `Modloader.zip` has only the loader `bass.dll`, so users must rename the original themselves (see [docs/install.md](docs/install.md)).
+
+## Ally ships mod and ai-flares (state at the end of the 2026-10-16 session)
+* **Installed builds** (game folder `Modloader/mods/`): `hf_ally_v0.9.1.dll` (archive and build copy `hf_ally_build/hf_ally_v0.9.1.dll`, older ones in `hf_ally_build/versions/`) and `highfleet_qol.dll` = `hf_qol_fork_build/archive/highfleet_qol_ai-flares-v6-allies.dll` (ai-flares plus missile dump plus the `allies` option). Config files: `Modloader/config/ally.json`, `Modloader/config/qol.json`. In `ally.json`: `max_allies 2`, `ally_toggle` on, `auto_retreat` on, `flagship_leaves handover`, `gui_inspect` and `log_precombat` off, `spare_prizes` default on. In `qol.json`: `ai_flares.allies true` (the file was rewritten with indent 2).
+* **Where the sources are**: `hf_ally` is a local git repo with **no remote** (the only copy of the source is on this machine; last commit `7d8b18e`). The QoL fork's working source (`src/ai_flares.rs`, `src/ai_missile_dump.rs`, `src/config/ai_flares.rs`, the modified `config.rs`, `lib.rs`, `elevation.rs`, README) is **uncommitted on the fork branch `ai-flares`**, plus a stray `README.md.orig`.
+* **Tested in play**: several allies, replacement after a retreat order, per-ship ally buttons, summary lines, handover when the flagship is shut down, flares on allies. **Not yet seen**: an ally destroyed in battle, prize-safe targeting on a convoy (the v0.9.0 hook fired but read the flag on the wrong object; fixed in v0.9.1, untested), several allies with `handover`.
+* **Ghidra**: the annotations of 2026-10-16 are saved in the program; the shared-project check-in is the user's.

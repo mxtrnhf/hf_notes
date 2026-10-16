@@ -121,3 +121,8 @@ Screenshot (shrunk): [ally buttons beside the numbers, ammo selector below, no o
 * **Allies attack prize ships** (player report). Cause found in the code: the ship loader sets a **prize flag `creature +0xc19`** (serialized `m_prize`) when the ship's NAME is `Pollux` or `Kadesh Mk1`; the AI target choice never reads it. See [../findings/battle-ally.md](../findings/battle-ally.md) "Targets and ammo".
 * **The AI ignores the ammo chosen on the selector** (player report: proximity chosen, default shell used): consistent with the AI weapon controller, which re-sets each gun's ammo slot every tick by creature flags (`+0xc7c`, `+0xc74`, `+0xc7d`, `+0xc75`, `+0xc76`), not by the loadout choice; see the same section.
 
+## Result of the v0.9.0 run: flares on allies, prize hook fired and showed a bug [game], log `Highfleet_2026-10-16_16-21-51.log`
+* **Flares on allies work** (player: "allied ships now use flares"): QoL `ai_flares.allies` true; the log has the usual `AI flares: first threat, missile link points at the ship itself` line for a missile aimed at an ally.
+* **The two wrappers around the AI target choice ran without a crash** in this session (first evidence in play for the call-site wrapper technique).
+* **The prize hook fired but misread the flag** (see [../findings/battle-ally.md](../findings/battle-ally.md) "Prize ships and trade convoys"): the same re-target line dozens of times a second, `prize enemies 0` at the first tick. Fixed in v0.9.1 (owner pointer instead of the parent chain, deduplicated log); the corrected hook has not been run yet.
+* Summary lines kept working; no `ALLY lost` seen.
