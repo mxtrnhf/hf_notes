@@ -43,3 +43,12 @@ TESTS WE WOULD LIKE YOU TO RUN  (all optional; tell us which ones you did)
  Known and expected: allies shoot the default shell, are not tactically smart, and may
  ignore the ammo you picked.
 ```
+
+## Added after the first tester crash reports (2026-10-16, v0.9.3)
+Reports: re-engaging a convoy crashed; ELINT plus missiles from a strike group crashed (without opening the battle screen); the ally choice is missing when a convoy is re-engaged; all sound is relative to the last spawned ship (an ally spawn moves the listener, NOT investigated: Ghidra was offline). Patched by static analysis only, **not run**: v0.9.3 arms the ally logic only for a battle entered through the pre-combat screen (log line `ALLY battle start ... armed / NOT armed`), the prize hook only touches ships the mod brought in, F8 needs a flying flagship (0.9.2), log caps reset per battle and the log is flushed at key lines.
+Note: the vanilla missile and plane defense battles already have allied AI ships (side > 0, AI flag set); the QoL `ai_flares.allies` option treats them like our allies and is NOT narrowed yet.
+Checklist for the next round (each with `ai_flares.allies` true and then false):
+1. Re-engage a convoy after a retreat: expect `NOT armed`, vanilla play, no ally.
+2. Let a strike group fire missiles at the fleet with ELINT on, do not open the battle screen.
+3. Missile or plane defense battle with allies in the fleet.
+4. If it still crashes: send the log, name the last `ALLY battle start` line; then bisect `ai_flares.allies: false`, then remove hf_ally.
