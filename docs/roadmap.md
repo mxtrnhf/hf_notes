@@ -17,7 +17,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 * **[QoL / Inconsistent behavior]** Salvage minigame: when a safety hazard occurs while the wreck site is out of focus, the game enters auto-mode instead of pausing. *(open)*
 * **[QoL]** Option to disable Pytor's map-pointing interactions. *(open)*
 * **[QoL]** Audio cue (or auto-pause) when aircraft intercept enemy forces on the strategic map. *(partial: hook point found, nothing built)*
-  * Hook point: the two `SetLevelSeriaToLoad_` calls in the map aircraft group update; the existing intercept cue is `radio_kill_06` on `MAPMODE_RADIO_HANDSET`: [findings/map-air-groups.md](findings/map-air-groups.md).
+  * Hook point: the two `SetLevelSeriaToLoad_` calls in the map aircraft group update; the existing intercept cue is `radio_kill_06` on `MAPMODE_RADIO_HANDSET`: [findings/map-air-groups.md](findings/map-air-groups.md); how to play a sound from a mod: [sound.md](sound.md).
 * **[QoL]** Toggle for auto-pause on the strategic map. *(open)*
 * **[Bug]** Capturing all cities around Khiva before the end-game event causes a crash loop / infinite loading. *(partial: probable cause and patch recipe, not reproduced or built)*
   * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [khiva-crash.md](findings/khiva-crash.md). Not reproduced in game.

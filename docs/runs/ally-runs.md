@@ -126,3 +126,8 @@ Screenshot (shrunk): [ally buttons beside the numbers, ammo selector below, no o
 * **The two wrappers around the AI target choice ran without a crash** in this session (first evidence in play for the call-site wrapper technique).
 * **The prize hook fired but misread the flag** (see [../findings/battle-ally.md](../findings/battle-ally.md) "Prize ships and trade convoys"): the same re-target line dozens of times a second, `prize enemies 0` at the first tick. Fixed in v0.9.1 (owner pointer instead of the parent chain, deduplicated log); the corrected hook has not been run yet.
 * Summary lines kept working; no `ALLY lost` seen.
+
+## Result of the v0.10.0 to v0.10.2 runs: ally sounds, 2026-10-17 [game], logs `Highfleet_2026-10-17_01-01-01.log`, `..._01-06-44.log`
+* **v0.10.0 (`playSFXSound_` call, see [../sound.md](../sound.md)): every call logged `ALLY sound (...) -> 1` and nothing was audible**, no `SX::play failed` in `client.log`. Cause: the volume-pointer argument pointed at 0.0 and the sound updater multiplies the volume by it every frame.
+* **v0.10.1 (pointer initialised to 1.0):** player: ally entering plays, F8 plays. Log: `ally joins` with `mission_start_01/02/03` (random), `retreat key` with `mission_danger_01`.
+* **Ally death did not play.** The summary of the battle said `allies brought 1 lost 0, ally: alive at the end (last state 1)`; there was no `ALLY lost` line. A destroyed ally is not flagged state 6/7, it just leaves the roster. v0.10.2 detects that (see [../findings/battle-ally.md](../findings/battle-ally.md)); untested.

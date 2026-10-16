@@ -62,3 +62,5 @@ Besides the `0x140303fb4` wrapper above, `hf_probe` ([mods/probe.md](mods/probe.
 Rule for sites that another mod may already have patched (for example `0x140303fb4` with `hf_draw_test` or `hf_probe` installed): pre-check the expected bytes (the 5 bytes of the original `E8 rel32`) before preparing the patch and skip the feature on a mismatch. With patchy a failed prepare makes `install_permanently` fail and `init` return false, which would take every QoL feature down with it.
 
 New feature wanting a site inside an owned function's first 14 bytes: patch a constant instead, or coordinate with the owner.
+
+* **`playSFXSound_` `0x1402e30e0`** (sound player, 15-byte entry `48 8b c4 48 89 58 08 ...`): detoured by `hf_probe` (`hook_sounds`); *called* (not hooked) by `hf_ally` v0.10+ behind a 15-byte precheck, so with the probe's sound hook loaded the ally sounds switch off. Call recipe: [sound.md](sound.md).

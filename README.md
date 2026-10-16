@@ -22,6 +22,7 @@ Layout: `docs/` reference docs; `docs/findings/` one note per question; `docs/re
 | [docs/structures.md](docs/structures.md) | class codes, Body / stats / fleet / map-missile / Creature layouts, `m_category` bits, projectile logic ids |
 | [docs/version-differences.md](docs/version-differences.md) | 1.151 vs 1.163: Body and Profile offset remaps, stats record, Ghidra struct status, strings added/removed |
 | [docs/systems.md](docs/systems.md) | how launching, engagements, refueling, elevation/arcs, strategic AI, firing and point defence work |
+| [docs/sound.md](docs/sound.md) | **playing a game sound from a mod**: the `playSFXSound_` call (argument table, Rust type), the volume-pointer pitfall (0.0 = silent), sound names, the stock radio, what `hf_ally` plays |
 | [docs/engine-hge.md](docs/engine-hge.md) | the HGE engine under the game: interface table, resource loading, stock formats, mod seams |
 | [docs/hooks.md](docs/hooks.md) | hooking techniques, who owns which patch site, candidate sites |
 | [docs/content.md](docs/content.md) | dialogue, characters, events, textures (study + experiment plan) |

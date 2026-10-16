@@ -62,6 +62,8 @@ Timeline of the run (probe seconds): title 0-26, editor 26-80, TEST combat 80-13
 The dedupe set is reset at every `MODE` change and keys are counted once per `(key, caller)`, so the numbers are **first-seen keys per screen, not usage counts**: from 2 to 211 per screen (editor 70-211, map `d0` 47-73, supplies `bc9` 95-109, landing `bc8` 5-100). Each screen prints its own text list, which is the closest thing to a "what does this screen show" answer.
 
 ## SOUND [game+code]
+Calling the same function from a mod (argument table, the volume-pointer pitfall): [../sound.md](../sound.md).
+
 126 distinct names. Top: `engine_rocket_down_01` 167 (kind 8), `explosion_med_01..04` about 40 each (kind 1), `shell_in_med_01` 41 (kind 11), `shell_out_small_01..03`, `shell_out_small2_*`, `shell_out_enemy_med_*` and `shell_out_enemy_tiny_*` (kind 2 = enemy fire), `alarm_small_07`, `combat_lock`, `turbine_01` (kind 7), `missile_run_02` (kind 12), `buzz_01`, `sold_01`, `beep_01`. Counts are lower bounds (the same sound within 100 ms is folded). The first argument ("kind") is a category [guess]. `error.log` has `ERR: SX::play failed to get effect = radio_landing_start_02` at game time 0:4:15:54, which matches the `SOUND radio_landing_start_02` line at probe 254.630 s: the name reaches the game intact, the failure is inside `SX::play`, a missing asset in the game itself (seen with QoL and the probe loaded; the vanilla `hge.log` also reports a missing `.mp3`).
 
 ## Gold [game]
