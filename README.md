@@ -49,7 +49,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/level-seria-dispatcher.md](docs/findings/level-seria-dispatcher.md) | `SomethingWithLevelSerias`: the SCR_* scenario dispatcher in 1.151 and 1.163, label addresses, string refs (names only, body unread) |
 | [docs/findings/click-func.md](docs/findings/click-func.md) | the GUI click handler `ClickFunc` (1.151 `0x1401261d0`, 1.163 `0x14012f120`): size, caller, what the probe logs, live-test recipe; also the 252-name element catalog and four decompiled branches (BUY_BUY, FUEL_BUY_SLIDER, MAPMODE_MISSION_*) |
 | [docs/findings/source-file-names.md](docs/findings/source-file-names.md) | the 15 original source-file paths embedded in the exe (`HYBRID FLEET 2013EX`) and what they say about the code layout |
-| [docs/findings/battle-ally.md](docs/findings/battle-ally.md) | an AI-run, player-side ship in battle: what makes a Creature AI-run (`+0xbd4`, the AI vector), side-sign targeting, the Missile-scenario spawn recipe, teardown, and the `hf_ally` prototype plan (not run yet) |
+| [docs/findings/battle-ally.md](docs/findings/battle-ally.md) | an AI-run, player-side ship in battle (`hf_ally` prototype, run in game): what makes a Creature AI-run, how the vanilla reserve/deploy machinery spawns the ally, run results, why retreat vanishes with an ally and the extraction call, the super-alpha checklist |
 
 ## Rendering
 How the game draws; start at the README. (`docs/rendering/`)
