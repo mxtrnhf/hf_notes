@@ -1,0 +1,59 @@
+Based on the HighFleet Knowledge Base (HFKB), the spawning of trade ships and their escorts is handled by a dedicated function during the campaign world generation phase. 
+
+Here is the detailed breakdown of the logic, the controlling function, and the underlying mechanics.
+
+### 1. The Controlling Function
+*   **Function Name:** `spawnTradeConvoy_` (v1.163) / `spawnTradeConvoy?` (v1.151)
+*   **Addresses:** `0x1401ed310` (v1.151) 
+*   **Caller:** Campaign World Generator (`FUN_14028de70` in v1.163), which runs at game start to populate the strategic map.
+*   **Signature:** `void spawnTradeConvoy_(undefined8 param_1, undefined4 param_2, undefined8 param_3, undefined8 param_4)`
+*   **Escadra Creation:** It finalizes the convoy by calling `Escadra::Escadra(&output, param_2, 1, param_3)`. The constant `1` passed as the third argument specifically identifies the newly created Escadra group as a **Trade Convoy**.
+
+---
+
+### 2. Trade Ship Selection Logic
+Every trade convoy contains **exactly ONE trade ship**. Unlike strike groups or garrisons, trade ships are completely exempt from Combat Value (CV) budget restrictions. 
+
+The game selects the trade ship using a weighted random roll:
+| Roll Branch | Probability | Ship Selected |
+| :--- | :--- | :--- |
+| **Roll 1** | 50% (Split) | **Pegasus** (12.5% overall) or **Odissey** (12.5% overall) |
+| **Roll 2** | 25% | **Kastor** |
+| **Roll 3** | 25% | **Pollux** |
+| **Roll 4** | 25% | **Kadesh Mk1** |
+
+---
+
+### 3. Escort Selection & The Fuel Constraint
+Trade convoys are protected by escort ships. However, **escort composition is limited by fuel consumption, NOT by Combat Value (CV).** 
+
+**The Escort Pool:**
+*   **Standard Pool (9 ships):** Intrepid, Scarab, Ballistic, Talos, Slogger, Lightning, Meteor Mk3, Meteor Mk2, Courageous.
+*   **Hardmode Additions:** Kormoran OR Negev. 
+    *   *Condition to add Hardmode escorts:* The campaign progression/difficulty gate (`Profile->field_0x165`) must be set, the initial trade ship roll must be > 1, and a final `random > 0.75` check must pass.
+
+**The Selection Algorithm:**
+1.  **Determine Max Escorts:** The game sets a hard cap of **2 escorts** in Normal mode, or **4 escorts** in Hardmode.
+2.  **Iterative Drafting:** The game randomly selects a candidate from the escort pool.
+3.  **The Fuel Eligibility Formula:** Before adding the escort, the game calculates if the convoy has the fuel capacity to support it. The escort is only added if it passes this threshold:
+    `(total_fuel / total_rate) * min_fuel > 3,000,000`
+4.  **Decrement Cap:** If eligible, the escort is added to the convoy, and the `max_escorts` counter is decremented. This loops until the cap is reached or no eligible escorts remain.
+
+---
+
+### 4. Targeting Deprioritization (The `+0xBB1` Flag)
+A critical piece of trade convoy logic is how the game prevents the player from easily sniping the escorts with strategic missiles. 
+
+When `spawnTradeConvoy_` successfully adds an escort to the convoy, it writes a `1` to a specific structural offset on the escort's Body/Creature object:
+*   **Offset:** `+0xBB1` (The "Non-Priority Target" flag)
+*   **Effect:** Later, when the player launches a strategic missile, the tactical target assignment function (`ConfigureStrategicMissileForTacticalBattle`) reads this `+0xBB1` flag. If it is non-zero, the engine **zeroes out the ship's CV sort key**. 
+*   **Result:** The escorts are pushed to the absolute bottom of the targeting priority list. Player missiles will actively avoid targeting the escorts, preferring the trade ship or other high-value combatants instead.
+
+---
+
+### 5. Strategic & Tactical Gameplay Behavior
+Once spawned, the trade convoy follows specific gameplay rules (`[USER-CONFIRMED]`):
+*   **Strategic Map:** Trade convoys are constantly moving across the strategic map or stopping to refuel.
+*   **Tactical Battle Win Condition:** The player **does not** need to destroy the trade ships to win the tactical battle. 
+*   **Capture Mechanic:** If the player eliminates all other enemies in the tactical battle (excluding ground vehicles), the surviving trade ships are automatically captured by the player.
+*   **No CV Restriction:** Because they don't count toward CV limits, trade ships can appear alongside highly dangerous escorts without breaking the game's CV-balancing algorithms.
