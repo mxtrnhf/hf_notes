@@ -25,4 +25,4 @@ Standalone modloader DLL (crate `hf-voice`, `hf_voice`, local git, no remote; bu
 * **Resource name** (`hf_quite_sure`): a `Sound` block appended to `Media/Snd/sound.res` (backup kept next to it).
 
 ## Status
-v0.1.0 and v0.1.1 crashed (misaligned stack, above). v0.1.2 (2026-10-17): F9 = `quite_sure.wav`, F10 = `radio_stall_01` (a `sound.res` name, to tell a bad file-path load from a bad call): **in-game result pending**.
+v0.1.0 and v0.1.1 crashed (misaligned stack, above). v0.1.2 (2026-10-17): F9 = `quite_sure.wav`, F10 = `radio_stall_01` (a `sound.res` name, to tell a bad file-path load from a bad call): **all three keys work in play** (F9 file path, F10 stock name, F11 `.res` name) [game].
