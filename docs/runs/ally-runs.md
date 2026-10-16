@@ -106,3 +106,10 @@ Screenshots (shrunk): [three allies in the air](img/three_ships.jpg), [after the
 * **Bug found: no `ALLY SUMMARY` line in any real battle since v0.7.0.** It printed only once, in the test fight, when the roster emptied inside the battle hook; a real fight ends without that tick. v0.8.2 logs the summary when the next battle starts or the next pre-combat screen is built, using the clock of the last battle tick.
 * Not covered by this run: an ally destroyed in battle (the `lost` path), `handover` with allies present, ally health.
 
+## Log checks for v0.8.2 / v0.8.3 (2026-10-16, source and DLL checked, not yet run in play)
+* **The summary now has four triggers**: the roster emptying inside the battle hook (test fights), the next battle's start (`on_spawn` re-arm), the next pre-combat screen, and, from v0.8.3, a click on any `RETRY_*` or `QUIT_*` element (the end-of-battle screen and the way out of the game: the `gui_inspect` dumps of the 15:25 session show `RETRY_NO` and `QUIT_TITLE` as the last clicks, and that session's summary would otherwise have been lost). The click hook only exists while `ally_toggle` or `gui_inspect` is on. The line carries the game clock of the last battle tick, so its duration is right; "enemies" is the count at the first battle tick (waves are missed), now printed as `enemies at start`.
+* **`ALLY lost` is unverified**: the manager may drop a dead ship from the roster before the hook sees it in state 6; use the `allies brought / lost` counts of the summary once a run has an ally destroyed.
+* **The `ally:` outcome describes only the first ally**; with several allies the counts are the data.
+* **v0.8.3 also guards the retreat-point restore of `handover`**: it is written back only when an ally stays or the reserve is not empty (v0.8.1 made flagship tracking run without allies, which restored the point after every solo retreat).
+* **`gui_inspect` and `log_precombat` are noisy** (up to 330 elements per click): off in the normal config; switch on in `ally.json` to investigate a screen.
+
