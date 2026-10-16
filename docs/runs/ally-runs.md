@@ -98,3 +98,11 @@ Screenshots: [ORDER UNSET rings and the support icon](img/getting_somewhere.png)
 * **The GUI dump** (`gui_inspect`) also exists for the map, shipworks and supplies screens (up to 330 elements): useful reference for later UI work. The ammo selector is rebuilt by `ammoSelectButtonPress?` (`0x14026f880`), which fired on entering the pre-combat screen.
 * Player question: cycling an ally's behaviour (stances) is not built; added to the checklist (roles are the game's own concept, but only "bombing" has any code behind it).
 
+## Result of the v0.8.1 run: several allies, AI retreat, AI step-in, "unset" = no ally [game], logs `Highfleet_2026-10-16_15-15-26.log`, `_15-25-07.log`
+Screenshots (shrunk): [three allies in the air](img/three_ships.jpg), [after the retreat order, the next ship in](img/ai_retreat_ai_step_in.jpg).
+* **Two allies in one battle** (`max_allies 2`, ships 2 to 5 switched on, mask `0x3c`): ship 2 deployed at once, ship 3 three seconds later (the cooldown), reserve 4 -> 3 -> 2. Each came from the front of the reserve after `reserve_to_front` (`reserve entry 0` every time because the lower ships had left the reserve).
+* **AI retreat and step-in**: the F8 order went to both allies at 15:29:07 (`retreat ordered (key)` for each, mode 2 + state 2), both left, **ship 4 stepped in at 15:29:13** (6 s later, as soon as a place was free) and **ship 5 at 15:29:57** (reserve 1 -> 0). No `ALLY lost` lines: they retreated, none was destroyed in this fight. So retreat, replacement and several allies all work in play (v0.8.0 code, v0.8.1 build).
+* **"Unset" means no ally**: all ship buttons off gives `switched on 0x0` then `ALLY off for this battle (no ship switched on; reserve 3, mask 0x0)` (log 15:15-26, 15:20:21). One ON ship and `max_allies 2` brought just that ship; a battle with one ship logged `no reserve ship to bring`.
+* **Bug found: no `ALLY SUMMARY` line in any real battle since v0.7.0.** It printed only once, in the test fight, when the roster emptied inside the battle hook; a real fight ends without that tick. v0.8.2 logs the summary when the next battle starts or the next pre-combat screen is built, using the clock of the last battle tick.
+* Not covered by this run: an ally destroyed in battle (the `lost` path), `handover` with allies present, ally health.
+
