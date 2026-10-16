@@ -81,7 +81,7 @@ One short page per mod, and the debug-only `hf_probe`. (`docs/mods/`)
 
 | Read | For |
 |---|---|
-| [docs/mods/voice.md](docs/mods/voice.md) | `hf_voice`: key-bound sounds from loose `.wav` files (no `.res` edit) |
+| [docs/mods/voice.md](docs/mods/voice.md) | `hf_voice`: key-bound sounds from loose `.wav` files (no `.res` edit), the player package |
 | [docs/mods/elevation.md](docs/mods/elevation.md) | set the elevation (`m_floor`) of the held shipworks part; keys, config, mechanism |
 | [docs/mods/speed.md](docs/mods/speed.md) | configurable map cruise speed: `vanilla` / `classic` / `custom` presets and the QoL port |
 | [docs/mods/multicharge.md](docs/mods/multicharge.md) | parts that launch several times before they are used up (charge level = part id) |

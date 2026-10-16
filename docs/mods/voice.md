@@ -20,6 +20,9 @@ Standalone modloader DLL (crate `hf-voice`, `hf_voice`, local git, no remote; bu
 ## Log lines
 `hf_voice vX config: ...`, `hf_voice: hook installed on the input task`, then one `VOICE <path> -> 1` per press (1 = queued, -1 = dropped). A bad path logs `ERR: SX::play failed to get effect = <path>` in `client.log`.
 
+## Package for players
+`hf_voice_pack_v0.1.2.zip` (folder `hf_voice_pack/`, next to the other packs in the workspace): `Modloader/mods/hf_voice_v0.1.2.dll`, `Modloader/config/voice.json` (F9 = `Media\\Snd\\custom\\quite_sure.wav`, F10 = `mission_start_01`, F11 = `mission_end_01`, the last two are stock lines), `Media/Snd/custom/quite_sure.wav`, and a `README.txt` (install, key-code table, list of stock sound names, how to add a `.wav`, troubleshooting by log line). The pack edits no game file (path method). Its README says "tested in the main menu" only: battle and map use are untested.
+
 ## Two ways to name a sound
 * **File path** (`Media\\Snd\\custom\\quite_sure.wav`): no `.res` edit, relies on the fallback in `CopyNameIntoMedia` ([../sound.md](../sound.md)).
 * **Resource name** (`hf_quite_sure`): a `Sound` block appended to `Media/Snd/sound.res` (backup kept next to it).

@@ -2,6 +2,12 @@
 
 How a DLL mod makes the game play one of its own sounds (a radio line, an alarm, an effect). Confirmed in play with `hf_ally` v0.10.1 on Steam **1.163** (2026-10-17). All addresses are 1.163; the 1.151 addresses are **[not read]**. Tags: legend in [../README.md](../README.md).
 
+## Summary (all confirmed in play, 2026-10-17) [game]
+* A mod plays a game sound by calling `playSFXSound_` (`0x1402e30e0`) on the game thread; the volume pointer must hold 1.0.
+* The sound `name` can be (1) a stock `sound.res` name, (2) a name we add with a `Sound` block to a `.res` the game loads, or (3) a **file path** below the game folder, loaded on first use without any `.res` edit. All three work; (3) is the one to ship because it touches no game file.
+* A **`.res` file** is an HGE resource script: text blocks `Sound <name> { filename=...  resgroup=3 }` (also `Texture`, `Animation`, `Font`, `Particle`, ...) that give assets short names; `media.res` `Include`s the others and the game reads them at start-up and asks for assets by name (language in [formats.md](formats.md)). The path fallback was seen for sounds only; textures and sprites probably still need a `.res` entry [guess].
+* Entry hooks need a stack pad (below); `hf_ally` plays join, F8, retreat and death lines this way, `hf_voice` plays key-bound lines. The shipped package: [mods/voice.md](mods/voice.md).
+
 ## The recipe [game]
 Call the game's own sound player, `playSFXSound_` at **`0x1402e30e0`** (Ghidra `playSFXSound_`; the probe calls it `playSFXSound?`). Its entry is `48 8b c4 48 89 58 08 48 89 68 10 48 89 70 18` (15 bytes): use it as the byte precheck. The argument layout below is copied from the stock radio's own call at `0x1402d6d32` (end of `PlayRadioSounds_`), so it is a call the game itself makes [code].
 
