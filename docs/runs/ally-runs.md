@@ -52,3 +52,7 @@ Open work, in the order the player asked for it:
 4. **Missiles**: re-check the launcher list offsets with a ship known to carry missiles; bombs: read the conditions of the bomb launch.
 5. **Better AI for both sides**: see "Where to take the AI" below.
 
+## Result of the v0.5.1 run: support role (3) and the pre-combat seam [game], log `Highfleet_2026-10-16_13-25-57.log`
+* `ally_mode: 3` (the "support" role from the ORDER table): the ally ran as before (state 1, closes on a target, `zenith n=4 loaded=0 ready=4 launches=0`, guns firing): **no visible difference from role 0**, which fits the byte search finding no code that tests the value 3. The player's reading: "acts the same as before". Role 3 is not a lever by itself; any support behaviour would have to be written by us. The config is back to 0.
+* The pre-combat seam at `0x1402d88bb` (end of `buildPrecombatScreen` `0x1402d7620`) **never fired** in a test fight or a campaign fight (3 patches installed, 0 `PRECOMBAT` lines). The screen is built elsewhere: `FUN_1402d73a0` (calls `secondaryPrecombatButtons`, `FUN_1401e8d80` -> `FUN_1401e8da0` / `FUN_1401ea500`, and the GUI dispatcher twice, at `0x1402d752a` and `0x1402d75f2`). v0.5.2 hooks those two sites too.
+
