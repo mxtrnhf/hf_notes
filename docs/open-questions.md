@@ -10,6 +10,13 @@
 * The arc scan being "gated off by data" (stats +0x128 == 0) versus a patched call is not settled (gun-side blocking itself is solved by highfleet-qol).
 * Refuel: the buy-fuel slider is partly traced ([findings/click-func.md](findings/click-func.md#decompiled-branches-v1163)); `REFUEL_TIME` is untraced. GOG 1.163 may share addresses with Steam 1.163; untested.
 
+## Ally mod crash hunt (open, see [runs/ally-runs.md](runs/ally-runs.md#crash-hunt-2026-10-17-tester-logs-ghidra-leads-diagnostics-build-first-debug-runs) and [findings/battle-ally.md](findings/battle-ally.md#fleets-landing-and-the-location-scene))
+* Crash address of the tester's engagement-start crash: pending (the v0.11 crash report prints module+offset; inside `0x1400f5b40` / `0x1402672c0` = scene case 2, inside `0x140265d80` = location walker).
+* What scene state 3 (after case 2 at `0x1402be084`) does when case 2 spawned no player ship: unread.
+* Does the landing scene (case 2) run before the player-side vector `0x143a158e0` is refilled? Repro to try: land at a city right after a split/merge (land-after-merge) and right after loading a save (land-after-load); both untested.
+* What removes merged-away fleets from the profile list (they vanish in play, the code shows no deleter); what `+0x478` of a fleet is (summed on merge, not fuel); what `+0x368 = 9000.0` set by `DetachShips` means.
+* F8 order leak: ships ordered out with F8 keep `+0xd70 = 2` on the map until used again. Fix (restore the previous order) is being built as hf_ally v0.11.3, not released.
+
 ## Engine (see `engine-hge.md`)
 * Which assets go through `Resource_Load` (textures? sounds? particles?) and whether `Resource_AttachPack` can override `media.res`: needs a log-only hook run. Which stock System_ method is missing from the interface table (Launch or Snapshot).
 
