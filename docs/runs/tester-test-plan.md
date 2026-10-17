@@ -1,6 +1,6 @@
 # Tester test plan for the ally pack (2026-10-16)
 
-The list shipped in the pack's `README.txt` (`/home/maksim/Development_Highfleet/hf_release_pack/`). Items 4, 7 and 8 are the ones with **no evidence in play yet** (an ally destroyed in battle with a replacement; control passing to an ally when the flagship is disabled is seen, but not a destroyed flagship; prize-safe targeting after the v0.9.1 fix). What each test checks in the code is described in [../findings/battle-ally.md](../findings/battle-ally.md) and [ally-runs.md](ally-runs.md).
+The list shipped in the pack's `README.txt` (`hf_release_pack/` in the workspace). Items 4, 7 and 8 are the ones with **no evidence in play yet** (an ally destroyed in battle with a replacement; control passing to an ally when the flagship is disabled is seen, but not a destroyed flagship; prize-safe targeting after the v0.9.1 fix). What each test checks in the code is described in [../findings/battle-ally.md](../findings/battle-ally.md) and [ally-runs.md](ally-runs.md).
 
 ```
 TESTS WE WOULD LIKE YOU TO RUN  (all optional; tell us which ones you did)
