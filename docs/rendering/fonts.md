@@ -159,7 +159,7 @@ The editor label pass (`0x1400d4380`) asks `0x1401a8710` for these fonts, all at
 |---|---|
 | Small readable UI text | `dinpro_14_reg`, `dinpro_14_med`, `fixed_16`, `vcr_14` |
 | Bold emphasis | `dinpro_14_bold`, `sourcepro_14_bold`, `impact_18` |
-| Pixel / terminal look | `fixed_16` (chosen for the elevation hint), `vcr_12/14/16`, `flash_small` (tiny, caps only) |
+| Pixel / terminal look | `fixed_16` (chosen for the elevation hint), `vcr_12/14/16` (`vcr_12` at scale 1.5, white: the `hf_ally` pre-combat "PLAYER" label [game], same `StyleFn` + `Render` recipe as the elevation hint), `flash_small` (tiny, caps only) |
 | Digits only (counters, readouts) | `nixies_30`, `radio_20`, `dinpro_200_black` |
 
 ## How a mod draws text [code, proven by the elevation hint [game]]
