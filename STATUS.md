@@ -1,6 +1,6 @@
 # Project status
 
-Volatile state: what is released, what is open upstream, what is broken. Everything else in these notes is meant to stay true without edits; keep dated, perishable facts here. Last updated 2026-10-17.
+Volatile state: what is released, what is open upstream, what is broken. Everything else in these notes is meant to stay true without edits; keep dated, perishable facts here. Last updated 2026-10-18 (evening).
 
 ## Release plan
 * **One monolith, the QoL mod.** Elevation, refuel and speed go into logdot's `highfleet-qol` by pull request: #18 pin `highfleet-rs` (open), #19 refuel and speed (**merged 2026-10-14 as `f5423ca`**, review changes: no `enabled`, `Vanilla`/`Classic`/`Modern`/`Custom` speed presets, no refuel clamp), #20 elevation (open; rebased onto upstream main and force-pushed 2026-10-16 as `aafbf6e`, only the 5 elevation commits).
@@ -38,3 +38,8 @@ The modloader README still says the release zip is `Artifacts.zip` and yields bo
 * **Result in play:** button logic works (v0.11.4); the PLAYER label works in the right place (v0.11.5, v0.11.6). **Open:** v0.11.8's cover gate is untested; check the `ALLY roller cover` lines in the log and the -900 threshold. Details: [docs/findings/precombat-screen.md](docs/findings/precombat-screen.md).
 * **Known gap:** the per-frame check runs on `SomethingInputTask`; with `hf_voice` loaded (same hook) the buttons do not follow the cards, and the `hf_ally` source comment that the battle-manager tick is a fallback is wrong (it never ticks on that screen). `hf_voice` and `hf_ally` are not run together at the moment.
 * **Ghidra (2026-10-17, by the notes session, saved, check-in is the user's):** `0x1401dd500` renamed `handleRadiationCounts?` -> `buildLandingFrame` (plate comment keeps the old label), comments at the seams B22 to B24, the `ROLL_*` string refs, the `memcmp`-labelled `0x140242e60` and `SomethingInputTask`.
+
+## hf_ai and qol dump delay, 2026-10-18 evening (local repos, no remotes)
+* **Installed in the game dir** (read from `Modloader/mods` and `config`): `hf_ai_v0.5.2.dll` (older ones are `.bak`), `hf_ally_v0.12.10_debug_telemetry.dll`, `highfleet_qol.dll` (built from `95e8bc7`, with the dump delay). **hf_ai v0.5.3 (`a70cfe7`) is built and committed but NOT installed.**
+* `hf_ai.json`: `ai_flares` on + `log_panic` + `launch_flares_probability` 0.6 (other curtain keys at defaults); `tactics` on, `blend_weight` 2.0, `strafe_enabled` false, dive on with `dive_min_s` 2 / `dive_max_s` 4. `qol.json`: dump chance 0.7, delay 0.6 / 1.5, `ai_flares.enabled` false. `ally.json` unchanged (telemetry on).
+* Versions and commits: [docs/changes-2026-10-18.md](docs/changes-2026-10-18.md). Next steps: [docs/handover-2026-10-18.md](docs/handover-2026-10-18.md).
