@@ -142,3 +142,7 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
 2. Save snapshots with diff (2): turns "play and notice" into data for the notes.
 3. Crash capture and the direct-to-scenario launcher (3): unblocks the crash bugs and combat testing in the roadmap. (Partly served by `hf_probe`; crash capture and the launcher are still open.)
 4. The rest as the work needs it.
+
+### AI: allied bombers, friendly AI tactics (requested 2026-10-18; no work started)
+* **Allied bombers** are very requested by the user's testers. Data to start from: Navarin sessions ([findings/ai-intrepid-benchmark.md](findings/ai-intrepid-benchmark.md)): bombs only on **landed** enemy ships (`mode` 3), released from 210-1490 u altitude at 140-250 u/s without boost, 1.2-13.8 s fall; landed enemies shoot back. Open: bomb release is not visible in the telemetry (the control byte clears within a frame), no altitude / landed / target-class columns.
+* **Friendly AI** (evade vs last stand, retreat decisions) cannot be a pure state machine; it needs more play data, ideally from testers (telemetry build).
