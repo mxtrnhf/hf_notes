@@ -1,0 +1,24 @@
+# AI tactics for Highfleet: `hf_ai` design and the existing `ai_flares` algorithm
+
+Status (2026-10-18): decisions taken, `hf_ai` v0.1.0 exists as a **log-only** steering hook and is **NOT installed in the game** (never run). Tags: legend in `../../README.md`. Data for tuning: [ai-telemetry.md](ai-telemetry.md); background and stages: "Where to take the AI" in [battle-ally.md](battle-ally.md).
+
+## Decisions
+* **A Modloader DLL is the only way to change how the AI flies** [code]: steering lives in the per-ship tick `FUN_140062f90` and aiming in `FUN_14007a8d0`, compiled code with no script or data hook. Data mods (`.seria`) change what the AI flies (designs, loadouts, fleet makeup, weapon ranges), not steering, timing or targeting. A web search found no existing Highfleet AI-behaviour mod (nexus mod 63 is a rebalance).
+* **Keep the stock tick and override its outputs** (waypoint at `creature+0xbf0/0xbf4` stored at `0x140064a8d`, engine command strength at `0x140065744`, fire bytes, launch gating); do not replace the tick, which also does launches, aircraft, retreat states and ally spacing.
+* **Player telemetry is for measuring and tuning hand-built tactics, not for behavioural cloning** (user question, 2026-10-18): the control surface is small (waypoint, thrust, aim, fire, launch), but a few hours from one pilot is too little data for a cloned policy and a state machine can be read and fixed. Tactics (kite, rush, flank, missile boat, break off, overshoot dodge) are code; their numbers (ranges, timings, weights) live in a config file meant to be hot-reloaded. The config is the knobs, not the intelligence.
+* **Standalone DLL `hf_ai`** (user chose "B" over putting it in the qol fork), repo `~/Development_Highfleet/hf_ai`, no remote yet. v0.1.0: the steering hook (same trampoline recipe as qol), a CSV of the stock AI's wanted waypoint per ship (`hf_ai_steer_*.csv`, columns include `rel` = angle between the wanted direction and the target bearing), and `decide(&Ctx) -> Option<(f32,f32)>` as the single plug-in point (returns `None`).
+* **Planned first tactic:** the overshoot dodge (below).
+
+## Hook ownership (open point)
+`0x140064a8d` is also the site of qol `ai_flares` evasion ([../hooks.md](../hooks.md)); only one mod can own it, because each checks the original bytes before patching. If hf_ai installs first, qol finds a jump there and skips the steering hook: evasion, and also the panic boost and barrel roll (the boost hook is only installed when the steering hook was), go off, while qol's flare hook at `0x14007f864` still installs. Load order is alphabetical in the logs seen so far (`hf_ai` before `highfleet_qol`) [guess, not guaranteed]. **Open decision, not made:** install `hf_ai` now (losing evasion, so the captured enemy behaviour changes) or first build an hf_ai evasion equal to qol's, so nothing is lost (the assistant leans to the second). The hf_ally telemetry already logs `wp_x, wp_y`, so the `hf_ai_steer` CSV adds little until a tactic exists.
+
+## What `ai_flares` does today [code, read in `hf_qol_fork/src/ai_flares.rs`; the numbers are the user's installed `qol.json`, not the code defaults]
+Reactive panic against missiles, per AI ship, scanned every 0.1 s:
+* Trigger: a missile locked on to the ship (target link `+0x498`, stats category 0x4000 or 0x8000000, active) closer than `trigger_range` 400; roll `reaction_probability` 0.6.
+* On success: a flare burst of `burst_seconds` 1.5 s, then `min_interval_seconds` 1.5 s of quiet.
+* Evasion (`evade` on): the waypoint is pulled (`evasion_strength` 0.9) towards a sidestep perpendicular to the line to the missile plus 0.5 retreat (`EVASION_RETREAT`), on one random side held for the panic, `evasion_seconds` 3.0; a missile still coming extends it by 1 s (2.5 s for a panic evasion).
+* Panic evasion (`panic_evasion_probability` 0.3): a fixed escape direction chosen at the start, engines boosted by `panic_boost` 2.0 for `panic_evasion_seconds` 8.0. Barrel roll (`barrel_roll_probability` 0.01): engine commands rewritten so the ship spins.
+* It uses the missile's **position only**: no missile velocity, no time to impact. `allies: true` applies it to AI-run ships of the player's side.
+
+## The overshoot dodge (user's idea, not built)
+The user's tactic: do not dodge early; let the missile come, then commit a hard lateral burst late so the missile cannot turn in time and overshoots. For the AI: hold course until time to impact (distance divided by closing speed, from the missile's `+0x130/+0x134` velocity) falls below a threshold, then thrust perpendicular to the missile's **velocity**, and do not spend flares on missiles that will overshoot anyway. Evidence: [ai-telemetry.md](ai-telemetry.md), "Missile overshoot test" (weak). The threshold and the lateral speed needed are to be taken from the v0.12.7 per-frame data.

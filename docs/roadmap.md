@@ -42,7 +42,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
   * Found, and a 1.163 addition: the cutoff and its patch sites are in [ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md) (section 1). Not applied or run in game.
 * **[Tactical, exploitable]** The AI consistently gives way to the player's ship, which gives the player easy positional advantage. *(partial: patch sites listed, guess, untested)*
   * Likely mechanism (the stand-off retreat) and its patch sites: [ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md) (section 2). Guess; not run in game.
-  * Data for any AI tuning: battle telemetry from `hf_ally` v0.12.3 / v0.12.4, see [ai-telemetry.md](findings/ai-telemetry.md) (v0.12.4 not yet run).
+  * Data for any AI tuning: battle telemetry from `hf_ally` v0.12.3 to v0.12.7, see [ai-telemetry.md](findings/ai-telemetry.md); tactics design: [ai-hf-ai-design.md](findings/ai-hf-ai-design.md).
 * **[Tactical]** The AI cannot use some ordnance or parts (LG/INC shells); AP rounds are fired only at extremely short range; the AI cannot deploy flares. *(partial: flares: cause and design; shells: patch-site notes; nothing built)*
   * Flares: the cause and a mod design are in [ai-flares.md](findings/ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
   * LG/INC/AP ammo choice by the AI: [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md) (section 3).
