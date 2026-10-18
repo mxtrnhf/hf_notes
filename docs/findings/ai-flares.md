@@ -1,6 +1,6 @@
 # Why AI ships never use flares, and how to give them flares (1.163)
 
-Status (2026-10-16): **running in game** (fork branch `ai-flares`, `src/ai_flares.rs`; the working source is still UNCOMMITTED in the fork). Enemy AI ships drop flares and dodge missiles; since 2026-10-16 the new option `ai_flares.allies` makes AI-run ships of the player's side do the same: confirmed in play ("allied ships now use flares"). Design below was changed during implementation, see "Implementation". Tags: legend in `../../README.md`.
+Status (2026-10-18: ported to hf_ai v0.2.0, see [ai-hf-ai-design.md](ai-hf-ai-design.md); qol's copy is retired once the user switches `ai_flares.enabled` over; hf_ai can write a `hf_ai_panic_*.log` trace with `log_panic`) (2026-10-16): **running in game** (fork branch `ai-flares`, `src/ai_flares.rs`; the working source is still UNCOMMITTED in the fork). Enemy AI ships drop flares and dodge missiles; since 2026-10-16 the new option `ai_flares.allies` makes AI-run ships of the player's side do the same: confirmed in play ("allied ships now use flares"). Design below was changed during implementation, see "Implementation". Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap item "the AI cannot deploy flares" (`roadmap.md`, AI, Tactical).
 
 ## Short answer

@@ -1,6 +1,6 @@
 # AI tactics for Highfleet: `hf_ai` design and the existing `ai_flares` algorithm
 
-Status (2026-10-18): decisions taken, `hf_ai` v0.1.0 exists as a **log-only** steering hook and is **NOT installed in the game** (never run). Tags: legend in `../../README.md`. Data for tuning: [ai-telemetry.md](ai-telemetry.md); background and stages: "Where to take the AI" in [battle-ally.md](battle-ally.md).
+Status (2026-10-18, evening): `hf_ai` v0.1.0 (log-only steering hook) ran in game and works (626 waypoint rows, all exactly 200 u). v0.2.0 (commit 2c563f5, local) ports qol `ai_flares` (config `Modloader/config/hf_ai.json`, `ai_flares.enabled` default false, optional `log_panic` trace); built and unit-tested (24 tests), **never run in game, not installed**. Pipeline stages in the steering hook: stock waypoint, `decide(ctx)` tactics, panic override, CSV row, store. Tags: legend in `../../README.md`. Data for tuning: [ai-telemetry.md](ai-telemetry.md); background and stages: "Where to take the AI" in [battle-ally.md](battle-ally.md).
 
 ## Decisions
 * **A Modloader DLL is the only way to change how the AI flies** [code]: steering lives in the per-ship tick `FUN_140062f90` and aiming in `FUN_14007a8d0`, compiled code with no script or data hook. Data mods (`.seria`) change what the AI flies (designs, loadouts, fleet makeup, weapon ranges), not steering, timing or targeting. A web search found no existing Highfleet AI-behaviour mod (nexus mod 63 is a rebalance).
@@ -9,7 +9,7 @@ Status (2026-10-18): decisions taken, `hf_ai` v0.1.0 exists as a **log-only** st
 * **Standalone DLL `hf_ai`** (user chose "B" over putting it in the qol fork), repo `~/Development_Highfleet/hf_ai`, no remote yet. v0.1.0: the steering hook (same trampoline recipe as qol), a CSV of the stock AI's wanted waypoint per ship (`hf_ai_steer_*.csv`, columns include `rel` = angle between the wanted direction and the target bearing), and `decide(&Ctx) -> Option<(f32,f32)>` as the single plug-in point (returns `None`).
 * **Planned first tactic:** the overshoot dodge (below).
 
-## Hook ownership (open point)
+## Hook ownership (resolved by the port, 2026-10-18: hf_ai v0.2.0 carries `ai_flares`; exactly one of qol `ai_flares.enabled` and hf_ai `ai_flares.enabled` may be on)
 `0x140064a8d` is also the site of qol `ai_flares` evasion ([../hooks.md](../hooks.md)); only one mod can own it, because each checks the original bytes before patching. If hf_ai installs first, qol finds a jump there and skips the steering hook: evasion, and also the panic boost and barrel roll (the boost hook is only installed when the steering hook was), go off, while qol's flare hook at `0x14007f864` still installs. Load order is alphabetical in the logs seen so far (`hf_ai` before `highfleet_qol`) [guess, not guaranteed]. **Open decision, not made:** install `hf_ai` now (losing evasion, so the captured enemy behaviour changes) or first build an hf_ai evasion equal to qol's, so nothing is lost (the assistant leans to the second). The hf_ally telemetry already logs `wp_x, wp_y`, so the `hf_ai_steer` CSV adds little until a tactic exists.
 
 ## What `ai_flares` does today [code, read in `hf_qol_fork/src/ai_flares.rs`; the numbers are the user's installed `qol.json`, not the code defaults]
