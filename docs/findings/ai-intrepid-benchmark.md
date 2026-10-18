@@ -1,6 +1,6 @@
-# Stock INTREPID piloting benchmark and enemy behaviour (15 battles, 2026-10-18)
+# Piloting benchmark and enemy behaviour: stock INTREPID (15 battles) and Lightning (11 usable sessions), 2026-10-18
 
-Status: **measured from hf_ally telemetry, nothing run on the AI yet.** Source data: `~/Development_Highfleet/tuning_telemetry/intrepid/` (15 sessions, 8.5 min of fighting; v0.12.8 / v0.12.9), full reports in `intrepid/report.md` (batch 1 + addendums), session ledger `tuning_telemetry/REVIEWED.tsv`. Player = expert user flying a stock INTREPID in Shipworks (2x 130mm guns, 2 missiles, no flares, 107 parts, 8250 hp). Design context: [ai-hf-ai-design.md](ai-hf-ai-design.md), telemetry format: [ai-telemetry.md](ai-telemetry.md). Tags: [data] measured, [guess].
+Status: **measured from hf_ally telemetry, nothing run on the AI yet.** Source data: `~/Development_Highfleet/tuning_telemetry/{intrepid,lightning}/` (15 INTREPID sessions, 8.5 min of fighting, v0.12.8 / v0.12.9; 11 Lightning sessions, v0.12.3-v0.12.7), full reports in `intrepid/report.md` and `lightning/report.md` (batch 1 + addendums), session ledger `tuning_telemetry/REVIEWED.tsv`. Player = expert user flying a stock INTREPID in Shipworks (2x 130mm guns, 2 missiles, no flares, 107 parts, 8250 hp). Design context: [ai-hf-ai-design.md](ai-hf-ai-design.md), telemetry format: [ai-telemetry.md](ai-telemetry.md). Tags: [data] measured, [guess].
 
 ## Player (expert) patterns [data]
 * Speed p50 ~100, p90 ~200 u/s; boost held ~10% of the time in 0.4-0.7 s taps. Range to the nearest enemy p10/50/90 about 180/460/1250 u; while firing p50 about 200-270 u.
@@ -17,8 +17,18 @@ Status: **measured from hf_ally telemetry, nothing run on the AI yet.** Source d
 * Removed enemies still had 66-98% hp: the kill rule is not visible in the data.
 * **qol missile dump:** 21 of ~100 enemy missiles die 0.7-1.9 s after launch within ~120 u of their launcher (Flower, Navarin, Paladin, Gladiator; Gryphon/MRL/Nimrod/Intrepid none); no predictor found; needs tuning.
 
+## Lightning (fast glass cannon; 11 usable sessions, 1064 s, 10 Hz player row) [data]
+Source: `tuning_telemetry/lightning/report.md`. Lightning: 2x CANNON_100_2, no missiles, no flares, 6510 hp. Compared with INTREPID:
+* Speed p50/p90/max 148/263/421 u/s (INTREPID 105/206/255); boost ~10% of the time in 0.3-0.5 s taps (same). Range to nearest enemy 206/451/1155 u, while firing p50 306 u; min-range p50 239 u, swing-out p50 849 u (508-1534), max-to-max cycle 16 s (n=110). LMB 21%, ~1.3 rounds/s, RMB never. Aim error 3 / 11 deg (same as INTREPID).
+* Enemies vs this fast target: radial speed -23 (<200 u), -13 (200-400), +15 (400-700), +54 (700-1200), +60 u/s (>1200): they back off inside ~400 u, never spin. They lead only partly (lead fraction median ~0.4-0.6, [guess], wide spread). Their shells hit 41% under 400 u, 14% at 400-700, 10% at 700-1200.
+* **Enemies fire missiles point-blank at a fast target**: 19 of 90 launches under 500 u (as low as 211 u); INTREPID data never below ~870 u.
+* Incoming missiles (90 = 45 salvos): every track ends at closest approach (60-180 u); only 1 salvo did clean damage (1339 hp, 4 Flower missiles). Pilot reaction in the 3 s before the pass (vs baseline): peak lateral accel 135 vs 86 u/s2, heading change 70 vs 43 deg, speed 192 vs 140, boost in 87% of windows vs 44%; peak accel ~1.1 s before the pass at ~414 u (INTREPID 1.0 s / 294 u). Correlation only.
+* qol missile dump: 8 early deaths within 1.5 s of launch, mostly Kormoran and Sarma (new victim classes) at 76-113 u from the launcher.
+* Damage: missiles ~8% of lost hp (up to ~35% counting ambiguous cascades; "27%" is unsupported). Near-death exists in one session only (39% raw hp); the pilot did not break off (kept closing, one 5 s move-away, re-engaged within 4-8 s). Two sessions lose 12 hp-100 items at a fixed world point near spawn plus other parts (not weapon damage; 16 parts left at once with no enemy within 1.7 km in 1792314721).
+* Caveats: 10 Hz player row (acceleration window ~0.4 s, shell tracks 95 u steps), early builds lack hp/names/bodies, every session ends abruptly with no result marker.
+
 ## What cannot be learned from this data
-Low-hp phase and break-off, finishing a fight, RMB/group-1 use, flares for the player, AP vs plain (confounded with target), and whether a dodge actually causes a miss.
+Low-hp phase and break-off (one Lightning near-death shows none), finishing a fight, RMB/group-1 use, flares for the player, AP vs plain (confounded with target), and whether a dodge actually causes a miss.
 
 ## Suggested numbers for the hf_ai tactics (S = from data, G = guess)
-kite: ~200 u while firing, swing out 900-1300 u every 10-20 s (S); missile boat: launch 900-1600 u, salvos of 2, 6-9 s apart (S); dodge: react at ~550 u (2.2 s) missile range, turn 45-90 deg off its track, tap boost ~0.4 s (S timing, G efficacy); flares: dump 2-6 per tick for ~1.5 s at <350 u (S, n small); fire missiles only at flare-less targets (S); enemy charge pace +45 u/s at long range (S).
+kite: ~200 u while firing (Lightning ~300 u), swing out 850-1300 u every 10-20 s (S); missile boat: launch 900-1600 u, salvos of 2, 6-9 s apart (S); dodge: react at ~550 u (2.2 s) missile range, turn 45-90 deg off its track, tap boost ~0.4 s (S timing, G efficacy); flares: dump 2-6 per tick for ~1.5 s at <350 u (S, n small); fire missiles only at flare-less targets (S); enemy charge pace +45 u/s at long range (S).
