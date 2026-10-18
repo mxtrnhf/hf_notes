@@ -1,0 +1,9 @@
+# Ship self-knowledge profiles: how the game computes mass, TWR and reach (1.163)
+
+Status: derived from the `.seria` files and validated against the game's own stored `m_tele_*` values (164 designs) and telemetry; not run in an AI yet. Data and details: `~/Development_Highfleet/tuning_telemetry/ship_profiles/` (`report.md`, `ship_profiles*.json`, `scripts/`). Purpose: let the hf_ai tactic layer derive "this ship is quick / heavy / short-ranged" from numbers instead of hard-coded ship rules. Tags: [code], [data], [guess].
+
+* `Creature::CalculateStats` = `0x14007fcf0` (calls the per-part accumulator `FUN_140071380`). Mass (+0x15b8) = sum of `m_mass` (body +0x1d8) over bodies with a null/root master; no fuel or ammo mass. Engines add stats +0xf8 to bank +0x1664 (spasmcode 102, left) or +0x1668 (103, right). Battle TWR (+0x1604) = (L+R)/(mass x 9.82), 0 if a bank is empty, not damage-scaled; map TWR (+0x160c) uses the map thrust (damage-scaled); map speed = 50 x sqrt(map TWR - 1). [code]
+* Gun reach (creature +0x1838 / +0x183c per fire group) is a caliber table: 37/57mm 800, 100/130mm 1500, 180/203/305mm 3000, 220mm rocket 6000, else 1000; 500 with AP loaded. [code]
+* Stock designs are in `Objects/Designs/`, not `Ships/` (rewritten by the speed mod; `Ships/Lightning.seria` hand-edited). Live parts = Frame/Body count + 9, start hp = sum of m_health + 810 (unverified for designs with other than 2 antennas). [data]
+* Lightning: TWR 12.99, thrust/mass 128, reach 1500; Intrepid: 5.76 / 56 / 1500; Navarin: 5.31 / 52 / 800 (6 flare launchers, 3 bombs, 2 Zenith). Enemy heavies (Gryphon, Borey, Kormoran, Kadesh, Kastor) have thrust/mass 22-28 and 20k hp: they park rather than kite. Measured p99 acceleration is 1.26-1.75 x thrust/mass.
+* Unknown: drag, engine bank semantics, mass vs fuel/ammo at runtime.
