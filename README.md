@@ -42,6 +42,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/ai-intrepid-benchmark.md](docs/findings/ai-intrepid-benchmark.md) | measured expert-pilot and enemy behaviour from 15 stock-INTREPID battles, 11 Lightning sessions and 7 Navarin campaign sessions, missile-dump collision rate, suggested numbers for the tactics |
 | [docs/findings/ship-profiles.md](docs/findings/ship-profiles.md) | how the game computes mass, TWR and gun reach, validated profiles of 20 designs for the AI self-knowledge data |
 | [docs/findings/hf-ai-first-run.md](docs/findings/hf-ai-first-run.md) | first in-game run of hf_ai v0.3.0: what works (close retreat, panic flares), what does not show (strafe) |
+| [docs/findings/ai-underside.md](docs/findings/ai-underside.md) | measured under/over-the-ship advantage (38 sessions): hit rate, lower-third damage, what enemies do, "deny the dive" proposal |
 | [docs/changes-2026-10-18.md](docs/changes-2026-10-18.md) | catalogue of the day: mod versions and commits, what is installed, findings pages, corrections, Ghidra renames |
 | [docs/handover-2026-10-18.md](docs/handover-2026-10-18.md) | start here next session: game-dir state, latest user feedback, ordered next steps, working rules |
 | [docs/findings/ammo-1151-vs-1163.md](docs/findings/ammo-1151-vs-1163.md) | the ammo table (built in code), the `Ammo` record, every value change between versions, live ammo-table dump |
