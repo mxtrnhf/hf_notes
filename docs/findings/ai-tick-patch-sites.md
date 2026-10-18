@@ -56,3 +56,6 @@ The AI tick also has call sites for `FUN_14002e3a0` (`0x140065880`, `0x140065f7f
 Where the launch counter `+0xc98` resets; the contents of the ship's second launch list `+0x13f0` (probably the AA launchers [guess]; `+0x13d8` holds the Zenith launchers, answered in combat-missile-launch.md); the meaning of the mode flags `DAT_147fc6fe0` and `BOOL_147fc6fdb`; the flag bytes `+0xc06..+0xc77` that choose AP / proximity; the addresses of the 1.151 twin's constants. Flares are covered separately in `ai-flares.md`.
 
 Extra pinned addresses: the cutoff's `JA` ends at `0x14007b033` (the guarded range is `0x14007b011`-`0x14007b039`); the pooled `1.0f` for the radial clamp is loaded at `0x14006471b`, just before the `600.0` divide at `0x140064723`.
+
+## Arena bounds (hf_ai v0.3.0 read, 2026-10-18) [code, layout inferred]
+Four f32 at `0x1403c2bc0`: x max, y max, x min, y min. `AiShipTick` reads them at `0x140064673`; `SomethingWithLevelSerias` writes +-6000 at `0x1402c36b6`; the deploy code uses the same addresses. Shipworks arenas measure about x +-1400-1500 in telemetry. y points down; landed enemies sit at y +164..+404, fights reach y about -2000. The creature mode field is `+0xb48` (1 airborne combat, 3 landed, 0 takeoff), not `+0xd70` (role).
