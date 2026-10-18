@@ -1,0 +1,6 @@
+# Ghidra annotations still to apply / save (2026-10-18 night)
+The Ghidra MCP timed out on `save_program` and on later `set_plate_comment` calls. Applied (in the open program, unsaved): rename `FUN_14002ff60` -> `LaunchZenithAtOwnerTarget`, first versions of the plate comments of `LaunchZenithAtOwnerTarget`, `AiWeaponController`, `FireGuns`, `FireGun`, and the disassembly comments listed in changes-2026-10-18.md.
+To correct (re-apply these plate texts, then save and check in with "Annotate 1.163: AI fire gates, Zenith launch, fire bytes"):
+* `LaunchZenithAtOwnerTarget`: replace "~4.1 s free flight before self-destruct [data]" with "~4.1 s of free flight in the telemetry; a fixed self-destruct timer is a [guess]"; replace "hf_ai uses this to detect a launch" with "hf_ai DETECTS a launch from the player's side with the TARGET link (side < 0); the owner link (+0x4b0, confirmed side +1 on 18+ launches) is only logged".
+* `AiWeaponController` item (7): "(checked only when the list at 0x147fc73d8 has > 1 entry; that it is the player-side/ally set is a [guess])".
+* `FireGuns`: add "[data] CONFIRMED at runtime: an AI ship's +0xbbc written by a mod persists and fires group 0 (hf_ai v0.6.4: enemy f0 = 1 in 3% of rows, 34 episodes, 13 produced shells)".
