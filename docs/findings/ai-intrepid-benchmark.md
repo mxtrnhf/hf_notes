@@ -27,6 +27,15 @@ Source: `tuning_telemetry/lightning/report.md`. Lightning: 2x CANNON_100_2, no m
 * Damage: missiles ~8% of lost hp (up to ~35% counting ambiguous cascades; "27%" is unsupported). Near-death exists in one session only (39% raw hp); the pilot did not break off (kept closing, one 5 s move-away, re-engaged within 4-8 s). Two sessions lose 12 hp-100 items at a fixed world point near spawn plus other parts (not weapon damage; 16 parts left at once with no enemy within 1.7 km in 1792314721).
 * Caveats: 10 Hz player row (acceleration window ~0.4 s, shell tracks 95 u steps), early builds lack hp/names/bodies, every session ends abruptly with no result marker.
 
+## Navarin (campaign, 7 sessions = 6 battles, no ally) [data]
+Source: `tuning_telemetry/navarin/report.md`. Four different Navarin hulls (75-96 parts, 5370-7310 hp, 2x 57mm; some with 2 missiles, 3 bombs, 180 flares). First campaign data; the 70 u shell-hit radius is a home-made guess.
+* Guns: LMB only, fired from p50 250-750 u (wider than INTREPID); aim error 2-5 / 5-12 deg; bouts 2-6 s. Boost taps 0.5-0.9 s at 3-21%. Kite swing 500-1000 u, half-period 6-15 s.
+* **Ground targets are enemy ships landed on their legs** (enemy `mode` 3, altitude 24-50 u above terrain, speed ~0; takeoff mode 3 -> 0 -> 1 takes ~2.5 s). **All 10 bomb drops were onto landed enemies; none onto an airborne ship**, even with bombs aboard and airborne enemies from t+0. Drops from altitude 210-1490 u at speed 140-251, no boost, no hard turn; 3-4 of 10 happened with an enemy missile within ~800 u, so bombing while dodging does occur. 9 of 10 landed within 19-33 u of a landed ship (2 one-shot removals at full hp). Landed enemies shoot back (13 missiles, 178 shells in 247 ship-seconds). n=10, one pilot.
+* Missiles: 3 of 5 player missiles hit (all launched below ~1000 u). Flares: 3-5 pulses 0.3 s apart (6 bodies per pulse), first pulse at missile distance 190-680 u, in ~75% of salvos. Dodge: peak lateral accel ~77 u/s2 about 0.9 s / 440 u before the pass; 1 of 22 enemy missiles hit.
+* Low hp: one case (session 716: 5410 -> 4143 hp while burning, crew 60 -> 15, speed fell to 34-50 u/s; the ship vanished at 43% hp: retreat/handover or destruction unknown). No break-off manoeuvre.
+* New enemy classes: Kadesh Mk1 (14.6k hp, 3-6 missiles), Kastor (14.9k hp, 4 missiles), enemy Navarin (flares + missiles), landed-start fleets. The win flag fires with 1-2 enemies still alive.
+* Telemetry gaps found: bomb release is invisible in `f2` (the byte clears within a frame), bomb owner_id -1, no altitude/landed/target-class columns, enemy control bytes always 0.
+
 ## What cannot be learned from this data
 Low-hp phase and break-off (one Lightning near-death shows none), finishing a fight, RMB/group-1 use, flares for the player, AP vs plain (confounded with target), and whether a dodge actually causes a miss.
 
