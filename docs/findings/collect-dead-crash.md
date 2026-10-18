@@ -1,0 +1,12 @@
+# The `Collect_dead node with m_master` crash (stock assertion, 1.163)
+
+Status: one crash seen, 2026-10-18 12:38 (hf_ally v0.12.9 telemetry build + highfleet_qol), **cause not proven**; subagent estimate about 60% a rare stock bug. Tags: [code] decompile, [data] logs, [guess].
+
+* The game's `error.log` ends with `ERR: Collect_dead node with m_master = 1.` The logger `0x1401954f0` (`WriteString`) always ends in an `INT3` at `0x140195798`, so any call to it is fatal [code]. No mod frames on the stack; hf_ally says "hook running: none" [data].
+* **Collector** `0x1401be250`, called once per frame from PreTask at `0x140287154` (after the ship break-up pass `0x14011d3e0` and the out-of-bounds kill loop). It walks the dead-node list (`DAT_143a2de10`) and frees a node only if `node+0x88` (master pointer) is 0; otherwise it logs with `node+0x90` (the master's id) [code]. The same for joints (list `DAT_1439ef238`, master `+0x58`/id `+0x60`, message `0x14036ba70`). A second copy of the node check is at `0x14024eaa5`.
+* Node fields [code]: `+0x48` state (0 dead), `+0x78` m_id, `+0x88`/`+0x90` master pointer/id. `m_master = 1` is probably the level root (guess).
+* Candidate cause: the ship break-up code `0x14011d3e0` -> `0x14011c1a0` detaches and re-adds parts or a new "Frame" body to `GlobalNode_` without testing body state, so a node killed earlier in the same frame can be re-added and end up dead with a master [code read, mechanism ~50%]. Return addresses `0x14011d9fe` and `0x14011c64b` were on the dump stack.
+* Telemetry [data]: enemy Nimrod (last reinforcement, carrying an unloaded Zenith) lost 12 parts and was hit by two player missiles at 9-18 u at t=158.32-158.38; crash at 158.44. Intrepid #2 died the same way at 113.12 and was collected fine; 59 other enemy disappearances in the logs did not crash.
+* The minidump holds only thread stacks (no heap), so the node's class could not be recovered. The node was at `0x204b97e0`.
+* **hf_ally v0.12.10** adds a read-only diagnostic: detours at `0x1401be274` (node) and `0x1401be2f8` (joint) write `Modloader/logs/hf_ally_deadnode.log` (RTTI class, state, ids, master, name `+0xc8`, whether it is a part of a roster ship, 256 raw bytes) when a node is about to trip the assert. It changes nothing.
+* A defensive patch (skip the fatal call at the call site `0x1401be28c`, not the INT3) is feasible but would leave a dead body in the scene (ghost or later crash). Not applied.
