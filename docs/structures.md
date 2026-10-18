@@ -44,7 +44,7 @@ builds on the `Mark` constructor). The same factory gives the same sizes for the
 | +0x508 / +0x510 | `m_sectors` vector<float>, 360 entries after a scan [game] |
 | +0x7a8 / +0x7ad | `m_count` / blueprint flag [game] |
 | +0x848 | `m_mdl_covered` (1.0 when the engine cone is blocked); also a cooldown test in the launch [code] |
-| +0x84c / +0x850 / +0x854 / +0x858 / +0x85c | saved weapon keys (matched in `bodySecondaryInit`): `m_weapon_type`, `m_weapon_ammo` (the ammo index `FireShell` dispatches on), `m_weapon_ammo_extra`, **`m_weapon_ammo_amount` = reserve rounds (int)**, `m_weapon_ammo_extra_amount` [code, key strings] |
+| +0x84c / +0x850 / +0x854 / +0x858 / +0x85c | saved weapon keys (matched in `bodySecondaryInit`): `m_weapon_type`, `m_weapon_ammo` (the position in `AmmoDefList`, 0..35, not the case key; `FireShell` computes `pos*0x188 + AMMO_LIST_BEGIN` and switches on `ammo->index`), `m_weapon_ammo_extra`, **`m_weapon_ammo_amount` = reserve rounds (int)**, `m_weapon_ammo_extra_amount` [code, key strings] |
 | +0x860 / +0x864 / +0x868 | runtime, no save key: **loaded** rounds (float; `FireGun` decrements it, needs >= 1) / reload step timer / rounds the current reload step adds (1 if the reserve was non-empty, else 0). `FUN_140054fb0` moves rounds reserve -> loaded one step at a time. Magazine size = Stats `+0x148`, reload time = Stats `+0x14c` [code] |
 | +0x7f8 / +0x800 / +0x804 | `m_mdl_fuel` (double, current fuel of a tank part), `m_mdl_fss` (float), `m_mdl_crew` (int, crew in the part; summed into ship `+0x17ec`) [code, save keys in `bodySecondaryInit` and the sums in `0x140071380`; blind re-derivation 2026-10-14; resolves the old `+0x804` fuel-or-crew conflict] |
 | +0x8d8 `m_stage` (not elevation), +0x90c `m_z` [code] |
