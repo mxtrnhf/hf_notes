@@ -1,3 +1,5 @@
+# STATUS: DONE 2026-10-18 night. The MCP recovered, the earlier edits had survived, the three corrections were applied and `save_program` succeeded. Only the user's check-in remains ("Annotate 1.163: AI fire gates, Zenith launch, fire bytes").
+
 # Ghidra annotations still to apply / save (2026-10-18 night)
 The Ghidra MCP timed out on `save_program` and on later `set_plate_comment` calls. Applied (in the open program, unsaved): rename `FUN_14002ff60` -> `LaunchZenithAtOwnerTarget`, first versions of the plate comments of `LaunchZenithAtOwnerTarget`, `AiWeaponController`, `FireGuns`, `FireGun`, and the disassembly comments listed in changes-2026-10-18.md.
 To correct (re-apply these plate texts, then save and check in with "Annotate 1.163: AI fire gates, Zenith launch, fire bytes"):
