@@ -73,6 +73,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | Read | For |
 |---|---|
 | [docs/findings/combat-missile-launch.md](docs/findings/combat-missile-launch.md) | how enemy ships (and the player) launch Zenith in combat: `FUN_14002ff60` at `0x140065edb`, detach probe, what is not the launch path, burst mod |
+| [docs/findings/strategic-missile-target-assignment.md](docs/findings/strategic-missile-target-assignment.md) | which ship a map missile attacks once the battle is built: 1.151 `0x140241680` / 1.163 `0x140263700`, `_CONV` test, Path A (highest combat value first) and Path B (random), hook sites, offset shifts, a table of addresses that mean different functions in the two versions |
 | [docs/findings/firing-and-shells.md](docs/findings/firing-and-shells.md) | `FireShell` dispatch, shell HP and lifetime, where projectile constants live |
 | [docs/findings/cluster-bomblet-ttl.md](docs/findings/cluster-bomblet-ttl.md) | cluster/mine bomblet spawn function, its two call sites, the TTL patch site (partial) |
 | [docs/findings/ammo-1151-vs-1163.md](docs/findings/ammo-1151-vs-1163.md) | the ammo table (built in code), the `Ammo` record, every value change between versions, live ammo-table dump |
