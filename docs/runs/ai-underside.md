@@ -1,5 +1,7 @@
 # Under / over the enemy ship: how real is the "dive under" advantage? (38 sessions, 2026-10-18)
 
+> **Dated measurement report** (2026-10-18): 38 sessions of `hf_ally` telemetry (builds v0.12.x). It describes the stock AI as it behaved then, not current behaviour; `hf_ai` has changed it since. The design page [ai-hf-ai-design.md](../findings/ai/ai-hf-ai-design.md) cites it as evidence.
+
 Status: **measured from telemetry; nothing built.** Full text with per-cell numbers: `tuning_telemetry/underside_report.md`. Marks: S supported, G guess, FS too few samples. "Under" = player within +-45 deg of straight below the enemy (y points down); hit shell = player-owned logic-100 body ending within 28 u of an enemy (95% have a health drop within 0.16 s). The parts CSV mixes frames: legs, engine_04, cannons are logged in WORLD coordinates, frame parts (hull, armour, fuel, engine_05) in LOCAL; converted with local = rot(world - root, -ang).
 
 ## Findings

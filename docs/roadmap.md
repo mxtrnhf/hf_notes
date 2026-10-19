@@ -20,7 +20,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
   * Hook point: the two `SetLevelSeriaToLoad_` calls in the map aircraft group update; the existing intercept cue is `radio_kill_06` on `MAPMODE_RADIO_HANDSET`: [findings/map-air-groups.md](findings/map-air-groups.md); how to play a sound from a mod: [sound.md](sound.md).
 * **[QoL]** Toggle for auto-pause on the strategic map. *(open)*
 * **[Bug]** Capturing all cities around Khiva before the end-game event causes a crash loop / infinite loading. *(partial: probable cause and patch recipe, not reproduced or built)*
-  * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [khiva-crash.md](findings/khiva-crash.md). Not reproduced in game.
+  * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [end-game.md](findings/end-game.md#the-khiva-end-game-crash-unguarded-list-writes-1163-probable-cause). Not reproduced in game.
 
 ### New features
 * **[Feature]** Cruise-missile barrage mechanic (for example salvos of 4 simultaneous incoming cruise missiles). *(partial: old_standalone/hf_salvo)*
@@ -119,11 +119,11 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
   guessing. Pairs with the save snapshots above. (Done: `hf_probe` `MARK`, F9.)
 * Rate limiting: the AI calls the launch every frame (hundreds of failures per fight, `systems.md`), so any hook needs count-and-summarise or "log only changes". (Done in effect: `hf_probe` filters noise and prints summaries.)
 
-### 5. Verification and regression *(partial: manual site checks and guards, `install.md` section 6 smoke test; no scripts or fingerprint)*
+### 5. Verification and regression *(partial: manual site checks and guards; no smoke-test script or fingerprint)*
 * **Site verifier (we did this by hand in practice):** read the patch-site table in `hooks.md` and check that every address still holds the expected bytes in a given exe or dump, plus the constants
   patched (300.0f launch cooldown, the 100/200 refuel rates, the 50.0f speed factor) and the class sizes in `structures.md`. We did this by hand for 1.163; scripted, it
   is a local script run after each game update (it needs the game exe or a dump, which cannot go in a public repo or public CI). It also answers "is this dump the same build" without opening Ghidra.
-* **Install smoke test:** from a clean game folder, check modloader present, mods load, version guards pass, `hge.log` has no new errors, pass/fail log lines from `install.md`.
+* **Install smoke test:** from a clean game folder, check modloader present, mods load, version guards pass, `hge.log` has no new errors, pass/fail log lines per mod (not written down yet; the tester pack README has the current ones).
 * **Notes vs binary check:** the same idea for `structures.md` offsets: a script that decompiles/greps a function and confirms a stated offset, so notes cannot drift unnoticed
   (the MapCraft size was wrong for a while).
 * Game-file fingerprint (hash of `Libraries/`, `Data/`, exe) stored with each report, so a bug report says which build it came from.

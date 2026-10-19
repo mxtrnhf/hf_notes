@@ -64,8 +64,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/cluster-bomblet-ttl.md](docs/findings/cluster-bomblet-ttl.md) | cluster/mine bomblet spawn function, its two call sites, the TTL patch site (partial) |
 | [docs/findings/map-air-groups.md](docs/findings/map-air-groups.md) | map aircraft groups, intercept probabilities, which code starts which engagement |
 | [docs/findings/sensors-and-crew.md](docs/findings/sensors-and-crew.md) | how sensors combine (max vs sum), crew capacity vs fuel capacity |
-| [docs/findings/end-game.md](docs/findings/end-game.md) | the scripted end game: phases, `endWar`, escalation |
-| [docs/findings/khiva-crash.md](docs/findings/khiva-crash.md) | probable cause of the Khiva end-game crash (unguarded list writes), patch recipe |
+| [docs/findings/end-game.md](docs/findings/end-game.md) | the scripted end game: phases, `endWar`, escalation; the Khiva crash (unguarded list writes) and its patch recipe |
 | [docs/findings/flare-crash-hunt.md](docs/findings/flare-crash-hunt.md) | the flare/proximity-fuse crash: fixed upstream by highfleet-qol (site and null pointer), plus the flare release path and flare body layout |
 | [docs/findings/collect-dead-crash.md](docs/findings/collect-dead-crash.md) | stock fatal assertion "Collect_dead node with m_master" (one crash, cause open), the collector and the hf_ally v0.12.10 diagnostic |
 | [docs/findings/mouse-sensitivity.md](docs/findings/mouse-sensitivity.md) | mouse sensitivity path; A220 slowdown not yet located (partial) |

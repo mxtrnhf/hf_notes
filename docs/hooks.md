@@ -54,7 +54,7 @@ Besides the `0x140303fb4` wrapper above, `hf_probe` ([mods/probe.md](mods/probe.
 |---|---|---|
 | `0x14007b021`, disp32 at `0x14007b025` | close-range cutoff margin (`30.0` operand) | operand repoint; [findings/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md) |
 | `0x1400631a6`, `0x1400631ec`, `0x14006320d`, `0x1400631fe`, `0x140064723` | AI stand-off knobs (`0.35`, `1000`, `660`, `600`) | operand repoints; same note |
-| `0x140262226` (84 bytes) | unguarded list-head writes (Khiva crash) | entry-style detour; [findings/khiva-crash.md](findings/khiva-crash.md) |
+| `0x140262226` (84 bytes) | unguarded list-head writes (Khiva crash) | entry-style detour; [findings/end-game.md](findings/end-game.md#the-khiva-end-game-crash-unguarded-list-writes-1163-probable-cause) |
 | `0x1400efa2a`, `0x1400ef9fb` | AI aircraft launch group size | [findings/ai-aircraft-launch.md](findings/ai/ai-aircraft-launch.md) |
 | `FUN_140032fb0` entry (`0x140032fb0`) | bomblet lifetime (sixth argument) | [findings/cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md) |
 | `0x14002e3a0` (also owned above by multicharge) | AI launch limits per target (1 per second, 10/2/1 in flight) | coordinate with the owner |
