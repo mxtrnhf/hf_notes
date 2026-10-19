@@ -1,6 +1,6 @@
 # Tactical AI: close-range cutoff, stand-off, ammo choice (1.163) and their patch sites
 
-Status: **read from the decompilation; none of the patches applied or run in game, except the section 4 launch site, which has a call-site wrapper tested in game: see [combat-missile-launch.md](../combat-missile-launch.md).** Tags: legend in `../../../README.md`.
+Status: **read from the decompilation. In use: the steering site `0x140064a8d`, the engine-command site `0x140065744` and the fire bytes (`hf_ai`, see [../../mods/hf-ai.md](../../mods/hf-ai.md)), and the section 4 launch site, which has a call-site wrapper tested in game (the QoL missile dump: [combat-missile-launch.md](../combat-missile-launch.md)). The other patches are not applied.** Tags: legend in `../../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap tactical AI items ("closing to very short range disables all weapons", "AI consistently gives way to the player", "AP only at extremely short range / LG and INC not used").
 
 ## Where the AI lives
