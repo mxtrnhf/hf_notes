@@ -86,7 +86,14 @@ The 1.151 `Libraries/OL.seria` was inspected while the Steam folder held 1.151 (
 * New stats records in 1.163: `CRAFT_DEBRIS`, `GROUND_LIGHT_TANK_01`, `GROUND_RIFLEMAN`, `MDL_CANNON_HARPOON`, `MDL_MISSILE_CLUSTER_SFW_01`, `MDL_MISSILE_DRUM_01`, `MDL_TORPEDO_300`; only in 1.151: `SOLDIER_RIFLEMAN`.
 (Values were printed once from the 1.151 file and the 1.163 copy; the 1.151 file was not saved.)
 
+## Nuclear warheads: kind 4 skips the area damage (1.163) [code]
+* **Where kind 4 is set:** a `creatureLogic` continuation block (no Ghidra function body there): `0x14003841d COMISS XMM0,[0x1403548e8]` (the constant is `100000.0`), `JBE 0x14003843b`, then `0x140038426 MOV [RSI+0x2dc],0x42c80000` (yield := 100.0), `0x140038430 MOV EBX,4`, `0x140038435 MOV [RSI+0x2e4],EBX`. Any warhead with yield above 100000 becomes "yield 100, kind 4". The strategic missile mover (`missileTacticalCombat_` `0x1400f7830`, despite the name it handles map-mode missiles) uses the same 100000 threshold on its own field `+0x2f0`.
+* **What kind 4 does:** right after the prologue of `FUN_140029b60`: `0x140029bf9 CMP [RCX+0x2e4],4`, `0x140029c00 JNZ 0x140029c0c`, `0x140029c02 CALL 0x14002bb50`, `0x140029c07 JMP 0x14002baad` (epilogue). `0x14002bb50` (`rep_14002ca30_MakeGlobal_`) only makes the nuke visuals (`cloudblast_01`, `flash_large_shadow`, `airblast_*`, `dust_JET2.psi`, white-out GUI) and calls `handleMissileIntercepts(linked body, 0, 1.0)`. It never calls the area-damage function `FUN_14002cdc0`, so a nuke explosion in a tactical battle does no area damage.
+* **Other writers of `+0x2e4` in 1.163:** `FireShell` 2 (x2), `setCertainBodyFloatVals` 1, `creatureLogic` `0x14003fb41` 3 (with yield 10.0), `bodySecondaryInit` `0x140026995` (`atoi` of the data field `m_explosive_type`; only level objects use it, always 10), `copyOverBody` (copy). Nothing else writes 4.
+* **To get damage and the nuke visuals together** (not written, not run): a detour at `0x140029c02` that calls `0x14002bb50`, restores `RCX` from `R14` and `XMM1` from `[R14+0x2dc]` (the call clobbers both), then jumps to `0x140029c0c`. Plain NOPs do not work. With yield clamped to 100 the area damage would be at most 100 at the centre with radius 10 (formula above), so a real nuke effect also needs a different yield there.
+
 ## Open
+* Inside `FUN_140029b60`, what the `+0x2e4` read at `0x14002ac56` does; any clamp inside `FUN_14002cdc0`.
 * The x5 aircraft/missile multiplier and the /5 armor reduction in the area routine, and the `+0x165` profile flag in the 0.66 factor, were read but not exercised.
 * The blast radius (+22% predicted) is not measured: the `DMG` lines do not log distance.
 * A 1.163 mod reading 1.151 values would need the matching `m_missile_explosive` (data) and the 2x/flat-5 behaviour (code); not decided whether it is worth shipping.
