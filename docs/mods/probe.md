@@ -1,5 +1,7 @@
 # hf_probe: the debug-only logging DLL (not a QoL mod)
 
+> **Status (2026-10-19):** debug only, not installed now (`hf_probe_v2.4.dll.bak`). See the table in [README.md](README.md).
+
 A modloader DLL that **only reads** the game and writes what it sees to `Modloader/probe.log`. It never patches game logic (the entry hooks are log-only; the HUD and seam test draw text). It exists to answer "what does the game do when I do X" for the notes; every finding that cites a probe run is under `findings/`. Source: `hf_probe` (crate `hf-probe`, local git, no remote; the header comment of `src/lib.rs` is the full version history). Never ship it together with QoL: it hooks the same editor label site (`0x140303fb4`) as the elevation hint, see [../hooks.md](../hooks.md).
 
 ## Install and run

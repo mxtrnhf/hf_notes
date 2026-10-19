@@ -1,5 +1,7 @@
 # highfleet-multicharge  (repo `old_standalone/hf_multicharge`)
 
+> **Status (2026-10-19):** standalone, not in QoL, not installed; repo `old_standalone/hf_multicharge` (local only). Not released.
+
 Parts that launch several times before they are used up. **Charge level = part id**: `MDL_AA_X3 > X2 > X1` (S-4 Triumph, combat AA) and `MDL_A101_4 .. _1` (A-101, four launches of the A-100, map).
 
 * Launch with charges left: fire a **clone** of the part (editor-style copy added to the level), then rewrite the real part's id in place and refresh its stats index (`FUN_140281cc0` -> +0x188).

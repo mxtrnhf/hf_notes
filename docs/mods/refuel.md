@@ -1,5 +1,7 @@
 # highfleet-refuel  (repo `old_standalone/hf_refuel`)
 
+> **Status (2026-10-19):** merged upstream into highfleet-qol (PR #19); installed with `player_rate_multiplier` 10. Standalone repo `old_standalone/hf_refuel` (local only) is the pre-merge version. See [qol.md](qol.md).
+
 Multiplies the station refuel rate (the game's rule: section "How the game refuels" below). Settings `refuel.ini`: `player_rate_multiplier`, `ai_rate_multiplier`, `log_calls`.
 
 * Mechanism: the rate is a float constant read by three `MULSS xmm0,[rip+disp]`; the constants (pooled `100.0f`/`200.0f`) are shared by hundreds of places, so only those three instructions

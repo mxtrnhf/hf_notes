@@ -1,5 +1,7 @@
 # highfleet-salvo  (repo `old_standalone/hf_salvo`)
 
+> **Status (2026-10-19):** standalone, not in QoL, not installed, postponed; repo `old_standalone/hf_salvo` (local only).
+
 Two independent options for strategic missiles on the map (`salvo.ini`):
 
 * `map_launch_delay` (vanilla 300): the cooldown the game starts after each map launch is the float immediate of `mov [rdi+0x50c], 300.0f` (`0x1400ed598`+6); a 4-byte data patch lets a whole

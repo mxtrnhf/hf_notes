@@ -1,5 +1,7 @@
 # highfleet-elevation  (repo `old_standalone/hf_elevation`, published)
 
+> **Status (2026-10-19):** merged into the QoL fork (installed, `elevation.enabled` true); upstream pull request #20 is open. Standalone repo `old_standalone/hf_elevation` (published as `highfleet-elevation`) is the pre-merge version. See [qol.md](qol.md).
+
 Sets the **elevation** (`m_floor`) of the part held in the shipworks. Elevation decides who can block whom in arc/exhaust scans (section "How elevation and firing arcs work" below), so combined with
 highfleet-qol's restored gun-arc blocking you can design guns that fire over your own hull.
 
