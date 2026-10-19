@@ -93,7 +93,6 @@ The 1.151 `Libraries/OL.seria` was inspected while the Steam folder held 1.151 (
 * **To get damage and the nuke visuals together** (not written, not run): a detour at `0x140029c02` that calls `0x14002bb50`, restores `RCX` from `R14` and `XMM1` from `[R14+0x2dc]` (the call clobbers both), then jumps to `0x140029c0c`. Plain NOPs do not work. With yield clamped to 100 the area damage would be at most 100 at the centre with radius 10 (formula above), so a real nuke effect also needs a different yield there.
 
 ## Type-4 damage injection: static results (Directive 2, 2026-10-19) [code]
-Full write-up: `mail/vectorctrl/response.md`.
 * Radius: falloff `R = sqrt(E)`; `2*sqrt(E)*k` is the damage *amplitude*; scan radius `max(R,200)` when `+0x2e0 != 0`. (An earlier reply said radius = 2*sqrt; wrong.)
 * Damage in `FUN_14002cdc0` ends in `CVTTSS2SI EDI,XMM0` at `0x14002cf6c` (int32). `E` has no clamp; `5*k_eff*2*sqrt(E) >= 2^31` gives `INT_MIN`, which the damage slot `0x1400519d0` turns into a **full heal** (negative damage). Safe `E`: 4.6e16 (k 1.0), 1.06e17 (k 0.66), 1.8e15 (x5 aircraft-logic target).
 * `+0x2e4` at `0x14002ac56` is copied into the deferred explosion record (`+0x0c`); the only consumer test is `type == 3` in `FUN_1401c7270`. Type 1 vs 4 is identical there.
@@ -102,7 +101,7 @@ Full write-up: `mail/vectorctrl/response.md`.
 * Getter for Logic 10: `CALL 0x140048870` at `0x140038410` (`GetStats(body+0x188)->+0x168`).
 
 ## Open
-* ~~`+0x2e4` read at `0x14002ac56`; clamp inside `FUN_14002cdc0`~~ resolved, see the next section.
+* ~~`+0x2e4` read at `0x14002ac56`; clamp inside `FUN_14002cdc0`~~ resolved, see the section above ("Type-4 damage injection: static results").
 * The x5 aircraft/missile multiplier and the /5 armor reduction in the area routine, and the `+0x165` profile flag in the 0.66 factor, were read but not exercised.
 * The blast radius (+22% predicted) is not measured: the `DMG` lines do not log distance.
 * A 1.163 mod reading 1.151 values would need the matching `m_missile_explosive` (data) and the 2x/flat-5 behaviour (code); not decided whether it is worth shipping.
