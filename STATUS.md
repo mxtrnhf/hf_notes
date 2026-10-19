@@ -14,7 +14,7 @@ Everything else in `mods/` is a `.bak` of an older build. Not installed: `hf_pro
 ## Repos
 | Repo | Remote | State |
 |---|---|---|
-| `hf_ai`, `hf_ally`, `hf_voice`, `hf_probe`, `hf_draw_test` | none (the only copies are on this machine) | clean; `hf_ally` also has the **side branch** `side/ignore-intercept-oids` (`fa11aff`, v0.12.11-ignoreoid.1, `intercept_ignore_oids`, for a modder's Sprint; never merged to master; built DLL in `hf_side_patches/`; untested in play) |
+| `hf_ai`, `hf_ally`, `hf_voice`, `hf_probe`, `hf_draw_test` | none (the only copies are on this machine) | clean; `hf_ally` also has the **side branch** `side/ignore-intercept-oids` (`09571bd`, v0.12.11-ignoreoid.1, `intercept_ignore_oids`, for a modder's Sprint; never merged to master; tester pack in `hf_side_patches/ignoreoid_pack/` (a loose older DLL also sits in `hf_side_patches/`); untested in play) |
 | `hf_qol_fork` | `origin` = `mxtrnhf/highfleet-qol`, `upstream` = logdot | feature branches (`elevation`, `refuel-rate`, `pin-highfleet-rs`) are on origin; branch `ai-flares` (installed build, `95e8bc7`) is local only; local `main` is 4 commits ahead of `origin/main` |
 | `hf_notes` | `mxtrnhf/hf_notes` | pushed (origin/master) as of 2026-10-19 |
 | `old_standalone/*` | `hf_elevation` and `hf_speed` published, the rest local | the pre-merge standalone mods |
