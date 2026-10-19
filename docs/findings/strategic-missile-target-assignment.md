@@ -1,6 +1,6 @@
 # Strategic missile -> tactical target assignment (`ConfigureStrategicMissileForTacticalBattle`)
 
-Status: **read in both programs (2026-10-19); no in-game test.** Tags: legend in `../../README.md`. Plus **[KB]** = a statement of the external HighFleet knowledge base (`mail/kb-monolith-analysis/`), checked here and marked as confirmed or not.
+Status: **read in both programs (2026-10-19); no in-game test.** Tags: legend in `../../README.md`. Plus **[KB]** = a statement of an external, AI-written HighFleet knowledge base (not part of this repo), checked here and marked as confirmed or not.
 **Every address below names its version.** The two programs reuse the same numbers for different functions (table in section 5), so an address without a version is a bug in these notes.
 
 ## 1. What it is
