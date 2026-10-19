@@ -97,7 +97,8 @@ Moved from the retired `systems.md` (2026-10-19).
   nearby friendly fleets into A, the loader is called. A volley of three therefore produced three fights in a row.
 * Scenarios are state machines inside the giant `FUN_1402ac970` (branch by `LVL_SCRIPT` name). `SCR_MISSILE` at `0x1402c4baf`; state byte-table `0x1402c7a00`, offsets `0x1402c79e4`.
   State 1 (`0x1402c4dfc`) calls **`FUN_1402d45c0`**: sorts the defender fleet's ships, spawns up to 4 (`FUN_1402672c0`), then reads **only B[0]**: `for i < B[0]+0x248` it creates a
-  missile with `EditorParts_DefinePart(0x143a139f0, string at B[0]+0x2b8, level, 1)` at a random offset, then zeroes the count.
+  missile with `EditorParts_DefinePart(0x143a139f0, string at B[0]+0x2b8, level, 1)` at a random offset, calls `FUN_140263700` on each new body to pick its target ([strategic-missile-target-assignment.md](strategic-missile-target-assignment.md)), then zeroes the count of the **original** map Missile (`[0x143a159c0]+8`, not a copy) [code, 2026-10-19].
+  On leaving the scene the exit handler **`FUN_1402d4f20`** (1.151 `0x1402ab190`) adds the number of surviving spawned bodies (vector `DAT_147fc73d8..DAT_147fc73e0`, 0x18 bytes per entry) back into that Missile's `+0x248`, if its class code is `0x400000001047` (Missile); so missiles that were not used return to the map as a count [code, 2026-10-19].
 * So a salvo fights as one only if the first missile's count is the sum; pushing extra list entries is ignored [game].
 * Map-level shooting: `FUN_140111110` (from `FUN_1400f11b0`) first rolls **75%** to kill a missile aimed at the same target (`MISSILE_INTECEPTED`, sound `radio_kill_06` on `MAPMODE_RADIO_HANDSET`), then downs at most 3 crafts per pass with a **66%** roll each (`CRAFT_DOWN`, `vtbl+0x210`) [code]. Both probabilities are literal `Random_Float` compares, unchanged since 1.151.
 

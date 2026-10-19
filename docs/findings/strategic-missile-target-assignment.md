@@ -14,7 +14,7 @@ When a strategic (map) missile meets a fleet, the game builds a tactical battle 
 Why these two are the same function **[code]**: the same overall call pattern (`CopyEscadraName`, `New`, `SetLink`, a descending merge sort), the same two hook-site instruction sequences (section 3), and every field offset moved by the amount the port table predicts (section 4). The caller roles match, but `0x1402aa830` (1.151) and `FUN_1402d45c0` (1.163) are paired only by role **[guess]**.
 
 ## 2. What it does (1.163, decompiled)
-Arguments: `param_1` = the tactical missile (a Creature), `param_2` = a map object (it has a map position and a virtual table). Names for these two roles are the KB's **[KB]**; the code only shows how they are used.
+Arguments: `param_1` = the tactical missile body (a Creature) just created, `param_2` = the **strategic Missile object it came from** (the map missile whose count `+0x248` drives the spawn loop in `FUN_1402d45c0`, lines `lVar28 = [[0x143a159c0]+8]` ... `FUN_140263700(newBody, lVar28)`) **[code, 2026-10-19]**. The names "tactical missile" / "aimed creature" are the KB's **[KB]**.
 
 1. Copy the name at `param_1+0x190` and test whether its last 5 characters are `_CONV` (string at 1.163 `0x14035fc64`).
 2. Write the creature's **logic id** `param_1+0x3c4` (see [combat-missile-launch.md](combat-missile-launch.md): `+0x3c4` is the logic id) = **1 for `_CONV`, 10 for anything else**, set `+0x3c8 = 1`, and set the link `param_1+0x4a8` = `param_2` (non-`_CONV`) or null (`_CONV`) **[code]**. What logic 1 and logic 10 do is not read here.
@@ -68,7 +68,7 @@ Do not carry an address across versions without the port table ([../data/port-11
 Checked against the two programs: **confirmed** the two hook sites and the convergence point (both versions), the `_CONV` suffix test, the two-path structure, and all four offset shifts; **wrong**: its "call site `0x1402D4BA3`" (the only direct call in 1.163 is `0x1402d4e80`), and its address `0x1400ECF80` for `initProfileMissiles?` (an interior address; the entry is 1.163 `0x1400eced0`). Not checked: its claim that the flag is set on trade-convoy **escorts**; our notes put it on the prize ship itself ([battle-ally.md](battle-ally.md)), which fits this code (flagged ships sorted last, so missiles go for the escorts).
 
 ## 7. Open
-* What `param_2` is, what the two points in step 3 are, and what `v` (vtable `+0x178`) means.
+* What the two points in step 3 are (for a map Missile: probably its current and its target position **[guess]**), and what `v` (vtable `+0x178` of the map Missile) means.
 * Which side takes Path A and which Path B in play (KB: player missiles A, AI missiles B **[KB, untested]**).
 * What logic ids 1 and 10 do to the missile after step 2.
 * Whether the 1.163 `Get_Profile`/part-swap logic exists elsewhere (section 4).
