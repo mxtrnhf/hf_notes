@@ -56,7 +56,7 @@ The call must run on the **game thread**. A per-frame, always-running site that 
 ## The stock radio, for reuse [code]
 * `PlayRadioSounds_` (`0x1402d5910`, `(int* code, float* out)`): a 35-case table from a code to a radio line (`0` death, `1` evac, `3` stall, `0x10..0x14` lost energy/generator/leg/missile/engine, `0x15..0x19` craft launch/lost, `0x1b` kill, `0x1d..0x21` go0..go4 ...), then the call above with `*out = result`. Only its caller list is odd (one bogus Ghidra caller); it is reached through a function pointer or jump table.
 * `PlayRadioSound_` (`0x1401b1fb0`, `(base, rand?, bound, sep)`) builds `base` + separator + zero-padded number; the random pick calls an HGE vtable function whose arguments the decompiler dropped, so "random in 1..bound" is a [guess]. Mods that want a specific file just call `playSFXSound_` with the exact name.
-* Map code uses the same player: `mission_end`, `radio_kill_06` on `MAPMODE_RADIO_HANDSET` ([systems.md](systems.md)).
+* Map code uses the same player: `mission_end`, `radio_kill_06` on `MAPMODE_RADIO_HANDSET` (listed in the next section).
 
 ## What `hf_ally` plays (v0.10.1/v0.10.2, config `ally_sounds`, default on)
 | Event | Sound | Evidence |
@@ -69,3 +69,8 @@ The call must run on the **game thread**. A per-frame, always-running site that 
 ## Open
 * The language choice (`_eng`), the kind tables, arguments 7-11 and 13, other threads, NULL for argument 6.
 * Roadmap item "audio cue when aircraft intercept" ([roadmap.md](roadmap.md)) now has its play recipe: `radio_kill_06` through this call.
+
+## Sounds seen in the map code [code, 1.151 names]
+Moved from the retired `systems.md` (2026-10-19).
+
+Fleet update: `mission_end` (radio, at most once per 3 s), `turbine_01`, `pump`, `pump_on`, `pump_off`, `engine_rocket_03`, `engine_ignit_int`, `env_horn`, `env_ship_landing`. Intercept: `radio_kill_06`. Refuel: `refueling_start/loop/stop`. To play any of these from a mod: [sound.md](sound.md).

@@ -43,3 +43,10 @@ body, the root body, the fire direction, a speed factor (1.0), `is_local_player`
 ## Live-test recipe
 * Breakpoint at the `FireShell` dispatch (1.163 `0x1400300d0`): read the ammo `index` from the `Ammo` entry and check it against the case list above.
 * Breakpoint after `BulletImpact__` returns: read the new shell's `+0x2c0` (time to live) and `+0x2c8` (health, expected 1.0).
+
+## Firing chain, active protection (KAZ) and bomblets [code]
+Moved from the retired `systems.md` (2026-10-19).
+
+* **Firing chain:** AI weapon controller `FUN_14007a8d0` (and the player's input path) -> `FireGuns` `0x1400559e0` -> `FireGun` `0x140032e60` -> `FireShell` `0x1400300d0` (dispatch on the `Ammo` entry's `index`) -> `Body::BulletImpact__` (cannon shells, all with 1 HP). [findings/firing-and-shells.md](firing-and-shells.md); ammo table: [findings/ammo-1151-vs-1163.md](ammo-1151-vs-1163.md). Weapon fields of the Body: `+0x858` reserve rounds (int), `+0x860` loaded rounds (float) [structures.md](../structures.md).
+* **Active protection (KAZ):** `FUN_14002f480` is the close-in burst of the "strides" sprites: it picks an incoming projectile within 60/120 units and 45 degrees, spends one count and damages it with the target's own explosive power; stats categories `0x4000`, `0x8000000`, `0x200000` are excluded. Called from `FUN_14007eb50`. Matches the KAZ category (bit 25) [guess] and `ITEM_KAZ_AMMO` (1.163).
+* **Bomblets:** cluster and mine bomblets are spawned by `FUN_140032fb0` (TTL is its sixth argument): [findings/cluster-bomblet-ttl.md](cluster-bomblet-ttl.md).

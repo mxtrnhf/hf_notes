@@ -11,7 +11,7 @@ Roadmap bug: "a proximity-fused missile colliding with flares crashes the game".
 * **Our earlier guess was close but off [guess, now checked]:** we expected a missing null check on a linked object and put the crash in `creatureLogic`; both held. The pointer was the property link (`0x14021b070`), not `GetStats` and not the owner link `+0x2e8`/`+0x480`.
 * **Open:** not reproduced by us. Where exactly the missile's proximity test selects a flare, and whether other callers of `0x14021b070` in `creatureLogic` (`0x140043112`) need the same guard, was not read.
 
-## Flare mechanics (kept: `ai/ai-flares.md` and `systems.md` rely on these)
+## Flare mechanics (kept: `ai/ai-flares.md` relies on these)
 * **How a flare is released:** the player-input update `FUN_14007eb50` (called with `FireGuns`, `FUN_14002f480` and the "flare" sound string at `0x14007f904`) loops over the ship's launcher lists and calls **`FUN_14002eed0` (the flare release)** for the list at `+0x1408..+0x1410`
   when the flag `+0xbc0` is set (the flag at `+0xbbc` fires the group-0 guns, `+0xbbd` the group-1 guns, `+0xbbe` drops from the list at `+0x1438`: see [../structures.md](../structures.md); corrected 2026-10-18, this line used to say `+0xbbd` drives `FireGuns` and `+0xbbe` drives `FUN_14002e7d0`). `FUN_14002eed0` refuses unless the launcher has its cooldown at `+0x848` at zero, is armed (`+0x80c`, `+0x818` non-zero) and has count `>= 1` (`+0x860`, which is the ammo counter,
 * **The flare body [code]:** `timeToLive` (`+0x2c0`) 5.0 s, **`logic` (`+0x3c4`) = `0x44c` (1100)**, layer/state (`+0x1f0`) 0, sprite id (`+0x8d8`) 5, drag (`+0x1dc`) `0x3a378034` (about 0.0007, the same as AP shells), velocity along the launcher direction x 400 with a random angle +-0.2 rad,

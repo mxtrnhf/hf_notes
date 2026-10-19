@@ -104,7 +104,7 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
 * **Live struct watch:** pick an object (selected part, selected fleet) and show its known fields by name using the layouts in `structures.md`, updating each frame (partial: `hf_probe` watches HELD, FLEET, LOCATION and GOLD). A field list that
   disagrees with the game is then visible immediately instead of in a later log.
 * **Direct-to-scenario launcher:** call the level loader (`FUN_14025afd0`, owned by highfleet-salvo, so coordinate) to start `Missile.seria`, `Bombers.seria` and similar with chosen
-  sides, skipping the map. Needed for testing salvo and AI work (`systems.md`), and for reproducing the crash bugs in the roadmap on demand.
+  sides, skipping the map. Needed for testing salvo and AI work (`mods/salvo.md`, `findings/map-air-groups.md`), and for reproducing the crash bugs in the roadmap on demand.
 * **Crash capture** [guess]: a vectored exception handler that logs faulting address, module, registers and a short stack, and writes a minidump. The flare-collision crash is
   currently "it crashes" with no address; this should turn it into an RVA we can open in Ghidra.
 * **Hang watchdog** [guess]: the Khiva "infinite loading" is a loop, not an exception, so the handler above never fires. A watchdog thread that notices the main thread has made
@@ -117,7 +117,7 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
   mod/function and merges several mods in time order.
 * **Marker hotkey:** the player presses a key and a marker line is written ("now I fired", "now the crash is about to happen"), so a log and a play session can be matched without
   guessing. Pairs with the save snapshots above. (Done: `hf_probe` `MARK`, F9.)
-* Rate limiting: the AI calls the launch every frame (hundreds of failures per fight, `systems.md`), so any hook needs count-and-summarise or "log only changes". (Done in effect: `hf_probe` filters noise and prints summaries.)
+* Rate limiting: the AI calls the launch every frame (hundreds of failures per fight, `findings/combat-missile-launch.md`), so any hook needs count-and-summarise or "log only changes". (Done in effect: `hf_probe` filters noise and prints summaries.)
 
 ### 5. Verification and regression *(partial: manual site checks and guards; no smoke-test script or fingerprint)*
 * **Site verifier (we did this by hand in practice):** read the patch-site table in `hooks.md` and check that every address still holds the expected bytes in a given exe or dump, plus the constants

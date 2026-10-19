@@ -86,7 +86,7 @@ auxiliary (ground units fire only priority <= 100). Caliber index ties to shell 
 | 13 | 8192 | leg | 28-31 | - | unused |
 
 The guide adds: gun enables elevation and shifts it +1; bit 19's group enables arc calculation and shifts elevation -1 (?). Cross-check [game]: the raycast "may block" test uses
-`~(category >> 5) & 1`, i.e. a body blocks a ray unless it is a **gun** (bit 5), or the floor rule allows it (`systems.md`).
+`~(category >> 5) & 1`, i.e. a body blocks a ray unless it is a **gun** (bit 5), or the floor rule allows it (`mods/elevation.md`).
 
 ## Fleet (Escadra, 0x147) [code unless noted]
 +0x100 std::list of ships (ship objects via `FUN_14021b070`) · +0x150/+0x154 position · +0x158 speed · +0x15c heading · +0x240 reverse flag ·
@@ -115,7 +115,7 @@ Details and addresses: [findings/ai-tick-patch-sites.md](findings/ai/ai-tick-pat
 ## Live reads from probe v2.0 (Steam 1.163, 2026-10-14; log `hf_probe_build/logs/2026-10-14_1421_v2.0/probe.log`) [game]
 Relayed by the probe session; one run, not re-checked here.
 * **Profile pointer** (what `Get_Profile_` `0x140292a90` -> `0x140292ab0` does): if byte `[0x147fc6f81]` and `[0x147fc6870]` are non-zero use `[0x147fc6870]`; else a list (pair at `0x147fc6880/0x147fc6888` when `[0x147fc6f80]` is set, otherwise `ProfileListStart/End` `0x147fc68b8/0x147fc68c0`), element size 8, index = i32 `ProfileNumber` at `0x147fc6878` (bounds checked). **Profile `+0x2a8` is the player's gold (i32):** `BUY_BUY` clicks were followed within 15 ms by -7800, -3400, -3600, and it changed live while the fuel slider was dragged.
-* **Location** (global `CURRENT_LOCATION` `0x143a11940`, a pointer, null on the map screens; code `0xc7`, size `0x370`): `+0x8` class-name string, `+0xc8` city name (`UR`, `ZEMARAIM`), `+0x130` a second name (`SARGAS`, `VEGA`; faction or region [guess]), `+0x210` `MARK_INIT`, `+0x288` `City_generated.seria`, `+0x25c` i32 city type (1 UR, 5 ZEMARAIM: matches QoL's shop city types), `+0x274` f32 station fuel stock (our refuel formula in `systems.md`; read 0.0 on the first visit and 552106.88 on the second to ZEMARAIM, so it is filled on a visit).
+* **Location** (global `CURRENT_LOCATION` `0x143a11940`, a pointer, null on the map screens; code `0xc7`, size `0x370`): `+0x8` class-name string, `+0xc8` city name (`UR`, `ZEMARAIM`), `+0x130` a second name (`SARGAS`, `VEGA`; faction or region [guess]), `+0x210` `MARK_INIT`, `+0x288` `City_generated.seria`, `+0x25c` i32 city type (1 UR, 5 ZEMARAIM: matches QoL's shop city types), `+0x274` f32 station fuel stock (our refuel formula in `mods/refuel.md`; read 0.0 on the first visit and 552106.88 on the second to ZEMARAIM, so it is filled on a visit).
 * **Player fleet** (`PLAYER_ESCADRA` `0x143a13eb0` -> the Escadra): `+0x150/+0x154` position (0, 11000 at the start), `+0x158` speed (30.484 moving, 0 stopped), `+0x15c` heading (rad), `+0x498` / `+0x4a0` fuel / capacity doubles (5.4e6 / 10.88e6 at the start; **vanilla refuel baseline** with the refuel mod off: fuel fell about 277,000 per second while moving and rose about 267k to 413k per second docked), which confirms the fleet fuel offsets in the Fleet section.
 * **GUI objects** (click hook `FUN_14012f120(ctx, gui*, button, id)`): `+0x8` class string (`Gui`, `List`, `Slider`), `+0xa40` element name (what `FindGuiElement` compares), `+0xa80` 4-byte value, `+0xad8` a Distortion resource name. A findings page on UI events is being written separately.
 

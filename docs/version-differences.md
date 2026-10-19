@@ -20,9 +20,9 @@ they are not independent evidence. The ~875 hand names and the data types are th
 ## 1.151 names that confirm what the 1.163 notes say
 | 1.151 name @ address | 1.163 function | Score | What it confirms in our notes |
 |---|---|---|---|
-| `CheckMapMotionEncounter` @ `0x1400e6e00` | `0x1400ec440` | 0.857 | `FUN_1400ec440` = do two map objects come within 1.0 during the next step (`systems.md`, engagements) [tool + code, we decompiled it] |
-| `handleMissileIntercepts` @ `0x1400eba90` | `0x1400f11b0` | 0.868 | the map-level shooting parent `FUN_1400f11b0` (`systems.md`) [tool] |
-| `runMissileandAircraftIntercept?` @ `0x14010b4d0` | `0x140111110` | 0.848 | the function that prints `MISSILE_INTECEPTED` and downs up to 3 crafts per pass (`systems.md`) [tool] |
+| `CheckMapMotionEncounter` @ `0x1400e6e00` | `0x1400ec440` | 0.857 | `FUN_1400ec440` = do two map objects come within 1.0 during the next step (`findings/map-air-groups.md`, engagements) [tool + code, we decompiled it] |
+| `handleMissileIntercepts` @ `0x1400eba90` | `0x1400f11b0` | 0.868 | the map-level shooting parent `FUN_1400f11b0` (`findings/map-air-groups.md`) [tool] |
+| `runMissileandAircraftIntercept?` @ `0x14010b4d0` | `0x140111110` | 0.848 | the function that prints `MISSILE_INTECEPTED` and downs up to 3 crafts per pass (`findings/map-air-groups.md`) [tool] |
 | `UpdateStrategicFleet` @ `0x14010c3a0` | `0x140111ff0` | 0.762 | the fleet update `FUN_140111ff0`: refuel, cooldown countdown, consumer call, engagement trigger [tool, low score] |
 | `selectMissileType` @ `0x140251950` | `0x140273640` | 0.890 | the map missile panel `FUN_140273640` with the four `MAPMODE_MISSILE_SW` switches [tool]; also the name used inside `FUN_140214c40` |
 | `initProfileMissiles?` @ `0x1400e7890` | `0x1400eced0` | 0.722 | the map launch consumer `FUN_1400eced0` (the 1.163 program already carries this name) [tool, low score; verified by decompiling in 1.163] |
@@ -32,7 +32,7 @@ they are not independent evidence. The ~875 hand names and the data types are th
 | `GetStats` family: `GetLaunchedRange` `0x1400462f0`, `GetLaunchedSpeed` `0x140046350`, `GetLaunchedSpeed2` `0x140046320`, `GetLaunchedHealth` `0x1400462c0`, `GetMissileAgility` `0x1400464f0`, `GetMissileAp` `0x140046520`, `GetMissileExplosive` `0x140046550`, `GetMissileFuzeType` `0x140046580`, `GetMissileRadarCone` `0x1400465b0` | not looked up | - | names the stats-record fields in `structures.md` (+0x158 launched_speed, +0x15c speed2, +0x160 range, +0x168 explosive, ...) [guess until opened] |
 | `Creature::add_fuel` @ `0x14005ea20` | not looked up | - | a ship-level add-fuel; 1.163 notes use `FUN_1400ea980` for the fleet-level one [guess] |
 | `renderMissilesOnMap` @ `0x1400e4360`, `traverseEscadraMissiles?` @ `0x1400e3860` | `0x1400e99d0`, `0x1400e8ee0` | 0.923, 0.714 | where the profile's map-object list is walked [tool] |
-| `handleRefuelingNoises?` @ `0x1400f9190` | `0x1400fe8b0` | 0.894 | the `+0x468` refuel-animation function `FUN_1400fe8b0` in `systems.md`, sounds `refueling_start/loop/stop` [tool] |
+| `handleRefuelingNoises?` @ `0x1400f9190` | `0x1400fe8b0` | 0.894 | the `+0x468` refuel-animation function `FUN_1400fe8b0` in `mods/refuel.md`, sounds `refueling_start/loop/stop` [tool] |
 | `setupHGEFunctionPointers` @ `0x1402bf650`, `CreateHGE` @ `0x1401730b0` | `0x1402eab80`, `0x14017ecc0` | 0.999, 0.990 | the HGE interface table setup in `engine-hge.md` [tool, high] |
 
 ## Body remap, 1.151 to 1.163
@@ -128,7 +128,7 @@ The two versions of `FireGun` use the same fields in the same roles, so each fie
 * The 1.151 names `fFireCharge` (`0x854`), `fFireRateTimer` (`0x860`), `fFireDelay` (`0x864`), `bFireStatus` (`0x868`) do not match how `FireGun` uses the fields (`0x860` is a byte flag, `0x858` and
   `0x85c` are floats). Those names in the 1.151 Ghidra struct look misplaced; do not carry them across.
 * **`FireGun` itself changed:** 1.151 contains the 360-sector blocking check that `highfleet-qol` restores (`iSectorIndex`, "This is what stops you from firing if your gun is blocked by your own ship");
-  1.163's `FireGun` has no sector check. Useful evidence for `systems.md` ("gun arc blocking restored by qol") and for the roadmap item about turret blocking.
+  1.163's `FireGun` has no sector check. Useful evidence for `mods/elevation.md` ("gun arc blocking restored by qol") and for the roadmap item about turret blocking.
 * 1.151's `FireGun` also carries two logdot comments worth keeping: `FireShell` is the call that actually fires; and the rate cooldown store is required for guns to fire at all.
 
 **Save keys of the whole block (static, 1.163, matched in `bodySecondaryInit`):** `+0x84c` `m_weapon_type`, `+0x850` `m_weapon_ammo` (the ammo index), `+0x854` `m_weapon_ammo_extra`, `+0x858` `m_weapon_ammo_amount`, `+0x85c` `m_weapon_ammo_extra_amount`, `+0x877` `m_rescue_explosive` (bool). The runtime fields `+0x860`..`+0x874` have no save key. So in this block the saved fields shift by **+0xc** and the `FireGun` runtime fields by +0x14; the single 1.151 counter was split into a saved reserve and a runtime loaded count.

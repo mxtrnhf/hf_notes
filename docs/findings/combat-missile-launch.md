@@ -32,3 +32,17 @@ A probe wrapping the call at `0x140037809` logged every part leaving a ship: all
 
 ## Open [guess]
 The ship launch gate reads the cooldown at `0x140065dac` (`MOVSS XMM0,[R14+0xd60]`, 9 bytes). A controlled short delay between burst launches would need that gate (and the ~1% roll) changed; not done.
+
+## Player input, list rebuilds, anti-air launchers and part copies
+Moved from the retired `systems.md` (2026-10-19).
+
+* Player input `FUN_14018a530`: code 0x1012 uses the list at ship+0x13d8 with `FUN_14002ff60` [code, player path not hooked; the detach probe saw the player's Zenith launches]. Lists are rebuilt by the stats routine `FUN_14007fcf0` -> `FUN_140071380`.
+* The part then detaches in the logic update `FUN_140033b90`: the call at `0x140037809` (`call 0x140048fc0`, RCX = the part) is the probe point [game]; disassembled [code]: `0x140037806 MOV RCX,RSI`, `0x140037809 CALL 0x140048fc0`, `0x140037811..0x140037817 CALL [RDX+0x68]` (`vtbl+0x68`, remove from its master), then `level->vtbl+0x50` adds it to the world (the `0x147fc6f88` level node is loaded at `0x14003781a`).
+**Anti-air launchers (interceptors, for example S-4 Triumph) [code, not observed for Zenith]**
+* `FUN_14002e590(part)` (player) / `FUN_14002e3a0(part, target)` (AI) need a target (`FUN_14006c0e0`/`FUN_14006c440`), the owner (+0xb8), the owner's cooldown (+0xad4) and in-flight limit (owner+0x17b0). They store target/owner refs at part+0x490/+0x4a8, set `+0x3c8`, start a timer, register the part in the owner's active-missile list. They were hooked at their AI call sites and never ran in three battles that included Zenith launches by both sides; multicharge's Triumph results ([mods/multicharge.md](../mods/multicharge.md)) fit the AA reading [guess].
+* Player input `FUN_14018a530`: code 0x1013 walks the ship's second list (ship+0x13f0, stride 0x18, entry+8 = part) and launches until one succeeds (one missile per press) [code].
+* The multicharge page reports that the AI retries every frame (hundreds of failures per fight). That can only hold for ships with AA launchers and a missile or aircraft target: the AI call sites of this pair never ran in the three Zenith battles. It does not describe Zenith, which is rate-limited by the 1% roll and the 2.0 s cooldown [guess].
+
+* Only the **low byte** of the return value is the success flag (both paths).
+* A copy of a part is made like the editor does it: `FUN_1401bfd00` copy, `vtbl+0x80`, `FUN_140280840(c,1)`, set position/angle (`FUN_1400521f0`/`FUN_140051850`, world
+  coordinates through the master `vtbl+0xe8/+0xe0`), `FUN_140027f90`, `vtbl+0x88`, count=1, blueprint=0, owner ref, then **add to the level node `*(0x147fc6f88)`** (only objects in the tree are updated).

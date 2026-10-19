@@ -66,3 +66,8 @@ Version guard: compare the 84 bytes before patching. What the game *should* do w
 1. Take a save with Khiva reachable; capture every city in one quadrant around it (or edit the save so those cities are captured) and trigger the end-game event. Expect the crash at the faulting address near `0x140262231`-`0x14026226d`.
 2. Better: with the crash-capture tool from the roadmap tooling list, log the faulting RVA once. A hit inside the four blocks above confirms this note.
 3. Or, with no game launch: read the list-building loop in the first part of the function (`0x140261a20` up to about `0x140261f16`; exact start not pinned) and the city record layout (`+0x19c` state, `+0xf8` scratch distance key) to confirm that captured cities leave the lists.
+
+## Part prices [code, 1.151 read]
+Moved from the retired `systems.md` (2026-10-19).
+
+* **Part prices:** `GetPartPrice` returns 0 when `Profile.endWar` is set or the part's category has bit 6 (`0x40`, block/bridge); otherwise the stats `price`. This is why bridges and blocks are free in the editor [code, 1.151 read].
