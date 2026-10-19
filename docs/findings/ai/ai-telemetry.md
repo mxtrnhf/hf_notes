@@ -1,6 +1,6 @@
 # Battle telemetry for AI research (`hf_ally` v0.12.3 to v0.12.7)
 
-Status (2026-10-18): **v0.12.4 to v0.12.7 have run in game** (several captures, no crash, no `TELEMETRY BUG` line, the user reports no lag with the per-frame body scan; no frame profiler exists, so "no lag" is the user's observation only). Installed now: `hf_ally_v0.12.7_debug_telemetry.dll`. Source: `hf_ally/src/telemetry.rs`, behind the cargo feature `telemetry` (a plain or `megalog`-only build contains none of it). Tags: legend in `../../../README.md`.
+Status: **telemetry builds v0.12.4 to v0.12.10 have run in game** (several captures, no crash, no `TELEMETRY BUG` line; the user reports no lag with the per-frame body scan, and no frame profiler exists, so "no lag" is an observation only). Source: `hf_ally/src/telemetry.rs`, behind the cargo feature `telemetry` (a plain or `megalog`-only build contains none of it). What is installed now: [../../../STATUS.md](../../../STATUS.md). Tags: legend in `../../../README.md`.
 Purpose: the harness of "Where to take the AI" stage 3 in [battle-ally.md](../battle-ally.md): record how the player flies and what the enemy AI does, so hand-built tactics can be tuned from data (design and decisions: [ai-hf-ai-design.md](ai-hf-ai-design.md)). Read-only: no game memory is written and no game function is called. Page-checked reads (`diag::rd`) everywhere except the per-frame body scan, which uses plain reads of the bodies in this frame's array (the game walks the same array).
 
 ## Versions

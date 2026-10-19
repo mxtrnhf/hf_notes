@@ -1,6 +1,6 @@
 # Battle ally: an AI-run, player-side ship that fights beside you
 
-Status (2026-10-16): **`hf_ally` v0.8.1**: AI allies from the reserve (per-ship buttons on the pre-combat screen choose who may come, `max_allies` how many fight at once, a lost ally is replaced by the next ship switched on), retreat with or without them, F8 retreat order, a per-battle summary line. Several allies, replacement after a retreat order, and "unset = no ally" confirmed in play 2026-10-16 (v0.8.1); an ally destroyed in battle is not yet seen. Dated run reports are in [../runs/ally-runs.md](../runs/ally-runs.md) and [../runs/ally-probe-run-1.md](../runs/ally-probe-run-1.md). Tags: legend in `../../README.md`. Addresses are 1.163 (image base `0x140000000`) unless stated.
+Status: **the vanilla machinery is read and the mod works in play.** What `hf_ally` does and its versions: [../mods/hf-ally.md](../mods/hf-ally.md). Confirmed in play 2026-10-16 (v0.8.1): several allies, replacement after a retreat order, "unset = no ally"; an ally destroyed in battle was not yet seen. Dated run reports are in [../runs/ally-runs.md](../runs/ally-runs.md) and [../runs/ally-probe-run-1.md](../runs/ally-probe-run-1.md). Tags: legend in `../../README.md`. Addresses are 1.163 (image base `0x140000000`) unless stated.
 Goal: when a battle starts, bring a second ship onto the player's side. The player flies one ship; the other is run by the stock AI (it "copies the enemy AI" for now) and attacks the same enemies.
 
 ## Address warning (a mistake in an earlier summary)

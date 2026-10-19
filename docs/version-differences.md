@@ -122,7 +122,7 @@ The two versions of `FireGun` use the same fields in the same roles, so each fie
 
 * So in this zone the shift is **+0x14**, not +0xc. (An earlier first-pass guess of +0xc was wrong.)
 * **Discrepancy with `structures.md` (resolved below):** the notes said `+0x848` = `m_mdl_covered` and `+0x858` = `m_weapon_ammo_amount`. The code supports the first half: `FUN_14001c4a0`
-  (`UpdateEngineCovered`) clears and sets 1.0 at `+0x848`, and the AA launch `FUN_14002e590` (and the Zenith launch `FUN_14002ff60`) returns 0 unless `+0x848 == 0.0`, so `+0x848` really is the "engine cone blocked / launch
+  (`UpdateEngineCovered`) clears and sets 1.0 at `+0x848`, and the AA launch `FUN_14002e590` (and the Zenith launch `LaunchZenithAtOwnerTarget` (`FUN_14002ff60`)) returns 0 unless `+0x848 == 0.0`, so `+0x848` really is the "engine cone blocked / launch
   blocked" flag. But `FireGun` decrements `+0x860`, not `+0x858`; the resolution below shows `+0x858` is the reserve count and `+0x860` the loaded rounds. The 1.151 field *names* `mdl_covered` / `mdl_turbine` are also swapped relative to what 1.163's `UpdateEngineCovered`
   writes (`+0x848` = 1.151 `0x834` `mdl_turbine`; the thing `FireGun` passes on is `+0x850`). Do not trust 1.151's name for that pair.
 * The 1.151 names `fFireCharge` (`0x854`), `fFireRateTimer` (`0x860`), `fFireDelay` (`0x864`), `bFireStatus` (`0x868`) do not match how `FireGun` uses the fields (`0x860` is a byte flag, `0x858` and
