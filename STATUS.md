@@ -5,9 +5,9 @@ The only file with perishable state: what is installed, released, open upstream 
 ## Installed in the game folder
 | Mod | File in `mods/` | Source commit | Config that matters |
 |---|---|---|---|
-| [hf_ai](docs/mods/hf-ai.md) | `hf_ai_v0.7.1.dll` | `ca7d678` | `hf_ai.json`: `ai_flares` on, `log_panic`, curtain 0.6; `tactics` on, dive on, aim awareness on, strafe off |
+| [hf_ai](docs/mods/hf-ai.md) | `hf_ai_v0.7.1.dll` | `ca7d678` (repo HEAD `7db1521` only changed the README; the DLL is byte-identical to the repo's release build) | `hf_ai.json`: `ai_flares` on, `log_panic`, curtain 0.6; `tactics` on, dive on, aim awareness on, strafe off |
 | [hf_ally](docs/mods/hf-ally.md) | `hf_ally_v0.12.10_debug_telemetry.dll` | `e9540a5` | `ally.json`: `max_allies` 2, `auto_retreat`, `flagship_leaves` handover, `telemetry` on |
-| [QoL fork](docs/mods/qol.md) | `highfleet_qol.dll` | `95e8bc7` (branch `ai-flares`) | `qol.json`: `ai_flares.enabled` false (hf_ai carries it), flare crash fix on, dump chance 0.7, delay 0.6 to 1.5, refuel player x10, speed `classic`, elevation on |
+| [QoL fork](docs/mods/qol.md) | `highfleet_qol.dll` | `95e8bc7` (branch `ai-flares`; the file was written 1 minute after that commit) | `qol.json`: `ai_flares.enabled` false (hf_ai carries it), flare crash fix on, dump chance 0.7, delay 0.6 to 1.5, refuel player x10, speed `classic`, elevation on |
 
 Everything else in `mods/` is a `.bak` of an older build. Not installed: `hf_probe`, `hf_voice`.
 
