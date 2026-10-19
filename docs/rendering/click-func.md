@@ -15,7 +15,7 @@ The function that decides what an accepted GUI click does. It is huge, and it is
 
 Size [observed, v1.163, read-only Ghidra script]: decompiling `FUN_14012f120` gives **8,589 lines** of C, **538,685 characters**, from a function body of 62,272 addresses. The user had heard "10,000+ lines"; Ghidra's line count depends on decompiler width settings, so this is the same order of magnitude. The decompiler needed its payload limit raised (default fails with "Response buffer size exceeded"); it took about 45 s with max payload 1000 MB.
 
-Source file [game]: the string xref shows Gui.cpp's `__FILE__` string (`0x140363628`) is referenced from `FUN_14012f120` (`0x14012f120`), so ClickFunc lives in Gui.cpp. See [source-file-names.md](source-file-names.md).
+Source file [game]: the string xref shows Gui.cpp's `__FILE__` string (`0x140363628`) is referenced from `FUN_14012f120` (`0x14012f120`), so ClickFunc lives in Gui.cpp. See [source-file-names.md](../findings/source-file-names.md).
 
 How to decompile a huge function through the Ghidra MCP [observed that it worked]: scripting enabled with `GHIDRA_MCP_ALLOW_SCRIPTS=1` when starting Ghidra, then a Java script with `DecompileOptions.setMaxPayloadMBytes(1000)` and `DecompInterface.setOptions`.
 
@@ -56,7 +56,7 @@ Most-called callees (names in `?` are Ghidra database names, a [guess] about mea
 Interpretation [code, from the numbers above]: this is one huge chain of independent `if (name == "...")` style tests plus deeply nested logic, not a switch and not a table; it reaches its single return through gotos. A click walks the tests until its element name matches; the cost is negligible. The Ghidra names (Get_Profile?, copyIntoEscadraName?, diffArrayDivBy24, multElementsBy24) are guesses [guess], but they suggest the handler does fleet/profile work directly (shop, fleet naming, etc.), i.e. it contains game logic, not only UI dispatch. (Giant if-chain functions like this are common in other games too.)
 
 ## What the probe knows about it
-`hf_probe` hooks its entry (26 stolen bytes) and logs `CLICK` lines. Arguments: RCX = ctx, RDX = `gui*`, R8D = button, R9 = `[gui+0xa80]`. The GUI element name is at `gui+0xa40`, its class string at `+0x8`, the fx/distortion name at `+0xad8`. Verified detail is in [ui-events-and-screens.md](../runs/ui-events-and-screens.md); not copied here.
+`hf_probe` hooks its entry (26 stolen bytes) and logs `CLICK` lines. Arguments: RCX = ctx, RDX = `gui*`, R8D = button, R9 = `[gui+0xa80]`. The GUI element name is at `gui+0xa40`, its class string at `+0x8`, the fx/distortion name at `+0xad8`. Verified detail is in [ui-events-and-screens.md](ui-events-and-screens.md); not copied here.
 
 ## Element-name catalog
 The GUI element names that `ClickFunc` compares a clicked element against: 252 unique names from 256 compare calls, in [../data/clickfunc-elements.tsv](../data/clickfunc-elements.tsv) (columns: group by name prefix, address of the first test, name, number of `CLICK` lines that carried it, mod idea). It is a **lower bound**, not the full list of clickable elements.
@@ -176,7 +176,7 @@ Interpretation [guess from names]: mission-planning fuel-load presets for a stri
 * Whether other callers appear in 1.163 through indirect calls (only the static caller is known).
 
 ## Added 2026-10-16 (from `hf_ally`) [code + game]
-* **The caller ignores the return value**: `GUI::_HandleClick` `0x14012d050` ends with `ClickFunc(...); return 1`, so an entry hook can skip the original (return early) without side effects. A working trampoline and the byte layout: [../rendering/gui-elements.md](../rendering/gui-elements.md).
+* **The caller ignores the return value**: `GUI::_HandleClick` `0x14012d050` ends with `ClickFunc(...); return 1`, so an entry hook can skip the original (return early) without side effects. A working trampoline and the byte layout: [../rendering/gui-elements.md](gui-elements.md).
 * **Branches seen**: `PRECOMBAT_OK` (string reference at `0x140138250`) calls `precombatOk` `0x1402d89c0`; `ORDER_SELECT` (`0x140137f87`) and `ORDER_SELECT2` (`0x140137fe4`) write `ship +0xd70 = gui +0xc00` (the chosen role value 1 / 2 / 3) and call `orderSelect1` `0x1401e82f0`, which rebuilds the menu; `AMMO_SELECT` / `AMMO_SELECT2` have the same pattern (string references at `0x140137cde`, `0x140137e27`).
 * **One physical click reaches `ClickFunc` twice** (same element, same button, a few ms apart) [observed in the `hf_ally` and `gui_inspect` logs; press plus release is a guess].
 * **`gui_inspect`** (`hf_ally`): logs the whole GUI element list on every click and when the ammo selector is rebuilt; useful to find the element names a screen carries: [../data/gui-dump-precombat-ammo-2026-10-16.txt](../data/gui-dump-precombat-ammo-2026-10-16.txt).

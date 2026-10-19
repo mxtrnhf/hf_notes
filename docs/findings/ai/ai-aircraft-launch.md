@@ -1,6 +1,6 @@
 # Strategic AI launches all its aircraft at once: where, and the patch sites (1.163)
 
-Status: **read from the decompilation and disassembly (re-checked in this pass); no patch applied, nothing run in game.** Tags: legend in `../../README.md`.
+Status: **read from the decompilation and disassembly (re-checked in this pass); no patch applied, nothing run in game.** Tags: legend in `../../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap AI item "the AI launches all its aircraft when it detects the player within strike range, so none are left for defensive interception".
 
 ## The function [code]

@@ -1,6 +1,6 @@
 # UI events, screens, gold, location and fleet (probe v2.0 run)
 
-Question: can the probe say, in words, which screen the game is on, what was clicked, what text and sounds a screen uses, when gold changes, where the player is and what the fleet does? Run: probe v2.0 (crate `hf_probe`, commit `417667c`, DLL sha256 `57238a25...`, 464,384 bytes) on Steam 1.163, 2026-10-14, started 14:21:31 (modloader log), with QoL loaded (elevation hint `window`; **refuel and speed disabled** in `qol.json`). Tags: legend in `../../README.md`. Logs are preserved outside the repo in `$HF_DEV/hf_probe_build/logs/2026-10-14_1421_v2.0/` (`probe.log` 5432 lines, `probe_ammo_raw.txt`, `modloader.log`, `client.log`, `error.log`). Background and the earlier runs: [probe-run-1.md](probe-run-1.md).
+Question: can the probe say, in words, which screen the game is on, what was clicked, what text and sounds a screen uses, when gold changes, where the player is and what the fleet does? Run: probe v2.0 (crate `hf_probe`, commit `417667c`, DLL sha256 `57238a25...`, 464,384 bytes) on Steam 1.163, 2026-10-14, started 14:21:31 (modloader log), with QoL loaded (elevation hint `window`; **refuel and speed disabled** in `qol.json`). Tags: legend in `../../README.md`. Logs are preserved outside the repo in `$HF_DEV/hf_probe_build/logs/2026-10-14_1421_v2.0/` (`probe.log` 5432 lines, `probe_ammo_raw.txt`, `modloader.log`, `client.log`, `error.log`). Background and the earlier runs: [probe-run-1.md](../runs/probe-run-1.md).
 
 ## Result in one table
 All four hooks installed (`HOOK click/text-key/sound/level-load installed`), the game ran about 5 minutes and exited normally (`client.log` "Clientlog finished", `error.log` "Errorlog finished") [game]. Lines: MEM 1840, TEXT 1503, SOUND 1064, KEY 314, MOUSE 250, LOAD 133, CLICK 95, NOISE 43, MODE 43, AMMO 38, FLEET 36, HELD 24, GOLD 18, WHEEL 14, LOCATION 6, HOOK 4, PROFILE 2.
@@ -27,7 +27,7 @@ A function entry has RSP = 8 mod 16 (return address just pushed) while patchy's 
 
 Sound callers include `BuyPartShop`, `BulletImpact`, `DetachShips`, `ElectronicRadarTutorial`, `FUN_140073560` and `FUN_14007eb50`. Level-load callers include `FUN_14012f120`, `FUN_140233710`, `FUN_140240b90`, `Load` `0x140293f90`, `PrepareMainLoop` `0x1401ad5a0`, `loadSeriaForLibraries?` `0x1400d09a0`, `loadShipBackups?` `0x14023cd00` and the wrapper `0x140225c00`.
 
-See also [click-func.md](../findings/click-func.md): `FUN_14012f120` is the 1.163 version of the 1.151 function `!ClickFunc`.
+See also [click-func.md](click-func.md): `FUN_14012f120` is the 1.163 version of the 1.151 function `!ClickFunc`.
 
 ## Clicks [game+code]
 Only clicks the GUI **accepted** are logged: the hook sits on `FUN_14012f120`, called at the end of `GUI::HandleClick` (`0x14012d050`); hooking the hit test would log every miss.
@@ -37,7 +37,7 @@ Only clicks the GUI **accepted** are logged: the hook sits on `FUN_14012f120`, c
 | element name | C string at `gui+0xa40` | the field `FindGuiElement` (`0x1401a9170`, list `GUI_ELEMENTS`) compares [code]; not always set: printed `?` for some, once `pN#8` |
 | class | `std::string` at `gui+0x8` | `Gui`, `List`, `Slider` |
 | value | 4 bytes at `gui+0xa80` | an int, but `1082130432` = 4.0f, `1065353216` = 1.0f, `1073741824` = 2.0f, `1091567616` = 9.0f on `GL_LIST_BUTTON`: a float on list buttons and sliders [guess for the meaning] |
-| effect | `std::string` at `gui+0xad8` | v2.0 called it `action`; the values (`gui_mil_focus`, `gui_red_opaq`, `gui_hud_white`, `editor_white`, `slider_green`) are **Distortion resource names** defined in `Media/Dst/distortion.res`, not Animation names [file]; the getter for that type is `0x140170270` (type 0xb, see [images-and-sprites.md](../rendering/images-and-sprites.md)). So `+0xad8` is the element's distortion (hover/focus effect) name; v2.1 prints it as `fx` |
+| effect | `std::string` at `gui+0xad8` | v2.0 called it `action`; the values (`gui_mil_focus`, `gui_red_opaq`, `gui_hud_white`, `editor_white`, `slider_green`) are **Distortion resource names** defined in `Media/Dst/distortion.res`, not Animation names [file]; the getter for that type is `0x140170270` (type 0xb, see [images-and-sprites.md](images-and-sprites.md)). So `+0xad8` is the element's distortion (hover/focus effect) name; v2.1 prints it as `fx` |
 
 Caller offsets: `+0x12d16d` for GUI clicks, `+0x12f2b8` for List clicks.
 

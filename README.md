@@ -39,23 +39,23 @@ Layout: `docs/` reference docs; `docs/findings/` one note per question; `docs/re
 | [docs/engine-hge.md](docs/engine-hge.md) | the HGE engine under the game: interface table, resource loading, stock formats, mod seams |
 | [docs/hooks.md](docs/hooks.md) | hooking techniques, who owns which patch site, candidate sites |
 | [docs/content.md](docs/content.md) | dialogue, characters, events, textures (study + experiment plan) |
-| [docs/total-conversion-hara-vera.md](docs/total-conversion-hara-vera.md) | study of the "Flight to Hara Vera" total conversion |
+| [docs/total-conversion-hara-vera.md](ref/total-conversion-hara-vera.md) | study of the "Flight to Hara Vera" total conversion |
 
 ## Findings
 One self-contained note per question; each ends with unknowns or a live-test recipe. (`docs/findings/`)
 
 | Read | For |
 |---|---|
-| [docs/findings/ai-aircraft-launch.md](docs/findings/ai-aircraft-launch.md) | why the strategic AI launches all aircraft at once, launch conditions, patch sites |
-| [docs/findings/ai-flares.md](docs/findings/ai-flares.md) | why AI ships never use flares (missing trigger, not missing parts) and a mod design |
+| [docs/findings/ai-aircraft-launch.md](docs/findings/ai/ai-aircraft-launch.md) | why the strategic AI launches all aircraft at once, launch conditions, patch sites |
+| [docs/findings/ai-flares.md](docs/findings/ai/ai-flares.md) | why AI ships never use flares (missing trigger, not missing parts) and a mod design |
 | [docs/findings/combat-missile-launch.md](docs/findings/combat-missile-launch.md) | how enemy ships (and the player) launch Zenith in combat: `FUN_14002ff60` at `0x140065edb`, detach probe, what is not the launch path, burst mod |
-| [docs/findings/ai-tick-patch-sites.md](docs/findings/ai-tick-patch-sites.md) | the tactical AI in 1.163: close-range cutoff, stand-off retreat, ammo choice, launch limits, byte-exact patch sites |
-| [docs/findings/ai-telemetry.md](docs/findings/ai-telemetry.md) | battle telemetry in `hf_ally` (feature `telemetry`): the three CSVs, part list and part health, ship name `+0xa90`, aim signal `vc2/vc3`, flying-body array and per-frame birth/death log, first captures, missile overshoot test |
-| [docs/findings/ai-hf-ai-design.md](docs/findings/ai-hf-ai-design.md) | why a DLL is the way to change the AI, the `hf_ai` design (log-only steering hook, `decide()`), the `ai_flares` missile-panic algorithm, the overshoot-dodge idea, hook-ownership clash |
-| [docs/findings/ai-intrepid-benchmark.md](docs/findings/ai-intrepid-benchmark.md) | measured expert-pilot and enemy behaviour from 15 stock-INTREPID battles, 11 Lightning sessions and 7 Navarin campaign sessions, missile-dump collision rate, suggested numbers for the tactics |
+| [docs/findings/ai-tick-patch-sites.md](docs/findings/ai/ai-tick-patch-sites.md) | the tactical AI in 1.163: close-range cutoff, stand-off retreat, ammo choice, launch limits, byte-exact patch sites |
+| [docs/findings/ai-telemetry.md](docs/findings/ai/ai-telemetry.md) | battle telemetry in `hf_ally` (feature `telemetry`): the three CSVs, part list and part health, ship name `+0xa90`, aim signal `vc2/vc3`, flying-body array and per-frame birth/death log, first captures, missile overshoot test |
+| [docs/findings/ai-hf-ai-design.md](docs/findings/ai/ai-hf-ai-design.md) | why a DLL is the way to change the AI, the `hf_ai` design (log-only steering hook, `decide()`), the `ai_flares` missile-panic algorithm, the overshoot-dodge idea, hook-ownership clash |
+| [docs/findings/ai-intrepid-benchmark.md](docs/runs/ai-intrepid-benchmark.md) | measured expert-pilot and enemy behaviour from 15 stock-INTREPID battles, 11 Lightning sessions and 7 Navarin campaign sessions, missile-dump collision rate, suggested numbers for the tactics |
 | [docs/findings/ship-profiles.md](docs/findings/ship-profiles.md) | how the game computes mass, TWR and gun reach, validated profiles of 20 designs for the AI self-knowledge data |
-| [docs/findings/hf-ai-first-run.md](docs/findings/hf-ai-first-run.md) | first in-game run of hf_ai v0.3.0: what works (close retreat, panic flares), what does not show (strafe) |
-| [docs/findings/ai-underside.md](docs/findings/ai-underside.md) | measured under/over-the-ship advantage (38 sessions): hit rate, lower-third damage, what enemies do, "deny the dive" proposal |
+| [docs/findings/hf-ai-first-run.md](docs/runs/hf-ai-first-run.md) | first in-game run of hf_ai v0.3.0: what works (close retreat, panic flares), what does not show (strafe) |
+| [docs/findings/ai-underside.md](docs/runs/ai-underside.md) | measured under/over-the-ship advantage (38 sessions): hit rate, lower-third damage, what enemies do, "deny the dive" proposal |
 | [docs/changes-2026-10-18.md](docs/changes-2026-10-18.md) | catalogue of the day (with an evening section for hf_ai v0.4.0 to v0.5.3): mod versions and commits, what is installed, findings pages, corrections, Ghidra renames |
 | [docs/handover-2026-10-18.md](docs/handover-2026-10-18.md) | start here next session (Update 5 = current state): game-dir state, latest user feedback, ordered next steps, working rules |
 | [docs/findings/ammo-1151-vs-1163.md](docs/findings/ammo-1151-vs-1163.md) | the ammo table (built in code), the `Ammo` record, every value change between versions, live ammo-table dump |
@@ -70,10 +70,10 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/collect-dead-crash.md](docs/findings/collect-dead-crash.md) | stock fatal assertion "Collect_dead node with m_master" (one crash, cause open), the collector and the hf_ally v0.12.10 diagnostic |
 | [docs/findings/mouse-sensitivity.md](docs/findings/mouse-sensitivity.md) | mouse sensitivity path; A220 slowdown not yet located (partial) |
 | [docs/findings/level-seria-dispatcher.md](docs/findings/level-seria-dispatcher.md) | `SomethingWithLevelSerias`: the SCR_* scenario dispatcher in 1.151 and 1.163, label addresses, string refs (names only, body unread) |
-| [docs/findings/click-func.md](docs/findings/click-func.md) | the GUI click handler `ClickFunc` (1.151 `0x1401261d0`, 1.163 `0x14012f120`): size, caller, what the probe logs, live-test recipe; also the 252-name element catalog and four decompiled branches (BUY_BUY, FUEL_BUY_SLIDER, MAPMODE_MISSION_*) |
+| [docs/findings/click-func.md](docs/rendering/click-func.md) | the GUI click handler `ClickFunc` (1.151 `0x1401261d0`, 1.163 `0x14012f120`): size, caller, what the probe logs, live-test recipe; also the 252-name element catalog and four decompiled branches (BUY_BUY, FUEL_BUY_SLIDER, MAPMODE_MISSION_*) |
 | [docs/findings/source-file-names.md](docs/findings/source-file-names.md) | the 15 original source-file paths embedded in the exe (`HYBRID FLEET 2013EX`) and what they say about the code layout |
 | [docs/findings/battle-ally.md](docs/findings/battle-ally.md) | the AI ally in battle (`hf_ally`, running in game): what makes a Creature AI-run, how the vanilla deploy spawns the ally, the retreat point and extraction (why a promoted ship could not retreat), the ORDER role table in `+0xd70` (1 unset, 2 bombing, 3 support), prize ships and trade convoys, ally flares, the AI's ammo flags, checklist, AI plan |
-| [docs/findings/precombat-screen.md](docs/findings/precombat-screen.md) | the pre-combat screen: the two builders (`FUN_1402d73a0` is the live one), card order = squad order, the native ammo selector layout, the per-ship ALLY buttons `hf_ally` builds on it, how they follow a card shuffle, the slot-1 PLAYER text label and the roller covers |
+| [docs/findings/precombat-screen.md](docs/rendering/precombat-screen.md) | the pre-combat screen: the two builders (`FUN_1402d73a0` is the live one), card order = squad order, the native ammo selector layout, the per-ship ALLY buttons `hf_ally` builds on it, how they follow a card shuffle, the slot-1 PLAYER text label and the roller covers |
 | [docs/rendering/gui-elements.md](docs/rendering/gui-elements.md) | making a GUI element the game's own way: the creation recipe (12-argument initializer), element list and fields, coordinates, hiding instead of freeing, the `ClickFunc` swallow trampoline |
 
 ## Rendering
@@ -93,8 +93,8 @@ Dated probe and seam-test reports: evidence, not reference. (`docs/runs/`)
 | Read | For |
 |---|---|
 | [docs/runs/probe-run-1.md](docs/runs/probe-run-1.md) | runs 1-3 of the `hf_probe` debug DLL (v1.0 to v2.0): input and memory diff in every screen, pinned cursor, mode and state bytes, clicks, gold, location and fleet |
-| [docs/runs/ui-events-and-screens.md](docs/runs/ui-events-and-screens.md) | probe v2.0 run: log-only hooks for clicks, text keys, sounds and level loads, gold, location and fleet watchers, which dispatcher flag is which screen |
-| [docs/runs/seam-test-run-1.md](docs/runs/seam-test-run-1.md) | seam test runs 1 and 2 (probe v2.2): labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean; map seam M11 chosen |
+| [docs/runs/ui-events-and-screens.md](docs/rendering/ui-events-and-screens.md) | probe v2.0 run: log-only hooks for clicks, text keys, sounds and level loads, gold, location and fleet watchers, which dispatcher flag is which screen |
+| [docs/runs/seam-test-run-1.md](docs/rendering/seam-test-run-1.md) | seam test runs 1 and 2 (probe v2.2): labels after every flush call of the map, battle and menu renderers, which seams fire and which are clean; map seam M11 chosen |
 | [docs/runs/ally-probe-run-1.md](docs/runs/ally-probe-run-1.md) | `hf_ally` v0.3.1 probe: ally against nearest enemy over three campaign battles (speed, ammo spent, targets); the ally is not slower than the enemy |
 | [docs/runs/ally-runs.md](docs/runs/ally-runs.md) | dated `hf_ally` run reports v0.1 to v0.4: spawn, strike run, mode 0, retreat key, auto-retreat, handover |
 
@@ -116,7 +116,7 @@ Tables. (`docs/data/`)
 
 | Read | For |
 |---|---|
-| [docs/data/clickfunc-elements.tsv](docs/data/clickfunc-elements.tsv) | the `ClickFunc` element catalog as a table: group, first-test address, name, times seen, mod idea (companion to [click-func.md](docs/findings/click-func.md)) |
+| [docs/data/clickfunc-elements.tsv](docs/data/clickfunc-elements.tsv) | the `ClickFunc` element catalog as a table: group, first-test address, name, times seen, mod idea (companion to [click-func.md](docs/rendering/click-func.md)) |
 | [docs/data/port-1151-1163-functions.tsv](docs/data/port-1151-1163-functions.tsv) | the 1.151 to 1.163 function names ported in Ghidra: new name, both addresses, evidence tier, old 1.163 name (includes the skipped `prop-skip` rows) |
 | [docs/data/port-1151-1163-matches.json](docs/data/port-1151-1163-matches.json) | the 1.151 to 1.163 function address map used for the port (before the fuzzy tier) |
 | [docs/data/port-1151-1163-signatures.tsv](docs/data/port-1151-1163-signatures.tsv) | the 345 function signatures ported (22 of them later reverted, see the reverts table; calling convention, return and parameter types as applied, and the type 1.151 had where a stale struct was replaced by `void *`: `intended_type`) |

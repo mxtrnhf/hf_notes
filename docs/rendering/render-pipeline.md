@@ -138,7 +138,7 @@ Dispatcher branches (`0x140300c20`) seen over about 190 s: other 0.017 s; campai
 * The editor label pass is drawn **under** the palette buttons: a sprite and text drawn from the hook at `0x140303fb4` at frame y about 990-1100 are hidden behind the bottom palette (see [images-and-sprites.md](images-and-sprites.md)).
 
 #### Flag to screen (probe run 3, v2.0) [game]
-Anchored by the clicks logged just before each change; details, text keys and the timeline in [ui-events-and-screens.md](../runs/ui-events-and-screens.md). Flags are bytes in the `0x147fc6f80..` region read by the dispatcher.
+Anchored by the clicks logged just before each change; details, text keys and the timeline in [ui-events-and-screens.md](ui-events-and-screens.md). Flags are bytes in the `0x147fc6f80..` region read by the dispatcher.
 
 | Branch and flag | Screen |
 |---|---|
@@ -151,7 +151,7 @@ Anchored by the clicks logged just before each change; details, text keys and th
 | battle, `bd4` (`0x147fc6fd4`) | flight HUD after `ED_SHPWRK_LAND`: landing / take-off arcade sequence [guess] |
 
 ### Seam test, probe v2.2 (2026-10-14) [game, observed]
-Probe 2.2 wrapped all 79 flush calls (map M00-M18 = sites above in order, battle B00-B28, other O00-O30) and drew a label after each. Full results and recipe in [seam-test-run-1.md](../runs/seam-test-run-1.md). Summary:
+Probe 2.2 wrapped all 79 flush calls (map M00-M18 = sites above in order, battle B00-B28, other O00-O30) and drew a label after each. Full results and recipe in [seam-test-run-1.md](seam-test-run-1.md). Summary:
 * Map renderer `0x14030a6b0` also draws the **story dialogue scenes** (over a blurred map); battle renderer `0x1403050a0` draws combat **and** the city, shop, supplies and repair screens; `0x14030f250` draws the main menu and difficulty screens.
 * Clean screen-space seams (observed): battle and city **B22-B24, B16, B10-B12**; map **M11**. B00-B09 are faded or glitched; **M16 and M17 are inside the glitch distortion pass** (labels glitch); **M08/M09 labels landed at wrong positions** (transformed layer, [guess] world space).
 * **Best map seam decided by run 2 [game]: M11 = flush call `0x14030dae4`** (clean, above the cockpit frame, fixed screen space, also clean on dialogue frames); second M16 = `0x14030e1a6`. M10 (`0x14030da75`) is hidden under the cockpit frame; M13-M15 fire only with the Esc menu. Details in seam-test-run-1.md, Run 2.

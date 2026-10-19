@@ -43,7 +43,7 @@ Evidence only; the reference is [../findings/battle-ally.md](../findings/battle-
 * Multiplayer slot variants of the same logic exist (`FUN_1402cc7e0`, `FUN_1402cce70`, per-slot timers `0x147fc7020..`); not relevant here.
 
 ## Probe result and open work (hf_ally v0.3.1) [game]
-Details and numbers: [../runs/ally-probe-run-1.md](../runs/ally-probe-run-1.md). Summary: the ally (mode 0) fights like an enemy ship: same state (1), comparable speed and ammunition use over whole battles; "sluggish" is the stock AI, not an ally handicap, and a small magazine makes a ship go quiet. Allies are full casualties (an ally killed by a bomb after enemy fire counted on the end screen).
+Details and numbers: [../runs/ally-probe-run-1.md](ally-probe-run-1.md). Summary: the ally (mode 0) fights like an enemy ship: same state (1), comparable speed and ammunition use over whole battles; "sluggish" is the stock AI, not an ally handicap, and a small magazine makes a ship go quiet. Allies are full casualties (an ally killed by a bomb after enemy fire counted on the end screen).
 
 Open work, in the order the player asked for it:
 1. **Swap between ships and monitor ally health** in battle: an AI-run ally can die while the player is busy. Needs a hotkey that calls `SetControlled(profile, ship, slot)` (`0x1402a7e30`; it already swaps the AI flag of both ships) and a readout of hull state; the health fields have not been located (candidates seen in `0x1400739c0`: the `+0x16a0` over `*(this[1]+0x4c)` ratio behind the "CRITICAL" label, and the damage popup `displayTadsDamage_`). Drawing text in battle needs the seams from `../rendering/`.

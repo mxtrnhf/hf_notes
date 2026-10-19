@@ -58,7 +58,7 @@ So shop and dialogue-like screens run the **battle branch** of the dispatcher [g
 * Input source: `SDL_PollEvent` in `InputTask` is only for joysticks in this build (details in [engine-hge.md](../engine-hge.md)); where the game accumulates its virtual cursor is still unknown.
 
 ## Run 3 (v2.0, 2026-10-14, 14:21:31) [game]
-First run with the log-only entry hooks and the state watchers; QoL loaded with refuel and speed disabled. All four hooks installed, clean exit, 5432 log lines. Everything about it is in [ui-events-and-screens.md](ui-events-and-screens.md); the headlines:
+First run with the log-only entry hooks and the state watchers; QoL loaded with refuel and speed disabled. All four hooks installed, clean exit, 5432 log lines. Everything about it is in [ui-events-and-screens.md](../rendering/ui-events-and-screens.md); the headlines:
 * `CLICK`, `TEXT`, `SOUND`, `GOLD`, `LOCATION` and `FLEET` work and turn the memory-diff noise into events in words: which element was clicked, which text keys a screen asks for, which sounds play, when gold changes (validated by three shop purchases), which city the player is in, where the fleet is and how fast its fuel changes.
 * **Correction to the click field name:** v2.0 printed the string at `gui+0xad8` as `action`. Its values (`gui_mil_focus`, `gui_red_opaq`, `gui_hud_white`, `editor_white`, `slider_green`) are **Distortion resource names** from `Media/Dst/distortion.res`, not actions and not Animation names [file]. v2.1 prints it as `fx`.
 * **`LOAD` read the wrong argument:** the path is the second argument (a literal `Libraries/parts.seria` arrived there). Fixed in v2.1 (commit `f094dec`, not yet run in game).
@@ -77,7 +77,7 @@ First run with the log-only entry hooks and the state watchers; QoL loaded with 
 * ~~Whether the sprite test draws at all~~: it does (Run 2), hidden under the palette.
 * The roles of the pointer slots `0x1403c0d58`, `d70`, `d88`, `db8`, `0x1403c0d40`, and whether `db8` is the hovered object (v1.2 resolves them to part names).
 * Whether `DBG_LOG_DEPTH` in `Config.ini` gives a verbose `client.log` (see `../../ref/config-ini.md`).
-* Map and battle HUD seams (flush sites listed in [render-pipeline.md](../rendering/render-pipeline.md)); the `TEXT` callers of run 3 are the shortcut ([ui-events-and-screens.md](ui-events-and-screens.md)).
+* Map and battle HUD seams (flush sites listed in [render-pipeline.md](../rendering/render-pipeline.md)); the `TEXT` callers of run 3 are the shortcut ([ui-events-and-screens.md](../rendering/ui-events-and-screens.md)).
 
 ## Probe v1.1 plan
 * Automatic noise filtering: hard-exclude `0x1403ef304`-`30f`, `0x1403c0e60`-`67`, `0x143a1197c`-`7f`; suppress addresses that change in more than about 25% of recent polls. F10 stays as an extra.

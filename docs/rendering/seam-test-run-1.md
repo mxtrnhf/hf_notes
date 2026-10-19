@@ -3,7 +3,7 @@
 Goal: find where extra text can be drawn on the map, battle/city and menu screens, as the editor label pass (`0x140303fb4`) allows in the editor. Log: `hf_probe_build/logs/2026-10-14_1801_v2.2/probe.log`, probe `t = 0` is `18:01:09`.
 
 ## Method [code]
-Probe 2.2 wraps every `call 0x140083b50` (flush) in three renderers with a trampoline: call the flush, then draw a label. 79 sites: map `M00..M18` (renderer `0x14030a6b0`, sites in [render-pipeline.md](../rendering/render-pipeline.md)), battle `B00..B28` (`0x1403050a0`), other `O00..O30` (`0x14030f250`). Label = id in `fixed_16`, white, blend 2, at x=1890 right-aligned and x=760 left-aligned, y = 40 + 17 * id (a second column for ids from 40). `F7` toggles drawing; `SEAMS hits/5s` lines count hits per seam.
+Probe 2.2 wraps every `call 0x140083b50` (flush) in three renderers with a trampoline: call the flush, then draw a label. 79 sites: map `M00..M18` (renderer `0x14030a6b0`, sites in [render-pipeline.md](render-pipeline.md)), battle `B00..B28` (`0x1403050a0`), other `O00..O30` (`0x14030f250`). Label = id in `fixed_16`, white, blend 2, at x=1890 right-aligned and x=760 left-aligned, y = 40 + 17 * id (a second column for ids from 40). `F7` toggles drawing; `SEAMS hits/5s` lines count hits per seam.
 
 ## Screens per renderer
 * `0x14030a6b0` (flags `campaign_d0` / `campaign_d2`): strategic map **and** story dialogue scenes (over a blurred map).

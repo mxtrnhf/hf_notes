@@ -4,7 +4,7 @@
 Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, QoL, Feature, AI, Mod Scope, Physics Engine.
 
 ## Version scope
-**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed, [mods/speed.md](mods/speed.md)) and the **damage changes**. The code-side differences are listed in [ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md) (per-ammo shell lifetime, rocket warheads, incendiary power and more). Other 1.163 changes found: the close-range weapon cutoff, the 3500/3000 special-target ranges and the 0.025 rad aim tolerance in the AI weapon controller ([findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md)), the harpoon, KAZ ammo and a removed debug overlay ([version-differences.md](version-differences.md)). Damage changes: done, see [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md) (compared live on both versions; what stays open is listed there).
+**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed, [mods/speed.md](mods/speed.md)) and the **damage changes**. The code-side differences are listed in [ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md) (per-ammo shell lifetime, rocket warheads, incendiary power and more). Other 1.163 changes found: the close-range weapon cutoff, the 3500/3000 special-target ranges and the 0.025 rad aim tolerance in the AI weapon controller ([findings/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md)), the harpoon, KAZ ammo and a removed debug overlay ([version-differences.md](version-differences.md)). Damage changes: done, see [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md) (compared live on both versions; what stays open is listed there).
 
 ## Items
 
@@ -35,17 +35,17 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 
 ### AI
 * **[Strategic]** The AI launches all its aircraft when it detects the player within strike range, so none are left for defensive interception. *(partial: cause and patch sites found, not applied)*
-  * Cause and byte-level patch sites: [ai-aircraft-launch.md](findings/ai-aircraft-launch.md). Not applied or run in game.
+  * Cause and byte-level patch sites: [ai-aircraft-launch.md](findings/ai/ai-aircraft-launch.md). Not applied or run in game.
 * **[Strategic]** The AI has no evasive manoeuvring against cruise missiles on the strategic map. *(open)*
   * Related, but interception odds, not evasion (no evasion code has been read): the intercept probabilities (75% missiles, 66% aircraft) are two literal `Random_Float` compares in `FUN_140111110`: [findings/map-air-groups.md](findings/map-air-groups.md).
 * **[Tactical, exploitable]** Closing to very short range of an enemy ship in tactical combat disables all of its weapon systems. *(partial: patch sites found, not applied)*
-  * Found, and a 1.163 addition: the cutoff and its patch sites are in [ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md) (section 1). Not applied or run in game.
+  * Found, and a 1.163 addition: the cutoff and its patch sites are in [ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md) (section 1). Not applied or run in game.
 * **[Tactical, exploitable]** The AI consistently gives way to the player's ship, which gives the player easy positional advantage. *(partial: patch sites listed, guess, untested)*
-  * Likely mechanism (the stand-off retreat) and its patch sites: [ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md) (section 2). Guess; not run in game.
-  * Data for any AI tuning: battle telemetry from `hf_ally` v0.12.3 to v0.12.7, see [ai-telemetry.md](findings/ai-telemetry.md); tactics design: [ai-hf-ai-design.md](findings/ai-hf-ai-design.md).
+  * Likely mechanism (the stand-off retreat) and its patch sites: [ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md) (section 2). Guess; not run in game.
+  * Data for any AI tuning: battle telemetry from `hf_ally` v0.12.3 to v0.12.7, see [ai-telemetry.md](findings/ai/ai-telemetry.md); tactics design: [ai-hf-ai-design.md](findings/ai/ai-hf-ai-design.md).
 * **[Tactical]** The AI cannot use some ordnance or parts (LG/INC shells); AP rounds are fired only at extremely short range; the AI cannot deploy flares. *(partial: flares: cause and design; shells: patch-site notes; nothing built)*
-  * Flares: the cause and a mod design are in [ai-flares.md](findings/ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
-  * LG/INC/AP ammo choice by the AI: [findings/ai-tick-patch-sites.md](findings/ai-tick-patch-sites.md) (section 3).
+  * Flares: the cause and a mod design are in [ai-flares.md](findings/ai/ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
+  * LG/INC/AP ammo choice by the AI: [findings/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md) (section 3).
 * **[Tactical, exploitable]** High convergence angles can be used to disable enemy turrets. *(open)*
 
 ### Mod scope
@@ -77,7 +77,7 @@ Same status as above: wish list, partly started (see the markers). What exists t
   variants), not a general editor, but it holds working code for reading and appending `.seria` blocks.
 * `dec`/`enc` (C++ with build script) in `hf_dialog_src`, another language-pack decoder; a `binwalk` binary in `hf_mods_unpack/tools/bin`.
 * Per-mod log files, the modloader 4.1.0 logging SDK (`setup.md`), and Ghidra with an MCP bridge.
-* `hf_probe` ([docs/mods/probe.md](mods/probe.md); log-only debug DLL, local, not a mod to ship): input and memory diff, `MODE`, `CLICK`/`TEXT`/`SOUND`/`LOAD` hooks, ammo dump, `MARK` hotkey (F9), HUD watch panel, and the 1.151/1.163 `BLAST`/`DMG` mode ([runs/probe-run-1.md](runs/probe-run-1.md), [runs/ui-events-and-screens.md](runs/ui-events-and-screens.md)); `hf_draw_test` (throwaway draw test, debug only). Beyond these, work is mostly hand-edited text.
+* `hf_probe` ([docs/mods/probe.md](mods/probe.md); log-only debug DLL, local, not a mod to ship): input and memory diff, `MODE`, `CLICK`/`TEXT`/`SOUND`/`LOAD` hooks, ammo dump, `MARK` hotkey (F9), HUD watch panel, and the 1.151/1.163 `BLAST`/`DMG` mode ([runs/probe-run-1.md](runs/probe-run-1.md), [runs/ui-events-and-screens.md](rendering/ui-events-and-screens.md)); `hf_draw_test` (throwaway draw test, debug only). Beyond these, work is mostly hand-edited text.
 Ordered by how much time each would save, not by effort. Tag: **[guess]** is an expected benefit (legend in `../README.md`); other claims are from problems we hit in practice.
 
 ### 1. `.seria` library and CLI (parse, query, patch, diff) *(partial: `apply_data.py` is only a generator)*
@@ -144,11 +144,11 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
 4. The rest as the work needs it.
 
 ### AI: allied bombers, friendly AI tactics (requested 2026-10-18; no work started)
-* **Allied bombers** are very requested by the user's testers. Data to start from: Navarin sessions ([findings/ai-intrepid-benchmark.md](findings/ai-intrepid-benchmark.md)): bombs only on **landed** enemy ships (`mode` 3), released from 210-1490 u altitude at 140-250 u/s without boost, 1.2-13.8 s fall; landed enemies shoot back. Open: bomb release is not visible in the telemetry (the control byte clears within a frame), no altitude / landed / target-class columns.
+* **Allied bombers** are very requested by the user's testers. Data to start from: Navarin sessions ([findings/ai-intrepid-benchmark.md](runs/ai-intrepid-benchmark.md)): bombs only on **landed** enemy ships (`mode` 3), released from 210-1490 u altitude at 140-250 u/s without boost, 1.2-13.8 s fall; landed enemies shoot back. Open: bomb release is not visible in the telemetry (the control byte clears within a frame), no altitude / landed / target-class columns.
 * **Friendly AI** (evade vs last stand, retreat decisions) cannot be a pure state machine; it needs more play data, ideally from testers (telemetry build).
 
 ### AI: what is next after the evening of 2026-10-18 (hf_ai v0.5.x)
-* **Top attacks / "dive + overpass"** (user idea): needs a clarifying question to the user first (which meaning: the enemy diving over the player, or the player passing over the enemy?). Do not build before that. The v0.4.1 verdict says a lateral sidestep is too small; a vertical or earlier response may be needed ([findings/ai-hf-ai-design.md](findings/ai-hf-ai-design.md)).
+* **Top attacks / "dive + overpass"** (user idea): needs a clarifying question to the user first (which meaning: the enemy diving over the player, or the player passing over the enemy?). Do not build before that. The v0.4.1 verdict says a lateral sidestep is too small; a vertical or earlier response may be needed ([findings/ai-hf-ai-design.md](findings/ai/ai-hf-ai-design.md)).
 * **Armored-sides ships hold height and range** (user idea, Intrepid-like): stay level with the target, deny the dive from underneath, keep distance because point-blank salvos are easy to aim. Not built.
 * **React earlier to fast ships**: scale `dive_dwell_s` / `dive_range` with the target's speed. Not built.
 * **Allied bombers + bomb telemetry**: the telemetry (hf_ally f2) logs only the bomb control byte; it has no bomb inventory, release counter or altitude. Telemetry upgrade first, then a bombing-run state.

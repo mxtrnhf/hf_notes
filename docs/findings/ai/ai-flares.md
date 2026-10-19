@@ -1,6 +1,6 @@
 # Why AI ships never use flares, and how to give them flares (1.163)
 
-Status (2026-10-18: ported to hf_ai v0.2.0, see [ai-hf-ai-design.md](ai-hf-ai-design.md); qol's copy is retired once the user switches `ai_flares.enabled` over; hf_ai can write a `hf_ai_panic_*.log` trace with `log_panic`) (2026-10-16): **running in game** (fork branch `ai-flares`, `src/ai_flares.rs`; the working source is still UNCOMMITTED in the fork). Enemy AI ships drop flares and dodge missiles; since 2026-10-16 the new option `ai_flares.allies` makes AI-run ships of the player's side do the same: confirmed in play ("allied ships now use flares"). Design below was changed during implementation, see "Implementation". Tags: legend in `../../README.md`.
+Status (2026-10-18: ported to hf_ai v0.2.0, see [ai-hf-ai-design.md](ai-hf-ai-design.md); qol's copy is retired once the user switches `ai_flares.enabled` over; hf_ai can write a `hf_ai_panic_*.log` trace with `log_panic`) (2026-10-16): **running in game** (fork branch `ai-flares`, `src/ai_flares.rs`; the working source is still UNCOMMITTED in the fork). Enemy AI ships drop flares and dodge missiles; since 2026-10-16 the new option `ai_flares.allies` makes AI-run ships of the player's side do the same: confirmed in play ("allied ships now use flares"). Design below was changed during implementation, see "Implementation". Tags: legend in `../../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe). Origin: roadmap item "the AI cannot deploy flares" (`roadmap.md`, AI, Tactical).
 
 ## Short answer
@@ -28,7 +28,7 @@ Follows the conventions in `hooks.md` (function-entry detour with version guard;
 * What the link at `+0x498` points at for a missile aimed at a ship: the ship root, a part, or the bridge. A log line when the trigger fires answers it.
 * How a missile seeker reacts to a flare body (logic `0x44c`). That is in `creatureLogic` (`0x140033b90`), which could not be decompiled in one piece [not read]. The player uses flares successfully, so an AI-released flare should behave the same.
 * Whether a flaring AI ship should also manoeuvre. Not addressed by this design.
-* The related roadmap bug "a proximity-fused missile colliding with flares crashes the game" is fixed upstream by highfleet-qol `enable_flare_crash_fix` ([flare-crash-hunt.md](flare-crash-hunt.md)); an AI that uses flares more often could hit it more often, so run with that fix on.
+* The related roadmap bug "a proximity-fused missile colliding with flares crashes the game" is fixed upstream by highfleet-qol `enable_flare_crash_fix` ([flare-crash-hunt.md](../flare-crash-hunt.md)); an AI that uses flares more often could hit it more often, so run with that fix on.
 
 ## Implementation (fork branch `ai-flares`)
 * **Do not set `+0xbc0` for AI ships** [code]: the flag-on branch ends in `0x140271200`, which (in arcade battle) redraws the player's flare HUD from the ship's first launcher and resets the HUD fade timer, so an AI ship with the flag on would overwrite the player's HUD. The hook calls the release `0x14002eed0(launcher)` itself instead, so no flare sound plays yet.

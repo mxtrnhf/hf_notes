@@ -44,7 +44,7 @@ Argument 6 is stored in the sound object (`+0x88`). The per-frame updater (`0x14
 
 ## Names and failures
 * `sound.res` has 449 `Sound <name> { filename=Media\Snd\...wav  resgroup=3 }` blocks [file]. Radio lines live in `Media/Snd/RADIO/`; the `_eng` blocks (`mission_danger_01_eng` -> `RADIO_ENG/`) are the English set. How the game chooses the language set is **[not read]**; `hf_ally` passes the plain (Russian) names, and the stock radio does too.
-* A name that is not in `sound.res`: returns -1.0 and writes `ERR: SX::play failed to get effect = <name>` to `client.log` (seen for `radio_landing_start_02`) [game: [runs/ui-events-and-screens.md](runs/ui-events-and-screens.md)].
+* A name that is not in `sound.res`: returns -1.0 and writes `ERR: SX::play failed to get effect = <name>` to `client.log` (seen for `radio_landing_start_02`) [game: [runs/ui-events-and-screens.md](rendering/ui-events-and-screens.md)].
 * Other -1.0 causes [code]: the `DEBUG_SOUND` flag is off, the kind's channel limit (`DAT_1403c2cc0[kind]`) is reached, HGE fails to start the channel. Per-kind tables: channel limit `DAT_1403c2cc0`, falloff radius `DAT_1403c2c88`, replace mode `DAT_147fc7668`; their values are **[not read]**.
 * `hf_probe` (`hook_sounds`) detours this entry; a mod with a 15-byte precheck (`hf_ally`) then turns its sounds off. The hook list is in [hooks.md](hooks.md).
 
