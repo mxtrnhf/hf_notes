@@ -53,4 +53,4 @@ Editor support: a `.clangd` pointing at the MinGW headers.
 * The game **rewrites `Libraries/OL.seria` and `Libraries/parts.seria` at startup**: edit them only with the game closed.
   A game update overwrites `Libraries/`, `Data/Dialogs/`, `Media/`.
 * A clean reinstall deletes `Saves/`, `Ships/`, `Config.ini`: back them up first (a Steam Cloud marker exists but do not rely on it).
-* **Notes hygiene**: screenshots committed to this repo should be shrunk first (about 1280 px wide, JPG or WebP; the first ones were 4 to 6 MB PNGs and stay in the history). Commits made with Claude end with a `Co-Authored-By` trailer.
+* **Notes hygiene**: screenshots committed to this repo should be shrunk first (about 1280 px wide, JPG or WebP; the first ones were 4 to 6 MB PNGs and stay in the history). 
