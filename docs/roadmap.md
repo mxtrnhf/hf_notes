@@ -154,3 +154,10 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
 * **Allied bombers + bomb telemetry**: the telemetry (hf_ally f2) logs only the bomb control byte; it has no bomb inventory, release counter or altitude. Telemetry upgrade first, then a bombing-run state.
 * **Break-off and friendly AI** need user decisions (and tester data) before any code.
 * **Strafe in the band** is unproven (it did not show in play; `strafe_enabled` is false).
+
+### Tooling: shared host DLL for hooks and logging (user idea 2026-10-19; not started)
+* One DLL (or a feature of the patching library) that owns every game patch and a common log/crash path, so mods cannot overwrite each other's patches and need not each re-check the original bytes. The patching-library variant is the author of the modloader's suggestion (logdot); the user likes it.
+* Where it helps: observe-only hooks (the probe) can share one patched address through a callback list. Where it cannot: two mods that both OVERRIDE the same value (hf_ai's steering waypoint vs qol's evasion) still need one owner; the host can only refuse the second claim loudly.
+* Costs to weigh: load-order dependency for every mod, one more file for testers, a C-style interface (Rust has no stable ABI across DLLs).
+* Today's collision map (Argon's read, hand-check pending): hf_ai vs qol share three AI addresses (hf_ai sorts first and wins); hf_probe vs hf_ally/hf_voice (sound, click, input task, battle seams) only when probe hooks are on; hf_probe vs hf_draw_test vs qol at the editor label call.
+* Until then each mod keeps its own logging. Probe v3.0.0 (read-only default, game clock on every line, panic guard) is the first step.
