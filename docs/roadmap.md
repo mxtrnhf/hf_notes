@@ -144,14 +144,13 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
 4. The rest as the work needs it.
 
 ### AI: allied bombers, friendly AI tactics (requested 2026-10-18; no work started)
-* **Allied bombers** are very requested by the user's testers. Data to start from: Navarin sessions ([findings/ai-intrepid-benchmark.md](runs/ai-intrepid-benchmark.md)): bombs only on **landed** enemy ships (`mode` 3), released from 210-1490 u altitude at 140-250 u/s without boost, 1.2-13.8 s fall; landed enemies shoot back. Open: bomb release is not visible in the telemetry (the control byte clears within a frame), no altitude / landed / target-class columns.
+* **Allied bombers** are very requested by the user's testers. Data to start from: Navarin sessions ([runs/ai-intrepid-benchmark.md](runs/ai-intrepid-benchmark.md)): bombs only on **landed** enemy ships (`mode` 3), released from 210-1490 u altitude at 140-250 u/s without boost, 1.2-13.8 s fall; landed enemies shoot back. Open: bomb release is not visible in the telemetry (the control byte clears within a frame), no altitude / landed / target-class columns.
 * **Friendly AI** (evade vs last stand, retreat decisions) cannot be a pure state machine; it needs more play data, ideally from testers (telemetry build).
 
-### AI: what is next after the evening of 2026-10-18 (hf_ai v0.5.x)
-* **Top attacks / "dive + overpass"** (user idea): needs a clarifying question to the user first (which meaning: the enemy diving over the player, or the player passing over the enemy?). Do not build before that. The v0.4.1 verdict says a lateral sidestep is too small; a vertical or earlier response may be needed ([findings/ai-hf-ai-design.md](findings/ai/ai-hf-ai-design.md)).
-* **Armored-sides ships hold height and range** (user idea, Intrepid-like): stay level with the target, deny the dive from underneath, keep distance because point-blank salvos are easy to aim. Not built.
-* **React earlier to fast ships**: scale `dive_dwell_s` / `dive_range` with the target's speed. Not built.
+### AI: tactics ideas (undated wish list; the current queue is in [../STATUS.md](../STATUS.md))
+* **Dive + overpass**: the user meant enemies that themselves make dive or overpass passes against the player; they added it may be unnecessary because deny-the-dive already triggers for a target both below and above. Parked until numbers on the share of time the player spends over the enemy and the damage from above versus below say otherwise.
+* **Armored-sides ships hold height and range** (user idea, Intrepid-like): stay level with the target, deny the dive from underneath, keep distance because point-blank salvos are easy to aim.
+* **React earlier to fast ships**: scale `dive_dwell_s` / `dive_range` with the target's speed.
 * **Allied bombers + bomb telemetry**: the telemetry (hf_ally f2) logs only the bomb control byte; it has no bomb inventory, release counter or altitude. Telemetry upgrade first, then a bombing-run state.
 * **Break-off and friendly AI** need user decisions (and tester data) before any code.
-* **Strafe in the band** is still unproven (live config has `strafe_enabled: false`).
-* **Check the flare curtain** with telemetry (owner-side log lines, enemy `fl_loaded` drain), then decide on installing v0.5.3 (retreat boost).
+* **Strafe in the band** is unproven (it did not show in play; `strafe_enabled` is false).

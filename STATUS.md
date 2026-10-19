@@ -1,45 +1,53 @@
 # Project status
 
-Volatile state: what is released, what is open upstream, what is broken. Everything else in these notes is meant to stay true without edits; keep dated, perishable facts here. Last updated 2026-10-18 (evening).
+The only file with perishable state: what is installed, released, open upstream or broken. Everything else in these notes is meant to stay true without edits. Last updated 2026-10-19, read from the game folder (`~/.local/share/Steam/steamapps/common/HighFleet/Modloader`), the repos' `git log` and `gh pr list`, not from older notes. Older versions of this file are in git history.
 
-## Release plan
-* **One monolith, the QoL mod.** Elevation, refuel and speed go into logdot's `highfleet-qol` by pull request: #18 pin `highfleet-rs` (open), #19 refuel and speed (**merged 2026-10-14 as `f5423ca`**, review changes: no `enabled`, `Vanilla`/`Classic`/`Modern`/`Custom` speed presets, no refuel clamp), #20 elevation (open; rebased onto upstream main and force-pushed 2026-10-16 as `aafbf6e`, only the 5 elevation commits).
-* **`enabled` rule (logdot's review of #19):** only `elevation` and `ai_flares` may have an `enabled` flag; every other section must default to vanilla. The 2026-10-16 cleanup removed the flag again from refuel and speed after it crept back via branches cut before the review.
-* The standalone repos (`highfleet-elevation`, `highfleet-speed` public; `hf_refuel`, `hf_multicharge`, `hf_salvo`, `hf_multimissile` local only; all six now live in `old_standalone/`) are the pre-merge versions. Salvo is postponed.
-* `hf_probe` and `hf_draw_test` are debug-only, local, not released.
-* To do: run the reinstall checklist ([docs/install.md](docs/install.md)); README follow-ups (troubleshooting, a worked "add a part" guide); optional move to the modloader's logging SDK. LICENSE names are set (`mxtrnhf`).
+## Installed in the game folder
+| Mod | File in `mods/` | Source commit | Config that matters |
+|---|---|---|---|
+| [hf_ai](docs/mods/hf-ai.md) | `hf_ai_v0.7.1.dll` | `ca7d678` | `hf_ai.json`: `ai_flares` on, `log_panic`, curtain 0.6; `tactics` on, dive on, aim awareness on, strafe off |
+| [hf_ally](docs/mods/hf-ally.md) | `hf_ally_v0.12.10_debug_telemetry.dll` | `e9540a5` | `ally.json`: `max_allies` 2, `auto_retreat`, `flagship_leaves` handover, `telemetry` on |
+| [QoL fork](docs/mods/qol.md) | `highfleet_qol.dll` | `95e8bc7` (branch `ai-flares`) | `qol.json`: `ai_flares.enabled` false (hf_ai carries it), flare crash fix on, dump chance 0.7, delay 0.6 to 1.5, refuel player x10, speed `classic`, elevation on |
 
-## QoL build break (found 2026-10-14)
-`highfleet-qol` depends on `highfleet-rs` by git URL with no pinned revision and `Cargo.lock` is gitignored, so a fresh build or CI run resolves the newest `highfleet-rs`. Commit `cfa6ae28` (2026-10-13, 'Rename and document 1.163 ammo fields') removed `Ammo::unknown_180h`, which `src/plane_guns.rs:271` (`ammo_max_load`) still uses, so `cargo check --features 1_163` fails. Pinning `highfleet` to `3f6b54b3` in a local lockfile builds (copy `hf_qol_fork/Cargo.lock` into any fresh worktree).
-* Upstream fix: rename the field use, or commit `Cargo.lock`.
-* Pinned in PR #18 ("Pin highfleet-rs to the last revision that builds", open). CI on PR #20 stays red until #18 merges (known, our local builds are fine).
+Everything else in `mods/` is a `.bak` of an older build. Not installed: `hf_probe`, `hf_voice`.
 
-## Modloader quirk
-The modloader README still says the release zip is `Artifacts.zip` and yields both `bass.dll` and `bass.dll_`; v4.1.0's `Modloader.zip` has only the loader `bass.dll`, so users must rename the original themselves (see [docs/install.md](docs/install.md)).
+## Repos
+| Repo | Remote | State |
+|---|---|---|
+| `hf_ai`, `hf_ally`, `hf_qol_fork`, `hf_voice`, `hf_probe` | none (the only copies are on this machine) | clean, except `hf_qol_fork` has an untracked `README.md.orig` |
+| `hf_notes` | `mxtrnhf/hf_notes` | see `git status` for unpushed commits |
+| `old_standalone/*` | `hf_elevation` and `hf_speed` published, the rest local | the pre-merge standalone mods |
 
-## Ally ships mod and ai-flares (state at the end of the 2026-10-16 session)
-* **Installed builds** (game folder `Modloader/mods/`): `hf_ally_v0.9.1.dll` (archive and build copy `hf_ally_build/hf_ally_v0.9.1.dll`, older ones in `hf_ally_build/versions/`) and `highfleet_qol.dll` = `hf_qol_fork_build/archive/highfleet_qol_ai-flares-v6-allies.dll` (ai-flares plus missile dump plus the `allies` option). Config files: `Modloader/config/ally.json`, `Modloader/config/qol.json`. In `ally.json`: `max_allies 2`, `ally_toggle` on, `auto_retreat` on, `flagship_leaves handover`, `gui_inspect` and `log_precombat` off, `spare_prizes` default on. In `qol.json`: `ai_flares.allies true` (the file was rewritten with indent 2).
-* **Where the sources are**: `hf_ally` is a local git repo with **no remote** (the only copy of the source is on this machine; last commit `7d8b18e`). The QoL fork's working source (`src/ai_flares.rs`, `src/ai_missile_dump.rs`, `src/config/ai_flares.rs`, the modified `config.rs`, `lib.rs`, `elevation.rs`, README) is **committed on the local fork branch `ai-flares`** (rebuilt 2026-10-16 as `5c3ab73` on top of `elevation`, missile dump and one squashed ai-flares/allies commit; no remote). Old pre-rebase tips are tags `old/elevation`, `old/ai-flares`, `old/ai-missile-dump`, `old/ai-flares-wip`, `old/refuel-rate`, `old/ai-flares-v2-tested`; a full bundle and ref list are in `hf_qol_fork_build/archive/` (`hf_qol_refs_2026-10-16.bundle`, `refs_before_cleanup_2026-10-16.txt`, `wt3_unfinished_merge_2026-10-16.patch`).
-* **Tested in play**: several allies, replacement after a retreat order, per-ship ally buttons, summary lines, handover when the flagship is shut down, flares on allies. **Not yet seen**: an ally destroyed in battle, prize-safe targeting on a convoy (the v0.9.0 hook fired but read the flag on the wrong object; fixed in v0.9.1, untested), several allies with `handover`.
-* **Telemetry (2026-10-18)**: `hf_ally` v0.12.7 (installed as `hf_ally_v0.12.7_debug_telemetry.dll`; telemetry only with cargo feature `telemetry`; `ally.json` `telemetry: true`, `spawn_ally: false`) writes telemetry, parts/damage and bodies CSVs; several captures ran without lag or crash. Note: [docs/findings/ai-telemetry.md](docs/findings/ai/ai-telemetry.md). `hf_ai` v0.3.0 (steering hook + ported ai_flares + "strafe in the band" tactics) is INSTALLED and ran (see [docs/changes-2026-10-18.md](docs/changes-2026-10-18.md), [docs/findings/hf-ai-first-run.md](docs/runs/hf-ai-first-run.md)); design: [docs/findings/ai-hf-ai-design.md](docs/findings/ai/ai-hf-ai-design.md).
-* **Ghidra**: the annotations of 2026-10-16 are saved in the program; the shared-project check-in is the user's.
-* **Tester pack** (2026-10-16): `$HF_DEV/hf_release_pack/` (and `hf_release_pack.zip` beside it): both DLLs (QoL v6 with allies, `hf_ally_v0.9.1`), a `qol.json` with every required key at stock values plus our `ai_flares` and `ai_missile_dump_chance 0.7`, an `ally.json`, and a `README.txt` explaining the settings and where the logs are (`Modloader/logs/Highfleet_*.log`, newest file). The QoL `qol.json` of the pack uses `planes {}` (vanilla) and no refuel/speed/elevation sections; those required keys were missing from a first lean draft, which the QoL loader would have rejected (`enable_anti_wobble`, `enable_unblocked_guns`, `enable_reduced_shake`, `enable_arcade_zoom`, the zoom keys, `planes`, `enable_shop_parts` have no serde default).
-* **Tester pack updated 2026-10-17:** **`hf_release_pack_v0.10.3.zip`** (the unversioned zip is gone) carries `hf_ally_v0.10.3.dll` (radio voice lines, working loss detection) with the same QoL DLL, and one custom audio file, `Media/Snd/RADIO/radio_stall_01.wav` (our own recording; it OVERWRITES the vanilla file, the README tells testers to back it up first and says it is optional). README has the sound description and test 15; the previous pack is `hf_release_pack_v0.9.3.zip`.
-* Installed since 2026-10-16 (later in the session): `highfleet_qol.dll` rebuilt from `ai-flares` (archived as `highfleet_qol_ai-flares-v2-rebased-on-upstream.dll`); the live `qol.json` has no `enabled` in `refuel`/`speed`. `hf_release_pack` (and its zip) was refreshed with the same DLL; its `qol.json` never had `refuel`/`speed` sections, so it needed no change.
-* Tester pack logging profile: `logging.json` (debug) is included, `ally.json` has `probe_lines` and `log_precombat` on; `gui_inspect` (very large) and `log_creatures` (huge) stay off. The Modloader default level when `logging.json` is absent was not checked.
+## Upstream (logdot/highfleet-qol)
+| PR | State | What |
+|---|---|---|
+| #19 | merged 2026-10-14 (`f5423ca`) | refuel rate and speed curve |
+| #20 | open | manual elevation (rebased 2026-10-16 as `aafbf6e`, 5 commits) |
+| #18 | open | pin `highfleet-rs` to the last revision that builds |
 
-## Ally mod, 2026-10-17 evening: crash hunt
-* **hf_ally v0.11.x** (diagnostics only, source in the local `hf_ally` repo): v0.11.0 added the version/build banner, a crash reporter in every build and a `--features megalog` debug build (unbuffered megalog, heartbeat, clicks, scene states, minidump); v0.11.1 added fleet/ship `SNAPSHOT` blocks to the debug megalog. **v0.11.3 debug is the latest packed build**, tester pack **`hf_release_pack_v0.11.3_debug.zip`** (the v0.11.2 zip is kept beside it). v0.11.3 restores the order (`+0xd70`) of ships sent out with F8, which used to stay at 2 ("bombing") on the map; own smoke run 2026-10-17: three restores logged, no `order=2` in any later snapshot, no crash. A ship that was destroyed while flying out is correctly left alone, but the loss detector still logs it as "left the roster, not destroyed" (state 2 counts as retreating).
-* **Why:** testers crash when starting an engagement after merging detachments; their logs end without a crash record because the modloader log is buffered (`BufferAndFlush`). Details: [docs/runs/ally-runs.md](docs/runs/ally-runs.md#crash-hunt-2026-10-17-tester-logs-ghidra-leads-diagnostics-build-first-debug-runs).
-* **Lead (Ghidra, read-only, a guess until a crash address arrives):** scene state 2 of `SomethingWithLevelSerias` (`0x1402be084`) is most likely the landing-in-a-city scene; it calls `FUN_1400f5b40` (first ship with `m_landing`) at `0x1402be0c8` with no null check on the first entry of the player-side vector `0x143a158e0`, which was seen null (after leaving a city) or empty (after a load) in play. Reference: [docs/findings/battle-ally.md](docs/findings/battle-ally.md#fleets-landing-and-the-location-scene). Next: the crash address, the tester's save, the three-way test (no mods / QoL only / hf_ally only), land-after-merge and land-after-load repros. Open items: [docs/open-questions.md](docs/open-questions.md).
+* **`enabled` rule (logdot's review of #19):** only `elevation` and `ai_flares` may have an `enabled` flag; every other section defaults to vanilla. The flag crept back into refuel and speed once, from branches cut before the review.
+* **Build break (found 2026-10-14):** `highfleet-qol` depends on `highfleet-rs` by git URL with no pinned revision and `Cargo.lock` is gitignored, so a fresh build resolves the newest `highfleet-rs`. Its commit `cfa6ae28` removed `Ammo::unknown_180h`, which `src/plane_guns.rs:271` still uses, so `cargo check --features 1_163` fails. Pinning `highfleet` to `3f6b54b3` in a local lockfile builds (copy `hf_qol_fork/Cargo.lock` into a fresh worktree). Fixed by PR #18; CI on PR #20 stays red until it merges.
+* **Modloader quirk:** the modloader README says the release zip is `Artifacts.zip` and yields both `bass.dll` and `bass.dll_`. v4.1.0's `Modloader.zip` has only the loader `bass.dll`, so users must rename the original `bass.dll` to `bass.dll_` themselves.
+* Standalone repos are the pre-merge versions. Salvo is postponed. `hf_probe` and `hf_draw_test` are debug-only and not released.
 
-## Ally mod, 2026-10-17 night: pre-combat buttons follow the shuffle, PLAYER label (local testing only)
-* **Installed:** `hf_ally_v0.11.8_debug.dll` (game dir; the release builds `hf_ally_v0.11.x.dll` and older ones sit in `hf_ally_build/` and `versions/`). Local commits in the `hf_ally` repo (still no remote): `70725b5` v0.11.4 (buttons follow the shuffle, gap-aware spacing), `1637aa5` v0.11.5 (PLAYER text label), `7594a09` v0.11.6 (white, `vcr_12`, selectable seam), `2993261` v0.11.7 (door gate on `LANDING_DOOR`, never matched), `4416f85` v0.11.8 (gate on `ROLL_DESK`). Tester pack is still `hf_release_pack_v0.10.3.zip`; nothing of 0.11.4+ is packed.
-* **Result in play:** button logic works (v0.11.4); the PLAYER label works in the right place (v0.11.5, v0.11.6). **Open:** v0.11.8's cover gate is untested; check the `ALLY roller cover` lines in the log and the -900 threshold. Details: [docs/findings/precombat-screen.md](docs/rendering/precombat-screen.md).
-* **Known gap:** the per-frame check runs on `SomethingInputTask`; with `hf_voice` loaded (same hook) the buttons do not follow the cards, and the `hf_ally` source comment that the battle-manager tick is a fallback is wrong (it never ticks on that screen). `hf_voice` and `hf_ally` are not run together at the moment.
-* **Ghidra (2026-10-17, by the notes session, saved, check-in is the user's):** `0x1401dd500` renamed `handleRadiationCounts?` -> `buildLandingFrame` (plate comment keeps the old label), comments at the seams B22 to B24, the `ROLL_*` string refs, the `memcmp`-labelled `0x140242e60` and `SomethingInputTask`.
+## Tester packs (workspace root)
+Newest: `hf_release_pack_v0.12.2_debug.zip` (folder `hf_release_pack_v0.12.2_debug`); earlier: `v0.11.11_debug`, `v0.11.3_debug`, `v0.11.2_debug`, `v0.10.3`, `v0.9.3`. A pack holds the DLLs, a `qol.json` with every required key at stock values, an `ally.json` and a `README.txt` (settings, where the logs are, the tester plan: [docs/runs/tester-test-plan.md](docs/runs/tester-test-plan.md)). The pack's `qol.json` must keep the keys that have no serde default (list in [docs/mods/qol.md](docs/mods/qol.md)). The v0.10.3 pack carries one custom audio file, `Media/Snd/RADIO/radio_stall_01.wav`, which overwrites the vanilla file (testers are told to back it up).
 
-## hf_ai and qol dump delay, 2026-10-18 evening (local repos, no remotes)
-* **Installed in the game dir** (read from `Modloader/mods` and `config`): `hf_ai_v0.5.2.dll` (older ones are `.bak`), `hf_ally_v0.12.10_debug_telemetry.dll`, `highfleet_qol.dll` (built from `95e8bc7`, with the dump delay). **hf_ai v0.5.3 (`a70cfe7`) is built and committed but NOT installed.**
-* `hf_ai.json`: `ai_flares` on + `log_panic` + `launch_flares_probability` 0.6 (other curtain keys at defaults); `tactics` on, `blend_weight` 2.0, `strafe_enabled` false, dive on with `dive_min_s` 2 / `dive_max_s` 4. `qol.json`: dump chance 0.7, delay 0.6 / 1.5, `ai_flares.enabled` false. `ally.json` unchanged (telemetry on).
-* Versions and commits: [docs/changes-2026-10-18.md](docs/changes-2026-10-18.md). Next steps: [docs/handover-2026-10-18.md](docs/handover-2026-10-18.md).
+## Open items
+| Item | Notes |
+|---|---|
+| Analyse the hf_ai v0.7.1 run | sessions 1792342753/843/949/955; replay `tuning_telemetry/visualizer/replay_v071.html`; check ETA timing, shelter, strays, difficulty |
+| Ghidra check-in | the 2026-10-18 annotations (AI fire gates, Zenith launch, fire bytes) are applied and saved; the shared-project check-in with the message "Annotate 1.163: AI fire gates, Zenith launch, fire bytes" is yours |
+| Merge/engagement crash (testers) | scene state 2 of `SomethingWithLevelSerias` (`0x1402be084`) calls `FUN_1400f5b40` at `0x1402be0c8` with no null check on the first entry of the player-side vector `0x143a158e0`, seen null after leaving a city and empty after a load [guess until a crash address arrives]. Needs: the crash address, the tester's save, the three-way test (no mods / QoL only / hf_ally only), land-after-merge and land-after-load repros. Details: [docs/runs/ally-runs.md](docs/runs/ally-runs.md), [docs/findings/battle-ally.md](docs/findings/battle-ally.md#fleets-landing-and-the-location-scene) |
+| `Collect_dead` stock crash | 1 in about 60 kills; waiting for a `hf_ally_deadnode.log` capture: [docs/findings/collect-dead-crash.md](docs/findings/collect-dead-crash.md) |
+| Missile dump | kills about 20% of some launchers' missiles at the old delay; delay 0.6 to 1.5 cut early deaths from 19% to 5%, still being tuned |
+| Pre-combat ALLY buttons | `hf_ally_v0.11.8` cover gate untested; with `hf_voice` loaded (same hook) the buttons do not follow the cards: [docs/rendering/precombat-screen.md](docs/rendering/precombat-screen.md) |
+| Ally untested paths | ally destroyed in battle, prize-safe targeting on a convoy, several allies with `handover` |
+| Allied bombers | needs bomb telemetry first (inventory, release counter, altitude); see the AI ideas in [docs/roadmap.md](docs/roadmap.md) |
+| Audio clipping | reported, cause unknown (game, or the flare curtain); parked |
+| README follow-ups | troubleshooting, a worked "add a part" guide; optional move to the modloader's logging SDK |
+| hf_ai README | its status line still says v0.5.3 (repo outside these notes) |
+
+## Data and working rules
+* Combat telemetry is in `tuning_telemetry/`; the ledger `REVIEWED.tsv` lists analysed sessions, unlisted ones in `Modloader/logs` are new. The user labels ships (Shipworks designs are named `TestProject`).
+* Install DLLs and change game configs only when asked; keep a `.bak`. Long open questions: [docs/open-questions.md](docs/open-questions.md).
