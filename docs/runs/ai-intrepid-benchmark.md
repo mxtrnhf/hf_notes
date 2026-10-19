@@ -1,6 +1,7 @@
 # Piloting benchmark and enemy behaviour: stock INTREPID (15 battles) and Lightning (11 usable sessions), 2026-10-18
 
 > **Dated measurement report** (2026-10-18): 15 stock-INTREPID battles, 11 Lightning sessions and 7 Navarin campaign sessions, `hf_ally` telemetry v0.12.3 to v0.12.9. It describes the stock AI and one expert pilot as they behaved then, not current behaviour. The design page [ai-hf-ai-design.md](../findings/ai/ai-hf-ai-design.md) cites it as evidence.
+> **Do not mix batches:** the later batch (sessions about 1792335913 to 1792336623) was flown in a MODIFIED INTREPID with 4 Zeniths and 2 flare launchers, a different ship from the stock INTREPID measured here.
 
 Status: **measured from hf_ally telemetry on the stock AI, before `hf_ai` changed it ([../mods/hf-ai.md](../mods/hf-ai.md)).** Source data: `~/Development_Highfleet/tuning_telemetry/{intrepid,lightning}/` (15 INTREPID sessions, 8.5 min of fighting, v0.12.8 / v0.12.9; 11 Lightning sessions, v0.12.3-v0.12.7), full reports in `intrepid/report.md` and `lightning/report.md` (batch 1 + addendums), session ledger `tuning_telemetry/REVIEWED.tsv`. Player = expert user flying a stock INTREPID in Shipworks (2x 130mm guns, 2 missiles, no flares, 107 parts, 8250 hp). Design context: [ai-hf-ai-design.md](../findings/ai/ai-hf-ai-design.md), telemetry format: [ai-telemetry.md](../findings/ai/ai-telemetry.md). Tags: [data] measured, [guess].
 

@@ -13,6 +13,8 @@ Status: **launch path found by reading plus in-game probes; one mod patch (burst
 * Older notes called this "aircraft launch". The evidence says it launches Zenith for the AI and (by the same list and key 0x1012, [code]) the player. Whether aircraft/hangars also use it is **not established**.
 * The part detaches in `creatureLogic` (`0x140033b90`) at the call `0x140037809` (`call 0x140048fc0`, RCX = RSI = the part) after a countdown; then the part has `+0x3c8 = 1`, `+0x3c0 = -1`.
 
+* **Free flight and detection [data / guess]:** the telemetry shows about 4.1 s of free flight before a Zenith ends; a fixed self-destruct timer is a [guess]. `hf_ai` DETECTS a launch from the player's side with the target link (side < 0); the owner link (`+0x4b0`, confirmed side +1 on 18+ launches) is only logged. For the AI weapon controller's launch-list check, the list at `0x147fc73d8` is consulted only when it has more than one entry; that it is the player-side or ally set is a [guess].
+
 ## Evidence [game]
 A probe wrapping the call at `0x140037809` logged every part leaving a ship: all stats=130, side from `owner+0xad4` (negative = enemy). One battle: 19 detaches, 15 enemy; per-ship gaps 2.6 to 8.7 s (owner A at t = 70.4, 76.9, 80.0, 83.4, 90.9). The player's own launches appear there too.
 

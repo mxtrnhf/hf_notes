@@ -1,5 +1,7 @@
 # hf_ai v0.3.0, first run in game (2026-10-18, 14:30-14:36)
 
+
+Session labels (ledger `tuning_telemetry/REVIEWED.tsv`): 1792323859 = 2x57mm, 6 flares, ENGINE_03; 1792323960 = 2x130mm, no flares, ENGINE_04.
 Status: **runs without errors; the tactic overrides waypoints, but the user reports "nothing feels different".** Data: `tuning_telemetry/hf_ai_v030_first_run/` (5 fights: 1 Lightning in Shipworks, 4 Navarin in campaign, 2 with an ally). Config: tactics on (defaults, `blend_weight` 1.0, allies off), ported `ai_flares` on with `log_panic`, qol `ai_flares` off. Tags: [data] measured.
 
 ## What works [data]

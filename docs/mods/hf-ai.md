@@ -30,9 +30,9 @@ Installed values: [../../STATUS.md](../../STATUS.md). Keys used in the 2026-10-1
 ## Measured so far (2026-10-18, small samples, mostly one pilot) [data]
 * The QoL missile-dump delay cut early missile deaths from 19% to 5%.
 * A curtain on every enemy took the player's Zeniths to 0 of 23 hits; the preventive version (targeted ship plus neighbours) 6 of 15.
-* Dive v0.4.1 fired in 88% of alignments with no panic overlap and no errors, but the player's under+over share only moved from 59% to 56%: the sidestep (~120 u in 2 s) is smaller than the ~200 u needed while the player closes ~110 u in 2 s. Wrong-foot and level pull showed no gain (cone exit time 2.04 s unchanged). Aim dodge moved ships only ~17 u/s and was wasted when the player was not shooting (fixed in 0.6.3, unmeasured). Early fire is mostly extra close-range fire.
-* Difficulty: v0.6.4 31.7 hp/s (v0.5.2 22.4, v0.6.0 42.5); the roster (Gladiator and Intrepid, 83% of shell damage) is the likely driver.
-* The v0.7.1 run (sessions 1792342753/843/949/955) is replayed but not analysed.
+* Dive v0.4.1 fired in 88% of alignments with no panic overlap and no errors, but the player's under+over share only moved from 59% to 56%: the sidestep (~120 u in 2 s) is smaller than the ~200 u needed while the player closes ~110 u in 2 s. Wrong-foot and level pull showed no gain (cone exit time 2.04 s unchanged). Aim dodge moved ships only ~17 u/s and was wasted when the player was not shooting (fixed in 0.6.3, unmeasured). Early fire is mostly extra CLOSE-range fire (median start 0.34 x reach, 13 of 34 episodes produced shells, at most 5-8% of the player's damage). Strays are real but did no measured damage. `ground_hard_y` cannot stop the stock AI from descending.
+* Difficulty: v0.6.4 31.7 hp/s (v0.5.2 22.4, v0.6.0 42.5), about 2000 hp per battle in all three; the roster (Gladiator and Intrepid, 83% of shell damage) is the likely driver.
+* The v0.7.1 run (sessions 1792342753/843/949/955) is replayed (`tuning_telemetry/visualizer/replay_v071.html`) but not analysed and not yet in `REVIEWED.tsv`.
 
 ## Rollback and data
 Every DLL swap and config change keeps a backup in the game folder (`hf_ai_v<ver>.dll.bak`, `hf_ai.json.bak_pre-<change>`, `qol.json.bak_pre-<change>`). Telemetry and reports are in `tuning_telemetry/` (`hf_ai_v030_first_run/`, `intrepid/`, `lightning/`, `navarin/`, `REVIEWED.tsv`; not in git).
