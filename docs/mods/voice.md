@@ -1,6 +1,6 @@
 # hf_voice: key-bound sounds from loose .wav files
 
-> **Status (2026-10-19):** debug and experiment mod, not installed now (it shares a hook with `hf_ally`, so the two are not run together). See the table in [README.md](README.md).
+> Debug and experiment mod (it shares a hook with `hf_ally`, so the two are not run together). See the table in [README.md](README.md).
 
 Standalone modloader DLL (crate `hf-voice`, `hf_voice`, local git, no remote; build `cargo xwin build --release`, DLL archived as `hf_voice_build/hf_voice_v<version>.dll`). Steam **1.163** only. Plays a `.wav` through the game's own sound player when a key is pressed; the mechanism is [../sound.md](../sound.md).
 

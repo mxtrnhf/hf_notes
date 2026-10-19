@@ -1,6 +1,6 @@
 # highfleet-speed  (repo `old_standalone/hf_speed`, published)
 
-> **Status (2026-10-19):** merged upstream into highfleet-qol (PR #19); installed with `preset` classic. Standalone repo `old_standalone/hf_speed` (published as `highfleet-speed`) is the pre-merge version. See [qol.md](qol.md).
+> Merged upstream into highfleet-qol (PR #19). Standalone repo `old_standalone/hf_speed` (published as `highfleet-speed`) is the pre-merge version. See [qol.md](qol.md).
 
 Configurable **map cruise speed**. Vanilla 1.163: `speed = 50 * sqrt(TWR - 1)` m/s; 1.151: `25 * TWR`.
 

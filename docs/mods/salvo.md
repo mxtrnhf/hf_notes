@@ -1,6 +1,6 @@
 # highfleet-salvo  (repo `old_standalone/hf_salvo`)
 
-> **Status (2026-10-19):** standalone, not in QoL, not installed, postponed; repo `old_standalone/hf_salvo` (local only).
+> Standalone, not in QoL, postponed; repo `old_standalone/hf_salvo` (local only).
 
 Two independent options for strategic missiles on the map (`salvo.ini`):
 

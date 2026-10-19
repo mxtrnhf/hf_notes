@@ -1,20 +1,20 @@
 # hf_ai: the tactical AI layer
 
-> **Status (2026-10-19):** active. `hf_ai_v0.7.1.dll` is installed. Repo `hf_ai` (local git, no remote), last commit `ca7d678`. The repo's own README still says "v0.5.3" in its status line (stale, outside these notes).
+> Active. Repo `hf_ai` (local git, no remote). What is installed and the open items: [../../STATUS.md](../../STATUS.md).
 
 A standalone modloader DLL (Steam 1.163 only) that keeps the stock per-ship AI tick (`FUN_140062f90`) and overrides its outputs from a small set of tactics: the steering waypoint (`creature+0xbf0/0xbf4`, written at `0x140064a8d`), the engine command strength (`0x140065744`), the fire bytes and the flare release. Design, decisions and the hook-ownership rules: [../findings/ai/ai-hf-ai-design.md](../findings/ai/ai-hf-ai-design.md). The ported flare/evasion algorithm: [../findings/ai/ai-flares.md](../findings/ai/ai-flares.md). The data it was designed from: [../findings/ai/ai-telemetry.md](../findings/ai/ai-telemetry.md), [../runs/ai-intrepid-benchmark.md](../runs/ai-intrepid-benchmark.md), [../runs/ai-underside.md](../runs/ai-underside.md).
 
 ## What it does (v0.7.1)
 * **`ai_flares`** (ported from the QoL fork): a missile locked on an AI ship inside `trigger_range` starts a panic: flare burst, sidestep, sometimes a boosted evasion; v0.5 to v0.7 added the **flare curtain** (pre-emptive flares when the player's side launches a missile; timed by missile ETA; certain for the targeted ship; ships that cannot drop shelter behind one that can; retreat from the launched missile with boost).
-* **`tactics`**: deny the dive (sidestep when the target is straight under or over), wrong-foot side, level pull, aim awareness (enemies slip off the player's aim line only while the player shoots), early fire (writes the group-0 fire byte for one second), stray-missile avoidance. "Strafe in the band" exists but is off (it did not show in play).
+* **`tactics`**: deny the dive (own `dive_*` keys and `dive_enabled` / `strafe_enabled` switches; an 80% roll once per alignment; `dive_min_accel` 30, cone 45 deg, range 600 u, dwell 1 s; `dive_boost` 2.0 through the engine hook `0x140065744`; the steer CSV state column shows `dive`, `dive_skip`, `dive_under`, `dive_over`) (sidestep when the target is straight under or over), wrong-foot side, level pull, aim awareness (enemies slip off the player's aim line only while the player shoots), early fire (writes the group-0 fire byte for one second), stray-missile avoidance. "Strafe in the band" exists but is off (it did not show in play).
 * Always installed: the log-only steering hook (CSV `hf_ai_steer_<unix>.csv`), and `hf_ai_panic_<unix>.log` with `log_panic`.
 
 ## Rules
 * Exactly one of QoL `ai_flares.enabled` and hf_ai `ai_flares.enabled` may be on (both patch the same three sites). Installed: QoL off, hf_ai on.
 * QoL `enable_flare_crash_fix` stays on.
 
-## Installed config (`Modloader/config/hf_ai.json`, 2026-10-19)
-`ai_flares` enabled, `log_panic`, `launch_flares_probability` 0.6, `launch_flares_targeted_only` and `launch_flares_shelter` on; `tactics` enabled, `blend_weight` 2.0, `strafe_enabled` false, `dive_enabled` true (`dive_min_s` 2, `dive_max_s` 4), `aim_enabled` true, `aim_fire_probability` 0.5.
+## Config (`Modloader/config/hf_ai.json`)
+Installed values: [../../STATUS.md](../../STATUS.md). Keys used in the 2026-10-18 tests: `ai_flares` enabled, `log_panic`, `launch_flares_probability` 0.6, `launch_flares_targeted_only` and `launch_flares_shelter` on; `tactics` enabled, `blend_weight` 2.0, `strafe_enabled` false, `dive_enabled` true (`dive_min_s` 2, `dive_max_s` 4), `aim_enabled` true, `aim_fire_probability` 0.5.
 
 ## Versions
 | Version | Commit | Added |
@@ -30,9 +30,12 @@ A standalone modloader DLL (Steam 1.163 only) that keeps the stock per-ship AI t
 ## Measured so far (2026-10-18, small samples, mostly one pilot) [data]
 * The QoL missile-dump delay cut early missile deaths from 19% to 5%.
 * A curtain on every enemy took the player's Zeniths to 0 of 23 hits; the preventive version (targeted ship plus neighbours) 6 of 15.
-* Wrong-foot and level pull showed no gain. Aim dodge moved ships only ~17 u/s and was wasted when the player was not shooting (fixed in 0.6.3, unmeasured). Early fire is mostly extra close-range fire.
+* Dive v0.4.1 fired in 88% of alignments with no panic overlap and no errors, but the player's under+over share only moved from 59% to 56%: the sidestep (~120 u in 2 s) is smaller than the ~200 u needed while the player closes ~110 u in 2 s. Wrong-foot and level pull showed no gain (cone exit time 2.04 s unchanged). Aim dodge moved ships only ~17 u/s and was wasted when the player was not shooting (fixed in 0.6.3, unmeasured). Early fire is mostly extra close-range fire.
 * Difficulty: v0.6.4 31.7 hp/s (v0.5.2 22.4, v0.6.0 42.5); the roster (Gladiator and Intrepid, 83% of shell damage) is the likely driver.
 * The v0.7.1 run (sessions 1792342753/843/949/955) is replayed but not analysed.
+
+## Rollback and data
+Every DLL swap and config change keeps a backup in the game folder (`hf_ai_v<ver>.dll.bak`, `hf_ai.json.bak_pre-<change>`, `qol.json.bak_pre-<change>`). Telemetry and reports are in `tuning_telemetry/` (`hf_ai_v030_first_run/`, `intrepid/`, `lightning/`, `navarin/`, `REVIEWED.tsv`; not in git).
 
 ## Open
 Analyse the v0.7.1 run; allied bombers (needs bomb telemetry first); break-off and friendly-AI behaviour need your decisions; hf_ai has no remote. Current list: [../../STATUS.md](../../STATUS.md).

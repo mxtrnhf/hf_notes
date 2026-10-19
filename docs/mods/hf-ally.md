@@ -1,6 +1,6 @@
 # hf_ally: AI allies from the reserve, pre-combat buttons, telemetry
 
-> **Status (2026-10-19):** active. `hf_ally_v0.12.10_debug_telemetry.dll` is installed (telemetry on). Repo `hf_ally` (local git, no remote), last commit `e9540a5`. Tester packs: `hf_release_pack_v0.12.2_debug.zip` is the newest in the workspace.
+> Active. Repo `hf_ally` (local git, no remote). What is installed, the newest tester pack and the open items: [../../STATUS.md](../../STATUS.md).
 
 A modloader DLL (Steam 1.163 only). In a battle entered through the pre-combat screen, a reserve ship is run by the game's own AI beside the player: it joins ~1.5 s after the start, can be told to retreat, is replaced by the next switched-on ship when it leaves or is lost, and spares prize ships. How the vanilla machinery works (what makes a Creature AI-run, the deploy, the retreat point, ORDER roles, prize ships, fleets and landing): [../findings/battle-ally.md](../findings/battle-ally.md). The pre-combat buttons: [../rendering/precombat-screen.md](../rendering/precombat-screen.md). Run reports: [../runs/ally-runs.md](../runs/ally-runs.md), [../runs/ally-probe-run-1.md](../runs/ally-probe-run-1.md), tester plan [../runs/tester-test-plan.md](../runs/tester-test-plan.md).
 
@@ -11,8 +11,8 @@ A modloader DLL (Steam 1.163 only). In a battle entered through the pre-combat s
 * Diagnostics: version banner, crash reporter in every build; the `megalog` cargo feature adds an unbuffered log, heartbeat, clicks, scene states, fleet snapshots and a minidump (the modloader log is buffered, so a crash loses its tail: [../findings/collect-dead-crash.md](../findings/collect-dead-crash.md) and the crash hunt in [../runs/ally-runs.md](../runs/ally-runs.md)).
 * Telemetry (cargo feature `telemetry`, config `telemetry: true`): ships, parts/damage and flying bodies CSVs, the player ship at 30 Hz, per-gun ammo type, a dead-node diagnostic. Described in [../findings/ai/ai-telemetry.md](../findings/ai/ai-telemetry.md).
 
-## Installed config (`Modloader/config/ally.json`, 2026-10-19)
-`spawn_ally` true, `ally_delay_seconds` 1.5, `auto_retreat` true, `retreat_key` 119, `flagship_leaves` handover, `ally_toggle` true, `max_allies` 2, `ally_fuel_retreat_percent` 90, `telemetry` true; `log_creatures`, `log_precombat`, `gui_inspect` off (the last two are very large).
+## Config (`Modloader/config/ally.json`)
+Keys: `spawn_ally`, `ally_delay_seconds`, `auto_retreat`, `retreat_key` (virtual-key code, 119 = F8), `flagship_leaves`, `ally_toggle`, `max_allies`, `ally_fuel_retreat_percent`, `telemetry`, `spare_prizes`, and the log switches `log_creatures`, `log_precombat`, `gui_inspect` (the last two are very large). Installed values: [../../STATUS.md](../../STATUS.md).
 
 ## Tested in play, and not
 Seen: several allies, replacement after a retreat order, per-ship buttons, summary lines, handover when the flagship is shut down, flares on allies (now in `hf_ai`). Not seen as of the 2026-10-16 list: an ally destroyed in battle, prize-safe targeting on a convoy (fixed in 0.9.1, untested), several allies with `handover`.

@@ -1,6 +1,6 @@
 # highfleet-qol (logdot) and our fork
 
-> **Status (2026-10-19):** installed as `highfleet_qol.dll` built from the local fork branch `ai-flares` at `95e8bc7` (`hf_qol_fork`; the branch `ai-flares` is local only, the other branches are on the `origin` fork `mxtrnhf/highfleet-qol`, with `upstream` = logdot). Pull-request states: [../../STATUS.md](../../STATUS.md).
+> The QoL fork carries our public and local features; the installed build, the PR states and the build break are in [../../STATUS.md](../../STATUS.md). The fork `hf_qol_fork` has `origin` (`mxtrnhf/highfleet-qol`) and `upstream` (logdot); branch `ai-flares` is local only.
 
 logdot's `highfleet-qol` is the one monolith the public features go into. What each of our features is, where it lives, and whether it is released:
 
@@ -10,7 +10,7 @@ logdot's `highfleet-qol` is the one monolith the public features go into. What e
 | speed curve | [speed.md](speed.md) | merged, PR #19 | yes (`preset` classic) |
 | manual elevation | [elevation.md](elevation.md) | PR #20 open | yes (`enabled` true) |
 | AI flares and evasion (`ai_flares`) | [../findings/ai/ai-flares.md](../findings/ai/ai-flares.md) | local branch only | built in, **off** (hf_ai carries it) |
-| AI missile dump (`ai_missile_dump_chance`, `_min_delay`, `_max_delay`) | [../findings/combat-missile-launch.md](../findings/combat-missile-launch.md) | local branch only | chance 0.7, delay 0.6 to 1.5 s |
+| AI missile dump (`ai_missile_dump_chance`, `_min_delay`, `_max_delay`) | [../findings/combat-missile-launch.md](../findings/combat-missile-launch.md) | local branch only | chance 0.7, delay 0.6 to 1.5 s (key defaults 0.1 / 0.5; commit `95e8bc7` also fixed `drop_stale`, which dropped bursts whose delay was over 1 s) |
 | `allies` option of `ai_flares` | [hf-ally.md](hf-ally.md) | local branch only | `true` (only matters if `ai_flares` is on) |
 | flare crash fix (`enable_flare_crash_fix`) | [../findings/flare-crash-hunt.md](../findings/flare-crash-hunt.md) | upstream | on; keep it on |
 

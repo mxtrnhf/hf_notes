@@ -4,7 +4,7 @@
 Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, QoL, Feature, AI, Mod Scope, Physics Engine.
 
 ## Version scope
-**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed, [mods/speed.md](mods/speed.md)) and the **damage changes**. The code-side differences are listed in [ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md) (per-ammo shell lifetime, rocket warheads, incendiary power and more). Other 1.163 changes found: the close-range weapon cutoff, the 3500/3000 special-target ranges and the 0.025 rad aim tolerance in the AI weapon controller ([findings/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md)), the harpoon, KAZ ammo and a removed debug overlay ([version-differences.md](version-differences.md)). Damage changes: done, see [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md) (compared live on both versions; what stays open is listed there).
+**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed, [mods/speed.md](mods/speed.md)) and the **damage changes**. The code-side differences are listed in [ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md) (per-ammo shell lifetime, rocket warheads, incendiary power and more). Other 1.163 changes found: the close-range weapon cutoff, the 3500/3000 special-target ranges and the 0.025 rad aim tolerance in the AI weapon controller ([findings/ai/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md)), the harpoon, KAZ ammo and a removed debug overlay ([version-differences.md](version-differences.md)). Damage changes: done, see [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md) (compared live on both versions; what stays open is listed there).
 
 ## Items
 
@@ -45,7 +45,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
   * Data for any AI tuning: battle telemetry from `hf_ally` v0.12.3 to v0.12.7, see [ai-telemetry.md](findings/ai/ai-telemetry.md); tactics design: [ai-hf-ai-design.md](findings/ai/ai-hf-ai-design.md).
 * **[Tactical]** The AI cannot use some ordnance or parts (LG/INC shells); AP rounds are fired only at extremely short range; the AI cannot deploy flares. *(partial: flares: cause and design; shells: patch-site notes; nothing built)*
   * Flares: the cause and a mod design are in [ai-flares.md](findings/ai/ai-flares.md) (the release code is generic; only the player's input sets the flag `Creature +0xbc0`). Not yet implemented or run in game.
-  * LG/INC/AP ammo choice by the AI: [findings/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md) (section 3).
+  * LG/INC/AP ammo choice by the AI: [findings/ai/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md) (section 3).
 * **[Tactical, exploitable]** High convergence angles can be used to disable enemy turrets. *(open)*
 
 ### Mod scope

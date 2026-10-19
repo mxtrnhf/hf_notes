@@ -1,6 +1,6 @@
 # highfleet-multicharge  (repo `old_standalone/hf_multicharge`)
 
-> **Status (2026-10-19):** standalone, not in QoL, not installed; repo `old_standalone/hf_multicharge` (local only). Not released.
+> Standalone, not in QoL, not released; repo `old_standalone/hf_multicharge` (local only). Installed state: [../../STATUS.md](../../STATUS.md).
 
 Parts that launch several times before they are used up. **Charge level = part id**: `MDL_AA_X3 > X2 > X1` (S-4 Triumph, combat AA) and `MDL_A101_4 .. _1` (A-101, four launches of the A-100, map).
 

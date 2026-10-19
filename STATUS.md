@@ -16,7 +16,7 @@ Everything else in `mods/` is a `.bak` of an older build. Not installed: `hf_pro
 |---|---|---|
 | `hf_ai`, `hf_ally`, `hf_voice`, `hf_probe`, `hf_draw_test` | none (the only copies are on this machine) | clean |
 | `hf_qol_fork` | `origin` = `mxtrnhf/highfleet-qol`, `upstream` = logdot | feature branches (`elevation`, `refuel-rate`, `pin-highfleet-rs`) are on origin; branch `ai-flares` (installed build, `95e8bc7`) is local only; local `main` is 4 commits ahead of `origin/main` |
-| `hf_notes` | `mxtrnhf/hf_notes` | see `git status` for unpushed commits |
+| `hf_notes` | `mxtrnhf/hf_notes` | pushed (origin/master) as of 2026-10-19 |
 | `old_standalone/*` | `hf_elevation` and `hf_speed` published, the rest local | the pre-merge standalone mods |
 
 ## Upstream (logdot/highfleet-qol)
@@ -47,7 +47,6 @@ Newest: `hf_release_pack_v0.12.2_debug.zip` (folder `hf_release_pack_v0.12.2_deb
 | Allied bombers | needs bomb telemetry first (inventory, release counter, altitude); see the AI ideas in [docs/roadmap.md](docs/roadmap.md) |
 | Audio clipping | reported, cause unknown (game, or the flare curtain); parked |
 | README follow-ups | troubleshooting, a worked "add a part" guide; optional move to the modloader's logging SDK |
-| hf_ai README | its status line still says v0.5.3 (repo outside these notes) |
 
 ## Data and working rules
 * Combat telemetry is in `tuning_telemetry/`; the ledger `REVIEWED.tsv` lists analysed sessions, unlisted ones in `Modloader/logs` are new. The user labels ships (Shipworks designs are named `TestProject`).
