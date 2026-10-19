@@ -1,6 +1,6 @@
 # highfleet-qol (logdot) and our fork
 
-> **Status (2026-10-19):** installed as `highfleet_qol.dll` built from the local fork branch `ai-flares` at `95e8bc7` (`hf_qol_fork`, no remote). Pull-request states: [../../STATUS.md](../../STATUS.md).
+> **Status (2026-10-19):** installed as `highfleet_qol.dll` built from the local fork branch `ai-flares` at `95e8bc7` (`hf_qol_fork`; the branch `ai-flares` is local only, the other branches are on the `origin` fork `mxtrnhf/highfleet-qol`, with `upstream` = logdot). Pull-request states: [../../STATUS.md](../../STATUS.md).
 
 logdot's `highfleet-qol` is the one monolith the public features go into. What each of our features is, where it lives, and whether it is released:
 

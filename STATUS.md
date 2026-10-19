@@ -14,7 +14,8 @@ Everything else in `mods/` is a `.bak` of an older build. Not installed: `hf_pro
 ## Repos
 | Repo | Remote | State |
 |---|---|---|
-| `hf_ai`, `hf_ally`, `hf_qol_fork`, `hf_voice`, `hf_probe` | none (the only copies are on this machine) | clean, except `hf_qol_fork` has an untracked `README.md.orig` |
+| `hf_ai`, `hf_ally`, `hf_voice`, `hf_probe`, `hf_draw_test` | none (the only copies are on this machine) | clean |
+| `hf_qol_fork` | `origin` = `mxtrnhf/highfleet-qol`, `upstream` = logdot | feature branches (`elevation`, `refuel-rate`, `pin-highfleet-rs`) are on origin; branch `ai-flares` (installed build, `95e8bc7`) is local only; local `main` is 4 commits ahead of `origin/main` |
 | `hf_notes` | `mxtrnhf/hf_notes` | see `git status` for unpushed commits |
 | `old_standalone/*` | `hf_elevation` and `hf_speed` published, the rest local | the pre-merge standalone mods |
 

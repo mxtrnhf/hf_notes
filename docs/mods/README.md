@@ -7,7 +7,7 @@ One row per mod. Status is as of 2026-10-19 and was read from the game folder's 
 |---|---|---|---|
 | `hf_ai` | active, v0.7.1 installed | `hf_ai` (local, no remote) | [hf-ai.md](hf-ai.md) |
 | `hf_ally` | active, v0.12.10 telemetry build installed | `hf_ally` (local, no remote) | [hf-ally.md](hf-ally.md) |
-| QoL fork (`highfleet_qol`) | installed; refuel and speed merged upstream, elevation PR #20 open, AI features local | `hf_qol_fork` (branch `ai-flares`) | [qol.md](qol.md) |
+| QoL fork (`highfleet_qol`) | installed; refuel and speed merged upstream, elevation PR #20 open, AI features local | `hf_qol_fork`: `origin` = `mxtrnhf/highfleet-qol`, `upstream` = logdot; branch `ai-flares` (the installed one) is local only | [qol.md](qol.md) |
 | refuel, speed, elevation | merged into QoL | `old_standalone/hf_refuel`, `hf_speed`, `hf_elevation` | [refuel.md](refuel.md), [speed.md](speed.md), [elevation.md](elevation.md) |
 | multicharge | standalone, not installed | `old_standalone/hf_multicharge` | [multicharge.md](multicharge.md) |
 | salvo | standalone, postponed | `old_standalone/hf_salvo` | [salvo.md](salvo.md) |
