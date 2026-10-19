@@ -1,7 +1,20 @@
 # Highfleet 1.163 reverse-engineering notes (with 1.151 comparison)
 
 Short, topic-based notes behind the Highfleet mods (Steam 1.163 with a 1.151 comparison, image base `0x140000000`).
-Tags (one legend for all docs): **[game]** verified in play, in logs or on the real game files · **[code]** read from the decompilation · **[guide]** community guide, unverified here · **[guess]** inferred · **[tool]** Ghidra fuzzy-match result (a similarity score, not proof) · **[not read]** known gap · **[file]** read from game files. `docs/version-differences.md` adds **[V]** / **[C]** / **[?]** for offset confidence (defined there). Paths in the docs are relative to the workspace root (`$HF_DEV`, e.g. `~/Development_Highfleet`) and the game folder is `<game dir>`.
+
+Tags (one legend for all docs):
+
+- **[game]** -- verified in play, in logs or on the real game files.
+
+- **[code]** -- read from the decompilation.
+
+- **[guide]** -- community guide, unverified here.
+- **[guess]** inferred.
+- **[tool]** Ghidra fuzzy-match result (a similarity score, not proof).
+- **[not read]** known gap.
+- **[file]** read from game files. 
+
+`docs/version-differences.md` adds **[V]** / **[C]** / **[?]** for offset confidence (defined there). Paths in the docs are relative to the workspace root (`$HF_DEV`, e.g. `~/Development_Highfleet`) and the game folder is `<game dir>`.
 
 Layout: `docs/` reference docs; `docs/findings/` one note per question; `docs/rendering/` how the game draws (start at its README); `docs/runs/` dated probe and seam-test reports (evidence, not reference); `docs/data/` tables; `STATUS.md` perishable state.
 
