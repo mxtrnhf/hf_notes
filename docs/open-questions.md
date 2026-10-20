@@ -10,6 +10,8 @@
 * The arc scan being "gated off by data" (stats +0x128 == 0) versus a patched call is not settled (gun-side blocking itself is solved by highfleet-qol).
 * Refuel: the buy-fuel slider is partly traced ([rendering/click-func.md](rendering/click-func.md#decompiled-branches-v1163)); `REFUEL_TIME` is untraced. GOG 1.163 may share addresses with Steam 1.163; untested.
 
+* **Aircraft AI crash `Highfleet.exe+0x10A51`** (stock out-of-bounds read of the 0x1b0-byte `AircraftLogic`, seen 2026-10-20): [findings/aircraft-logic-oob-crash.md](findings/aircraft-logic-oob-crash.md). Candidate 2-byte fix not applied.
+
 ## Ally mod crash hunt (open, see [runs/ally-runs.md](runs/ally-runs.md#crash-hunt-2026-10-17-tester-logs-ghidra-leads-diagnostics-build-first-debug-runs) and [findings/battle-ally.md](findings/battle-ally.md#fleets-landing-and-the-location-scene))
 * Crash address of the tester's engagement-start crash: pending (the v0.11 crash report prints module+offset; inside `0x1400f5b40` / `0x1402672c0` = scene case 2, inside `0x140265d80` = location walker).
 * What scene state 3 (after case 2 at `0x1402be084`) does when case 2 spawned no player ship: unread.
