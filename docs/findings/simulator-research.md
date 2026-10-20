@@ -20,7 +20,7 @@ linked below; this page only collects and cross-checks them.
 
 ## AI
 * The waypoint formula of `AiShipTick` is ported exactly (agreement is at the 0.1-unit log resolution, which is a transcription check, not a behaviour test) [code + data].
-* The force: F = m x k_a x (c x u - v) - (0, m x 9.82), two bank vectors with a norm clamp and a 6-sample average. An empirical delivery factor of 1.7 is unexplained; the attitude-hold term (gate: 2 x min bank angular thrust / hull inertia > 0.02) and the avoidance term are not ported [code].
+* The force: F = m x k_a x (c x u - v) - (0, m x 9.82), two bank vectors with a norm clamp and a 6-sample average. There is no fixed delivery factor: each of the two banks carries the full tick vector, so the delivered force is about 2|F| when aligned and unclamped (checked on 11,761 enemy rows, structural model median 1.000); the attitude-hold term (gate: 2 x min bank angular thrust / hull inertia > 0.02) and the avoidance term are not ported [code].
 * Enemy ammo doctrine is rolled once at spawn (first group-0 gun's calibre and rating): see [firing-and-shells.md](firing-and-shells.md), [ai/](ai/) and `hf_ml/out/ds2-ammo-writer`. AP needs c7c AND c74 AND distance < 1000; proximity needs c7d AND (c75 OR c76) [code, seen in play].
 
 ## Damage and kill
