@@ -1,0 +1,19 @@
+# Serializing a ship to text (.seria writer) (1.163)
+
+Status: read in Ghidra 2026-10-21 [code]; the call from a mod is untested. 
+
+**Update:** the game has a one-call file writer, `ISerializable_SerializeToFile 0x14024e3e0` (`bool(obj /*RCX*/, const char* path /*RDX*/)`): it builds its own stream, opens the file (`std::_Fiopen(path, ios::out, 0x40)`), calls `obj->vtable[+0x10]` (= `ISerializable::Serialize 0x140190820`), flushes and closes; the game uses it for `Libraries/OL.seria` and ship saves. A mod needs no stream of its own. Serialize only reads for Body/Joint and writes log lines (2 per object); `Level::Serialize` is the one that changes a global.
+
+Tags: **[code]** read today; **[guess]**. Nothing was called or patched, only read.
+
+## What exists  [code]
+* `ISerializable::Serialize(this, stream)` at **0x140190820** is the game's generic text writer (the `.seria` format). If `this+0x40` (a "serializable" flag) is false it returns true and writes nothing. Otherwise it logs `Ser starts for object %s`, requires `*(stream + 0x88) != 0`, writes an open marker, calls the class's virtual `SerializeHeader` (vtable slot), then calls the virtual `Serialize` of every child in `this->properties` (a linked list), writes a close marker, logs `Ser successful`. It is referenced by ~80 vtables (every serializable class) and by the wrapper `Level::Serialize 0x1402c98d0`.
+* The per-part field list is **`Body::SerializeHeader` 0x14004f010** [code]: it writes (only when != default) `m_position`(+0x128/+0x12c), `m_velocity`(+0x130/+0x134), `m_angle`(+0x138), `m_ang_velocity`(+0x13c), `m_center`(+0x210), `m_scale`(+0x920/+0x924), `m_density`(+0x1d0), `m_friction`(+0x1d4), `m_mass`(+0x1d8), `m_health`(+0x2c8) `m_health_max`(+0x2cc), `m_burn_hp`(+0x334), `m_slot_type`(+0x368), `m_logic`(+0x3c4), `m_sectors`(+0x508 list), `m_oid`(+0x190 string), fuel/crew/pump/turbine/weapon fields (`m_mdl_fuel` double +0x7f8, `m_mdl_fss` +0x800, `m_mdl_crew` +0x804, `m_mdl_side` +0x808, `m_mdl_pump` +0x838, `m_mdl_turbine` +0x83c, `m_weapon_type` +0x84c, `m_weapon_ammo` +0x850, `m_weapon_ammo_extra` +0x854, `m_weapon_ammo_amount` +0x858, `m_weapon_ammo_extra_amount` +0x85c), mesh (`m_mesh` -> mesh serializer), `m_slots` (+0x350 list), `m_routs` (+0x338), sprites, `aircraftLogic` (+0xa20), `m_ttl`, `m_explosive*`, `m_logic_i1..i4/f1..f4/s1`. It does NOT write temperature `+0x2ec`/dose `+0x2f0`, reload/rate timers `+0x864..+0x874`, power `+0x818`, enabled `+0x80c`, gun loaded `+0x860`: so a seria round trip is NOT an exact runtime copy (those restart from defaults).
+* Joint fields: `Slot_SerializeFields 0x1401943b0` (really the Joint serializer: m_A/m_B ids, shiftA/B, m_type, limits, motor).
+* Creature (ship-level) fields are NOT serialized by a creature serializer I found; the ship is saved as its **part tree**. `Profile::Save 0x1402a73a0` does it per saved ship: `FUN_140048500(creature, &vec, 1)` collects the parts (climbs the master pointer `+0x88` to the root part, `FUN_14001cfa0`), makes a new root Node named `<ship name>_root`, `APP_MoveVolume`s the parts into it (this MOVES/rewrites state: do not call on a live ship), then the frame's vtable `+0x50`, then writes the profile with an ostream. Side effect also: `FUN_140048500` clears byte `+0x388` on collected parts.
+
+## How to use it
+* Call `ISerializable_SerializeToFile(root_part, path)` on the game thread for each ship's ROOT part (climb the master pointer `+0x88` while the parent's class code &0xf == 0xf). Untested: that the root part's property list contains all child parts.
+* A seria dump is not a runtime copy: temperature, reload/rate timers, power, the enabled flag, the gun loaded count and all creature-level fields (fuel total, rating, TWR) are not written.
+* Alternative needing no call: the probe's S/Q rows already give layout and changes.
+* Open: the Creature class's own `SerializeHeader` (if any); the mesh serializer was not read.

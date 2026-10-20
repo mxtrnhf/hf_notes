@@ -1,0 +1,43 @@
+# Guns: aim servo, reload, fire gates, spread, recoil (1.163)
+
+Status: read in Ghidra 2026-10-21 [code] unless marked. Program `Highfleet.exe.unpacked.exe` 1.163. Companion: [blast-and-penetration.md](blast-and-penetration.md), [firing-and-shells.md](firing-and-shells.md). Ammo index to gun: [ammo-1151-vs-1163.md](ammo-1151-vs-1163.md).
+
+Program `Highfleet.exe.unpacked.exe` (1.163). Tags: **[code]** read by me today in decompile; **[agent]** from the DeepSeek report `hf_ml/out/ds-gunaim/REPORT.md`, not re-read; **[guess]**.
+
+## 1. How a gun turns (NOT instant)  [code]
+* The gun barrel is a part on a **revolute joint with a motor**; it is steered by the same servo as the engine swivel: message id 200 `{200, angle}` -> dispatcher `0x1400533f0` -> handler `0x140053870` (not renamed yet; it is a servo update, not an "atan2f").
+* Handler: error = wrap(commanded angle - part angle `+0x138`), deadband 0.01 rad (error set to 0 below that), then **sqrt easing**: `e = sign(err) * sqrt(|err|)`. Motor speed = `P * P * Stats+0x108 * e` with `P` = part power fraction `+0x818`; motor max torque = `mass(+0x1d8) / 100`. Applied through `Joint_SetMotor` on every joint in the part's joint list (`+0x230`). Needs power `+0x818` != 0 (it returns at once otherwise) and, when Stats `+0xec` != 0, also `+0x820` != 0.
+* **Parallax correction** (if the owner has a target link in `+0xb00`, or `+0xb18` when part `+0x84c` (weapon type) == 1): the commanded direction is taken as a ray from the ship CENTRE (`+0x1840/+0x1844`); the point on that ray at the same distance as the target from the centre is computed, and the gun turns to point from ITS OWN position at that point. So off-centre guns converge on the aim ray at target range. Without a target the commanded angle is used as is.
+* The AI commands ONE angle per ship for all guns (`-atan2(dir)`), computed in `AiWeaponController 0x14007a8d0` at `0x14007b600..0x14007b92f` [agent], direction stored at creature `+0xbf8/+0xbfc`, lead vector `+0xbc8/+0xbcc`. Lead uses the solver `FUN_140233490` [code, below]. AI fires only when `|gun angle +0x138 - aim| <= 0.025 rad` (float at `0x140354678`) [agent].
+* `FUN_140233490(out, targetPos, targetVel, v0, accel, accelTime, shooterPos, shooterVel)`: bisection (100 iterations, stop at 0.5 range) for the flight time t of a projectile that accelerates at `accel` for `accelTime` seconds from base speed `v0` and then coasts; the aim point is shooter + t * (relative velocity) + target... i.e. a standard intercept with an acceleration phase. Whether the plain-shell AI call passes accel = 0 was not read.
+
+## 2. Firing arcs  [code]
+* **No arc check exists in FireGuns / FireGun / FireShell.** The Body list `m_sectors` (`+0x508/+0x510`) is only read by serializer / copy / constructor code (no game-logic reader found in a program-wide search for `+0x508`/`+0x510`). Stats `+0x12c/+0x130` (sectors shift/threshold) were not found in the turn or fire code either [agent, my search found no reader].
+* So the only real limit on where a gun can point is the **revolute joint's angle limits** (`m_angle_enable/min/max`, Joint `+0xf4/+0xfc/+0x100`, DATA in the seria) plus physical blocking by its own hull (shells collide with the shooter's parts? see gun part 2). The QoL mod's arc blocking (`0x140032f22`) is the mod's own addition, not vanilla.
+
+## 3. Fire gates, FireGuns -> FireGun  [code]
+`FireGuns(gun)` (0x1400559e0, takes ONE gun; callers loop the groups): requires gun `+0x2f4 == 0`, `+0x818 != 0` (powered) and (Stats `+0xec == 0` or `+0x820 != 0`); then `FireGun(gun, side)` with side = -1 when owner `+0xad4 <= 0` and nonzero (enemy), else +1.
+`FireGun` (0x140032e60): needs loaded `+0x860 >= 1.0`; sets latch `+0x874 = 1`; refuses if block timer `+0x870 > 0`, or rate timer `+0x86c != 0`. Fires: `+0x860 -= 1` (clears `+0x875` at <= 0), `+0x86c = 1 / (rpm/60)` with rpm = Stats `+0x150` (0 -> 0), then `FireShell`. (In the `DAT_147fc6fd4` mode a gun with the rate timer running returns "fired" without firing.)
+
+## 4. Reload model (per-frame, `Part_Tick` 0x140054fb0, code at `0x1400553b5..0x140055516`)  [code]
+Fields (gun part): `+0x860` loaded rounds (float), `+0x858` reserve rounds (int), `+0x864` reload timer, `+0x868` rounds-in-flight-of-reload (0/1), `+0x86c` rate timer, `+0x870` AI block float, `+0x874` latch, `+0x85c` second ammo reserve. Stats: `+0x148` magazine (int), `+0x14c` reload time (s), `+0x150` rpm.
+* Reload runs only if Stats `+0x14c != 0`, part enabled `+0x80c != 0` and powered `+0x818 != 0`, and the part has an owner (or is a GUI body).
+* **Rounds are loaded ONE AT A TIME.** When `timer == 0` and `loaded < magazine`: `timer = reload_time / magazine` (x0.8 with perk id 1 in creature `+0x1a30` list). If reserve `+0x858 >= 1`: reserve -= 1 and step = 1, else step = 0 (a round is only added if the reserve paid for it). While `timer > 0` it counts down by `dt * k` with **k = 1.75 for the player's ship, 1.0 for everyone else**; at <= 0: `loaded += step` (skipped for parts named `MDL_FIGHTER01`), `timer = 0`, and the next round starts on the next tick.
+* One exception to the countdown: when `DAT_147fc6fe0 != 0`, for a non-player part the timer only runs if `FUN_1402213e0()` is true or `FUN_14021ccb0(owner,0,1)` is true (a campaign-mode condition I did not decode) [V code, meaning open].
+* The rate timer `+0x86c` counts down by dt (the global `time_related_global_`); at <= 0 it is set to 0.
+* **AI burst/pause cycle** (non-player only): a fire attempt sets latch `+0x874`; while the latch is set `+0x870 -= dt`; when it falls below -3.0 it is reset to **+1.5** and the latch is cleared. FireGun refuses while `+0x870 > 0`. Net: roughly 3 s of allowed fire then a 1.5 s pause, repeating while the AI keeps trying (the first cycle starts at 0, so the first pause comes after ~3 s of attempts). The player's `+0x870` is forced to 0 every tick.
+* Player-only: if reserve, loaded and step are all 0 and the extra reserve `+0x85c > 0`, `FUN_1401b6e00(owner)` runs (swap to the second ammo type) [guess on meaning].
+
+## 5. Spawn, spread, speed, recoil (`FireShell 0x1400300d0`, `Body::BulletImpact__ 0x140052a80`)  [code]
+* FireShell dispatches on the **ammo index** (not calibre): 5, 10, 15, 20, 25, 30, 40, 90 are ordinary shells through `BulletImpact__`; 51/52/54/55 (0x33 0x34 0x36 0x37) are missiles (their own setup); 60 and 70 are multi-pellet flak (3 and 6 pellets, fixed fan 0.3 / 0.1 rad steps, speed rand * 300 / 250 * mass); 80 is the EMP pulse; the rest of FireShell is muzzle flash and sound.
+* **Spread** = uniform random angle in `[-s, +s]` rad around the aim: `s = 0.05` for ammo 5, 10, 15; `s = 0.02` for ammo 20, 25, 30, 40, 90. [V: the `param_13` argument of each call: `0x3d4ccccd` = 0.05, `0x3ca3d70a` = 0.02]
+* **Muzzle speed** = `rand(0.98, 1.20) * ammo.speed` (HGE uniform), direction = gun's local forward (0,1) rotated to world by the gun angle, then rotated by the spread. It is applied as an **impulse = speed * mass** on the shell body (vtable `+0x190`; so v = speed * rand). I did NOT find the shooter's velocity being added in this function: the shell starts at the ship's velocity only if the engine does it somewhere else (CreateShell_ / the node-add call). **Check in the telemetry: shell speed in the world frame vs ship speed.**
+* **Recoil**: `FireGun` passes `param_5 = 1`, so the root body of the gun's chain (`traverse...` top node, i.e. the ship's frame body) gets the equal and opposite impulse `-(speed * rand * mass_shell)`; real momentum conservation, no extra recoil factor in this function.
+* Shell body setup (BulletImpact__): ttl = `ammo.ttl` (1.0 for armour-piercing), explosive `+0x2dc = ammo.explosive_power`, penetration `+0x2e0 = ammo.penetrative_power`, incendiary `+0x2e8 = ammo.incendiary_power`, calibre `+0x3c4`, `ap_drag` -> `+0x1dc`, health 1.0 (`+0x2c8/+0x2cc`), bullet flag `+0x1fc = 1` (continuous collision); owner links set by `SetLink` (shooter creature and gun). Exact link offsets not decoded here.
+
+## 6. Not done / open
+* Ammo index <-> item table: `AMMO_LIST_BEGIN 0x143a13be0`, stride 0x188, fields (`ttl`, `speed`, `explosive_power`, `penetrative_power`, `incendiary_power`, `ap_drag`, `caliber`); whether FireShell index == calibre key for the shells (5 = 37 mm, 10, 15, 20, 25 = 180 mm?, 30, 40, 90 ...) should be read from the Ammo table, not guessed.
+* `DAT_147fc6fe0` reload-pause conditions (`FUN_1402213e0`, `FUN_14021ccb0`).
+* Player-side aim sender (who pushes the player's `+0xbb4` into `{200, angle}`): not found; likely through a vtable.
+* Does the shell inherit the ship velocity (see §5)?
+* Gun part 2 (shell flight, shell-vs-part hit, penetration) not started.
