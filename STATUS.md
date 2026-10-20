@@ -6,7 +6,7 @@ The only file with perishable state: what is installed, released, open upstream 
 | Mod | File in `mods/` | Source commit | Config that matters |
 |---|---|---|---|
 | [hf_ai](docs/mods/hf-ai.md) | `hf_ai_v0.7.1.dll` | `ca7d678` (repo HEAD `7db1521` only changed the README; the DLL is byte-identical to the repo's release build) | `hf_ai.json`: `ai_flares` on, `log_panic`, curtain 0.6; `tactics` on, dive on, aim awareness on, strafe off |
-| [hf_ally](docs/mods/hf-ally.md) | `hf_ally_v0.12.11-ammo.1_debug_telemetry.dll` (installed 2026-10-20; previous `sim.14` build backed up in `old_mod_backups/mods/`) | `1d9e408` on local branch `feat/sim-ammo-log` (worktree `hf_ally_sim_ammo`, cut from `feat/sim-telemetry` `31e0b2b`; adds `hf_ally_ammo_*.csv`) | `ally.json`: `max_allies` 2, `auto_retreat`, `flagship_leaves` handover, `telemetry` on |
+| [hf_ally](docs/mods/hf-ally.md) | `hf_ally_v0.12.11-sim.16_debug_telemetry.dll` (installed 2026-10-20, built by probe-dev, not yet flown; the earlier `sim.14` and `ammo.1` builds are backed up in `old_mod_backups/mods/`) | `5dbc8b7` on `feat/sim-telemetry` (sim.15 columns `in_x`.. + `hf_ally_ammo_*.csv`) | `ally.json`: `max_allies` 2, `auto_retreat`, `flagship_leaves` handover, `telemetry` on |
 | [QoL fork](docs/mods/qol.md) | `highfleet_qol.dll` | `95e8bc7` (branch `ai-flares`; the file was written 1 minute after that commit) | `qol.json`: `ai_flares.enabled` false (hf_ai carries it), flare crash fix on, dump chance 0.7, delay 0.6 to 1.5, refuel player x10, speed `classic`, elevation on |
 
 Everything else in `mods/` is a `.bak` of an older build. Not installed: `hf_probe`, `hf_voice`.
