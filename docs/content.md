@@ -53,3 +53,7 @@ Ships: `Navarin Mk2`, `Navarin Mk3`, `Nomad Mk2`, `Lancer`, `Paladin`, `Titan`, 
 Open risk: dialogue and `Media/` are overwritten by game updates; runtime injection (a mod DLL) would avoid editing files but is not designed.
 
 Tag examples (from the early notes): `<BACKGROUND=name>` such as `background_crowd_01` or `undeground_02` (sic), `<MUSIC=Duduk_4_ever>`, `<ILLUSTRATION=-1>`.
+
+
+## Engine names and mount types (2026-10-20)
+`MDL_ENGINE_01` = RD-59 (swivels), `02` = RD-59S (static), `03` = D-30 (swivels), `04` = NK-25 (swivels), `05` = D-30S (static; "S" means static), `06` has no placeable prototype. Whether an engine swivels follows its mount type `m_slot_type` in `Libraries/parts.seria` (before `m_oid`): 162 (01) and 146 (03, 04; the same as every cannon) rotate, 1121 (02) and 1105 (05; the type of rigid blocks) do not [file]; details and the joint serializer in [structures.md](structures.md) ("Engines: names, mount types and which ones swivel"). Burn stats exist only on fuel tanks and engines: [findings/contact-damage-and-fire.md](findings/contact-damage-and-fire.md).

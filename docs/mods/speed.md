@@ -13,3 +13,7 @@ Configurable **map cruise speed**. Vanilla 1.163: `speed = 50 * sqrt(TWR - 1)` m
 Moved from the retired `systems.md` (2026-10-19).
 
 The ship stats routine `FUN_14007fcf0` computes `powf(TWR - 1, 0.5)` at `0x140080699`: speed = `50 * sqrt(TWR - 1)` m/s in 1.163 (internal unit; the UI and `speed.log` show km/h = m/s x 3.6) (1.151 used `25 * TWR`). The game caches each ship's speed.
+
+
+## Engine names and mount types (2026-10-20)
+`MDL_ENGINE_01` = RD-59 (swivels), `02` = RD-59S (static), `03` = D-30 (swivels), `04` = NK-25 (swivels), `05` = D-30S (static; "S" means static), `06` has no placeable prototype. Whether an engine swivels follows its mount type `m_slot_type` in `Libraries/parts.seria` (before `m_oid`): 162 (01) and 146 (03, 04; the same as every cannon) rotate, 1121 (02) and 1105 (05; the type of rigid blocks) do not [file]; details and the joint serializer in [structures.md](../structures.md) ("Engines: names, mount types and which ones swivel"). Burn stats exist only on fuel tanks and engines: [findings/contact-damage-and-fire.md](../findings/contact-damage-and-fire.md).
