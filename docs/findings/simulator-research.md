@@ -10,7 +10,7 @@ linked below; this page only collects and cross-checks them.
 * Step 0.02 s (1/50), 10 iterations, gravity 9.82 game units (+y down), position scale 0.05, linear and angular damping 0.05, friction 0.6, restitution 0.001 [code].
 * One convex polygon fixture per part from the `Mesh` in each Body node (<= 8 vertices); mass = min(w,h) x m_density x polygon area = seria `m_mass`; inertia is Box2D's own [code].
 * The moving mass is `cmass` (creature +0x15b8, the sum of all part masses), not the logged `frame_mass`: jointed parts (engines, guns on slot types 146/162/282) are separate bodies that the Frame drags. a = F / cmass [data, 3 designs].
-* Drag: Box2D damping gives 0.05/s; the measured coefficient also grows with speed (0.06 at rest, 0.27 at 400 u/s) and that term is not located in code [fit].
+* Drag: Box2D damping gives 0.05/s. The game's quadratic air-drag force exists (F = -v_hat x 0.5 x 1.29 x c x |v|^2) but `c` = save key `m_drag_lin` is set only on level objects (City, Land, Town), never on ships, so hulls have none [code + file]. The measured coefficient also grows with speed (0.06 at rest, 0.27 at 400 u/s); that term is therefore not drag and is unexplained: a speed falloff of engine force or a measurement artefact; an engines-off high-speed coast would settle it.
 
 ## Engines
 * Force per engine = Stats+0xf8 x strength x cos(command - engine angle), dropped if cos <= 0, along (sin a, -cos a) ([contact-damage-and-fire.md](contact-damage-and-fire.md) has the surrounding handler) [code]. `eng_840` in the logs is a force readout (0.5 + 1e-8 x force), not a throttle [code + data].
