@@ -1,0 +1,28 @@
+# Landing legs (landing gear) in 1.163
+
+Status: read in Ghidra 2026-10-21 [code] unless marked; data from `hf_ml/data/Libraries/OL.seria` [file] and the sim.24 telemetry `hf_ml/data/sim_runs10/hf_ally_simparts_*.csv` [game]. The question was whether folded legs are non-colliding. They are NOT: no code removes or filters their fixtures. Related: [ship-bodies-fixtures-and-breakup.md](ship-bodies-fixtures-and-breakup.md), [contact-damage-and-fire.md](contact-damage-and-fire.md).
+
+## Which parts are legs
+* Stats `OL.seria`: `MDL_LEG_01` (price 50, power 50, `m_mdl_leg_force` 100), `MDL_LEG_02` (100, 100, 400), `MDL_LEG_03` (200, 200, 1600), `MDL_LEG_04` (400, 400, 3200); all category `m_category=8192` (0x2000), armour 5, power priority 2 [file]. Slot types: `MDL_LEG_01` = 266, `MDL_LEG_02` = 282 (JOINTED, own b2 bodies) [game]. `ITEM_LEG` is the shop item (constructor.seria).
+* Part logic id (`+0x3c4`, `m_logic`) = **400 (0x190)** for a leg part; `+0x7b0` (`is_leg`) is the Body flag the contact code tests [code].
+* Layer (`+0x1f0`, `m_layer`) of leg parts = **7** in the telemetry; hull/armour/structure 1, ammo/fuel/generator/static engine 2, bridge and aircraft 3, swivel engines 4, cannons 6 [game, sim_runs10 M rows]. Shells are created with layer 15 (`BulletImpact__` `0x140052b2e`) [code].
+* Structure (Lightning, sim_runs10 J rows): each leg is two parts joined by revolute joints with angle limits [0, 1.9635] / [-1.9635, 0] (112.5 degrees), reference angle +-1.1781 (67.5 degrees), plus a distance joint (kind 0, "rope" length stored at Joint `+0xd8/+0xdc`) and weld joints (kind 2); the revolute motors are DISABLED in the logged rows (passive until the logic enables them) [game].
+
+## State machine (creatureLogic `0x140033b90`, leg case at `0x14003878f..0x140038b71`) [code]
+* Leg part state is `part+0x3cc`: **0 = retracting, 1 = retracted (folded), 2 = deploying, 3 = deployed**. The owner creature keeps an aggregate mode in `creature+0xb48` (same values: 0/1/2/3; set to 1 when retracted, 3 when deployed).
+* States 0 and 2 drive the leg's revolute joint (the joint whose node B `+0x88` is this part): the target is one of the joint's two limits (`Joint+0xfc` lower or `+0x100` upper, chosen by the `cw` flag `Joint+0x110`: deploy and retract use opposite limits). Error = `b2RevoluteJoint_GetJointAngle` (`0x14031c200`) minus target; while |error| >= a threshold (float at `0x14035278c`) `Joint_SetMotor(joint, +-speed, torque)` runs (speed constants `0x140354928` / `0x1403527a4`, torque from `0x140048780(part)` = the part's leg force term).
+* When the target is reached the motor is switched off (`Joint_SetMotor(joint, 0, 0)`). Retracted (state 1): the distance/rope joint's b2 length (`b2Joint +0x80`) is set to **10.0**. Deployed (state 3): the length is set to a function of the creature mass `creature+0x15b8` divided by the leg force (`0x14001c7b0`, a clamp/lerp), i.e. the shock-absorber length scales with ship weight / leg strength.
+* Part command id 10 with argument 1 or 3 sets the state (`Part_HandleCommand` `0x1400533f0`, only for parts with logic 400; arg 3 -> state 2 deploy, arg 1 -> retract) [code]. **Who sends command 10 (key, landing code, AI, altitude) was NOT found.**
+* Initial pose: `FUN_1401bcab0` snaps each leg into the RETRACTED pose at set-up: leg angle = frame angle + joint limit (lower or upper by the `cw` flag) + reference angle, state 1, then moves the part so the joint anchors coincide and sets the rope length to 10.0 (recursive over the leg chain). `FUN_14022bc90` sets state 3 (deployed) for the landing scene. So in a battle the legs start folded (state 1) [code]; whether a mission can deploy them mid-battle is unknown.
+
+## Collision side [code]
+* Legs keep their fixtures and b2 bodies for the whole battle: nothing destroys or filters them when folded (`b2CFilter_ShouldCollide` `0x1402858c0` has no leg or state rule; folded and deployed legs collide the same). Filtering that applies to legs: layer AND (`layer_a & layer_b == 0` -> no contact; a leg (7) overlaps every other layer in use, a shell (15) overlaps all), same group/owner (`+0xc0` equal, i.e. the ship's own parts, and parent/child/grandparent pairs) never collide, so legs never touch their own hull; they DO collide with enemy ships' parts, shells and debris.
+* Contact damage: `Physics_ProcessContactRecord` (`0x1402849a0`) reads `is_leg` (`+0x7b0`) of both bodies (at `0x140285043`, `0x140285084`, `0x140285685`, `0x140285771`) and the owner's byte `+0xa40`; with arcade battle active a contact involving a creature-owned leg (category 0x2000) deals no contact damage (earlier note in `hf_ml/DESIGN_NOTES.md` item 6). The exact use of `+0xa40` is unclear [guess: a "settled/landed" flag].
+* Legs are ordinary damageable parts (armour 5, hp from the part): direct shell hits and blast hit them; blast area damage treats them like other non-armour parts. `ShipStatusCheck` (`0x14006ab70`) has no leg-specific rule; legs count in the part totals (`+0x16a0` / original count) like other parts [code: no leg test in the function; counting is a guess].
+
+## For the simulator
+Legs are separate b2 bodies (JOINTED slots 266/282), mass 2836 each (`MDL_LEG_01`), starting in the folded pose (state 1). Treat them as collidable small bodies that never touch their own ship; they are not "folded away". A safe simplification for battles is to keep them as fixed folded geometry only if the shells that hit them are rare; they are NOT excluded by any rule.
+
+## Open
+* Sender of command 10 / what triggers deploy and retract; whether it ever happens in arcade or campaign battles.
+* Meaning of creature `+0xa40` in the contact code; leg force sums into creature stats.
