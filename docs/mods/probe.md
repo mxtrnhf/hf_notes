@@ -21,6 +21,13 @@ A modloader DLL that **only reads** the game and writes what it sees to `Modload
 | 2.2 | seam test: numbered labels after every flush call of the map, battle and menu renderers |
 | 2.3 | `BLAST` (explosion routine entry) and `DMG` (every Body damage call) hooks |
 | 2.4 | 1.151 support (BLAST/DMG only); `DMG` lines limited to calls from the explosion code (burn and physics ticks flooded the log with ~380k lines) |
+| 3.0.0 | read-only by default, game clock `g=` on every line, panic-guarded hooks, font sampler folded in |
+| 3.1.0 | opt-in `REMOVE` hook (RemoveLostAIShip 0x14006bc10, with the ShipStatusCheck inputs), `damage_all_callers` (DMG lines for contact, fire, physics and blast; `r8=0x1` = physics contact) |
+| 3.2.0 / 3.2.1 | `REMOVE` lists guns_n, ammo budget, bridge and explosive parts; `BLAST` names the exploding part; previous `probe.log` archived per launch as `Modloader/logs/probe_<id>.log` |
+| 3.3.0 | `DMG` lines name the part's node id (`node=`, the seria m_id), owner ship, owner name and side |
+| 3.4.0 | `b=<battle session id>` on every line (from `Modloader/current_battle.txt`, written by hf_ally sim.10+); `g=` restarts every battle, so `(b, g)` joins to the hf_ally CSVs |
+| 3.5.0 | `REMOVE` lists every gun (hp, state, active flag, ammo need, tier) and every ammo rack (capacity) |
+| 3.5.1 | `DMG` prints `dmg` with 6 decimals (contact impulse = dmg/0.8) |
 
 ## What the lines mean
 * `BLAST #n obj=... pos=(x,y) +2c0=... explosive(+2dc)=E strength(+2e0)=S kind=... +20c=...`: one explosion. `explosive` is the warhead power, `strength` is the missile's `m_missile_ap` (0 for shells: no chain), `+2c0` a float that raises the chain budget. Offsets are 1.163; on 1.151 the same fields are `0x10` lower from `+0x2b0`. Meaning of the fields: [../findings/explosion-damage-1151-vs-1163.md](../findings/explosion-damage-1151-vs-1163.md).

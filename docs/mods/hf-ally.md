@@ -9,7 +9,7 @@ A modloader DLL (Steam 1.163 only). In a battle entered through the pre-combat s
 * Retreat: key F8 (`retreat_key` 119), automatic when the flagship leaves alive (`flagship_leaves`: `handover` or `retreat`), and when combat fuel falls to `ally_fuel_retreat_percent`. F8 restores the order (`+0xd70`) of ships sent out.
 * `spare_prizes` (default on): allies re-target away from prize ships. Radio voice lines on join, F8, retreat, destroyed. An `ALLY SUMMARY` log line after each battle.
 * Diagnostics: version banner, crash reporter in every build; the `megalog` cargo feature adds an unbuffered log, heartbeat, clicks, scene states, fleet snapshots and a minidump (the modloader log is buffered, so a crash loses its tail: [../findings/collect-dead-crash.md](../findings/collect-dead-crash.md) and the crash hunt in [../runs/ally-runs.md](../runs/ally-runs.md)).
-* Telemetry (cargo feature `telemetry`, config `telemetry: true`): ships, parts/damage and flying bodies CSVs, the player ship at 30 Hz, per-gun ammo type, a dead-node diagnostic. Described in [../findings/ai/ai-telemetry.md](../findings/ai/ai-telemetry.md).
+* Telemetry (cargo feature `telemetry`, config `telemetry: true`): ships, parts/damage and flying bodies CSVs, the player ship at 30 Hz, per-gun ammo type, a dead-node diagnostic. Described in [../findings/ai/ai-telemetry.md](../findings/ai/ai-telemetry.md) (v0.12.3 to 0.12.7); the simulator files of 0.12.11-sim.x (sim, simparts, debris, ammo, fire, partdump, bodies) are described in `hf_ml/handover/probe-dev.md` and in the first lines of each CSV.
 
 ## Config (`Modloader/config/ally.json`)
 Keys: `spawn_ally`, `ally_delay_seconds`, `auto_retreat`, `retreat_key` (virtual-key code, 119 = F8), `flagship_leaves`, `ally_toggle`, `max_allies`, `ally_fuel_retreat_percent`, `telemetry`, `spare_prizes`, and the log switches `log_creatures`, `log_precombat`, `gui_inspect` (the last two are very large). Installed values: [../../STATUS.md](../../STATUS.md).
@@ -29,5 +29,6 @@ Seen: several allies, replacement after a retreat order, per-ship buttons, summa
 | 0.11.x | diagnostics, buttons follow the shuffle, PLAYER label |
 | 0.12.0 to 0.12.3 | fuel retreat, `ally_mode` removed |
 | 0.12.4 to 0.12.10 | telemetry, 30 Hz player row, gun ammo, dead-node diagnostic |
+| 0.12.11-sim.1 to sim.21 (2026-10-20, branch `feat/sim-telemetry` in `hf_ally_sim`) | simulator telemetry: `hf_ally_sim` (A/I/P/E/R/V rows), `simparts`, `debris`, `ammo`, `fire`, `partdump` CSVs, `bodies` tracks for planes, `current_battle.txt` for the probe. Every file and column, the sim.1..21 changelog and the quirks: `hf_ml/handover/probe-dev.md` (local repo `hf_ml`, not part of these notes) |
 
 Per-version commits: `git log` in the `hf_ally` repo.
