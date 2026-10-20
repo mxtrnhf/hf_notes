@@ -49,7 +49,7 @@ In decompile form (Ghidra, cleaned): `if (this[+0x108]==0 || this[+0x48]==0 || t
 |---|---|---|---|
 | `+0x50` | owner plane **body** pointer (`FUN_14000f7a0`, this function's second block) | brain | yes |
 | `+0x118` | state selector, 6 after construction | brain | yes |
-| `+0x128`, `+0x138` | "has weapon/payload" tests (also in the state-5 handler `0x140010340`) | brain | yes |
+| `+0x128`, `+0x138` | two fields tested for "non-zero" (also in the state-5 handler `0x140010340`); that they mean "has weapon/payload" is a [guess] | brain | yes |
 | `+0x150` (`+0x158` node) | current target link (`SetLink`, `ReassignLinkNode`) | brain | yes |
 | `+0x190` (= `+400`) | second state ("phase") | brain | yes |
 | `+0xc8` | side id, passed to `FUN_140220120` (friend check) | brain | yes |
