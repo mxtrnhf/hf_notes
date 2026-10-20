@@ -78,6 +78,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/firing-and-shells.md](docs/findings/firing-and-shells.md) | `FireShell` dispatch, shell HP and lifetime, where projectile constants live |
 | [docs/findings/cluster-bomblet-ttl.md](docs/findings/cluster-bomblet-ttl.md) | cluster/mine bomblet spawn function, its two call sites, the TTL patch site (partial) |
 | [docs/findings/ammo-1151-vs-1163.md](docs/findings/ammo-1151-vs-1163.md) | the ammo table (built in code), the `Ammo` record, every value change between versions, live ammo-table dump |
+| [docs/findings/contact-damage-and-fire.md](docs/findings/contact-damage-and-fire.md) | contact damage (0.8 x solver impulse, armour threshold, x0.6 player scaling, tear-off above 4e6) and the heat-based fire model (only fuel tanks and engines burn) |
 | [docs/findings/explosion-damage-1151-vs-1163.md](docs/findings/explosion-damage-1151-vs-1163.md) | why 1.163 missile hits reach deeper into a ship: Zenith warhead 200 to 300, armor hit x2 to x4, part cost flat 5 to maxHP/20; 180mm shells unchanged; run-time evidence from both versions |
 | [docs/findings/sensors-and-crew.md](docs/findings/sensors-and-crew.md) | how sensors combine (max vs sum), crew capacity vs fuel capacity |
 | [docs/findings/map-air-groups.md](docs/findings/map-air-groups.md) | map aircraft groups, intercept probabilities, which code starts which engagement |
