@@ -9,15 +9,23 @@ Tags (one legend for all docs):
 - **[code]** -- read from the decompilation.
 
 - **[guide]** -- community guide, unverified here.
-- **[guess]** inferred.
-- **[tool]** Ghidra fuzzy-match result (a similarity score, not proof).
-- **[not read]** known gap.
-- **[file]** read from game files. 
-- **[agent]** a DeepSeek agent's reading of the code (reports in `hf_ml/out/ds2-*`), NOT re-read by Claude. Treat as a lead. Claims Claude re-read in the bytes or decompile are plain **[code]**.
+- **[guess]** -- inferred.
+- **[tool]** -- Ghidra fuzzy-match result (a similarity score, not proof).
+- **[not read]** -- known gap.
+- **[file]** -- read from game files. 
+- **[agent]** -- a DeepSeek agent's reading of the code (reports in `hf_ml/out/ds2-*`), NOT re-read by Claude. Treat as a lead. Claims Claude re-read in the bytes or decompile are plain **[code]**.
 
 `docs/version-differences.md` adds **[V]** / **[C]** / **[?]** for offset confidence (defined there). Paths in the docs are relative to the workspace root (`$HF_DEV`, e.g. `~/Development_Highfleet`) and the game folder is `<game dir>`.
 
-Layout: `docs/` reference docs; `docs/findings/` one note per question (`findings/ai/` for the AI); `docs/rendering/` how the game draws and how its screens and GUI work (start at its README); `docs/mods/` one page per mod and the debug tools; `docs/runs/` dated reports (evidence, not reference); `docs/data/` tables; `ref/` third-party material; `STATUS.md` is the only file with perishable state (installed versions, open pull requests, open items).
+Layout: 
+- `docs/` reference docs;
+- `docs/findings/` one note per question (`findings/ai/` for the AI);
+- `docs/rendering/` how the game draws and how its screens and GUI work (start at its README);
+- `docs/mods/` one page per mod and the debug tools;
+- `docs/runs/` dated reports (evidence, not reference);
+- `docs/data/` tables;
+- `ref/` third-party material;
+- `STATUS.md` is the only file with perishable state (installed versions, open pull requests, open items).
 
 ## Start here
 | Read | For |
