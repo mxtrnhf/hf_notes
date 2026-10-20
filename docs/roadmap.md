@@ -50,7 +50,7 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 
 ### Mod scope
 * **[Mod Scope / Bug]** Support for combined sensors. Sensor range calculation is currently bugged (accumulative) with two or more sensor types. *(partial: code reading done, live test not run)*
-  * Code reading says sensors combine by per-sector maximum per type; only jammers sum, so the accumulation claim is not confirmed: [findings/sensors-and-crew.md](findings/sensors-and-crew.md). Test: two radars vs one in the range readout.
+  * Code reading says sensors combine by per-sector maximum per type; only jammers sum, and the later stage that turns the arrays into a detection strength was read on 2026-10-20 (radar maximum only, no two types combined), so the accumulation claim is false as stated: [findings/sensors-and-crew.md](findings/sensors-and-crew.md). Test: two radars vs one in the range readout.
 * **[Mod Scope]** HP modification for missiles (Zenith), aircraft, rockets (A220) and cannon shells. *(partial: constants located, no mod)*
   * Where each constant lives: all cannon shells have 1 HP (a single argument to `BulletImpact__`), rockets 10 HP in `FireShell`, canister pellets 30/10: [findings/firing-and-shells.md](findings/firing-and-shells.md). Missile HP is the stats-record field `+0x184 launched_health` ([structures.md](structures.md)); aircraft and missile HP are not tied in yet.
 * **[Mod Scope]** Wider ship-roster modification (additional ship variants, adjustable composition ratio). *(open)*

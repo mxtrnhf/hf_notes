@@ -13,6 +13,7 @@ Tags (one legend for all docs):
 - **[tool]** Ghidra fuzzy-match result (a similarity score, not proof).
 - **[not read]** known gap.
 - **[file]** read from game files. 
+- **[agent]** a DeepSeek agent's reading of the code (reports in `hf_ml/out/ds2-*`), NOT re-read by Claude. Treat as a lead. Claims Claude re-read in the bytes or decompile are plain **[code]**.
 
 `docs/version-differences.md` adds **[V]** / **[C]** / **[?]** for offset confidence (defined there). Paths in the docs are relative to the workspace root (`$HF_DEV`, e.g. `~/Development_Highfleet`) and the game folder is `<game dir>`.
 
