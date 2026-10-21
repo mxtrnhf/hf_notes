@@ -56,6 +56,12 @@ Frame body numbers from the torque probe (mass, I about COM, offset of the COM f
 | stock | 0.209 | 0.209 | 0.22 on spin, 0.20 on angle |
 | wide statics + swivels | 0.230 | 0.230 | consistent |
 
+## 2b. What the swivel engines do in a pure rotation command [data]
+From the torque probe (every engine body's angle at 50 Hz, relative to the Frame), four-swivel Lightning:
+* **E held from rest:** both right-bank engines (command codes 101/103) swing the same way, positive, from 0 to +pi in about 2.6 s (0.53, 0.97, 1.45, 1.90, 2.23, 2.66, 2.97, 3.10 rad at 0.06, 0.12, 0.2, 0.3, 0.4, 0.6, 0.9, 1.2 s) and then sit near +-pi. The left-bank engines (100/102) stay at 0 (0.00 to 0.28 rad after 3 s). The right bank therefore fires backwards and the left bank forwards.
+* **Q held:** the roles swap. The right bank settles near 0 (it was at -1.55) and the left bank swings through -pi (negative, shortest path from -1.55) and ends near +-pi.
+* A command exactly opposite to an engine (error = pi) turns it in the positive direction, so two engines at the same angle swing together; the servo law is `motor speed = wrap(cmd - angle) * power^2 * 3.0` (see `static-engine-force-path.md`).
+
 ## 3. Why each design behaves as it does [data + code]
 
 * **Swivels only: smooth.** The braking `Tw` alone exceeds the cap `m_at` above about 2.9 rad/s, so `T = +-m_at` on 84% of active ticks. The angle term has amplitude at most `kp * pi * m_at = 1.1e7`, too small to pull `T` below the cap, so it is invisible. The plateau is where the capped stabiliser torque (about 624 N*m) matches the engine torque.
