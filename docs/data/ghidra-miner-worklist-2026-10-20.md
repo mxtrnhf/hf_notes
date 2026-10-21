@@ -9,7 +9,7 @@ Source: the assistant message of 2026-10-20 17:14 in the session transcript `21b
 | 4 | Gun fire control, shell flight, shell-vs-part hit rules | Biggest unknown for combat; aim, reload and spread first, hit rules second | 3-5 h | partly: [guns-aim-reload-fire.md](../findings/guns-aim-reload-fire.md), [blast-and-penetration.md](../findings/blast-and-penetration.md) |
 | 5 | AI behaviour states (circling, retreat, target choice) | Needed to copy vanilla AI; much already known | 2-4 h | partly: see the AI notes in `findings/ai/` |
 | 6 | Missile guidance, flare-vs-seeker rule | Moderate value until guns work | ~2 h | open |
-| 7 | Ship removal and victory rules, campaign vs arcade | Needed to end simulated battles correctly | 1-2 h | open |
+| 7 | Ship removal and victory rules, campaign vs arcade | Needed to end simulated battles correctly | 1-2 h | mostly done: [ship-removal-and-battle-result.md](../findings/ship-removal-and-battle-result.md) (loss checks, removal, result codes -1/1/2); open: roster list criteria |
 | 8 | Check numbers against logs once `sim.22` data exists | Replaces guesses with exact values | ~1 h | ongoing (sim.28 to sim.30 logs checked the stabiliser formula) |
 
 Notes from the original message: the miner would do planes last; items 1-7 need no new flights; recommended order was 1 and 2 first (cheap, aimed at the rotation problem), then 3 and 4 in parallel with flights, then 5-7 once the flight model works.
