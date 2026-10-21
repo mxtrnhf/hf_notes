@@ -77,5 +77,5 @@ Fields (gun part): `+0x860` loaded rounds (float), `+0x858` reserve rounds (int)
 | 25 and 40 | 180 mm and 305 mm (shared code) | 0.375 | 6666.7 | 3 | 85.6 | 10.0 | both indices use the same shape |
 | 30 | 203 mm | 0.625 | 1920.0 | 3 | 114 | 15.0 | |
 | 90 | harpoon | 0.625 | 3200.0 | 3 | 190 | 20.0 | also sets flags `0x10015`, changes the shooter's logic to `0x89` |
-Rockets (51, 52, 54, 55) use A = 2.87 / 7.5 style sizes with density 507.0 and n = 4, hp 10, ttl 10 (51, 55) or 30 (52, 54), collision mask 7; canister (60: 3 pellets, 70: 6 pellets) A = 1.0 / 2.0 with density 1000, n = 3, pellet speed `rand * 300 * mass` / `rand * 250 * mass`. Muzzle flash: a separate short-lived 4-vertex body (A = 20, density 1.0) with sprites `flash` / `flash_fire`.
+Rockets (51, 52, 54, 55) use A = 2.87, density 507.0 and n = 4, hp 10, ttl 10 (51, 55) or 30 (52, 54), collision mask 7; canister (60: 3 pellets, 70: 6 pellets) A = 1.0 / 2.0 with density 1000, n = 3, pellet speed `rand * 300 * mass` / `rand * 250 * mass`. Muzzle flash: a separate short-lived 4-vertex body (A = 20, density 1.0) with sprites `flash` / `flash_fire`.
 Mass check: muzzle momentum `m * v` for the 180 mm shell is about 85.6 * 700 = 6.0e4 (game units); that is also the recoil impulse the player's ship receives.
