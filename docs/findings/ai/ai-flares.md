@@ -26,7 +26,7 @@ Follows the conventions in `hooks.md` (function-entry detour with version guard;
 
 ## Unknowns (settle in a first test run)
 * What the link at `+0x498` points at for a missile aimed at a ship: the ship root, a part, or the bridge. A log line when the trigger fires answers it.
-* How a missile seeker reacts to a flare body (logic `0x44c`). That is in `creatureLogic` (`0x140033b90`), which could not be decompiled in one piece [not read]. The player uses flares successfully, so an AI-released flare should behave the same.
+* How a missile seeker reacts to a flare body (logic `0x44c`). Not decoded; as of 2026-10-21 no code compares any logic id with 0x44c and the flare body has collision mask 0, see [../flares-and-missiles.md](../flares-and-missiles.md). The player uses flares successfully, so an AI-released flare should behave the same.
 * Whether a flaring AI ship should also manoeuvre. Not addressed by this design.
 * The related roadmap bug "a proximity-fused missile colliding with flares crashes the game" is fixed upstream by highfleet-qol `enable_flare_crash_fix` ([flare-crash-hunt.md](../flare-crash-hunt.md)); an AI that uses flares more often could hit it more often, so run with that fix on.
 
