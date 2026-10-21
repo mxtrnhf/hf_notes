@@ -95,6 +95,9 @@ The probe's calls from the enemy ship (gate 2e7, `m_at` 1e7 per call, I = 1.0e8 
 * **How the solver redistributes the impulse** to engines, legs and guns that sit on their own joints in the steps after the Frame's jump. A model that lets the whole welded assembly absorb the impulse reproduces 14 flights; a sweep of that share from 0 to 1.3 has a flat optimum at 0.85 to 1.0. A direct measurement was too confounded by engine force. Not proven.
 * **Lurch period on long runs**: the model's lurches come about 10% faster than the game's after a few turns, so the angle drifts over tens of seconds. Short windows (2 to 5 s) are accurate. The cause is not found.
 
+## 7b. Side finding: MDL_EVAC parts are also free bodies [data]
+In the torque probe's body list the two `MDL_EVAC` parts (slot type 1097, mass 17 911, b2 mass 2.239 each) appear as separate dynamic b2 bodies with no joint. They drift away from the hull from the first seconds (about 15 m at 2 s, 70 m at 30 s). The Frame body's mass (166.98 b2 on the stock Lightning) already includes the EVAC fixtures: leaving them out gives 162.51. So the pods exist in addition to their fixtures in the Frame. They never touch the ship and do not change its motion, but they count if a body list is summed as if it were the ship.
+
 ## 8. Evidence
 * Telemetry probe files: per-step torque and body states for the player's bodies, hook rows for every `AddTorque`, `AddForce*` and `SetAngularVelocity` call on the hull with the caller address, per-step creature fields (`+0x17fc`, `+0x1800`, `+0x15b4`, `+0x180c`, `+0xbc4`), per-engine-part rows, and the stabiliser's own register values. The enemy ship's calls appear in the same rows; they were filtered out before the numbers above.
 * Flights: four-swivel (5), statics-only wide (3 plus one close), stock (5), wide statics + swivels (1), 14 sessions in the validation.
