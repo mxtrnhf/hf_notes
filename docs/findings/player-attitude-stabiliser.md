@@ -26,3 +26,6 @@ Question from the simulator session: the user heard that ships "auto stabilize" 
 
 ## Not done
 * The vtable `+0x78` function above, the exact place where the player's creature is added to the world lists, and `Stats+0x100` readers in the editor/UI (only the accumulator reads it in the game code).
+
+## Update 2026-10-21: the player's hull stabiliser is not the AI attitude hold
+The stabiliser that damps the player's hull spin is the per-engine `Body_AddTorque` in `creatureLogic` case 200 ([hull-stabiliser-engine-logic.md](hull-stabiliser-engine-logic.md)), which runs for every ship (player and AI, no AI-flag test). The open point above (whether the player is on the AI list, and what vtable `+0x78` returns for it) is therefore **no longer needed to explain the player's behaviour**; it is still unresolved, and it only matters for whether `AiShip_SteerController`'s separate bank-vector attitude hold also runs for the player (no evidence that it does).
