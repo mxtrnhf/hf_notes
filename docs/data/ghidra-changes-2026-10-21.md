@@ -31,3 +31,16 @@ Source of every entry: decompile / disassembly read in this session; details in 
 
 ## End-of-line comments (set)
 0x140080c24 (`+0x180c` turn gate = 2 * min(`+0x1684`, `+0x1688`)), 0x14006d0f2 and 0x140064fe7 (gate test in the AI steering code).
+
+## Second batch, 2026-10-21 (after the first check-in)
+| kind | address | change |
+|---|---|---|
+| created | 0x140019be0 | `Body_AddTorque` (was undefined) + plate comment (already checked in) |
+| rename | 0x140048720 | `FUN_140048720` -> `GetMdlAt` (Stats +0x100) (already checked in) |
+| comments | 0x140035652, 0x1400356a2, 0x14003573d, 0x140035757, 0x1400357cb | hull-stabiliser case (creatureLogic logic id 200) (already checked in) |
+| rename | 0x140078b40 | `FUN_140078b40` -> `AiShip_ChooseTarget`, plate comment (target choice and scoring) |
+| plate | 0x1400739c0 | `aiShipDriver`: kind `+0xbd8`, state `+0xbdc` table, re-derive step |
+| plate | 0x1402cc260 | `battleManagerTick`: battle result codes -1 / 1 / 2 |
+| plate | 0x140028360 | `Engine_ApplyThrustForce`: gates, +0xbc4 x0.01, f(X), bank sums (replaces the earlier plate text, which is included) |
+| plate | 0x14007eb50 | `CreatureUpdate`: dispatch of creatureLogic, `+0xbc4` spool ramp, history record |
+| comments | 0x14007910f, 0x140073c64, 0x1400638a0, 0x140266036, 0x140004fff, 0x140005a93 | state / kind writers (state 2, 7, 2, 5; kind 2, 3) |
