@@ -2,6 +2,15 @@
 
 Written 2026-10-21 from telemetry of Lightning variants (Shipworks test flights) plus the code reads in `hull-stabiliser-engine-logic.md` and `static-engine-force-path.md`. This note is the game-facing summary: what the player sees, the numbers, worked examples, what was ruled out, and what is still open. Tags: **[code]** read from the binary, **[data]** measured in flight, **[inference]** reasoned, not proven.
 
+## 0. Overview (one page)
+* **What it is.** Every engine part pushes the hull against its own spin and against its tilt, every physics step, through `Body_AddTorque` on the Frame (`creatureLogic` case 200). It runs while the ship thrusts and for 0.6 s after. It is a game mechanic ("anti-tilt", `m_mdl_at`), not rigid-body physics: it changes the hull's angular velocity directly, so it never shows in any force or torque accumulator.
+* **Formula.** Per engine part: `Tw = -spin * I * 0.05 * frac`, `Ta = -wrapped_angle * I * 0.05 * frac`, `frac = m_at / (2 * min(bank sums of m_at))`, `I` = the Frame body alone about its origin. A thrust bank that applied no force in the tick turns the angle term off and halves the damping. `Tw` is zero once the thrust history (`+0x15b4`, about 30 ticks) is empty. `T` is capped at +-`m_at`.
+* **What it does to each design.** Swivel-only: the cap hides the angle term, smooth plateau (7.15 rad/s on four swivels). Statics-only: one static never fires, so a bank is always idle, pure damping, plateau = engine torque / about 105 N*m per rad/s (0.3 rad/s with the statics near the centre, 1.6 rad/s spread wide). Swivels plus statics: the angle term is live and flips sign where the wrapped hull angle passes +-pi, a push of about 0.38 rad/s in one 20 ms step, once per turn (the lurch).
+* **What it is not.** Not Box2D (step, solver, damping 0.05 are stock), not antennas, not contacts, not joint motors, not hull air drag, not the AI attitude hold (a separate system on the AI list), not an editor-only effect.
+* **Who gets it.** The player ship and AI ships alike (the same case runs on the enemy ship's engines).
+* **Geometry facts this needed.** The Frame body origin is the Frame node's position in the design file, not the file's coordinate origin (checked on 17 ships of 10 designs: COM offset, mass and inertia equal the logged values). Landing legs sit folded at their joint limits in flight (section 7c). The two MDL_EVAC parts are also free bodies (section 7b).
+* **Open.** Why the response to the Frame's angular impulse after the joint solver shares it is best matched by about 0.75 of the whole body set's inertia and not by a single value across designs; behaviour on other ship classes, arcade and campaign; what zeroes the per-tick bank sums.
+
 ## 1. What you see in the game
 
 | Design | Hold E or Q from rest | Release all keys |
@@ -79,6 +88,8 @@ Idle-bank statistics on the player's active ticks: four swivels 8.5%, two static
 * **Hull air drag** (`Body_PreStepUpdate`): about 15 N*m at 50 u/s against 700 to 900 N*m of engine torque; real but irrelevant to rotation.
 * **Engine force application**: `Body_AddForceAtPoint` applies each engine force correctly at the part centre; the engine joints pass 90 to 105% of it to the hull.
 * **AI attitude hold** (`AiShip_SteerController`): a separate system run from the AI list only [code; one detail about list registration is unverified, see `player-attitude-stabiliser.md`]. It is not this stabiliser.
+
+* **Checked and found consistent with the game's own numbers**: the per-bank engine force sums equal the logged ones to within 1% through a hold and through the swing of the right bank (e.g. 72.0 / 44.1 / 69.8 e6); the hull's drag and gravity reproduce the deceleration of a coast to a ratio of 1.00 over 0.3 s intervals at 92 to 94 u/s; the spin and position responses fit best with no delay between the logged keys and the forces (a lag of 0 +- 0.02 s on three sessions); the engines' starting angle decides the first half second of a window (with the logged angles the 2 s error is 2 to 3 u, with the engines at rest 21 u).
 
 ## 5. Consequences
 * **Design guidance.** A ship's turn rate is set by two things only: the engines' turning torque (lever arm times thrust) and the stabiliser's cap `sum(m_at)`. The `m_mdl_at` values (OL.seria): ENGINE_01 and 02 7e7, ENGINE_03 and 04 1e7, ENGINE_05 1.5e7, ENGINE_06 4e6. More or heavier engines raise both the gate and the cap; the gain `0.05 * I / gate` falls as the gate rises. A big hull with a small gate has a large gain and saturates the cap.
