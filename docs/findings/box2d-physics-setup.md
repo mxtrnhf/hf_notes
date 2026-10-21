@@ -1,4 +1,6 @@
 # How the game sets up Box2D: shapes, mass, filtering, damping, gravity (v1.163) - ghidra-miner, 2026-10-20
+
+**See also (2026-10-21):** field offsets of the Box2D objects, the weld joint's 6.0 linear mass scale and the antenna chain: [box2d-struct-layouts.md](box2d-struct-layouts.md).
 [V] = read by me in Ghidra today (decompile/disassembly). [file] = checked against the data files. [guess] = inference.
 
 ## 0. The engine
