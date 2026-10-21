@@ -21,6 +21,7 @@ The Stats records with `m_category = 128` (0x80) in `Libraries/OL.seria` are exa
 * Contact rule for missiles vs everything: collision mask 7 and flags `0x25`; `Projectile_DetonateOnImpulse` (needs `+0x38c >= 0`, set by the arming code in state 1: `+0x38c = mass * [0x140354828]`) and the zero-impulse proximity case in `Physics_ProcessContactRecord` (state `+0x3cc == 2`, owner matches) detonate them.
 
 ## 4. What is still open (and why)
+* **Update 2026-10-21:** the steering law is now mostly decoded in [zenith-steering.md](zenith-steering.md) (PD torque Kp 20 / Kd 1, intercept-solver lead, reference heading); its section 4 lists what remains.
 * The seeker target acquisition and the flare lure are decoded (section below). Still open: the steering law that turns the aim direction into torque (lead, gains), and the proximity fuze radius details.
 * Empirical cheapest route: the probe's `BLAST` lines already show the missile explosive; add a per-frame log of `+0x3cc`, `+0x3d0`, heading `+0x138`, velocity and the target link position for bodies with logic 130 / 160 during a flare drop.
 
