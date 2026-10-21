@@ -38,7 +38,7 @@ All fixtures use category 1 / mask 0xFFFF / group 0, so Box2D's own filter never
 5. launch grace: a body with `+0x3c0 > 0` (launch timer/logic activity) ignores bodies of certain categories while the timer is below 0.9 (nuke 0x8000000) / 0.8 (missiles, planes);
 6. both bodies of class 0x10 (`+0x1c8 == 0x10`) do not collide; same-owner explosive bodies with the 0x228 flag etc.
 Use this list as the source of truth for 'who collides with whom'; the exact flag meanings (e.g. `+0x1c0` bits) are only partly decoded.
-The PreSolve callback 0x140284730 additionally detonates explosive projectiles on first contact (calls the blast routine FUN_14002cdc0 with the body's explosive); PostSolve 0x140284340 records the contact result used for contact damage (see contact-damage-and-fire.md).
+The PreSolve callback 0x140284730 implements only the flare/decoy rule (corrected 2026-10-21: it does NOT detonate shells; a shell dies from contact damage, see guns-aim-reload-fire.md section 7); PostSolve 0x140284340 records the contact result used for contact damage (see contact-damage-and-fire.md).
 
 ## 6. What I did not find
 * A SetLinearDamping/SetAngularDamping call after creation (none found, so Box2D's own drag is 0.05/s); where the hull's |v|-dependent term comes from is open (see section 2).
