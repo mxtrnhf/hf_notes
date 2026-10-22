@@ -40,3 +40,10 @@ Verdict: good enough for calm mid-air movement of Kormoran-class ships; Lightnin
 4. Lightning stabiliser excess; Intrepid 88 deg drift; Fenek fast-spin windows.
 5. Rename of the .hftm files to battle_record_YYYY_MM_DD_HH-MM-SS.hftm requested from probe-dev; the sim loader must accept both names once built.
 6. Logger SSD wear (probe-dev): negligible, about 610 KB/s of battle, 7.5 GB per 3 h, about 0.5 % of 600 TBW per year (write amplification inferred, not measured).
+
+## 6. sim.41 sessions (three flights 2026-10-22 11:48-11:53: Fenek, Gladiator, Kormoran), ship from the dump
+* Loader: the dump was rejected by a part-count check that counted oid-less ANTENNA_PART markers; fixed (oid multiset is the check), and a rejected dump no longer falls back silently to a matched design (HFSIM_ALLOW_MATCH=1 allows it). The six sessions of sim_runs28/29 have no dump and were matched designs in the audit above.
+* Kormoran 1792659121: landed at 265.7 s, the touchdown removed engines 84 and 147 (265.78, 266.0 s); trimmed to 264.8 s in sim/session_trims.json.
+* Results (simmetrics, 3 sessions): 3 s windows median angle 0.10 deg (p90 5.0), velocity 0.16 u/s (p90 2.2); 40 logged lockouts, 2 missed, lateness median +0.00 s (p10 -0.04, p90 +0.08). Flagged 3 s windows: Fenek 8/17, Gladiator 7/40, Kormoran 3/24.
+* **Slot graph, TS rows (sim.41): the game's conduction graph is the SAME as the sim's design-file graph** (Kormoran: 604 directed edges in both, 0 one-way). An earlier version of this analysis reported a quarter of the edges as one-way; that was a parsing bug (the entry count of the row was glued to the first occupant, dropping every body's first neighbour). The directed-graph hypothesis for the 0.8 onward-conduction fudge is therefore refuted; the cause of the fudge is still unknown. Decoded onward scale 1.0 is still worse than 0.8 (lateness +0.04 s, 3 of 40 missed).
+* TO rows (body array order) are present (Kormoran: 20 dumps); not yet used by the thermal pass (reversing the order changed nothing earlier).
