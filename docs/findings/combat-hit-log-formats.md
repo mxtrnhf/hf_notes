@@ -15,5 +15,18 @@ Common body fields (17, in this order, used by C): `P` (pointer), `ship` (teleme
 | **Z** (sim.50) | a ship part is removed (`Body::KillAndQueueDead` 0x1402805e0, ship parts only) | `part P, ship, part, logic, part mass (+0x1d8), removeFromMaster, creature mass (+0x15b8) before, part hp` |
 | **Y** (sim.50) | 1 and 10 steps after a Z, once per ship | `ship, d (steps after), creature mass (+0x15b8), b2 mass kg of the root body (b2 +0x90), b2 inertia (+0x98), b2 local centre x, y (+0x1c/+0x20), game mass derived (= b2 mass / 0.05^3)`. The game may update the b2 mass late; compare d=1 and d=10. Root body = creature +0x88 if its class nibble is 0xf, else the creature. |
 
-Not done: per-gun AI fire decision (AiWeaponController 0x14007a8d0 needs hook sites from the ghidra session), 50 Hz shell positions, missile/rocket launch rows, Stats +0xc4 threshold column (use simparts).
+## sim.51 additions (rockets, missiles, AI gun decision)
+| kind | when | fields after `t,step,kind` |
+|---|---|---|
+| **R** | a gun-fired rocket is born (FireShell keys 51/52/54/55, logic 130/132), written ONE step after the birth site so velocity is valid | `body P, logic, ammo index (key, Ammo+0x154), ammo name, shooter ship, side tag, gun P, gun ship, gun part, target P (+0x498, usually 0 for rockets), target ship, target part, x, y, vx, vy, ang, ttl (+0x2c0), hp, expl, mass, creature mass (+0x15b8) of the owner, born step` |
+| **L** | a part-launched missile detaches (Zenith MDL_MISSILE_01 logic 1; the ejection block is shared with logic 3, 4 and 132) | same columns as R; ammo index -1, ammo name empty, "gun" = the missile part itself with ship/part -1; target = the armed target link (+0x498). Use it with the creature mass (+0x15b8) column: compare with the mass of the preceding rows to see the per-launch drop. |
+| **G** | AiWeaponController loop top, shape C (ship target), once per gun per call | `group (0/1), creature ship, gun ship, gun part, latch (+0x875), loaded (+0x860), burst timer (+0x870), aim angle sent (XMM9), distance (XMM8), gun angle (+0x138), ammo key (+0x850), creature byte +0x228` |
+| **G5** | the range test was reached for that gun | `group, gun ship, gun part, dist, limit (creature +0x1838/+0x183c), limit byte ([rbp+0x70], 0 = limit doubled), effective limit`; the gun is stopped when dist > effective limit |
+| **G6** | the angle test was reached | `group, gun ship, gun part, gun angle, aim angle, wrapped |diff|`; stopped when > 0.025 |
+| **GS** / **GE** | latch store (a normal fire start) / the no-pause exception store | `group, gun ship, gun part` |
+| **GA** | ammo choice store | `gun ship, gun part, ammo index` |
+| **F** | every FireGuns call (also player guns) | `gun ship, gun part, caller rva`: 0x7bc3b = shape C group 0, 0x7bf05 = C group 1, 0x7ad67 = A group 0, 0x7af44 = A group 1 |
+Gate number 1-8 is derived offline with the rule at the end of `combat-hit-hook-sites.md` (section 2). Shape A (aircraft/missile target) angle stores are not hooked, only shape C. Harpoon (key 90) births are the normal S rows (ammo index 90). The row cap is now 2000 per step.
+
+Not done: 50 Hz shell positions, shape A gun rows, Stats +0xc4 threshold column (use simparts).
 If hf_probe's `hook_blast` is on it patches `Body_ApplyDamage` too; hf_ally loads first and wins, the probe then skips its DMG hook.
