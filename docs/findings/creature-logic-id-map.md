@@ -10,15 +10,16 @@ Tag **[V]** (jump and byte tables read from the image). `creatureLogic` is vtabl
 | 100 | `0x140033d47` | **plain cannon shell**: arming (`+0x3d0 = 20/|v|`, then `+0x38c = 25 * mass`), no spin, align to velocity; see shell-detonation-paths.md |
 | 110 | `0x140033ce8` | timed fuse: state 0 `+0x3d0 = +0x3d4`; state 1 `Body_DieExplode` when the timer is spent |
 | 120 | `0x140033c5a` | delayed warhead: state 0 `+0x3d0 = +0x3d4`-style delay, then `+0x38c = 10000.0`, `+0x2dc = +0x3d8`, logic id := 0 |
-| 130 | `0x1400348be` | not read |
-| 132 | `0x140034b78` | not read |
+| 130 | `0x1400348be` | **rocket** (ammo 51/52/55): thrust 500*mass for 1.5 s, cone/range cluster burst; weapons-index.md s5.2 |
+| 132 | `0x140034b78` | **300 mm rocket** (ammo 54): heading lag to launcher angle, closest-approach fuze, 5..50 bomblets; weapons-index.md s5.3 |
 | 135 | `0x140035553` | missile arming: state 0 `+0x3d0 = 0.05`, state 1 when spent `+0x38c = 25 * mass` |
-| 137 | `0x1400355c5` | not read |
-| 140 | `0x14003447b` | not read |
+| 137 | `0x1400355c5` | set by `FireShell` on the firing part for the harpoon (ammo 90); not read |
+| 140 | `0x14003447b` | **laser-guided shell** (`_LG`): steers to owner's aim line, 0.4 rad/tick cap; weapons-index.md s5.4 |
 | 150 | `0x140033e0b` | not read |
-| 160 | `0x14003409f` | not read |
-| 190 | `0x1400342a1` | not read |
+| 160 | `0x14003409f` | **proximity shell** (`_PROXY`): 150 range, 36 deg cone, 5..15 fragments; weapons-index.md s5.5 |
+| 190 | `0x1400342a1` | **rocket-burst bomblet** (made by `FUN_14001c890`); weapons-index.md s5.6 |
 | 200 | `0x140035652` | **hull stabiliser** (hull-stabiliser-engine-logic.md, hull-stabiliser-coupling.md) |
 | 210 | `0x1400357d6` | not read |
 | 400 | `0x140038767` | rotor / helicopter-style motor (commands 400) |
 | all other ids | `0x14004501f` | nothing |
+| 550 | `0x140038d8d` (via `0x140038d63` table) | **debris fragment** from `Body_DieExplode`; weapons-index.md s5.7 |
