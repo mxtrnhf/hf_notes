@@ -119,7 +119,7 @@ Method: `creatureLogic 0x140033b90` blocks for ids 130/132/140/160/190/550 were 
 | `_LG` guided shell | **140** | `BulletImpact__` | | 5.4 |
 | `_PROXY` shell | **160** | `BulletImpact__` | | 5.5 |
 | bomblets of 130/132 rockets | **190** | `FUN_14001c890` | | 5.6 |
-| bomblets of proximity shells / mines | 0 (no logic; `CreateShell_` bodies) | `FUN_140032fb0` = `Projectile_ExplodeAndCluster` | see cluster-bomblet-ttl.md | |
+| fragments of proximity shells / mines | not set by `FUN_140032fb0` (logic stays 0, unverified) | `FUN_140032fb0` = `Projectile_ExplodeAndCluster` | see cluster-bomblet-ttl.md | |
 | debris of a dead part | **550** | `Body_DieExplode` | | 5.7 |
 | tactical missile `MDL_MISSILE_01` (Zenith) | **1** (stats index 130; do not confuse) | ship part, detaches | | flares-and-missiles.md, zenith-steering.md |
 (Ammo 130 caliber ids come from the live dump in ammo-1151-vs-1163.md: NAR122 / 220 mm / NAR340 = 130, 300 mm = 132.) Logic id 150 has no vanilla producer I could find (no `FireShell` or ammo entry stores it); 210 is still unread.
