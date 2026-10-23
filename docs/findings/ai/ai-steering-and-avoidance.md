@@ -1,6 +1,6 @@
 # AI ship steering: obstacle avoidance, force law, attitude hold (v1.163), ghidra-miner, 2026-10-21
 
-Tags: **[V]** = read in the 1.163 program (decompile plus disassembly, constants read from memory). Names: `AiShip_SteerController` `0x14006cb30` (driver states 0 and 4), `AiShip_ScanObstacles` `0x14024cc20`, `AiShip_AddObstacleNode` `0x14024ce50` (renamed 2026-10-21 from `rep_14022bc20_New`; adds one obstacle; the old name carried the 1.151 address, do not decompile that address in 1.163). `AiShipTick` `0x140062f90` carries an **inlined copy of the same law** (scan call at `0x140064e6f`, same parameters), so the numbers below hold for both paths [V].
+Tags: **[V]** = read in the 1.163 program (decompile plus disassembly, constants read from memory). Names: `AiShip_SteerController` `0x14006cb30` (driver states 0 and 4), `AiShip_ScanObstacles` `0x14024cc20`, `AiShip_AddObstacleNode` `0x14024ce50` (renamed 2026-10-21 from `rep_14022bc20_New`; adds one obstacle; the old name carried the 1.151 address, do not decompile that address in 1.163). `AiShipTick` `0x140062f90` carries an inlined copy of the avoidance scan (scan call at `0x140064e6f`, same parameters). **CORRECTION 2026-10-23: the force law (s3) and the per-bank clamp (s5.1) are NOT the same in the two paths**; the AiShipTick numbers are in the boxes marked AiShipTick below, they are the ones that matched logged AI commands (simulator check on 10 sessions, `hf_ml/sim/ai_cmd_check.py`).
 
 ## 1. What the avoidance sees (ScanObstacles) [V]
 Called with `range = clamp(4 * |v|, 200, 800)` (v = own hull velocity, root body `+0x130/+0x134`), `minMass = 0.1 * own mass (+0x15b8)`, `maxExplosive = 500.0`.
@@ -20,7 +20,15 @@ Per surviving node: `closing = (v_self - v_obs) . dir` (positive = approaching),
 
 `A = - sum(w_i * dir_i)` (pushes away). Weight factor `creature+0xc04` is set to 1.0 in the AI-ship setup (`0x140072d74`) and no other creature code writes it, so use 1.0. (`AiShipTick`'s copy omits the multiply, same result.)
 
-## 3. Force law (translation) [V; constants read: 9.82, 10, 20, 100, 0.1, 3.0]
+## 3. Force law (translation)
+**AiShipTick `0x140062f90` (the path that runs the AI engines; decompile read 2026-10-23, constants 25.0, 4.0, 10.0, 9.82, 0.1, 20.0 are decompile literals) [V]:**
+* `m = creature +0x15b8`, `T1 = +0x1664`, `T2 = +0x1668`, `accel = (T1 + T2) / (m * 9.82)`, `a4 = min(accel, 4.0)`. Returns without commands if `T1 == 0` or `T2 == 0` (except a ship named "Titan...").
+* `cmd_max = accel * 25.0`; but if byte `+0xc74` is set and `accel < 4.0`: `cmd_max = a4 * 40.0`.
+* `s = clamp(sqrt(dist + 0.1) / 20, 0, 1)` multiplies `cmd_max` (skipped when the driver state `iVar33 == 2`).
+* `ts = 10.0 / a4`; `F = ((dir_t + A) * (s * cmd_max) * m) / ts - (v * m) / ts - (0, m * 9.82)`; `A = -sum(w_i dir_i)`, `w = ((t - 10) * 0.1)^2` as in s2.
+So `F = m * (s * cmd_max * (dir_t + A) - v) * a4 / 10 - (0, 9.82 m)`: a velocity controller whose desired speed is `25 * accel * s` and whose gain is `min(accel, 4) / 10` per second. This matches the simulator port `hf_ml/sim/hfsim/aisteer.py`.
+
+**AiShip_SteerController `0x14006cb30` (driver states 0 and 4) [V; constants read: 9.82, 10, 20, 100, 0.1, 3.0]; not what the logged AI engines follow:**
 * `dir_t` = unit vector from hull to waypoint (`creature +0xbf0/+0xbf4`), `dist` = distance; `s = clamp(sqrt(dist + 0.1) / 20, 0, 1)` (s reaches 1 at dist 400).
 * Desired velocity `v_des = 100 * s * (A + dir_t)` (not normalised, so |A + dir_t| can exceed 1 or fall toward 0 when the avoid term cancels the heading).
 * `F = m * (v_des - v) / kk - (0, m * 9.82)` with `kk = 10 / TWR`, `TWR = (T1 + T2) / (m * 9.82)`, `T1/T2 = creature +0x1664/+0x1668`, `m = +0x15b8`. So `F = (T1 + T2) / 98.2 * (v_des - v) - (0, 9.82 m)`: a proportional velocity controller whose gain scales with thrust to weight ratio (acceleration `= TWR/10 * (v_des - v)` plus gravity compensation).
@@ -32,7 +40,7 @@ Per surviving node: `closing = (v_self - v_obs) . dir` (positive = approaching),
 * P term only, no derivative, no cap: `k = e * I / 20`, `h = (sin a, -cos a)`; **bank 1 vector += k h, bank 2 vector -= k h** (the same pair construction as the player's Q/E keys but with magnitude k).
 
 ## 5. From force to engine commands [V]
-1. Bank vector = `F` (+ attitude pair). Clamp per bank, with `T` = that bank's thrust sum (`+0x1664` / `+0x1668`): if `|vec| > 3T` scale to `3T`; **else if `|vec| > T` scale to `T`**. (This is what the disassembly does, `COMISS` polarity checked at `0x14006d2ea` / `0x14006d31c`: values between T and 3T are cut to T, values above 3T are cut to 3T. Odd, but it is the code.)
+1. Bank vector = `F` (+ attitude pair). Clamp per bank, with `T` = that bank's thrust sum (`+0x1664` / `+0x1668`). **AiShipTick: `limit = T + T` (disassembly `0x14006526d`, bank 2; bank 1 the same shape at `0x140065200..0x14006522e`): if `|vec| > 2T` scale to `2T`, else if `|vec| > T` scale to `T`** [V]. **AiShip_SteerController: constant 3.0 at `0x140352804` (disassembly `0x14006d2db..0x14006d31c`): if `|vec| > 3T` scale to `3T`, else if `|vec| > T` scale to `T`** [V]. (Odd in both: values between T and the limit are cut to T. The old text applied the SteerController 3T to both paths.) (This is what the disassembly does, `COMISS` polarity checked at `0x14006d2ea` / `0x14006d31c`: values between T and 3T are cut to T, values above 3T are cut to 3T. Odd, but it is the code.)
 2. Smoothing: five stored slots per bank (x at `+0xc1c + 8 i`, y at `+0xc20 + 8 i`; bank 2 at `+0xc44` / `+0xc48`), shared ring index `+0xc6c` (0..4). `out = (sum of the 5 slots + new clamped vector) / 6`; then `slot[idx] = out` (the **output** is stored, not the raw input, so it is an IIR-like filter), `idx = (idx + 1) mod 5`. Slots start at 0.
 3. Per bank: angle `= -atan2(-x, -y)` wrapped to `[0, 2pi)`; strength `= |out| / T_bank` (can reach 3.0, the player's keys give 1.0, boost 2.0).
 4. Commands to every engine part in the list `+0x1330`: `100` (bank 1 angle), `0x65` (bank 2 angle), `0x66` (bank 1 angle and strength), `0x67` (bank 2 angle and strength); parts act on their own bank.
