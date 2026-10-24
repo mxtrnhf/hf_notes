@@ -32,11 +32,11 @@ Callers of `0x14002e930`:
 
 | site | role |
 |---|---|
-| `0x1402679c8` in `rep_140245ab0_New` (`0x140267700`) | spawns a *group* of planes at battle start, loops the vector (stride 0x18, plane ptr at `+8`); called from `FUN_1402cf4d0` (`0x1402cf4d0`, battle-start setup, player and enemy ship lists `DAT_143a158e0` / `DAT_143a159c0`) and `FUN_1402ca2b0` (called from `SomethingWithLevelSerias`) |
-| `0x14007a658` in `FUN_14007a4c0` | re-initialises a landed plane of the carrier (carrier plane vector `+0x14c8..+0x14d0`, stride 0x18, ptr at `+8`); frees the old logic first, so this path **does** reload the loadout |
+| `0x1402679c8` in `rep_140245ab0_New` (`0x140267700`) | spawns a *group* of planes; **only the plane-vs-plane scenarios** (`FUN_1402cf4d0` = level seria `SCR_CRAFTS_VS_CRAFTS`, variant `DAT_147fc6fc4 == 1`, call at `0x1402c58ed`; `FUN_1402ca2b0` = another scripted scenario, call at `0x1402c5540`). **Not the normal carrier battle** (corrected 2026-10-24, see section 7). |
+| `0x14007a658` in `FUN_14007a4c0` | **the player's launch**: `Input_KeyUp` `0x14018a530` calls it at `0x14018a815` (RDI = the controlled ship; gates: byte `0x147fc6fb7 != 0`, byte `0x143a11909 == 0`), also `SomethingWithLevelSerias` `0x1402c492d`. Picks one plane from the carrier's vector, frees its old logic, calls `0x14002e930` |
 | `0x140065bd9` in `AiShipTick` | AI carrier launch |
 
-`FUN_1402cf4d0` already reads `plane+0x3f8` before launch (to classify bomber vs fighter, sets `plane+0xf8` to 1.0 / 2.0), so **overriding `+0x3f8` must happen before `FUN_1402cf4d0` runs** for the classification to follow, or the byte-level fallout is only the icon/role order.
+(Earlier text here claimed `FUN_1402cf4d0` is the battle-start setup; wrong, it is the plane-vs-plane scenario. It reads `plane+0x3f8` only to classify bomber/fighter there.)
 
 ### Re-arm on landing (free)
 
@@ -65,7 +65,7 @@ Callers of `0x14002e930`:
 | use | address | note |
 |---|---|---|
 | force loadout for player planes (preferred) | entry of `loadAmmoForAircraft__` `0x14002e930` | `plane` = RCX, owner = RDX; skip when `*(float*)(owner+0xad4) < 0`; write a copy of the chosen name into `plane+0x3f8` (EscadraString: replace via the game's own string copy (`rep_14009dec0_CopyString`, as the function itself does at its step 2), do not memcpy over an SSO/heap string) |
-| fixes classification too | before `FUN_1402cf4d0` `0x1402cf4d0` (entry) or its two loops at `0x1402cf70a` / `0x1402cfa78` | those LEAs read `plane+0x3f8` |
+| (retracted) `FUN_1402cf4d0` | only the CRAFTS_VS_CRAFTS scenario, irrelevant for carrier battles | |
 | re-arm | `0x14000edec` area in `FUN_14000ebb0` (reads `BOOL_147fc6f80`, then `plane+0x3f8` at `0x14000ee1f`) | automatic once `+0x3f8` is changed |
 | greying | read `Profile+0x540` as above, or call `0x1402a9090` equivalent | no hook needed |
 | consume items [if wanted] | there is none in battle; mimic ClickFunc `0x14012fb0b..0x14012fb80` (`inv[part] -= count; used[part] += count`) | |
@@ -76,3 +76,25 @@ Callers of `0x14002e930`:
 * How the `profile+0x560` pair list reaches the battle launch.
 * Whether any other code decrements `Profile+0x540` (no full xref sweep).
 * The offset of the ship-index field in section 4.
+
+## 7. Follow-up 2026-10-24: pre-combat card -> ship, planes as parts, consumption, armament list
+
+### What a plane is [code]
+A carrier's planes are **parts of the carrier creature with logic id `0x1f4` (500)**. `Creature_AccumulatePartStats` `0x140072790..`: for every part with `+0x3c4 == 0x1f4` it pushes a Link to the part into the carrier vector **`+0x14c8..+0x14d0`** (stride 0x18; Link = `{vtable +0, Node* +8, id +0x10}`, ctor `Link_ConstructFromBody` `0x140194bd0`), adds to a counter at `+0x15f4`, and stores the count in **`+0x17dc`** (`0x140072884`). So the plane stock is the part list of the ship design; there is no separate hangar count. `+0x3f8` / `+0x190` / `+0xa20` are fields of that plane part. The `AircraftLogic` (`+0xa20`) is created lazily by `0x14002e930` at launch; the arming therefore happens **at each launch**, not at battle start [code: `if (plane[0x144]==0) new AircraftLogic`; `FUN_14007a4c0` frees and nulls it before calling].
+
+### Pre-combat card -> ship (per hf_notes `docs/rendering/precombat-screen.md`)
+Card `+0xbc0` is a Link to the ship creature (`precombatOk` `0x1402d89c0` matches `node+0x18` against it). Ship creature = `*(Creature**)(card+0xbc0 + 8)`. "Has planes" = `*(u32*)(ship+0x17dc) > 0`, or `*(u64*)(ship+0x14c8) != *(u64*)(ship+0x14d0)` (the test `afterBattleStars` and `shipCardsMainStatsDisp?` `0x14007e271` use). Plane list entry i: `part = *(Part**)(*(u64*)(ship+0x14c8) + i*0x18 + 8)`; craft name = EscadraString at `part+0x190`, loadout name at `part+0x3f8`. Whether the plane parts' `+0x3f8` is already filled at pre-combat (ship loaded from the save) was not verified; `SerializeHeader` `0x1400510f7` (de)serialises it, so it should be. The ship creatures exist at pre-combat: the card list and `shipCardsMainStatsDisp?` read the vectors there [code].
+
+### Which launch paths read the name (all go through `0x14002e930`)
+* Player-controlled ship: `Input_KeyUp` -> `FUN_14007a4c0` (one plane per key release).
+* AI ships **including allied AI carriers** (side float `+0xad4 > 0`): `AiShipTick` `0x140062f90` -> `0x140065bd9`. A "player side only" filter that tests `owner+0xad4 < 0` still lets allied AI carriers through; if only the controlled ship's planes should change, also compare `owner` with the controlled creature.
+* Landing re-arm: `FUN_14000ebb0` state 6 (`BOOL_147fc6f80` campaign only, bomb lists empty): re-reads `plane+0x3f8`; no inventory.
+
+### Consumption
+Vanilla never consumes anything for a launch, a re-arm or a crash, and nothing returns items after a battle (`afterBattleStars` only reads the plane vector to choose a sprite) [code, no inventory access found on these paths; no full sweep of `Profile+0x540` writers]. The only vanilla moves are the strategic `LOADOUT_LIST` click (`inv[part] -= count; used[part] += count`, `Profile+0x540` / `+0x550`) [see also `hf_ml/analysis/clickfunc/planes-and-loadouts.md`]. Cleaner point than "each arming": **consume once per (plane part, battle)**: decrement when a plane is armed for the first time in the battle (mark it, e.g. a set of part pointers cleared at battle start) and do not charge landing re-arms (the game re-arms free from the same loadout). Returning the items on leaving the battle has no vanilla analogue; if wanted, the mod must track the set and add back for planes not lost (a plane's alive state: part `+0x48 != 0`, same test `FUN_14007a4c0` uses on its list nodes). This is a design choice, not a game fact.
+
+### Plane armaments (hardcoded table, `LoadPlaneLoadouts` `0x1401af830`, from `hf_ml/analysis/clickfunc/planes-and-loadouts.md` and the live `qol.json` dump)
+Loadout -> parts (name x count): T7: `LOADOUT_T7_GUN37` (none), `_FAB100` ITEM_FAB100 x4, `_FAB250` ITEM_FAB250 x2, `_NURS122` ITEM_NAR122 x12, `_NURS340` ITEM_NAR340 x2, `_K13` ITEM_K13 x2; LA29: `_GUN37` (none), `_FAB100` x2, `_FAB250` x1, `_NURS122` x6. Weights 10 (K13 5). So **plane armaments = {ITEM_FAB100, ITEM_FAB250, ITEM_NAR122, ITEM_NAR340, ITEM_K13}**; ITEM_GUN37 is the default gun and needs no stock. For a mod that may add loadouts, derive the set from `PLANE_LOADOUTS` (`+0x80..+0x88` vectors) at runtime. Default fallback loadout = `*_GUN37` (no parts, flag `has_gun37mm`).
+
+### Open
+Initial `+0x3f8` content of a fresh plane part (default string from the part definition vs. empty vs. `LOADOUT_*_GUN37`) was not read; if empty, `0x14002e930` falls back to ITEM_GUN37 only. `FUN_14007a4c0` selection criteria (`+0x48`, `+0x888 != 1`, `+0x890`, `+0x820 == 1.0`, `+0x24c == 0`, `+0x259` role byte) are in the decompile but not interpreted.
