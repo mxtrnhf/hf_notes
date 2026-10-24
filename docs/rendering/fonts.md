@@ -169,6 +169,17 @@ The editor label pass (`0x1400d4380`) asks `0x1401a8710` for these fonts, all at
 4. Text is **ASCII only**; `\n` and `@` break lines (replace `@` in user text), and a NUL ends the text.
 5. Drawing only shows while the scene is rendered: use the editor label-pass hook at `0x140303fb4` (see [render-pipeline.md](render-pipeline.md)).
 
+### Recipe that matches the game's own yellow labels [game, hf_ally rel.19 to rel.23, user-confirmed "looks GOOD"]
+Use this to make mod text indistinguishable from the pre-combat ammo picker label ("ФУГАСНЫЙ" and the like), whose text markup is `{font=flash_large_shadow}{color=4293514025}{align=2}` (`findings/carrier-plane-loadouts.md` section 15):
+* **Font** `flash_large_shadow` (the drop shadow is baked into the glyphs: do **not** draw a second, black copy; that made it look doubled).
+* **Colour** `0xFFE9D329` (ARGB, yellow-gold; decimal 4293514025). The `0xFFE0E0DB` grey-white is what the "PLAYER" label used before.
+* **Scale 1.0, blend 2.** Do not scale: a bitmap font scaled to 0.75 looked blurry. If you want smaller text, pick a smaller font, but note that `vcr_12` looked ragged next to this one.
+* **Whole pixels.** Round `x` and `y` before `Render` (`(960.0 + gui_x).round()`): text at a fractional position is resampled and looks soft. This was the last thing between "rough" and "clean".
+* **Align** 0 (left edge at `x`) for a label beside a button, 2 (centred on `x`) for text above one. Mistaking 2 for left put the text under the button.
+* **Vertical position**: `y` is the top of the line; for text centred on a button at GUI height `by` use `540 + by - 8` with this font.
+* **Where to draw**: the pre-combat render seam (see `precombat-screen.md`, B24), after the game's own labels, and only while the screen is live (hide the text when the doors/covers are closed). Save and restore the font's scale, colour and blend (`+0x100c`, `+0x1020`, `+0x1028`) around the call, because fonts are shared.
+* **Working code**: `hf_ally_release/src/lib.rs`, `draw_plane_labels` and `draw_marker_text` (constants `LABEL_FONT`, `LABEL_COLOR`, `MARKER_FONT`).
+
 ## Unknowns
 * What draws the stats panel (Cyrillic) text, and with which font.
 * What `flash_large_shadow_special` is used for (undeclared in `fonts.res`).
