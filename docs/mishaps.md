@@ -2,6 +2,16 @@
 
 A running log of things that went wrong in funny, instructive or expensive ways. Newest first. Keep the entries short, true and blameless: what happened, why, and what we learned. No data here that belongs in a findings note; link to it instead.
 
+## 2026-10-25: The bombers that capsized their own carrier (hf_ally rel.11 to rel.24)
+
+**What happened.** Once bombs finally worked, the user's LA-29 planes were too eager. They were switched into the game's bomber routine the moment they were armed, so they started their bombing dive straight off the deck and hit the landing deck of the carrier they had just left. The carrier capsized.
+
+**Why.** The first bomb fix (the one-byte patch at `0x14000cf16`) made every plane with a bomb list use the bomber routine from frame one, and the later rocket fix (planes put into mode 3 once they have a target) did the same with no waiting. Nothing gave the plane time to take off and clear the ship first. The game's own script keeps a plane idle until it is more than twice the carrier's radius away; the bomber routine has no such stage.
+
+**The fix** (rel.25): the global patch is off by default (`plane_bombers` false). Bomb and rocket planes now fly the game's normal script first, and are switched to the bomber routine only after `plane_attack_delay` seconds (default 6) and only if they have a target.
+
+**Lesson.** "Make the plane attack" also means "not yet". When you bypass a state machine's early states, you also bypass whatever those states were quietly doing, here clearing the carrier.
+
 ## 2026-10-24: The mod that queued five billion rockets (hf_ally rel.21)
 
 **What happened.** The user asked for unlimited plane armaments in Shipworks test fights, so that every plane loadout could be picked without touching the real campaign stock. I (the ally-mod session) hooked the game's two profile stock calls, only while the test-fight flag is set: "how many do you own" (`0x14028c460`) answers 1000, and "remove N items" (`0x140293ad0`) does nothing.
