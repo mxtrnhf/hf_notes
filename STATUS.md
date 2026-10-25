@@ -12,6 +12,10 @@ The only file with perishable state: what is installed, released, open upstream 
 
 The `mods/` folder holds exactly these four DLLs (older builds and `.bak` files are in `old_mod_backups/mods/`). Not installed: `hf_voice`.
 
+## Custom-aircraft test install (2026-10-25, game folder; not yet played)
+* `mods/hf_ally_v0.13.1-custom-planes.dll` = `highfleet-allies` commit `bd5e647` (local only, not pushed); the previous DLL is `Modloader/hf_ally_v0.13.1.dll.bak_pre-custom-planes`.
+* Hara Vera's `CRAFT_SB15` merged into `Libraries/parts.seria`, `Libraries/OL.seria`, `Media/Tex_Extra/Extra.res` (+ `SB15.png`), both dialog packs and `qol.json` (`planes`, `enable_shop_parts` true, `shop_parts.CRAFT_SB15` at 100 %). Originals in `hf_game_backups/sb15_2026-10-25/`. Steam "verify files" undoes the data files. Recipe and open questions: `docs/findings/custom-aircraft.md`.
+
 ## Repos
 | Repo | Remote | State |
 |---|---|---|

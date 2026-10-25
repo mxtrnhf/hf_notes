@@ -32,3 +32,6 @@ Seen: several allies, replacement after a retreat order, per-ship buttons, summa
 | 0.12.11-sim.1 to sim.21 (2026-10-20, branch `feat/sim-telemetry` in `hf_ally_sim`) | simulator telemetry: `hf_ally_sim` (A/I/P/E/R/V rows), `simparts`, `debris`, `ammo`, `fire`, `partdump` CSVs, `bodies` tracks for planes, `current_battle.txt` for the probe. Every file and column, the sim.1..21 changelog and the quirks: `hf_ml/handover/probe-dev.md` (local repo `hf_ml`, not part of these notes) |
 
 Per-version commits: `git log` in the `hf_ally` repo.
+
+## Carrier plane buttons and custom aircraft (2026-10-25, unreleased, commit `bd5e647`)
+The pre-combat plane-loadout buttons follow the game's own craft and loadout tables instead of a fixed T-7 / LA-29 list, so loadouts re-priced or added through the qol `planes` option, and custom aircraft such as the Hara Vera SB-15, get a button too (up to four plane types per card). Details and the install recipe for the SB-15: `docs/findings/custom-aircraft.md`; table layout: `docs/findings/carrier-plane-loadouts.md` sections 14 and 24.
