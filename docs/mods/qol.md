@@ -9,6 +9,7 @@ logdot's `highfleet-qol` is the one monolith the public features go into. What e
 | refuel rate | [refuel.md](refuel.md) | merged, PR #19 | yes (`player_rate_multiplier` 10) |
 | speed curve | [speed.md](speed.md) | merged, PR #19 | yes (`preset` classic) |
 | manual elevation | [elevation.md](elevation.md) | PR #20 open | yes (`enabled` true) |
+| elevation rules (`elevation_rules`: vanilla/classic/modern) | [../findings/elevation-rules-1151-vs-1163.md](../findings/elevation-rules-1151-vs-1163.md) | fork branch `elevation-rules` (pushed), merged locally into `allies-qol`; not game-tested | built in, **vanilla** (`classic` = 1.151 firing-arc rules) |
 | AI flares and evasion (`ai_flares`) | [../findings/ai/ai-flares.md](../findings/ai/ai-flares.md) | local branch only | built in, **off** (hf_ai carries it) |
 | AI missile dump (`ai_missile_dump_chance`, `_min_delay`, `_max_delay`) | [../findings/combat-missile-launch.md](../findings/combat-missile-launch.md) | local branch only | chance 0.7, delay 0.6 to 1.5 s (key defaults 0.1 / 0.5; commit `95e8bc7` also fixed `drop_stale`, which dropped bursts whose delay was over 1 s) |
 | `allies` option of `ai_flares` | [hf-ally.md](hf-ally.md) | local branch only | `true` (only matters if `ai_flares` is on) |
