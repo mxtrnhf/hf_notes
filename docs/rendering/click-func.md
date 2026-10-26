@@ -181,3 +181,6 @@ Interpretation [guess from names]: mission-planning fuel-load presets for a stri
 * **One physical click reaches `ClickFunc` twice** (same element, same button, a few ms apart) [observed in the `hf_ally` and `gui_inspect` logs; press plus release is a guess].
 * **`gui_inspect`** (`hf_ally`): logs the whole GUI element list on every click and when the ammo selector is rebuilt; useful to find the element names a screen carries: [../data/gui-dump-precombat-ammo-2026-10-16.txt](../data/gui-dump-precombat-ammo-2026-10-16.txt).
 
+
+## Update 2026-10-26
+The ClickFunc analysis workspace (`hf_ml/analysis/clickfunc/`) was reviewed and its verified parts applied to Ghidra: corrections to this page (the 4th argument is a float in XMM3, the element name is a `std::string`, the function does decompile, `HELLO_OMAR_1` is not an element) and the identified helpers are in [click-func-analysis.md](click-func-analysis.md).

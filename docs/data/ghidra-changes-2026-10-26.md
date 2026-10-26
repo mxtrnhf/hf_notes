@@ -29,3 +29,22 @@ Old names are in the plate comments (rule of 2026-10-26).
 | plate | 0x1400109c0 | `AircraftLogic_State6_SelectTarget`: crash site +0x10A51 and the 2-byte fix |
 | comments | 0x140036288, 0x14003641e, 0x14003635b, 0x140036318, 0x1400367c7, 0x140036886, 0x140036c68, 0x140034269, 0x140034448, 0x140037245, 0x1400361a2 | missile block: flare rule, constants, fuse, bomblet calls, steering, give-up state (two of these addresses already held a comment, which the batch overwrote) |
 Verified by the curator (bytes or disassembly re-read): flare gate and `0x44c` compare, constants pi/4, 400, 0.01, 0.001, 20, 0.1; the four Khiva write blocks (84 bytes) and the `endWar` store; the detection function head and its callers. Not independently verified: the panel colours and zoom, the ELINT/IRST formulas, the steering aim table, the per-id table beyond the ids named above.
+
+## Third batch: ClickFunc analysis workspace (hf_ml/analysis/clickfunc), verified items only
+Old names are in the plate comments. Re-read by the curator: decompile or disassembly of every function below, the `XMM3` call site, the `m_spasmcode` and `m_intel_data` strings and the three difficulty writes.
+| kind | address | change |
+|---|---|---|
+| rename | 0x1402d8ee0 | `FUN_1402d8ee0` -> `hotseatPrecombatOk` |
+| rename | 0x1401404b0 | `rep_140135ac0_VCRUNTIME140.DLL::memcmp` -> `ClickFunc_ListMiniDispatch` |
+| rename | 0x140264f20 | `FUN_140264f20` -> `Shipworks_CommitDesignAsControlledShip` |
+| rename | 0x1401c32b0 | `FUN_1401c32b0` -> `Gui_CreateConfirmDialog` |
+| rename | 0x1402213b0 | `FUN_1402213b0` -> `Ship_IsAliveWithThrust` (the analysis' "ready for 6/7" is inverted; corrected in the plate) |
+| rename | 0x1400a61f0 | `FUN_1400a61f0` -> `Escadra_IsPlayerSide` |
+| rename | 0x140251fd0 | `miscMapSomething2?` -> `MapUi_SelectFleet` |
+| rename | 0x1400ba3a0, 0x1402923f0, 0x1402924d0 | `FUN_*` -> `Profile_SubtractCash`, `Profile_GetCaptainHirePrice`, `Profile_GetFirstPlayerCreature` |
+| rename | 0x1400530e0, 0x1400188e0 | `diffArrayDivBy24`, `multElementsBy24` -> `Vec24_Size`, `Vec24_At` (0x18-byte elements, not editor-only) |
+| rename | 0x14012ca00, 0x140165a00, 0x1401659c0, 0x140165940, 0x140129f40, 0x14012a4b0 | `FUN_*` -> `Vec2_DivScalar`, `VectorPtr_PushBack`, `VectorLink_PushBack`, `Vector58_PushBack`, `Iterator_Advance`, `VectorLink_CopyConstruct` |
+| rename | 0x14020c010, 0x1402016d0 | `FUN_*` -> `Editor_GenerateSlots`, `Editor_GenerateMesh` |
+| plate | 0x14012f120 | `!ClickFunc`: signature (float in XMM3), `std::string` element name, structure (old text kept) |
+| comments | 0x1401373ec, 0x140137498, 0x140137559 | `PRESELECT_HARD`: `Profile+0x164` = easy flag, `+0x165` = hard flag |
+Not applied: 0x140265070 (repair-card check twin) and the `FUN_1401c4ee0` / `FUN_1401c0dc0` UI builders (not re-read), and everything in the workspace's economy, map-mode, radio, intel, planes and options pages beyond what is listed.
