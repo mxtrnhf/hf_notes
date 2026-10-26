@@ -68,3 +68,14 @@ Rejected from the workspace: "`rep_1401f80a0` is a profile-delete helper" (it is
 | plate | 0x14029c5c0 | `afterBattleStars??` (kept name): target box, spawn box, aim arrow |
 | comments | 0x14029fee2, 0x14029ff1b | `sign_aim` target box at `playerShip+0xb00`, fixed 62 px |
 Not applied: the `FUN_14018af40` rename (stick-mode twin, not re-read), the tracer and marker functions (agent only).
+
+## Sixth batch: ds3-target leftovers (re-read decompiles)
+| kind | address | change |
+|---|---|---|
+| rename | 0x140248ba0 | `rep_1402279a0_..::sqrtf` -> `Gfx_DrawWorldLine` (the game's line primitive) |
+| rename | 0x140248490 | `rep_140227290_..::sinf` -> `Hud_DrawAimRay` (draws the aim line and X, nearest raycast hit) |
+| rename | 0x14018af40 | `FUN_14018af40` -> `Input_UpdateStickAim` (mode 2, also the fire flags +0xbbc/+0xbbd) |
+| plate | 0x14004bed0 | `handleAmmoInBattle?`: shell tracer drawer |
+| plate | 0x14029ae40 | per-body marker pass and its mask table |
+| comments | 0x1402676c3, 0x14800eab0, 0x1403c0dc8, 0x1403c0dcc | spawn time `+0xbe8`, `sign_aim` global, aim offset globals |
+Note: `rep_XXXX` names carry the 1.151 address; do not look the address up in 1.163.
