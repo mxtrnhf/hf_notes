@@ -48,3 +48,15 @@ Old names are in the plate comments. Re-read by the curator: decompile or disass
 | plate | 0x14012f120 | `!ClickFunc`: signature (float in XMM3), `std::string` element name, structure (old text kept) |
 | comments | 0x1401373ec, 0x140137498, 0x140137559 | `PRESELECT_HARD`: `Profile+0x164` = easy flag, `+0x165` = hard flag |
 Not applied: 0x140265070 (repair-card check twin) and the `FUN_1401c4ee0` / `FUN_1401c0dc0` UI builders (not re-read), and everything in the workspace's economy, map-mode, radio, intel, planes and options pages beyond what is listed.
+
+## Fourth batch: ClickFunc workspace, second pass (decompile re-read)
+| kind | address | change |
+|---|---|---|
+| rename | 0x140265070 | `FUN_140265070` -> `Shipworks_ExitCheckRepairCards` |
+| rename | 0x1401ecb10 | `FUN_1401ecb10` -> `BuildQuitMenu` (also the app exit path; Save button gated by `Profile+0x164`) |
+| rename | 0x1401f7d50, 0x1401d3500 | `FUN_*` -> `BuildSkirmishSlotScreen`, `BuildCampaignSlotScreen` (the second by analogy) |
+| rename | 0x140292ab0 | `FUN_140292ab0` -> `Profile_GetActive` |
+| rename | 0x14028b400, 0x14028b3c0 | `FUN_*` -> `ProfileVec5c0_EmplaceBack`, `ProfileVec5c0_PushBack` |
+| plate | 0x140252270 | `sellShipButton?`: modes, condition factor, shop transfer |
+| comments (data) | 0x147fc6fca, 0x147fc6880, 0x143a11901, 0x147fc6f81, 0x143a15930 | what the globals are |
+Rejected from the workspace: "`rep_1401f80a0` is a profile-delete helper" (it is an address inside `BuildSkirmishSlotScreen`; `rep_` names embed 1.151 addresses).
