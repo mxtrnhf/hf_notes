@@ -10,6 +10,8 @@ The only file with perishable state: what is installed, released, open upstream 
 | [hf_probe](docs/mods/probe.md) | `hf_probe_v3.5.1.dll` (installed 2026-10-20; v3.5.0 and older in `old_mod_backups/mods/`) | `8d66564` (repo `hf_probe`, local only, master) | `probe.json`: blast / damage / ship-removal hooks on; v3.5.1 prints contact damage with 6 decimals so the impulse is `dmg/0.8` |
 | [QoL fork](docs/mods/qol.md) | `highfleet_qol.dll` | `95e8bc7` (branch `ai-flares`; the file was written 1 minute after that commit) | `qol.json`: `ai_flares.enabled` false (hf_ai carries it), flare crash fix on, dump chance 0.7, delay 0.6 to 1.5, refuel player x10, speed `classic`, elevation on |
 
+**2026-10-26 update (QoL row above is older):** the installed `highfleet_qol.dll` is the fork branch `allies-qol` at `e7ab6ab` (local only, includes branch `elevation-rules`, which is pushed to `mxtrnhf/highfleet-qol`), built with `--features 1_163`. `qol.json` has `"elevation_rules": "classic_kaz"` (details: [findings/elevation-rules-1151-vs-1163.md](docs/findings/elevation-rules-1151-vs-1163.md)). The first three patches were seen applied in the game log of 2026-10-26 18:58 (on the build before the truss detours); the truss detours (`classic_kaz`) have not run in the game yet. Backups next to the install: `Modloader/highfleet_qol.dll.bak_pre-*` and `Modloader/config/qol.json.bak_pre-*` (`pre-elevation-rules`, `pre-classic-kaz`, `pre-four-value`). Do not copy a DLL while the game runs (a build was replaced under a running game once, 19:13).
+
 The `mods/` folder holds exactly these four DLLs (older builds and `.bak` files are in `old_mod_backups/mods/`). Not installed: `hf_voice`.
 
 ## Custom-aircraft test install (2026-10-25, game folder; not yet played)
