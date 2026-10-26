@@ -51,7 +51,7 @@ Tags: **[V]** 1.163 offset is also verified in `structures.md` (game or code); *
 | `0x828`, `0x82c` | **+0x10** | pump pair [C] |
 | about `0x834` .. `0x868` (weapon/ammo area) | **+0xc for the saved weapon keys (`0x840`..`0x84c`), +0x14 for the `FireGun` runtime fields** | resolved with `FireGun` and the save keys (below): the zone is not one shift |
 | `0x86a` .. `0x87c` (rescue flags, `isCrtScreen`, `repairType`) | about 0 [?] | bool cluster is repacked; see "unresolved" |
-| about `0x980` .. `0xa30` (floor, edRotate, aircraft logic) | **+0x30** | `floorType`, `floor`, `edRotate`, aircraft logic pointer |
+| about `0x978` .. `0xa30` (floor, edRotate, aircraft logic) | **+0x38** for the floor pair (re-read 2026-10-26, see [findings/elevation-rules-1151-vs-1163.md](findings/elevation-rules-1151-vs-1163.md)); later fields not re-checked | `floorType`, `floor`, `edRotate`, aircraft logic pointer |
 | tail flags (`isFocusable` ...) | **+0x30 or +0x38** [?] | the copy routine writes bytes at 0xa38..0xa3d; the 1.151 flags are at 0x9fc..0xa0d, so this end zone is unresolved |
 
 **Total size (corrected):** the *real* 1.151 Body is **0xa08** bytes (`New(0xa08)` in 1.151 `Projectile_ExplodeAndCluster`; the Ghidra 1.151 struct says 0xa10, 8 bytes too big), and the real 1.163 Body
@@ -94,7 +94,7 @@ The shift therefore climbs through the zones (0, +4, +0x10, +0x14, then +0x30 at
 | cooldown float set to `1/(rate/60)` (`field_0x858`) | 0x858 | **0x86c** | +0x14 | [C] FireGun in both versions |
 | float that blocks firing when > 0 (`field_0x85c`) | 0x85c | **0x870** | +0x14 | [C] FireGun in both versions |
 | byte written 1 on entry (named `fFireRateTimer` in 1.151) | 0x860 | **0x874** | +0x14 | [C] FireGun in both versions |
-| `floorType`, `floor` | 0x980, 0x988 | 0x9b0, 0x9b8 | +0x30 | [V] (`m_floor_type`, `m_floor`) |
+| `floorType`, `floor` | 0x978, 0x980 (the Ghidra struct labels them 8 bytes late; `Deserealize` `0x140024679` / `0x1400246bf` writes the save keys there) | 0x9b0, 0x9b8 | +0x38 | [V] (`m_floor_type`, `m_floor`) |
 | `lightColorR..A`, `lightFade`, `ambient` | 0x9c8.. | 0x9fc..? | +0x30 | [?] by zone |
 | `edRotate` | 0x9f8 | 0xa28 | +0x30 | [V] (`m_ed_rotate` 0xa28) |
 | `aircraftLogic` pointer | 0x9f0 (and 0x9e8) | 0xa20 | +0x30 | [C] |

@@ -20,7 +20,6 @@ Moved from the retired `systems.md` (2026-10-19).
   `0x10` force floor 3. A part without `0x01`/`0x10` keeps its saved floor. An automatic part rises by 1 when every connection-slot neighbour is at or above it, repeating until stable
   (bumping attached non-socket children). Saved ships contain floors 1-3.
 * Arc scan `Body::ScanSectors` `0x140052340`: 360 one-degree rays via `World_RaycastBodies` `0x140239f30`; a hit writes 0 to that degree's `m_sectors` entry. `UpdateEngineCovered`
-  `0x14001c4a0` averages the engine cone into `m_mdl_covered`. A body blocks a ray only if it is **not a gun** (category bit 5) **or** `shooterFloor <= otherFloor`
-  (+1 if the body's master type is 7): elevation decides who can block whom (guns only block by height).
+  `0x14001c4a0` averages the engine cone into `m_mdl_covered`. The gun test is on the **shooter**: a non-gun shooter is not floor-tested (every body blocks), a gun shooter skips a body when `shooterFloor > candidateFloor`. Both floors get +1 when the body's master is null or type 7 (the candidate's +1 is new in 1.163, see [../findings/elevation-rules-1151-vs-1163.md](../findings/elevation-rules-1151-vs-1163.md)).
 * Gun arc blocking is restored in 1.163 by highfleet-qol: it detours `FireGun` (inject `0x140032f22`, exit `0x140032ef0`, return `0x140032f29`), reads the gun's 360 `m_sectors`
   (requires stats +0x128 != 0), maps the gun angle relative to the root to a sector and blocks on 0.0.
