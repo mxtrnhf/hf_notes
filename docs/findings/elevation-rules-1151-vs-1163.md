@@ -26,6 +26,12 @@ Port idea, not applied: at `0x14023a103` replace `0F 44 D0` (`CMOVZ EDX,EAX`) wi
 ## 3. Regular guns
 1.151 `FireGun` (`0x140032fa0`) tests one sector (blocked iff entry is exactly 0.0); 1.163 `FireGun` has none (the QoL mod re-adds it at `0x140032f22`). 1.163's AI weapon controller also gains a 0.025 rad aim tolerance. With QoL's gun blocking on, the detour is why 1.163 blocks guns where vanilla 1.163 would not; the rule in section 1 decides who blocks.
 
+## Update 2026-10-26 (evening): what blocks the KAZ, and `classic_kaz` [code]
+* For a non-gun shooter (category bit 5 clear, so also the KAZ) `World_RaycastBodies` skips the floor test: **every** part fixture of the same ship counts as a blocker, empty hull blocks (`MDL_BLOCK*`, category 64) as well as armor (2), modules and trusses/hardpoints (128). The candidate-floor +1 therefore affects guns only. Same in 1.151 (`0x14021be40`, `R15B` skips the floor test). The only per-category escape is the `param_8` mask (`GetPartFlagsWord & mask`), which 1.163 uses with `0x80` for type-2 sensors; the KAZ scan passes 0.
+* So 1.151's KAZ was not "transparent to hull"; it tolerated up to 50% of a 34 degree cone being blocked. A ray that starts inside a fixture reports no hit in Box2D, which may explain fire from inside a hull block (not tested).
+* Truss (`MDL_FERMA*`, price 5 to 80: 1x1 (4 variants), 2x1, 2x2 (4), 4x4) and hardpoint (`MDL_HARD*`, price 50 to 200: 1x1 (4), 2x1, 2x2 (4)) share category 128, so the mask cannot tell them apart; the mod matches the oid prefix `MDL_FERMA` (body `+0x190` std::string).
+* Mod flag `classic_kaz` (QoL fork, `elevation_rules.rs`): KAZ cone 1.2 rad, covered test as type 3 with threshold 0.5, and trusses skipped in the KAZ scan (detour pair: shooter noted at `0x140239f5b`, candidate test at `0x14023a120`). Blocks, command bridge, hardpoints, armor, modules still block. `elevation_rules: classic` now covers guns only. Not game-tested.
+
 ## Not determined
 * No game test of any patch. Whether (1) alone gives the testers' feeling is open.
 * 1.151 KAZ data are from notes and a mod file, not an original file.

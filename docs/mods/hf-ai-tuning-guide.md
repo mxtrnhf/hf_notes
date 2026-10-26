@@ -84,3 +84,36 @@ Unconfirmed in play: whether allies really dodge as intended. The ally curtain a
 ## 6. Release defaults (pack v0.13.0-rel.3)
 
 `enabled` true; `ai_flares`: enabled, allies, evade, `panic_evasion_probability` 0.3, `launch_flares_probability` 0.6, `log_panic` true, everything else at the code defaults; `tactics`: enabled, `apply_to_allies` true, `strafe_enabled` false, `dive_enabled` true, `aim_enabled` true, `aim_fire_probability` 0.5; steering and scan logs off.
+
+## 7. Recipes: "I see X, so I change Y"
+
+All keys live in `Modloader/config/hf_ai.json`. Keep a `.bak`, change one line, restart the game, fight the same enemy again. Unlisted keys keep the defaults in sections 3.1 to 3.4.
+
+| What you see in battle | What to change |
+|---|---|
+| Too many flares around the targeted ship; neighbours dump for nothing | `ai_flares.launch_flares_neighbor_range` to `0`: only the ship the missile is aimed at joins the curtain. Lower `launch_flares_probability` (0.6) to thin it out further. |
+| Enemies dump flares every time I (or my allies) fire anything | They react to any missile launched by your side. Lower `launch_flares_probability`, or set `launch_flares_targeted_only` true (it is the default) so only the target reacts. |
+| Flares are gone before the missile arrives | `launch_flares_eta_lead` is the head start in seconds (4). Flares last 5 s, so keep it near 4. |
+| My allies dump flares too often | `ai_flares.allies` false turns allies' flares off completely. Otherwise lower `launch_flares_probability` (it applies to everyone). |
+| Ships with no flare launchers just sit there when a Zenith comes | Shelter and running away already exist (section 3.2). Make them braver or more nervous with `launch_flares_evade` (0.9), `launch_flares_boost` (2.0) and `launch_flares_evade_range` (3000). `launch_flares_shelter` must stay true. |
+| The AI is too good at dodging missiles | Lower `reaction_probability` (0.6) and `panic_evasion_probability` (0.3); raise `min_interval_seconds`. |
+| The AI is too easy to hit with missiles | The opposite: raise `reaction_probability`, `trigger_range` (400) and `stray_missile_*` radius. |
+| Ships keep shooting at me from below | Section 3.3: lower `dive_under_dwell_s`, raise `dive_weight` / `dive_boost`. |
+| Enemies hit me too early or from far away | `aim_fire_probability` to `0` turns off early fire. |
+| Heavy ships never dodge | Not a bug: below `dive_min_accel` (30) thrust-to-mass they keep stock behaviour. Lowering it makes slow ships twitch. |
+
+## 8. Why flares start at "wrong" times (what the code does)
+
+* **Missile locked on a ship** (panic, section 3.1): flares start only when the missile is closer than `trigger_range` (400 units) and the reaction roll passed. This is the "late" flare burst.
+* **Missile launched by the other camp** (curtain, section 3.2): flares start before any lock, a few seconds before the missile's estimated arrival. This is the "early" one, and it is the reason a ship can dump flares when nothing is yet aimed at *it*: it is the target or stands within `launch_flares_neighbor_range` of the target. The trigger is the launch, not the danger to that particular ship.
+* **Allies** run the same logic mirrored: they dump on an **enemy** launch aimed at you or at an ally.
+* **K-13 (carrier planes' air-to-air missile):** checked in the 2026-10-25 test logs (6 K-13 launches with hf_ai loaded): no launch was detected and no curtain started, so the K-13 does not set off flare dumps. Not checked: enemy planes firing K-13 at your allies.
+* **Shells:** nothing in hf_ai dodges shells. Only the dive and aim tactics (3.3, 3.4) affect where ships fly relative to your guns.
+* **Zeniths and ships without flares:** they use the panic evasion and the curtain's shelter / run-away. How good that is has not been measured separately; enemy missiles hit only 2 to 5 percent overall.
+
+## 9. A one-battle test routine
+
+1. Set `"log_panic": true` inside `ai_flares`.
+2. Fight, then open the newest `Modloader/logs/hf_ai_panic_*.log`. `CURTAIN_START` is a preventive dump (the line says which launch triggered it), `START` is a panic, `CURTAIN_DROP` is each flare drop.
+3. Count: how many `CURTAIN_START` lines happened without you or an ally launching anything? If zero, nothing is "wrong", you are seeing the design. If not zero, send the log.
+4. Change one value from section 7 and repeat.
