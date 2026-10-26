@@ -60,3 +60,11 @@ Not applied: 0x140265070 (repair-card check twin) and the `FUN_1401c4ee0` / `FUN
 | plate | 0x140252270 | `sellShipButton?`: modes, condition factor, shop transfer |
 | comments (data) | 0x147fc6fca, 0x147fc6880, 0x143a11901, 0x147fc6f81, 0x143a15930 | what the globals are |
 Rejected from the workspace: "`rep_1401f80a0` is a profile-delete helper" (it is an address inside `BuildSkirmishSlotScreen`; `rep_` names embed 1.151 addresses).
+
+## Fifth batch: ds3-target report (cursor, aim, target box)
+| kind | address | change |
+|---|---|---|
+| rename | 0x14018b310 | `FUN_14018b310` -> `Input_UpdateMouseAim` (relative aim offset, `ship+0xbb4`) |
+| plate | 0x14029c5c0 | `afterBattleStars??` (kept name): target box, spawn box, aim arrow |
+| comments | 0x14029fee2, 0x14029ff1b | `sign_aim` target box at `playerShip+0xb00`, fixed 62 px |
+Not applied: the `FUN_14018af40` rename (stick-mode twin, not re-read), the tracer and marker functions (agent only).
