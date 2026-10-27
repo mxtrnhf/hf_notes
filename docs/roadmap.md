@@ -82,7 +82,7 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
 
 ### 1. `.seria` library and CLI (parse, query, patch, diff) *(partial: `apply_data.py` is only a generator)*
 * **Why (hit in practice):** `.seria` is picky (nested `header=number { }`, braces alone on a line, never indented, defaults omitted, repeated `attr=value` lines are arrays), so by-hand edits
-  of 2051 `m_stats` records break silently. The game also **rewrites `OL.seria` and `parts.seria` at startup**, and a game update overwrites `Libraries/`.
+  of the 176 `m_stats` records (2051 is the class code) break silently. The game also **rewrites `OL.seria` and `parts.seria` at startup**, and a game update overwrites `Libraries/`.
 * A parser/serializer that round-trips a file byte-for-byte when nothing is changed (so a diff shows only the intended edit). Then:
   * `get`/`set` by id and field, for example `OL.seria[MDL_NUKE_03_CONV].m_launched_range`, with bulk edits from a CSV or JSON.
   * **Patch files instead of edited game files:** a small declarative list of changes (id, field, new value, expected old value) applied on top of vanilla. It survives game updates

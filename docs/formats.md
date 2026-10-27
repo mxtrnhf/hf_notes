@@ -17,7 +17,7 @@ The game folder (`~/.local/share/Steam/steamapps/common/HighFleet/`) is ground t
 * Quick checks: `grep -n "m_oid=MDL_MISSILE_01" -A40 Libraries/OL.seria`, or load the file with a small script and compare the stats of two versions field by field (what the explosion finding did).
 
 ## Part libraries (`Libraries/`)
-* `OL.seria`: `m_stats=2051` records, one per part id `m_oid`: price, category, crew/power/ammo needs, weapon and missile stats
+* `OL.seria`: `m_stats` (class code 2051; the shipped file has 176 records, per the hot-reload study, [findings/hot-reload-feasibility.md](findings/hot-reload-feasibility.md)), one per part id `m_oid`: price, category, crew/power/ammo needs, weapon and missile stats
   (`m_weapon_load_amount/time/rate/caliber`, `m_launched_speed/range`, `m_missile_explosive/ap`, ...; offsets in `structures.md`).
   Not stored in saves, so edits apply to a running campaign after restart. `m_category` is a bit field (table in `structures.md`).
 * `parts.seria`: Body prototypes `m_children=15`: `m_oid`, `m_id` (also in each slot's `m_master.id`: cloning needs every occurrence replaced),
