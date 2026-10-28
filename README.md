@@ -164,7 +164,7 @@ Tables. (`docs/data/`)
 
 | Read | For |
 |---|---|
-| [docs/data/ghidra-changes-2026-10-29.md](docs/data/ghidra-changes-2026-10-29.md) | unnamed-function sweep: 166 renames with doc-style plate comments (containers/STL, Body/Part/Creature, aircraft, fleet/missiles, GUI/text, static initialisers), the `!FrameFunc` plate, and the clusters deliberately left for a later pass with counts |
+| [docs/data/ghidra-changes-2026-10-29.md](docs/data/ghidra-changes-2026-10-29.md) | unnamed-function sweep: 386 renames with doc-style plate comments (166 single-agent + 221 from five parallel agents; per-agent tables in `docs/data/ghidra-sweep-2026-10-29-agent1..5.md`), `!FrameFunc` plate, Box2D joint-enum warning, and the clusters deliberately left with counts |
 | [docs/data/ghidra-changes-2026-10-28.md](docs/data/ghidra-changes-2026-10-28.md) | ammo funding/refund round and plane combat paths (plate/rename log) |
 | [docs/data/clickfunc-elements.tsv](docs/data/clickfunc-elements.tsv) | the `ClickFunc` element catalog as a table: group, first-test address, name, times seen, mod idea (companion to [click-func.md](docs/rendering/click-func.md)) |
 | [docs/data/port-1151-1163-functions.tsv](docs/data/port-1151-1163-functions.tsv) | the 1.151 to 1.163 function names ported in Ghidra: new name, both addresses, evidence tier, old 1.163 name (includes the skipped `prop-skip` rows) |

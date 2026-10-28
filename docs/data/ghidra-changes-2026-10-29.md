@@ -1,21 +1,33 @@
-# Ghidra changes, 2026-10-29 (unnamed-function sweep, first pass)
+# Ghidra changes, 2026-10-29 (unnamed-function sweep)
 
 Program `Highfleet.exe.unpacked.exe` v1.163, saved (version after the sweep). The
 check-in to the shared project is the user's.
+
+The sweep ran in two waves. The first was the single-agent pass documented in
+the tables below (`166` renames). The second wave was **five parallel agents on
+disjoint address ranges**; their 221 renames are summarised in "Batch 2" below
+and detailed in the per-agent note files. After the two waves the unnamed set
+went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to **1,826 `FUN_*` +
+1,663 `rep_*`**.
+
+Every rename in both waves was verified against the live program after the
+agents finished (387 claimed addresses compared by address and name; two
+mismatches found and fixed: `Sort3WithComparator` -> `Sort3ByComparator`, and
+`Body_Constructor`, whose entry moved 0x30 bytes down to `0x140015ed0` under
+re-analysis and needed its plate re-applied).
 
 This pass started from the full function list and worked through the unnamed
 `FUN_*` / `rep_*` functions, prioritising (a) helpers that almost every game
 function calls, (b) game logic whose callers/callees were already named, and
 (c) clusters that can be identified from an existing note or from a string
-reference. 166 functions were renamed and given a plate comment in doc-comment
-style (summary sentence, `Algorithm`, `Parameters`, `Returns`). `!FrameFunc`,
-one of the two `!` (decompile-size) functions, also got a plate comment.
+reference. `!FrameFunc`, one of the two `!` (decompile-size) functions, also got
+a plate comment.
 
 Conventions used in this pass:
 
 * names follow the existing `<Subsystem>_<Verb><Object>` shape (`Body_Explode`,
   `Part_GetRange`, `AircraftLogic_SetState`);
-* std/CRT helpers keep a `String_` / `Vector` / `RbTree_` / `NewArray` prefix
+* std/CRT helpers keep a `String_` / `Vector` / `RbTree_` / `AllocArray` prefix
   instead of being named after the C++ symbol, because the exact template
   instantiation is not recoverable from the call sites;
 * plate comments say what the function does, not how it was found; the old
@@ -38,7 +50,7 @@ Conventions used in this pass:
 | 0x140057d50 | `String_CopyConstruct` | string copy-construct from string |
 | 0x140057db0 | `String_ConcatStringString` | `operator+` for two strings |
 | 0x140028340 | `String_End` | end pointer (`c_str() + size()`) |
-| 0x140005620 | `ThrowBadArrayNewLength` | throws `std::bad_array_new_length` |
+| 0x140005620 | `ThrowBadArrayLengthException` | throws `std::bad_array_new_length` |
 | 0x1400051e0 | `Exception_InitBadArrayNewLength` | builds that exception object |
 | 0x1400055e0 | `Link_DestroyRange` | destroys a range of `Link` |
 | 0x140005270 | `Link_DestroyVector` | destroys a vector of `Link` |
@@ -76,9 +88,9 @@ Conventions used in this pass:
 | 0x140280770 | `Node_AreAllPropertiesAlive` | all linked properties alive |
 | 0x140110400 | `Creature_SetMissileGroupId` | group id on all linked missiles |
 | 0x1401a8110 | *(skipped, destructor thunk)* | |
-| 0x140007d00 | `NewArray8` | `operator new[]` for 8-byte elements |
-| 0x140055f50 | `NewArray24` | 24-byte elements |
-| 0x140055fd0 | `NewArray40` | 40-byte elements |
+| 0x140007d00 | `AllocateArrayOf8Byte` | `operator new[]` for 8-byte elements |
+| 0x140055f50 | `AllocArrayStride24` | 24-byte elements |
+| 0x140055fd0 | `AllocArrayStride40` | 40-byte elements |
 | 0x1400099e0 | `DeleteArray16` | `operator delete[]` for 16-byte elements |
 | 0x140009a30 | `DeleteArray32` | 32-byte elements |
 | 0x140023a30 | `DeleteArray56` | 56-byte elements |
@@ -109,7 +121,7 @@ Conventions used in this pass:
 
 | addr | new name | what it is |
 |---|---|---|
-| 0x140015f00 | `Body_Constructor` | `Body::Body` |
+| 0x140015ed0 | `Body_Constructor` | `Body::Body` |
 | 0x140024f70 | `Body_DestroyPhysics` | destroy the b2Body and clear links |
 | 0x140048030 | `Body_GetB2AngularVelocity` | b2Body+0x48 |
 | 0x1400486a0 | `Body_GetLinearVelocity` | b2Body+0x40, scaled |
@@ -246,6 +258,79 @@ Conventions used in this pass:
 | 0x140002eb0 | `InitGlobal_OutputStream1` | `oStream1` |
 | 0x140002fc0 | `InitGlobal_DialogPath` | `Data/Dialogs/english.seria` |
 
+## Batch 2: five parallel agents (same day)
+
+Five agents worked disjoint address ranges, coordinating through a shared
+blackboard for name collisions and "what is this" questions. Total: **221
+renames**, every one plated. Their detailed tables (including the "skipped /
+open" lists with reasons) are the per-agent files:
+
+| agent | range | renames | note |
+|---|---|---|---|
+| 1 | 0x140005000–0x14001FFFF | 34 | [ghidra-sweep-2026-10-29-agent1.md](ghidra-sweep-2026-10-29-agent1.md) |
+| 2 | 0x140020000–0x14006FFFF | 52 | [ghidra-sweep-2026-10-29-agent2.md](ghidra-sweep-2026-10-29-agent2.md) |
+| 3 | 0x140070000–0x14011FFFF + 0x140300000–0x140350510 | 56 | [ghidra-sweep-2026-10-29-agent3.md](ghidra-sweep-2026-10-29-agent3.md) |
+| 4 | 0x140120000–0x1401FFFFF | 40 | [ghidra-sweep-2026-10-29-agent4.md](ghidra-sweep-2026-10-29-agent4.md) |
+| 5 | 0x140200000–0x1402FFFFF | 39 | [ghidra-sweep-2026-10-29-agent5.md](ghidra-sweep-2026-10-29-agent5.md) |
+
+What the batch added that is worth remembering:
+
+* **The `SCR_*` scene ticks are named.** Agent 5 recovered the
+  `SomethingWithLevelSerias` branch map (each scene string is referenced once;
+  the `LEA RDX` is the branch test; `DAT_147fc6fc4` is the per-frame state, 0x61
+  = leave scene) and named `SCR_COMBAT`, `SCR_COMBAT_TickWaveSpawner`,
+  `SCR_COMBAT_ReturnToMap`, `SCR_COMBAT_SpawnPlayerShip`, the
+  `SCR_COMBAT_SKIRMISH_*` family, `SCR_BOMBERS(_Tick)`, the `SCR_MISSILE_*`
+  pair, `SCR_CRAFTS_VS_CRAFTS(_CheckEnd)` and
+  `SCR_CRAFTS_VS_MISSILE_ReturnShips`. The full table is in agent 5's note.
+* **Box2D is essentially complete** up to `0x140350510`: the GJK/`b2Distance`
+  layer, the TOI layer, the polygon shape maths, the contact/broadphase
+  internals and the pulley/wheel/mouse/gear/friction/rope solver sets.
+  Agent 3 warns that **the stock 2.3 joint-type enum does not match this
+  build**: the type-4 `Dump` is `b2WheelJoint`, type-7 is `b2PulleyJoint`,
+  type-10 is `b2MouseJoint`. Re-derive `b2Joint_Destroy`'s size table from the
+  constructors, not the enum.
+* **Pre-combat builders identified** (`Precombat_BuildLayoutDispatch`,
+  `Precombat_BuildMapLayout`, `Precombat_BuildCardLayout`), which closes the
+  "which of the two builders is the map layout" question in
+  [../rendering/precombat-screen.md](../rendering/precombat-screen.md).
+* **`.seria` is read out of a ZIP container**: `Zip_ReadLocalFileHeader`,
+  `Zip_ReadInt32BE`, `Zlib_Adler32` are in the resource path.
+* **Name-collision rule in the MCP server**: a new name is rejected when an
+  existing function's token set is a subset of it (e.g. `NewArray8` vs `New`).
+  That is why the array helpers are now `AllocateArrayOf8Byte` /
+  `AllocArrayStride24` / `AllocArrayStride40` and the throw helper is
+  `ThrowBadArrayLengthException`. Keep it in mind for future passes.
+
+### Cross-agent notes worth keeping
+
+* **Scene-branch map** (agent 5): each `SCR_*` string is referenced once from
+  `SomethingWithLevelSerias`, and the `LEA RDX` address is the branch test:
+  `SCR_RUINS` 0x1402c1f4b, `SCR_COMBAT` 0x1402c24d9, `SCR_COMBAT_SKIRMISH`
+  0x1402c3c78, `SCR_COMBAT_SKIRMISH_PVP` 0x1402c44c4, `SCR_COMBAT_TEST`
+  0x1402c4848, `SCR_MISSILE` 0x1402c4baf, `SCR_CRAFTS_VS_MISSILE` 0x1402c510c,
+  `SCR_BOMBERS` 0x1402c52ee, `SCR_CRAFTS_VS_CRAFTS` 0x1402c5890, `SCR_CREDITS`
+  0x1402c5a86. `DAT_147fc6fc4` is the per-frame state, 0x61 = leave scene. Any
+  tick call site can be attributed to a scene by its address.
+* **Body vtable slot map** (agent 2, read from memory): +0xe8 world position,
+  +0xf0 local angle -> world, +0xf8 local point -> world, +0x150
+  dropped-body link collector, +0x208 set health, +0x298 projectile cleanup.
+  Body/Frame/Creature/Missile vtables copy most of these slots, so a DATA xref
+  from `0x148079xxx` / `0x14036xxxx` does not tell you the class.
+* **World-to-screen has two flavours** (agent 4):
+  `Gui_WorldToScreenPoint` 0x1401a8670 is the cheap GUI-frame transform used all
+  over the pre-combat/GUI code; `Creature_WorldToScreen` 0x1400250a0 is the
+  richer one with zoom, shake and camera offsets.
+* **Input stack** 0x140184f90..0x14018ac30 is now `InputTask_Constructor`,
+  `Input_InitRawInputDevices`, `Input_Joystick_Constructor`,
+  `Input_HandleJoystickEvent`, `Input_HandleKeyDown`, `Input_HandleMouseMove`,
+  `Input_SwapJoystickPlayerIndex`, `InputTask_Destructor`.
+  `rep_14018b530_InputTask` is a duplicate copy of `InputTask_Constructor`; it
+  was left under its `rep_` name on purpose.
+* **Box2D joint-class trick** (agent 3): every joint's `Dump` virtual prints its
+  own `b2XxxJointDef` string. Read vtable slot [4] and follow it; the literal in
+  the body names the class in one step.
+
 ## `!` functions
 
 Only two functions carry the `!` prefix in this database:
@@ -263,42 +348,42 @@ Only two functions carry the `!` prefix in this database:
 
 ## Left for a later pass
 
-The unnamed set at the start of the pass was 2201 `FUN_*` and 1674 `rep_*`
-(4865 total functions). After the pass: 2042 `FUN_*` and 1667 `rep_*`. The rest
-is deliberately not renamed yet, because a name would be a guess:
+The unnamed set at the start of the day was 2201 `FUN_*` and 1674 `rep_*`
+(4865 total functions). After both waves: **1826 `FUN_*` and 1663 `rep_*`**
+(386 named). What remains is deliberately not renamed yet, because a name would
+be a guess:
 
 1. **CRT / compiler boilerplate at the bottom of the image.** `_eh` cleanup
    funclets, duplicated `free`-one-field destructors (0x140344000..0x140345000
    is a long run of identical 0x20-byte functions), exception copy helpers and
    the `atexit` stubs. Naming these adds noise; they are compiler output, not
-   game logic.
+   game logic. This is also most of the 1663 `rep_*` names that remain: they
+   keep the `rep_` prefix because the target already carries the real name
+   (e.g. `rep_140004e70_GetStats`); only the genuinely unnamed ones are worth
+   touching.
 2. **The `FUN_*` factory block 0x140086000..0x14009b000.** Some 300 small
    three-line functions that each `New` a derived object, call a specific
    constructor (`FUN_14009f9xx`, `FUN_14009faxx`) and push it into one of the
    owner's vectors. They are one class factory per GUI/serialiser type; naming
    them needs the class of each constructor, which the constructors do not
-   reveal (they only differ in vtable). This is the single biggest remaining
-   cluster.
-3. **The `SomethingWithLevelSerias` callees 0x1402ca070..0x1402d45c0.** These
-   are the per-frame ticks of the `SCR_*` scenes (one of them,
-   `0x1402ca2b0`, is already `SCR_BOMBERS`; `0x1402cdaf0` / `0x1402cdfb0` are
-   `SCR_COMBAT` / `SCR_COMBAT_SKIRMISH_PVP` from the 2026-10-28 pass). They have
-   no arguments and only touch globals, and the dispatcher calls them
-   conditionally, so identifying each one needs reading the dispatcher's branch
-   conditions for that call site, not the callee.
-4. **Box2D internals 0x140330000..0x140350510.** Most `b2*` entry points are
-   already named; the unnamed ones are per-joint solver/init pairs and the
-   contact/TOI internals. The matrix and body helpers that could be identified
-   from their call sites (`b2Body_SetEnabled`, `b2Mat22_GetInverse`,
-   `b2Mat33_GetSymInverse33`, `b2Mat22_Solve`, `b2Mat33_Solve33`,
-   `b2World_ResetProfile`, `b2Island_Destroy`) were done in this pass; the rest
-   needs the Box2D 2.3 source read side by side with each joint's solver.
+   reveal (they only differ in vtable). Agent 3 left it untouched. This is the
+   single biggest remaining cluster.
+3. **The rest of the engine half 0x140070000..0x14011FFFF** (about 1,750
+   functions): per-class serialisation boilerplate, `Property`/`ISerializable`
+   copies, Escadra/Creature accessors whose semantics need
+   [../structures.md](../structures.md). Agent 3 listed the specific skips
+   (lazy texture creators, property registration, quality settings).
+4. **Box2D leftovers** are now only (a) vtable slots with no function object in
+   Ghidra (the gear/pulley/mouse/wheel virtuals listed in agent 3's note; they
+   need `create_function` first) and (b) a handful of ambiguous helpers
+   (`0x140321930` heap sift, `0x140319da0` empty stub, `0x140318b20`).
 5. **Functions whose identity depends on an unread global.** e.g.
-   0x1400dd0d0 (0x950, called from `!ClickFunc`, Shipworks commit/exit), the
-   `0x1402cf4d0` / `0x1402d45c0` scene ticks, 0x1401c7270 (0x25d0, called by
-   `World_ThermalPass`), 0x1400b1440 (0x77d0, `mainDialogWithChoices` and
-   `!ClickFunc`). These are good next targets once their main caller is read.
+   0x1400dd0d0 (0x950, called from `!ClickFunc`, Shipworks commit/exit),
+   0x1401c7270 (0x25d0, called by `World_ThermalPass`), 0x1400b1440 (0x77d0,
+   `mainDialogWithChoices` and `!ClickFunc`), plus the slider factory
+   0x1401574b0 and the ship-zoom LOD family. These are good next targets once
+   their main caller is read.
 
-Suggested order for the next pass: the `SomethingWithLevelSerias` ticks first
-(one dispatcher read names up to fourteen functions), then the Box2D joint
-pairs (mechanical), then the factory block if it is needed at all.
+Suggested order for the next pass: the remaining engine cluster (agent 3's
+skip list, one class at a time), then the `create_function` pass over the
+Box2D vtable slots, then the factory block only if something needs it.
