@@ -118,6 +118,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/elevation-rules-1151-vs-1163.md](docs/findings/elevation-rules-1151-vs-1163.md) | why 1.163 blocks gun arcs and the KAZ more than 1.151: candidate floor +1 in `World_RaycastBodies`, KAZ cone 1.2 vs pi/4, KAZ covered gate type 3/0.5 vs 5/0.15; patch ideas (not applied); floor offsets 0x978/0x980 |
 | [docs/findings/sensors-and-crew.md](docs/findings/sensors-and-crew.md) | how sensors combine (max vs sum), crew capacity vs fuel capacity |
 | [docs/findings/map-air-groups.md](docs/findings/map-air-groups.md) | map aircraft groups, intercept probabilities, which code starts which engagement |
+| [docs/findings/plane-combat-modes-and-gunpods.md](docs/findings/plane-combat-modes-and-gunpods.md) | real-time plane modes (0/2/3/6), which mode fires bombs/rockets/gun, why FAB/NURS planes have no 37 mm in vanilla, the class-3 stock auto-draw leak, and the tactical-only `extra_gunpod` design |
 | [docs/findings/end-game.md](docs/findings/end-game.md) | the scripted end game: phases, `endWar`, escalation; the Khiva crash (unguarded list writes) and its patch recipe |
 | [docs/findings/level-seria-dispatcher.md](docs/findings/level-seria-dispatcher.md) | `SomethingWithLevelSerias`: the SCR_* scenario dispatcher in 1.151 and 1.163, label addresses, string refs (names only, body unread) |
 

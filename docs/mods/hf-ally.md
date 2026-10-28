@@ -12,7 +12,9 @@ A modloader DLL (Steam 1.163 only). In a battle entered through the pre-combat s
 * Telemetry (cargo feature `telemetry`, config `telemetry: true`): ships, parts/damage and flying bodies CSVs, the player ship at 30 Hz, per-gun ammo type, a dead-node diagnostic. Described in [../findings/ai/ai-telemetry.md](../findings/ai/ai-telemetry.md) (v0.12.3 to 0.12.7); the simulator files of 0.12.11-sim.x (sim, simparts, debris, ammo, fire, partdump, bodies) are described in `hf_ml/handover/probe-dev.md` and in the first lines of each CSV.
 
 ## Config (`Modloader/config/ally.json`)
-Keys: `spawn_ally`, `ally_delay_seconds`, `auto_retreat`, `retreat_key` (virtual-key code, 119 = F8), `flagship_leaves`, `ally_toggle`, `max_allies`, `ally_fuel_retreat_percent`, `telemetry`, `spare_prizes`, `ally_ai_ammo`, and the log switches `log_creatures`, `log_precombat`, `gui_inspect` (the last two are very large). Installed values: [../../STATUS.md](../../STATUS.md).
+Keys: `spawn_ally`, `ally_delay_seconds`, `auto_retreat`, `retreat_key` (virtual-key code, 119 = F8), `flagship_leaves`, `ally_toggle`, `max_allies`, `ally_fuel_retreat_percent`, `telemetry`, `spare_prizes`, `ally_ai_ammo`, `plane_loadouts`, `extra_gunpod`, and the log switches `log_creatures`, `log_precombat`, `gui_inspect` (the last two are very large). Installed values: [../../STATUS.md](../../STATUS.md).
+
+`extra_gunpod` (default on) is the tactical-plane gunpod: a chosen FAB/NURS plane on a vanilla T-7/LA-29 gets the 37 mm and, once bombs and rockets are gone, stays in **Combat.seria** and strafes with it. Custom crafts (SB-15 etc.) and the strategic bomber scene are excluded. Details and addresses: [../findings/plane-combat-modes-and-gunpods.md](../findings/plane-combat-modes-and-gunpods.md).
 
 `ally_ai_ammo` (default on) gives each ally the enemy spawner's ammo dice (`+0xc7c` AP / `+0xc7d` proximity), so its AI controller uses AP / proximity. The reserve/refund accounting behind it and the v0.13.3 to 0.13.5 fixes: [../findings/gun-ammo-funding-and-refund.md](../findings/gun-ammo-funding-and-refund.md).
 
@@ -33,6 +35,7 @@ Seen: several allies, replacement after a retreat order, per-ship buttons, summa
 | 0.12.4 to 0.12.10 | telemetry, 30 Hz player row, gun ammo, dead-node diagnostic |
 | 0.12.11-sim.1 to sim.21 (2026-10-20, branch `feat/sim-telemetry` in `hf_ally_sim`) | simulator telemetry: `hf_ally_sim` (A/I/P/E/R/V rows), `simparts`, `debris`, `ammo`, `fire`, `partdump` CSVs, `bodies` tracks for planes, `current_battle.txt` for the probe. Every file and column, the sim.1..21 changelog and the quirks: `hf_ml/handover/probe-dev.md` (local repo `hf_ml`, not part of these notes) |
 | 0.13.0 to 0.13.5 (2026-10-25 to 10-28) | custom aircraft / loadouts read from the game's craft and ammo tables; PLAYER / plane labels hidden once pre-combat is gone and under the Esc shade (0.13.4); ally ammo doctrine and the refund fixes (0.13.3 then 0.13.5): paid ammo returns to the inventory, the free 9999 base pool is never minted, and pre-combat ammo clicks are left alone. Tested in game 2026-10-28 |
+| 0.13.6 to 0.13.7 (2026-10-28) | `extra_gunpod`: vanilla T-7/LA-29 bomb/rocket planes get the 37 mm and stay for a strafing phase after the payload; only in `Combat.seria`; custom crafts excluded. 0.13.7 also disables the vanilla class-3 stock draw for every chosen loadout, so a FAB plane no longer gets NAR-122 from another loadout of the craft. Tested in campaign; SB-15/no-draw re-test pending |
 
 Per-version commits: `git log` in the `hf_ally` repo.
 

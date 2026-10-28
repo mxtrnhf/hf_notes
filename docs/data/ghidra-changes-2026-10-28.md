@@ -14,3 +14,23 @@ Program `Highfleet.exe.unpacked.exe` v1.163, saved. The check-in to the shared p
 | plate (global, new) | 0x147fc75a8 | `std::list` rebuilt by `FUN_1402d9500`; `InitBattleGunAmmoReserves` is then called on it. Its pre-combat role was not read further; it is the wave list during the battle |
 
 Re-read while annotating: `ReturnCreatureGunAmmoToInventory`, `InitBattleGunAmmoReserves`, `ammoSelectButtonPress_`, `FUN_1402d9500`, `ClickFunc` branches at 0x140137cde and 0x140137e27, `buildSquadPrecombatScreen`, and the two list globals. Not settled: the split byte in `FUN_1402d9500`; the other refund callers (extract / scene exits).
+
+## Second batch: plane combat paths (2026-10-28, after the `extra_gunpod` work)
+
+Program `Highfleet.exe.unpacked.exe` v1.163, saved. Finding: [../findings/plane-combat-modes-and-gunpods.md](../findings/plane-combat-modes-and-gunpods.md).
+
+| kind | address | change |
+|---|---|---|
+| plate | 0x14000ae90 | `AircraftLogic_InitAndPickMode`: full `stateSelectorAircraft_` mapping (0/1/2/3/4), list offsets and writer table |
+| plate (extended) | 0x14000bd50 | `AircraftLogic_Mode3_Bomber`: bomb call site 0x14000c3cd / entry 0x140009a80, rocket FireShell 0x14000c5be, no gun FireShell, no `+0xac/+0xb4` writes, pass loop and empty-payload behaviour |
+| plate (extended) | 0x14000ceb0 | `AircraftLogic_Mode6_Default`: state-3 rocket/gun sites 0x14000d872/0x14000d930, field list, free magazine rule, class-3 stock-draw gate and max-part-count draw |
+| rename + plate | 0x14000fa30 | `FUN_14000fa30` -> `AircraftLogic_UpdateAmmoTimers`; old name in plate. Documents `+0xb4` no-decrement when `+0x118 == 6` |
+| plate (new) | 0x14000ea20 | `configure_plane_gun`: the six fields |
+| plate (extended) | 0x14002e930 | `loadAmmoForAircraft`: `has_gun37mm` gate, live-dump evidence, class dispatch, unknown-loadout fallback, callers |
+| plate (new) | 0x1402ca2b0 | `SCR_BOMBERS` role, `BOOL_147fc6fdb=1`, selector 2/3, spawn call, proven call chain, unproven links |
+| plate (new) | 0x140267700 | group spawner: arms at 0x1402679c8 (owner 0), side via 0x14000e680, callers |
+| EOL comments | 0x14000c3cd, 0x14000c5be, 0x14000d872, 0x14000d930, 0x14000d13c, 0x14000bd02, 0x14000b9c5 | bomb release, mode-3 rocket, mode-6 rocket/gun, class-3 draw gate, mode-2 and mode-0 gun |
+| EOL comments | 0x1402c52ee, 0x1402c5540, 0x1402679c8, 0x1402ca326, 0x14013e02c | `SCR_BOMBERS` branch/call, arming call, `BOOL_147fc6fdb=1`, `EDC_TEST_FIGHT` sets `DAT_147fc6fb6=1` |
+| global comments | 0x1403bd008, 0x147fc6fdb, 0x147fc6fb6 | mode selector, scripted-scene flag, Shipworks test flag |
+
+Corrections from this pass: the 1.163 bomb-drop entry is `0x140009a80` (the Ghidra label `rep_1400094a0_Get_Profile?` keeps a stale 1.151 address); `FUN_1402cdaf0` = `SCR_COMBAT`, `FUN_1402cdfb0` = `SCR_COMBAT_SKIRMISH_PVP` (both selector 4); `DAT_147fc6fb6` has a second setter at `0x14013539d` besides `EDC_TEST_FIGHT`. The `SCR_BOMBERS -> FUN_1402ca2b0 -> 0x140267700 -> 0x14002e930` chain is proven at call level; what the output vectors hold and the bomber/escort split was not read.
