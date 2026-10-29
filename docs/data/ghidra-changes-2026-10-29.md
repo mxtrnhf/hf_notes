@@ -3,13 +3,13 @@
 Program `Highfleet.exe.unpacked.exe` v1.163, saved (version after the sweep). The
 check-in to the shared project is the user's.
 
-The sweep ran in eight waves. The first was the single-agent pass documented in
-the tables below (`166` renames). Waves 2–8 were five, five, five, ten, ten, ten
-and ten parallel agents on disjoint ranges. After all eight waves the unnamed
-set went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to **142 `FUN_*` +
-1,151 `rep_*`**; the program now has **4,128 named functions** (about 2,623
-renames of existing functions plus 515 named functions created at missing
-function objects). Coverage is **76.15%** of 5,421 function objects.
+The sweep ran in nine waves. The first was the single-agent pass documented in
+the tables below (`166` renames). Waves 2–9 were five, five, five, ten, ten, ten,
+ten and ten parallel agents on disjoint ranges. After all nine waves the unnamed
+set went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to **93 `FUN_*` +
+979 `rep_*`**; the program now has **4,350 named functions** (about 2,844
+renames of existing functions plus 516 named functions created at missing
+function objects). Coverage is **80.23%** of 5,422 function objects.
 
 Every rename in all six waves was verified against the live program after the
 agents finished (over 1,200 tabulated addresses compared by address and name;
@@ -831,6 +831,141 @@ functions** (139 of them named), so net named +356 over the 3,772 baseline.
 * HGE RNG (4 slots), the CInit table, the funclet tail and the Body vtable are
   all resolved; the remaining work is the 73 open funclets, 1,151 stale `rep_*`,
   and ~110 `FUN_*` (mostly open funclets/padding).
+
+## Batch 9: final tail (same day)
+
+Ninth and last wave, ten agents. Baseline at the start of the wave: **5,421
+function objects, 4,128 named (76.15%), 142 `FUN_*`, 1,151 `rep_*`**. The wave
+has no broad name-sweep range: it finishes the 66 open funclets, re-matches the
+remaining 1,151 `rep_*`, names the 32 created-but-unnamed functions (31
+`.rdata` slots + Body `+0x240`) and plates the last real `FUN_*`. Agent 10 only
+consolidates documentation (`structures.md`, the audit TSV/`.md`, this section)
+and renames nothing.
+
+Mid-wave the blackboard gained the **rename protocol** (ground rule 2): an
+existing name that is *provably wrong or misleading* may now be renamed (never
+for style), with the old name recorded. Those renames are **corrections**, not
+new discoveries — they are recorded separately below and must not be counted as
+newly named functions.
+
+> **Results folded by the parent.** Agent 10 wrote the assignment table while
+> the wave was running; the parent reconciled all ten worker reports against
+> the live program and filled the results below.
+
+### Assignment
+
+| agent | role | scope | result |
+|---|---|---|---|
+| 1 | open funclets A | open funclets in `0x140336730–0x14033FFFF`; stale-owner cases: rename the owner first, then the funclet | 2 owners renamed + 4 funclets named; 33 open (29 with an object, 4 without) |
+| 2 | open funclets B | open funclets in `0x140340000–0x140347FFF` (same method) | 2 owners renamed + 3 funclets named; 18 open |
+| 3 | open funclets C | open funclets in `0x140348000–0x140350510` (same method) | 5 owners renamed + 9 funclets named (1 created from a 29-byte `.pdata` extent); 1 open |
+| 4 | `rep_*` re-match A | remaining `rep_*` in `0x140000000–0x1400FFFFF` (~437); appends to `q1` | 384 audited, 42 renamed, 342 stale; 1 correction (`Escadra` -> `Escadra_Constructor`) |
+| 5 | `rep_*` re-match B | remaining `rep_*` in `0x140100000–0x1401FFFFF` (~328); appends to `q2` | 326 audited, 33 renamed, 293 stale, 0 unreadable |
+| 6 | `rep_*` re-match C | remaining `rep_*` in `0x140200000–0x1402FFFFF` (~288); appends to `q3` | 287 audited, 85 renamed, 15 stale; 195 left |
+| 7 | `rep_*` re-match D + primaries | remaining `rep_*` in `0x140300000–0x140350510` (~105), **including** the five `_CxxThrowException` addresses; appends to `q4` | 6 effective, 3 renamed, 3 stale. **Correction: the five are EH funclets, not primaries** |
+| 8 | created-but-unnamed | the 32 created-but-unnamed functions: 31 `.rdata` targets + `FUN_14004c7e0` (Body `+0x240`) | 29 named + re-plated, 3 left with reasons (`0x14017c780`, `0x14017c800`, `0x14004c7e0`) |
+| 9 | last unplated `FUN_*` | the ~110 `FUN_*` without plates | 54 in scope, 5 named + plated (`type_info_*`, `Cloud/Ground_SetSpawnParams`, two destroy-range thunks), 49 skipped |
+| 10 | documentation | `structures.md`, the audit TSV/`.md`, this section; no renames | done (below) |
+
+The "66" in rows 1–3 is the batch-8 **total** for all three funclet agents, not
+each slice: the blackboard assignment repeated the total, and the live split
+reported by agent 2 is **35 / 21 / 10** for `0x140336730–0x14033FFFF`,
+`0x140340000–0x140347FFF` and `0x140348000–0x140350510`. Agent 2's slice had 21
+open funclets, not 66.
+
+### Worker results
+
+* **Agents 1–3 (open funclets).** 9 owners renamed and 16 funclets named (1
+  created from a 29-byte `.pdata` extent); 52 open. The live split was
+  35 / 21 / 10, not 66 each. Proven owners include `Escadra_FindRefuelTarget`,
+  `Gui_BuildMinifigCard`, `HistoryDesign_CreateFromCreature`,
+  `Ship_RecreateFromBackup`, `Battle_DeployFromReserve`,
+  `Body_TryAttachBodies`, `Sprite_CopyFrom`, `Ground_DrawMarker`,
+  `CityLandscape_RenderTiles`. `0x14034b743` is not a cleanup at all (it tests
+  `STATUS_ACCESS_VIOLATION`). Two owners had already been renamed by agent 6.
+* **Agents 4–7 (`rep_*` re-match).** 1,003 bodies re-checked; 163 promoted,
+  the rest stale. `q1` 42, `q2` 33, `q3` 85, `q4` 3. The consolidated audit is
+  **1,496 rows / 593 `renamed` / 903 `stale label`**.
+* **Agent 7 (five `_CxxThrowException` addresses).** The five are **EH funclets,
+  not primaries**: no CALL xref, establisher frame in RDX, `UNWIND_INFO` flags 0,
+  `_CxxThrowException(0,0)` rethrow epilogue, sitting in the funclet-only band.
+  This reverses the batch-8 conclusion (which `structures.md` had recorded).
+  Three are now named `Vector24/VectorString56/VectorString_InsertReallocate_EhCleanup_*`;
+  two remain stale because their owner (`0x140013160`) is still a `rep_*`.
+* **Agent 8 (created-but-unnamed).** 29 of 32 named: `Slider_SetValue` (which
+  unblocks two funclets), `Gui_ActivateElement`/`DeactivateElement`,
+  `Gui_OnHoverEnter`, `Gui_DrawElement`, `Gui_Update`, `List_*`/`ObjectList_*`
+  accessors, `Frame_IsStatic`, `Escadra_OnElementRemoved`,
+  `lProperty_WriteField`. Three left: `0x14017c780`, `0x14017c800`,
+  `0x14004c7e0`.
+* **Agent 9 (last unplated `FUN_*`).** 54 in scope; 5 named
+  (`type_info_ScalarDeletingDestructor`, `Cloud_SetSpawnParams`,
+  `Ground_SetSpawnParams`, two `Vector*_DestroyRangeThunk`s); 49 skipped
+  (`__scrt_*`, padding, split fragments, record ctors with no owner).
+* **Agent 10 (documentation).** Updated `structures.md` (Body rows, the five
+  rethrow bodies, the 31 withheld `.rdata` slots), rebuilt the audit TSV and
+  wrote this section.
+
+### Corrections to existing names (rename protocol)
+
+| addr | old name | new name | evidence | agent |
+|---|---|---|---|---|
+| 0x1400e36a0 | `Escadra` | `Escadra_Constructor` | ctor body (base init + vtable) — old name was a bare class name | 4 |
+
+No other already-named function was renamed; the misleading names encountered
+were all `rep_*` labels or were already in the agent's own scope.
+
+### Counts
+
+Program after the wave: **5,422 function objects, 4,350 named (80.23%), 93
+`FUN_*`, 979 `rep_*`**. The wave reported **221 renames + 1 created function**
+(net +222 named over the 4,128 baseline). All 593 tabulated renames exist under
+their expected names and all carry plates; the owner/funclet names quoted in
+the notes were spot-checked live.
+
+The remaining work is now small: 52 open funclets, 903 stale `rep_*`, 93
+`FUN_*` (mostly the same open funclets and padding), and three withheld names.
+
+## `!` functions
+
+Only two functions carry the `!` prefix in this database:
+
+* `!ClickFunc` (0x14012f120) - already had a plate comment from
+  [click-func.md](../rendering/click-func.md); unchanged.
+* `!FrameFunc` (0x1401a8970) - **new plate comment**. It is the game loop's
+  per-frame callback: frame delta from `QueryPerformanceCounter`, the global
+  `GameClock` advance, the day/night phase (`_DAT_143a119d0`, 15-hour cycle),
+  the current time-speed selection (`DAT_1403c1270`), then the fixed task chain
+  `SomethingPreTask -> SomethingPhysicTask -> SomethingInputTask ->
+  SomethingAITask -> SomethingGameTask -> SomethingSoundTask ->
+  SomethingVideoTask`. Read from the decompiler (it decompiled after all, with
+  the `!` name); no ASM pass was needed.
+
+## Left for a later pass
+
+The unnamed set at the start of the day was 2,201 `FUN_*` and 1,674 `rep_*`
+(3,875 total; 990 named). After all nine waves: **93 `FUN_*` and 979 `rep_*`**
+remain unnamed, and the program has 4,350 named functions (80.23% of 5,422).
+What is left:
+
+1. **52 open funclets** in `0x140336730–0x140350510`: mostly generic
+   container/allocator replicas and subsystem procedures with no single
+   identity. Owner map: `data/funclet-ownership-2026-10-29.tsv`.
+2. **979 stale `rep_*`.** 593 have been renamed from body evidence; the rest
+   are real unnamed bodies whose labels point into unrelated functions. Per-row
+   evidence: `data/rep-audit-2026-10-29-q*.tsv`. Highest-value still-stale:
+   `0x1402e3580` (sound-name normaliser), the two `_CxxThrowException` funclets
+   owned by `0x140013160`, and `0x1403182a0`.
+3. **93 `FUN_*`**: the open funclets plus padding, `__scrt_*` outlines, split
+   `CopyEscadraName` fragments, small predicates with unknown fields
+   (`0x140073340`, `0x1400a6210`, `0x1400f51c0`, `0x1400bee20`,
+   `0x1400fdec0`).
+4. **Three withheld names**: `0x14017c780`, `0x14017c800`, `0x14004c7e0`.
+5. **Six `Cloud`/`Ground`/`Landpart` vtable slots** with no function object,
+   and four out-of-scope stale `rep_*` CRT labels reported by batch-9 agent 9.
+
+Suggested order: the two `_CxxThrowException` funclets (owner `0x140013160`),
+then the highest-value stale `rep_*` above, then the remaining `FUN_*`.
 
 ## `!` functions
 

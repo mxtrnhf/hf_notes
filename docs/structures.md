@@ -51,7 +51,7 @@ builds on the `Mark` constructor). The same factory gives the same sizes for the
 | +0x9b0 / +0x9b8 | `m_floor_type` bitmask / `m_floor` = **elevation** [game] |
 | +0xa28 | `m_ed_rotate` [code] |
 
-Vtable slots [code]: +0x40 kill(this,1), +0x48 kill, (+0x48 kill goes `FUN_140049ea0` -> `FUN_1402805d0` -> vtbl+0x40(this,1)), +0x50 add child, +0x68 remove from master, +0x80/+0x88 editor "place" steps, +0xe0 master-angle transform and **+0xe8 world position** (the same group; +0xe8 is the getter the distance helpers go through), **+0xf0 local angle -> world frame**, **+0xf8 local point -> world frame**, **+0x150 dropped-body link collector** (the pass that re-collects the subtree's `Link`s), +0x178 side (float; sign = friend/foe), **+0x208 set health**, +0x210 damage, **+0x298 projectile cleanup**. Body/Frame/Creature/Missile vtables copy most of these slots, so a DATA xref from `0x14036xxxx` does not identify the class; `0x1480xxxx` xrefs are `.pdata`/unwind, not vtables, and say nothing about the class either. Smart-ref = 0x18 bytes (vtable, pointer, ?): ctor `FUN_140194bd0(ref,node)`, copy
+Vtable slots [code]: +0x40 kill(this,1), +0x48 kill, (+0x48 kill goes `FUN_140049ea0` -> `FUN_1402805d0` -> vtbl+0x40(this,1)), +0x50 add child, +0x68 remove from master, +0x80/+0x88 editor "place" steps, +0xe0 master-angle transform and **+0xe8 world position** (the same group; +0xe8 is the getter the distance helpers go through), **+0xf0 local angle -> world frame**, **+0xf8 local point -> world frame**, **+0x150 dropped-body link collector** (the pass that re-collects the subtree's `Link`s), +0x178 side (float; sign = friend/foe), **+0x208 set health**, +0x210 damage, **+0x298 close the cached part-info panel** (see below). Body/Frame/Creature/Missile vtables copy most of these slots, so a DATA xref from `0x14036xxxx` does not identify the class; `0x1480xxxx` xrefs are `.pdata`/unwind, not vtables, and say nothing about the class either. Smart-ref = 0x18 bytes (vtable, pointer, ?): ctor `FUN_140194bd0(ref,node)`, copy
 `FUN_140194b80`, dtor `FUN_140194d20`, assign `FUN_140194de0`; reallocating vector insert `FUN_140004b00(vec,pos,ref)`; `FUN_1402c7c90` = `vector<Node*>::insert(range of refs)`.
 
 ### Body vtable slot map `0x140352a30` [code, 2026-10-29]
@@ -67,7 +67,7 @@ declared on Node vs Body is still open):
 | 0 | `+0x0` | 0x140018b60 | first virtual |
 | 24 | `+0xc0` | 0x14002e300 | |
 | 25 | `+0xc8` | 0x14002e290 | |
-| 33 | `+0x108` | 0x140018fb0 | |
+| 33 | `+0x108` | 0x140018fb0 | **`Body_OnClick`** — click entry `(int mouseButton, Node* context)` |
 | 48 | `+0x180` | 0x14001bf60 | |
 | 49 | `+0x188` | 0x14001b7f0 | |
 | 53 | `+0x1a8` | 0x140049e10 | |
@@ -77,9 +77,9 @@ declared on Node vs Body is still open):
 | 58 | `+0x1d0` | 0x140048020 | |
 | 65 | `+0x208` | 0x140051de0 | documented as "set health"; body tests the byte at +0x2d0 and the float at +0x2c8 (the health pair), consistent |
 | 67 | `+0x218` | 0x140019300 | |
-| 68 | `+0x220` | 0x140053110 | |
-| 72 | `+0x240` | 0x14004c7e0 | |
-| 73 | `+0x248` | 0x14004d8e0 | |
+| 68 | `+0x220` | 0x140053110 | **`Body_LinkAdjacentParts`** — attach the touching free parts of two bodies |
+| 72 | `+0x240` | 0x14004c7e0 | still `FUN_*`: forwarder to slot 71 (+0x238, draw) with a fixed `0.0f`; see below |
+| 73 | `+0x248` | 0x14004d8e0 | **`Body_DrawMeshPolygon`** — filled Mesh polygon (3-vertex primitive via `HGE+0x2d0`) |
 | 78 | `+0x270` | 0x140054dd0 | |
 | 83 | `+0x298` | 0x14004bba0 | see caveat below |
 | 87 | `+0x2b8` | 0x14004eaa0 | |
@@ -101,11 +101,20 @@ calls it before teardown. So slot +0x298 is **`Body_ClosePartInfoPanel`**
 [code, 2026-10-29].
 
 **The four created-but-unnamed slots** (33 `0x140018fb0`, 68 `0x140053110`,
-72 `0x14004c7e0`, 73 `0x14004d8e0`) are recorded with their read behaviour in
-[data/ghidra-sweep-2026-10-29-b7-agent7.md](data/ghidra-sweep-2026-10-29-b7-agent7.md)
-§3; the batch-8 slot agent is naming them. Slot 72 is a two-instruction forward
-to slot 71 (`JMP [[this]+0x238](this, 0.0f)`), so its name can only ever
-restate slot 71.
+72 `0x14004c7e0`, 73 `0x14004d8e0`) were resolved by batch 8 [code, 2026-10-29]:
+slot 33 is **`Body_OnClick`** (the Body side of the GUI
+`HandleClick`/`BeginInputCapture` pair; picks a part up, returning its fuel on a
+left click), slot 68 **`Body_LinkAdjacentParts`**, slot 73
+**`Body_DrawMeshPolygon`** (one triangle per ear of the Mesh fan through
+`HGE+0x2d0`). Only slot 72 (`0x14004c7e0`) is still `FUN_*`: it is a
+two-instruction forward to slot 71 — `JMP [[this]+0x238](this, 0.0f)` — the body
+draw at `+0x238` (`0x14004bed0`, `handleAmmoInBattle?`), which declares no float
+parameter and never reads XMM1. It is the draw entry "with a fixed 0.0"
+(default alpha / animation time unproven), so a name can only restate slot 71.
+The full 16-table slot map (+0x100…+0x250) is in
+[data/ghidra-sweep-2026-10-29-b8-agent9.md](data/ghidra-sweep-2026-10-29-b8-agent9.md)
+§1. Batch 9's slot agent is the one that may close slot 72; both agent notes are
+the authority over this one-line summary.
 
 ## Stats record (`GetStats(index)` `FUN_140281e00`; id -> index `FUN_140281cc0`) [code]
 +0x88 price (probe v1.3, 2026-10-14 [game]: `MDL_ARMOR2X1_01` 400, `MDL_LEG_01/02/03` 50 / 100 / 200, `MDL_FERMA2X2_01` 20, `MDL_AMMO_02` 1000; `+0xb0` category read as 8192 legs, 128 ferma, 16 ammo rack, 2 armor), +0x8c important, +0x90 timecost, +0x94 repair_cost, +0xb0 **category**, +0xb4 sort_index, +0xc4 armor, +0xd0 fuel_need, +0xc8 fuel capacity (double), +0xd4 crew capacity (int) [code, indirect: the 1.151 names plus the ship stats sum; `findings/sensors-and-crew.md`], +0xd8 crew_need,
@@ -260,6 +269,54 @@ re-arms in `Body_UpdateEffectTimers` (0.15 / 0.2 / 0.3 s) and the effects code.
 
 Concrete-shader vtable slot convention: 1 = destructor, 2 = `Init`, slot 0 of the CB vtable = constant-buffer upload, 8 = `EmitVerticesA`, 9 = `EmitVerticesB`. The full per-class table (vtable address + every renamed member) is in [data/ghidra-sweep-2026-10-29-b3-agent1.md](data/ghidra-sweep-2026-10-29-b3-agent1.md); the renderer that drives the shader objects is in [rendering/render-pipeline.md](rendering/render-pipeline.md).
 
+### `.rdata` slots created with the name withheld (31) [code, 2026-10-29]
+Batch 8 created 166 function objects behind `.rdata` targets. 135 were named
+(89 + 46) and **31 were created and plated but left `FUN_*`** because the
+owning class or the operation is not provable. They are real vtable slots (each
+target already decoded as a prologue/getter/thunk), not artefacts. The plates
+carry the vtable/slot, parameters and behaviour; batch 9's `.rdata` agent is
+re-proving the names. Full reasons:
+[data/ghidra-sweep-2026-10-29-b8-agent2.md](data/ghidra-sweep-2026-10-29-b8-agent2.md)
+§"Created + plated, left unnamed".
+
+| addr | recorded behaviour (why unnamed) |
+|---|---|
+| `0x140104a80` | Escadra remove hook; linked-object field and player-background side effect do not name it |
+| `0x14011bda0` | stage propagation + enable; class field names unknown |
+| `0x14011caa0` | predicate on a `+0x178` sub-object of class code 2 |
+| `0x14012cf20` | GUI map-sky layout/link step |
+| `0x14012d210` | GUI child-group activation (overlaps `Gui_IsElementActive`/radio) |
+| `0x14012da30` | map click/refresh handler |
+| `0x14012dd90` | slider-list refresh (`slider_std`/`slider_green`, `list_add`/`list_remove`) |
+| `0x14012e1e0` | inventory grid layout |
+| `0x14012e7e0` | `lootBoxCoins()` wrapper |
+| `0x14012e7f0` | slider drag with min/max clamp |
+| `0x14012e8d0` | hover-driven slider (ship-zoom style) |
+| `0x14012ece0` | GUI child-group deactivation |
+| `0x14015de50` | HUD marker registration/draw (map cell pool `0x143faa680`) |
+| `0x14015e930` | HUD marker registration/draw, second table |
+| `0x14015f0d0` | body stats/label draw with `ZOOM_LEVEL-1` shadow fix-up |
+| `0x14015f8d0` | trivial getter of `+0xa80` (value/alpha) |
+| `0x14015f8e0` | accessor into the 0x18-stride vector at `+0xe88` |
+| `0x14015f930` | returns `&(+0xa60)` std::string |
+| `0x14015f950` | accessor into the 0x20-stride vector at `+0xe70` |
+| `0x14015f990` | trampoline to slot `+0x368` |
+| `0x140165860` | property parse callback for names `time` / `emo` |
+| `0x14016bd10` | thunk `ADD RCX,0xe88; JMP 0x140150490`; target has no function object |
+| `0x14016bdf0` | clamp `[0,1]` setter of `+0xa80` |
+| `0x14016be10` | large GUI element initialiser |
+| `0x14016bea0` | string setter that also stores `atof` into `+0xa80` |
+| `0x14016bf00` | large GUI layout/refresh method (also the owner of two open funclets) |
+| `0x14016c6d0` | typing/echo handler (plays `type_01`) |
+| `0x140170b80` | constant getter `4096.0f` (`0x45800000`) |
+| `0x14017c780` | forwards through the runtime-resolved pointer `DAT_1439e89b0` |
+| `0x14017c800` | returns `-1` unconditionally |
+| `0x140190c10` | property `WriteField` via `Node::WriteParameter_`; subclass unknown |
+
+**TODO (parent):** replace this list with batch-9's proven names as they land;
+the count of remaining `FUN_*` here is 31 until the batch-9 `.rdata` agent
+reports.
+
 ## Box2D build quirks [code, 2026-10-29]
 The embedded engine is **Box2D 2.3.1**-shaped (the edge/polygon path is the `b2EPCollider` class, which 2.4 removed), but several layouts differ from the stock source:
 
@@ -294,4 +351,6 @@ written — see the batch-7 section of
 ## Naming caveats: `rep_*` and `/EH` funclets [code, 2026-10-29]
 
 * **The `rep_*` prefix is not evidence of identity.** It is a stale 1.151 signature-database label: hashing every `rep_*` body in `0x140000000–0x14006FFFF` found **0 of 207** with a byte-identical twin anywhere in the image, and 174 of the 199 embedded `<hex>` targets point *inside* an unrelated function (or mid-instruction). Sizes contradict the claimed imports too (`sqrtf`/`free` "replicas" of 2–5 KB). Consequences: never infer a call target's meaning from its `rep_...` label, and never leave a body unnamed just because it is a "replica" — it needs a body-level read. Known wrong examples: `0x140184430` (`..._atoi64` that is really `LinkVector_InsertAt`), `0x14025ecf0` (`..._free` that is a ~1.5 KB string builder), `0x140324330` (`..._FastFail?` that is `b2Island::SolveTOI`), `0x14016cd50` (`..._MessageBoxA` that is `Texture_Load`). A body-level re-match pass and its audit table are in `data/rep-audit-2026-10-29.tsv` (batch 6).
-* **`/EH` funclets are owner-attributed, not individual functions.** The ~926 cleanup clones in `0x140337000–0x14034b77f` all have the shape "test a mask bit in the frame, clear it, destroy/free one member at frame+OFF, or deallocate and rethrow". The owning class is not recoverable from the funclet's own body or its own unwind record (all of them share one generic 6-byte-prolog `UNWIND_INFO`); it comes from the parent's FH4 `FuncInfo4` funclet list, reached from the `.pdata` `RUNTIME_FUNCTION` array (`0x148078000–0x14808c1ff`, 6869 × 12-byte records). The `0x1480xxxx` data xrefs are unwind records, **not** vtables, and the image has no FH3 data at all. Batch 6 parsed those tables and wrote `data/funclet-ownership-2026-10-29.tsv` (`funclet -> owner -> member offset`); funclets are named `<Owner>_EhCleanup_<member>` (e.g. `Body_EhCleanup_Mass`, `ShaderBloom_EhCleanup_0x30`) only where ownership is proved, and ownerless clones keep a family anchor and stay catalogued. Result [code]: **all 926 funclets in `0x140337000–0x14034b77f` have a proved owner** — 347 distinct owning functions, 829 with exactly one owner and 97 ICF-shared by 2+ owners (one body serving up to 34 classes); 761 have a Ghidra function object, 165 do not. 448 were renamed (112 distinct owners — `SomethingWithLevelSerias` 83 funclets, `lootBoxCoins` 37, `Dialog_ExecuteChoiceActions` 35, `TarkhanGUIDispatchOperator` 26, `salvageMiniGame?` 23), 124 of them needing an `_sz<hex>`/`_b<bit>` disambiguator because one owner destroys the same frame slot under several guards. 176 `FUN_*` keep a proven owner but stay unnamed: 73 are ICF-shared (naming after one owner would be wrong), 72 have an owner that is itself a `rep_*` replica label, 27 have an uncertain owner name (`!ClickFunc`). Family split of the 926: string 382, freeField 369, rethrow 104, linkFree 40, vdtor 16, vector 6, captain 3, other 5, nobody 1. The range now holds 762 function objects (176 `FUN_*`, 82 untouched `rep_*`, 504 named).
+* **`/EH` funclets are owner-attributed, not individual functions.** The ~926 cleanup clones in `0x140337000–0x14034b77f` all have the shape "test a mask bit in the frame, clear it, destroy/free one member at frame+OFF, or deallocate and rethrow". The owning class is not recoverable from the funclet's own body or its own unwind record (all of them share one generic 6-byte-prolog `UNWIND_INFO`); it comes from the parent's FH4 `FuncInfo4` funclet list, reached from the `.pdata` `RUNTIME_FUNCTION` array (`0x148078000–0x14808c1ff`, 6869 × 12-byte records). The `0x1480xxxx` data xrefs are unwind records, **not** vtables, and the image has no FH3 data at all. Batch 6 parsed those tables and wrote `data/funclet-ownership-2026-10-29.tsv` (`funclet -> owner -> member offset`); funclets are named `<Owner>_EhCleanup_<member>` (e.g. `Body_EhCleanup_Mass`, `ShaderBloom_EhCleanup_0x30`) only where ownership is proved, and ownerless clones keep a family anchor and stay catalogued. Result [code]: **all 926 funclets in `0x140337000–0x14034b77f` have a proved owner** — 347 distinct owning functions, 829 with exactly one owner and 97 ICF-shared by 2+ owners (one body serving up to 34 classes); 761 have a Ghidra function object, 165 do not. 448 were renamed (112 distinct owners — `SomethingWithLevelSerias` 83 funclets, `lootBoxCoins` 37, `Dialog_ExecuteChoiceActions` 35, `TarkhanGUIDispatchOperator` 26, `salvageMiniGame?` 23), 124 of them needing an `_sz<hex>`/`_b<bit>` disambiguator because one owner destroys the same frame slot under several guards. 176 `FUN_*` keep a proven owner but stay unnamed: 73 are ICF-shared (naming after one owner would be wrong), 72 have an owner that is itself a `rep_*` replica label, 27 have an uncertain owner name (`!ClickFunc`). Family split of the 926: string 382, freeField 369, rethrow 104, linkFree 40, vdtor 16, vector 6, captain 3, other 5, nobody 1. The range now holds 762 function objects (176 `FUN_*`, 82 untouched `rep_*`, 504 named). Batch 8 then proved 7 more owners from their bodies (all stale-`rep_*` game classes: `Fleet_CreateEscadraFromShips`, `Moral_BuildMiniFigPanel`, `Escadra_AddIntelEntry`, `Escadra_CopyFrom`, `Creature_AddLandingLights`, `Gui_CopyConstructor`, `Shader_AddParam`) and named/plated their 7 funclets, leaving **66 open** — 31 generic container/allocator helpers, 2 FX spawners, 23 subsystem procedures, 5 edge cases and 5 with no function object. The split and every owner→member→funclet row are in [data/ghidra-sweep-2026-10-29-b8-agent3.md](data/ghidra-sweep-2026-10-29-b8-agent3.md) §3. Batch 9's funclet agents are working that 66; their notes, not this paragraph, are the live count.
+
+**The five `_CxxThrowException` primaries.** `0x140336c80`, `0x140336d20`, `0x140336df0`, `0x140336ea0` and `0x140336f00` (0x3e/0x3e/0x3b/0x59/0x3f bytes) sit inside the funclet range but are **primary functions, not funclets**: each has its own prologue and `UNWIND_INFO`, each is absent from the ownership TSV, and each decompiles as a container rethrow guard — destroy/free a range at the frame fields `+0x28/+0x38/+0x40/+0x48/+0x50/+0x58/+0x70/+0x78/+0x80/+0x88/+0xd0` (one of `Array_DestroyRange24`, `DeleteArray32`, `DeleteArray56`, `deallocate`), or `memmove` the saved begin/end back, then `_CxxThrowException(0,0)`. They still carry stale `rep_..._CxxThrowException` labels from the 1.151 signature DB; the labels were batch 8's open disagreement and are settled here [code, 2026-10-29]. Batch 9's `rep_*` agent owns renaming them.
