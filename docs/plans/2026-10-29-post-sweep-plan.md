@@ -7,12 +7,19 @@ Date: 2026-10-29. Baseline from the saved program
 
 | Metric | Count |
 |---|---:|
-| Function objects | 5,430 |
-| Named | 4,502 |
-| **Unnamed** | **928** |
-| — `FUN_*` | 80 |
-| — `rep_*` | 848 |
-| Coverage | 82.91% |
+| Function objects | 5,432 |
+| Named | 4,639 |
+| **Unnamed** | **793** |
+| — `FUN_*` | 59 |
+| — `rep_*` | 734 |
+| Coverage | **85.40%** |
+
+**Progress:** phases 0, 1 and 2 are done (2026-10-30) — see
+[../data/ghidra-changes-2026-10-30.md](../data/ghidra-changes-2026-10-30.md).
+Classification produced 94 nameable / 457 needs-structures / 347 CRT-noise / 30
+ambiguous; the funclet walk closed 20 and renamed 17 owners (17 remain open);
+the five family agents added 137 names. The remaining tail is 59 `FUN_*` and
+734 `rep_*`.
 
 Remaining composition (agent estimates from batches 9–10):
 
@@ -84,14 +91,14 @@ Rules: rename a whole family from one proven pattern (`VectorStride40_InsertMove
 skip anything whose element type or owner class is unproven. Expected yield:
 200–400 names. Rebuild the audit TSV after each family.
 
-## Phase 3 — last game logic (1 agent, ~0.5 day)
+## Phase 3 — last game logic (1 agent, ~0.5 day)  [not started]
 
 The 80 `FUN_*` minus the funclets: `0x140073340`, `0x1400a6210`,
 `0x1400f51c0`, `0x1400bee20`, `0x1400fdec0`, split `CopyEscadraName`
 fragments, padding. Extend `structures.md` for a field before naming its
 accessor; otherwise classify and close.
 
-## Phase 4 — docs and close (1 agent, ~0.5 day)
+## Phase 4 — docs and close (1 agent, ~0.5 day)  [partly done: changes doc, structures, STATUS, README updated 2026-10-30]
 
 1. Rebuild `rep-audit-2026-10-29.tsv` from the q-files; refresh
    `rep-audit-2026-10-29.md`.

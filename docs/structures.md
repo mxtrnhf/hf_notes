@@ -396,3 +396,76 @@ their results. **TODO (parent):** fold the proved owner classes from
 `data/ghidra-sweep-2026-10-29-b10-agent1.md` / `-agent2.md` into this
 paragraph, and update the funclet counts in the bullet above (52 open at the
 start of the wave). Do not treat this paragraph as a result.
+
+## Post-sweep additions (2026-10-30) [code]
+
+From the classification/family pass; see
+[data/ghidra-changes-2026-10-30.md](data/ghidra-changes-2026-10-30.md).
+
+### `__CxxFrameHandler4` (no 0x19930520)
+
+The binary uses FH4 exclusively. Funclet ownership walk:
+`.pdata` RUNTIME_FUNCTION → `UNWIND_INFO` with `UNW_FLAG_EHANDLER` → handler-data
+`FuncInfo4` (RVA from the handler tail) → header byte → compressed
+`UnwindMap` / `TryBlockMap` → type-3 unwind actions and handler
+`dispOfHandler` / continuation offsets. Handler RVAs `0x334494`, `0x334510`,
+`0x336594`, `0x3365ca` all share this encoding.
+
+### `ConstantBuffer<T>` vtables (shader layer)
+
+Slot 1 is the scalar-deleting destructor; it calls `ShaderData_ResetVTable`
+then frees. Class names come from `CompleteObjectLocator` →
+`pTypeDescriptor` (`.?AV?$ConstantBuffer@…@@@@`). Nine single-owner trees:
+
+| vtable | class |
+|---|---|
+| `0x140356ad8` | `ConstantBuffer<CBMatrix@Effect>` |
+| `0x140356c38` | `ConstantBuffer<CBConstants<ShaderBackground>>` |
+| `0x140356da0` | `ConstantBuffer<…Bloom…>` |
+| `0x1403572f8` | `ConstantBuffer<…DeferringClose…>` |
+| `0x140357478` | `ConstantBuffer<…DeferringCloseAndPrebloom…>` |
+| `0x140358a10` | `ConstantBuffer<…RainDrops…>` |
+| `0x140358c18` | `ConstantBuffer<…Shockwave…>` |
+
+Five destructors are MSVC ICF folds serving 2–9 of these instantiations
+(`ConstantBuffer_ScalarDeletingDestructor_SharedA–E`); the plate lists every
+owning vtable.
+
+### `std::_Tree` node layout
+
+`+0x00` left, `+0x08` right, `+0x10` parent, `+0x18` colour, `+0x19` isnil;
+value starts at `node + 0x20` unless the plate says otherwise. Node sizes seen:
+0x28, 0x30, 0x40, 0x48, 0x68. `RbTreeStride<N>` uses N = decimal byte size.
+
+### `std::list` node (this build)
+
+`+0x00` next, `+0x08` prev, payload at `+0x10`; most instantiations allocate
+0x18 or 0x20 bytes (`List_PushBackNode24*`, `ListStride24_PushBack`).
+
+### Field blockers for the next pass (from P2e)
+
+These offsets are used by 300+ remaining `needs structures` bodies and are not
+yet in the sections above. Recording them here so the next pass can promote
+whole families.
+
+**Gui** (blocks ~40 bodies): `+0xa34`, `+0xa39`, `+0xa3c`, `+0x91c`, `+0x929`,
+`+0xee8`, `+0xcc8` (second string), `+0xc98`, `+0xab8..+0xad0`, `+0xd70`,
+`+0xd74`, `+0xdbc`, `+0xdc0`.
+
+**Sprite**: `+0x78` owner, `+0x90` name, `+0xdc`, `+0x114..+0x124`, `+0x160`
+part list (7 bodies).
+
+**Property / linked map-object record**: key `+0x28`, name string
+`+0xc8/+0xd8/+0xe0`, tiebreak `+0x108`, owner-node list `+0x100`, payload dword
+`+0x2b4` (15 bodies).
+
+**Body** (missing from the §Body table): `+0x80c` enabled/armed flag (used by
+5 renames), `+0x808` `m_mdl_side`, `+0x818/+0x814/+0x844` power factor/flags,
+`+0x92c`, `+0x1c0` flag word, `+0x7ac`, `+0x100` dependant list.
+
+**Creature** lists: `+0x1378/+0x1380` launch items, `+0x1498/+0x14a0` sensors,
+`+0x1348/+0x1350` power consumers, `+0x1540/+0x1548` (stride 0x30),
+`+0xc80` double fuel quantity, `+0xc18`.
+
+**Profile**: `+0x3f0` tutorial trigger value; `+0x1f8/+0x200` is the fleet list
+also reached through `Get_Profile_`.
