@@ -3,20 +3,21 @@
 Program `Highfleet.exe.unpacked.exe` v1.163, saved (version after the sweep). The
 check-in to the shared project is the user's.
 
-The sweep ran in three waves. The first was the single-agent pass documented in
-the tables below (`166` renames). The second wave was **five parallel agents on
-disjoint address ranges** (`221`); the third was **five more agents** on the
-remaining game code (`575`). The batch-2 and batch-3 details are summarised in
-their own sections below and in the per-agent note files. After all three waves
-the unnamed set went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to
-**1,277 `FUN_*` + 1,637 `rep_*`** (961 functions named).
+The sweep ran in four waves. The first was the single-agent pass documented in
+the tables below (`166` renames). Waves 2–4 were five parallel agents each on
+disjoint ranges (`221`, `575`, `372`). The per-wave details are summarised in
+their own sections and in the per-agent note files. After all four waves the
+unnamed set went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to
+**958 `FUN_*` + 1,592 `rep_*`**; the program now has **2,323 named functions**
+(1,325 renames of existing functions plus 8 functions created at missing
+vtable slots).
 
-Every rename in all three waves was verified against the live program after the
-agents finished (714 claimed addresses compared by address and name; two
+Every rename in all four waves was verified against the live program after the
+agents finished (985 tabulated addresses compared by address and name; two
 mismatches found and fixed: `Sort3WithComparator` -> `Sort3ByComparator`, and
 `Body_Constructor`, whose entry moved 0x30 bytes down to `0x140015ed0` under
-re-analysis and needed its plate re-applied). Two missing plates found by the
-plate audit (`Property_SetFloat`, `App_ReloadSeria`) were written by hand.
+re-analysis and needed its plate re-applied). Plate audits found and fixed two
+missing plates (`Property_SetFloat`, `App_ReloadSeria`).
 
 This pass started from the full function list and worked through the unnamed
 `FUN_*` / `rep_*` functions, prioritising (a) helpers that almost every game
@@ -374,6 +375,45 @@ What the batch corrected or added:
 * **`.seria` is a ZIP** confirmed again from the resource side, with `Inflate_*`
   and `Crc32_GetTable` named.
 
+## Batch 4: five agents on the leftovers (same day)
+
+The final wave covered the clusters the earlier waves had deliberately skipped.
+It added **372 named functions: 364 renames + 8 functions created at vtable
+slots that had no function object**. Per-agent tables and inventory:
+
+| agent | range | result | note |
+|---|---|---|---|
+| 1 | 0x140330000–0x14033FFFF | 16 renamed + 2 created | [ghidra-sweep-2026-10-29-b4-agent1.md](ghidra-sweep-2026-10-29-b4-agent1.md) |
+| 2 | 0x140340000–0x140350510 | 53 renamed; 514 documented clones | [ghidra-sweep-2026-10-29-b4-agent2.md](ghidra-sweep-2026-10-29-b4-agent2.md) |
+| 3 | 0x140000000–0x14006FFFF | 124 renamed (87 `FUN_*` + 37 `rep_*_atexit`) | [ghidra-sweep-2026-10-29-b4-agent3.md](ghidra-sweep-2026-10-29-b4-agent3.md) |
+| 4 | 0x140070000–0x14011FFFF + 0x1401B0000–0x1401FFFFF | 30 renamed | [ghidra-sweep-2026-10-29-b4-agent4.md](ghidra-sweep-2026-10-29-b4-agent4.md) |
+| 5 | 0x140120000–0x1401AFFFF + 0x140200000–0x1402FFFFF | 143 renamed + 6 created | [ghidra-sweep-2026-10-29-b4-agent5.md](ghidra-sweep-2026-10-29-b4-agent5.md) |
+
+What the batch corrected or added:
+
+* **`0x1400b1440` is `Dialog_ExecuteChoiceActions`** — the 0x77aa-byte token
+  interpreter for dialogue answers, confirmed from ~170 action literals and the
+  `mainDialogWithChoices` / `!ClickFunc` callers. This was the last big unknown
+  in the dialogue path.
+* **`0x1401a7120` is the random fleet/shop generator**, not a panel builder:
+  `Fleet_CreateRandomEscadra`, `Fleet_GenerateShipNames`,
+  `Fleet_SelectShipsForBudget`, `Fleet_BuildShopOffer`,
+  `Fleet_AddNamedShipToPool`.
+* **HGE vtable `0x1403672f0` resolved** (file +0x90/+0x98, sound +0x138/+0x140,
+  music +0x160/+0x168/+0x178, stream +0x1c0/+0x1c8), which named the whole
+  `Media_Ensure*/Release*` proxy family plus `Sound_Load`, `Music_Free`.
+* **Box2D contact/edge layer finished**: the six contact `_Evaluate` slots,
+  `b2CollideEdgeAndCircle/Polygon`, `b2EPCollider_*`, `b2PolygonEdgeSeparation`,
+  `b2EdgeShape`'s vtable, `b2ChainShape_GetChildEdge`.
+* **Static-init/destructor pairing**: 90 `InitGlobal_*` initialisers in the CRT
+  header and 43 `DtorGlobal_*` teardown twins at the tail, matched by global
+  address. `InitGlobal_BigRecordPool` allocates 2.8M × 0x18 records at startup.
+* **Two corrections made during reconciliation**: `0x1401c2ba0`
+  (`Captain_CreatePanelForSlot` -> `Fleet_CreateRandomEscadraForSlot`; its
+  arguments are slot presets fed to the random-fleet builder) and `0x14018f7d0`
+  (mis-named `rep_..._free` -> `ISerializable_Destructor`, the base destructor
+  the `Captain_Destructor` thunks tail-jump into).
+
 ## `!` functions
 
 Only two functions carry the `!` prefix in this database:
@@ -391,37 +431,30 @@ Only two functions carry the `!` prefix in this database:
 
 ## Left for a later pass
 
-The unnamed set at the start of the day was 2201 `FUN_*` and 1674 `rep_*`
-(4865 total functions). After all three waves: **1277 `FUN_*` and 1637
-`rep_*`** (961 named). What remains is deliberately not renamed yet, because a
-name would be a guess:
+The unnamed set at the start of the day was 2,201 `FUN_*` and 1,674 `rep_*`
+(3,875 total; 990 named). After all four waves: **958 `FUN_*` and 1,592
+`rep_*`** remain unnamed, and the program has 2,323 named functions. What is
+left is not renamed because a name would add no information:
 
-1. **CRT / compiler boilerplate at the bottom of the image**, including
-   `0x140000000–0x14006FFFF` and the run of identical 0x20-byte functions at
-   `0x140344000..0x140345000`: `_eh` cleanup funclets, exception copy helpers and
-   the `atexit` stubs. Naming these adds noise; they are compiler output, not
-   game logic. This is also most of the 1,637 `rep_*` names that remain: they
-   keep the `rep_` prefix because the target already carries the real name
-   (e.g. `rep_140004e70_GetStats`); only the genuinely unnamed ones are worth
-   touching.
-2. **Embedded-Box2D leftovers 0x140330000–0x140350510.** Mostly (a) vtable slots
-   with no function object in Ghidra (the gear/pulley/mouse/wheel virtuals
-   listed in batch-2 agent 3's note; they need `create_function` first) and
-   (b) ambiguous helpers (`0x140321930` heap sift, `0x140319da0` empty stub,
-   `0x140318b20`) plus compiler clones.
-3. **Large single functions whose semantics need a full read**: 0x1400b1440
-   (0x77d0, `mainDialogWithChoices` / `!ClickFunc`), 0x1400dd0d0 (0x950,
-   Shipworks commit/exit), 0x1400f5be0 / 0x1400f9a40 (map encounter/intercept),
-   0x1401c7270 (0x25d0 particle spawner), 0x140206950, 0x14021cf40 (70 KB),
-   0x140245180 (27 KB), 0x140295500 (31 KB), 0x14029b3e0, 0x1402da8f0.
-4. **Container/sort internals** (about 150 `FUN_*`): `std::vector`/`_Tree`/
-   introsort clones and ICF-merged destructors across 0x140120000–0x1401FFFFF
-   and the engine half. They are mechanical; name them only if a specific
-   analysis needs the instantiation.
-5. **Unread quality/settings helpers**: `0x1403169c0`, `0x140316a50`,
-   `0x140316ba0`, `0x140316d00`, `0x140309d70`, `0x140110340` (named only as a
-   group so far).
+1. **Compiler-generated code**, and the bulk of the remainder: 514 functions in
+   `0x140340000–0x140350510` and 263 in `0x140330000–0x14033FFFF` are
+   `_eh`/`/GS` cleanup funclets and ICF clones of `free`-one-field destructors.
+   They are catalogued in batch-4 agent 2's note by span, frame offset and
+   destroying callee. 1,592 `rep_*` names are mostly the same thing (ICF replicas
+   whose target already carries the real name).
+2. **Large single functions not read deep enough for a certain name**:
+   `0x14021cf40` (70 KB), `0x140245180` (27 KB), `0x140295500` (31 KB),
+   `0x140256a90`, `0x1402943f0`, `0x140296530`, `0x140297100`,
+   `0x1402a7f60/8760/9090` and the `0x1402b0000`–`0x1402f0000` scene tails.
+3. **Container/sort internals** still unnamed in `0x140120000–0x1401AFFFF`
+   (about 85) and `0x140070000–0x14011FFFF` (about 34), plus the remaining GUI
+   quad/UV setup at `0x140172550–0x140172b10` and a few BASS attribute helpers.
+4. **Unknown-field accessors** whose semantics need an unread struct:
+   `0x14015f7b0`..`0x14015f8a0`, `0x1400702a0`, `0x140079ed0`, `0x140078930`.
+5. **CRT plumbing** left as `rep_*`: `_invalid_parameter`/`free` forwarders and
+   `_set_app_type` stubs in `0x140000000–0x14006FFFF`.
 
-Suggested order for the next pass: the `create_function` pass over the Box2D
-vtable slots, then the large single functions in item 3 (highest value), then
-the container clones.
+Suggested order for the next pass: the large single functions in item 2 (each
+needs a dedicated read), then the unknown-field accessors once
+[../structures.md](../structures.md) is extended, then the container clones if a
+specific analysis needs an instantiation.
