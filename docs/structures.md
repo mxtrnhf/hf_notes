@@ -90,13 +90,22 @@ entries are ordinary function objects (e.g. +0x40 `0x1402805e0`, +0x48
 *does* still has to come from the body; the offsets above only say where it is
 declared.
 
-**Slot +0x298 conflict.** The batch-6 hand-off called `0x14004bba0`
-`Body_ClosePartInfoPanel` and the batch-6 vtable note called +0x298 "projectile
-cleanup"; the bytes support neither name. The body is a five-instruction
+**Slot +0x298 (`0x14004bba0`) resolved.** The batch-6 vtable note called it
+"projectile cleanup"; that is disproved. The body is a five-instruction
 forwarder: `MOV RCX,[RCX+0x9d0]; TEST RCX,RCX; JZ ret; MOV RAX,[RCX]; JMP
 [RAX+0x48]` — it forwards to slot +0x48 (the kill/remove slot) of the object
-stored at Body `+0x9d0`, if present. Re-read the callers before naming it.
-[code, 2026-10-29]
+stored at Body `+0x9d0`, if present. Batch 7 read both sides: `+0x9d0` is the
+cached part-info panel created by slot 80 (`Body_BuildPartStatsText`), the
+hover-enter/leave pair (slots 36/83) sets and clears it, and `Body_Kill` (slot 9)
+calls it before teardown. So slot +0x298 is **`Body_ClosePartInfoPanel`**
+[code, 2026-10-29].
+
+**The four created-but-unnamed slots** (33 `0x140018fb0`, 68 `0x140053110`,
+72 `0x14004c7e0`, 73 `0x14004d8e0`) are recorded with their read behaviour in
+[data/ghidra-sweep-2026-10-29-b7-agent7.md](data/ghidra-sweep-2026-10-29-b7-agent7.md)
+§3; the batch-8 slot agent is naming them. Slot 72 is a two-instruction forward
+to slot 71 (`JMP [[this]+0x238](this, 0.0f)`), so its name can only ever
+restate slot 71.
 
 ## Stats record (`GetStats(index)` `FUN_140281e00`; id -> index `FUN_140281cc0`) [code]
 +0x88 price (probe v1.3, 2026-10-14 [game]: `MDL_ARMOR2X1_01` 400, `MDL_LEG_01/02/03` 50 / 100 / 200, `MDL_FERMA2X2_01` 20, `MDL_AMMO_02` 1000; `+0xb0` category read as 8192 legs, 128 ferma, 16 ammo rack, 2 armor), +0x8c important, +0x90 timecost, +0x94 repair_cost, +0xb0 **category**, +0xb4 sort_index, +0xc4 armor, +0xd0 fuel_need, +0xc8 fuel capacity (double), +0xd4 crew capacity (int) [code, indirect: the 1.151 names plus the ship stats sum; `findings/sensors-and-crew.md`], +0xd8 crew_need,
@@ -216,6 +225,31 @@ The vtable is populated with real code pointers, so every media/audio call in th
 | +0x308 | 0x14016cba0 | sibling factory: `ADD RCX,8; JMP 0x1400838e0` |
 | +0x310 | 0x14016cd50 | **`Texture_Load`** — `(this, data, size, flag)`; size != 0 goes through `D3DX11CreateTextureFromMemory`, size == 0 through the disk loader. Still carries the bogus `rep_140161260_USER32.DLL::MessageBoxA` name in the database |
 | +0x320 | 0x14016cd10 | adapter: call `vtable+0x10`, truncate the float result to int |
+
+### HGE RNG: one MSVC `rand` LCG [code, 2026-10-29]
+
+The HGE object's random-number virtuals are four trivially small functions
+reached only through the vtable (there is no direct `call` to any of them in
+`.text`), all decoding cleanly but **without a Ghidra function object** before
+the batch-8 slot pass (four of them are the batch-8 agent-9 creation targets):
+
+| vtable slot | addr | behaviour |
+|---|---|---|
+| +0x100 | 0x140174350 | **seed setter** `(this, u32 seed)`: `seed != 0` stores it; `seed == 0` calls the imported clock at IAT `0x140351660` and stores the result |
+| +0x108 | 0x140174320 | **int in `[min, max)`**: steps the LCG, `SHR EAX,0x10`, `XOR EAX,ECX` (mixes the high half with the new state), `DIV R8D`, returns `min + remainder` |
+| +0x110 | 0x1401742d0 | **float in a range**: steps the LCG, `SHR EAX,0x10`, `CVTSI2SS`, multiplies by the constant at `0x140366c18` (bits `0x37800080`, ~2^-16, which turns the 16-bit value into `[0,1)`) and then by the range argument |
+| +0x118 | 0x140174310 | **get state**: `MOV EAX,[0x1439e8688]; RET` |
+
+The generator is the classic MSVC `rand` LCG, with a **32-bit state at
+`0x1439e8688`** (in the big `.data` block, zero-initialised: the address has no
+file bytes at load time, so seeding is the first runtime access), multiplier
+**`0x343fd`** (214013), increment **`0x269ec3`** (2531011). The state is updated
+in place on every step (`IMUL EAX,[0x1439e8688],0x343fd; ADD EAX,0x269ec3;
+MOV [0x1439e8688],EAX`). The float variant takes the high 16 bits
+(`state >> 16`) and scales them by ~2^-16 to get `[0,1)`; the int variant mixes
+the same high half with the new state, then takes a `DIV` remainder to land in
+`[min, max)`. This is the RNG behind the `HGE->vtable[+0x110]`
+re-arms in `Body_UpdateEffectTimers` (0.15 / 0.2 / 0.3 s) and the effects code.
 
 ### D3D11 shader layer (0x140080000–0x14009FFFF, ~246 functions) [code]
 `0x1400817E0–0x14009FF80` is the game's whole D3D11 layer, not a "class factory" as the first pass guessed. Every class there was recovered from MSVC RTTI (`vtable[-1]` -> `CompleteObjectLocator` -> `TypeDescriptor` -> `.?AV<Class>@@`), because most of the members are virtual and have no direct callers. Layout of the block:

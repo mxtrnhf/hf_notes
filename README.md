@@ -164,7 +164,7 @@ Tables. (`docs/data/`)
 
 | Read | For |
 |---|---|
-| [docs/data/ghidra-changes-2026-10-29.md](docs/data/ghidra-changes-2026-10-29.md) | unnamed-function sweep: ~2,402 renames + 380 created functions with doc-style plate comments in seven waves (per-agent tables in `docs/data/ghidra-sweep-2026-10-29-*agent*.md`). Includes the shader-layer class map (RTTI-derived), full `/EH` funclet ownership from the unwind tables (926 funclets → 347 owners), the `rep_*`-labels-are-unreliable correction, the CRT C-initialiser table, and the remaining clusters with addresses |
+| [docs/data/ghidra-changes-2026-10-29.md](docs/data/ghidra-changes-2026-10-29.md) | unnamed-function sweep: ~2,623 renames + 515 created functions with doc-style plate comments in eight waves (per-agent tables in `docs/data/ghidra-sweep-2026-10-29-*agent*.md`). Includes the shader-layer class map (RTTI-derived), full `/EH` funclet ownership from the unwind tables (926 funclets → 347 owners), the `rep_*`-labels-are-unreliable correction, the CRT C-initialiser table, the `.rdata`/HGE/Body slot creation pass, and the remaining clusters with addresses |
 | [docs/data/ghidra-changes-2026-10-28.md](docs/data/ghidra-changes-2026-10-28.md) | ammo funding/refund round and plane combat paths (plate/rename log) |
 | [docs/data/clickfunc-elements.tsv](docs/data/clickfunc-elements.tsv) | the `ClickFunc` element catalog as a table: group, first-test address, name, times seen, mod idea (companion to [click-func.md](docs/rendering/click-func.md)) |
 | [docs/data/port-1151-1163-functions.tsv](docs/data/port-1151-1163-functions.tsv) | the 1.151 to 1.163 function names ported in Ghidra: new name, both addresses, evidence tier, old 1.163 name (includes the skipped `prop-skip` rows) |

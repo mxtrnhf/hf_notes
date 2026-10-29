@@ -3,13 +3,13 @@
 Program `Highfleet.exe.unpacked.exe` v1.163, saved (version after the sweep). The
 check-in to the shared project is the user's.
 
-The sweep ran in seven waves. The first was the single-agent pass documented in
-the tables below (`166` renames). Waves 2–7 were five, five, five, ten, ten and
-ten parallel agents on disjoint ranges. After all seven waves the unnamed set
-went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to **197 `FUN_*` +
-1,282 `rep_*`**; the program now has **3,772 named functions** (about 2,402
-renames of existing functions plus 380 functions created at missing function
-objects). Coverage is **71.83%** of 5,251 function objects.
+The sweep ran in eight waves. The first was the single-agent pass documented in
+the tables below (`166` renames). Waves 2–8 were five, five, five, ten, ten, ten
+and ten parallel agents on disjoint ranges. After all eight waves the unnamed
+set went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to **142 `FUN_*` +
+1,151 `rep_*`**; the program now has **4,128 named functions** (about 2,623
+renames of existing functions plus 515 named functions created at missing
+function objects). Coverage is **76.15%** of 5,421 function objects.
 
 Every rename in all six waves was verified against the live program after the
 agents finished (over 1,200 tabulated addresses compared by address and name;
@@ -664,6 +664,218 @@ carry plates.
   script bundle is broken (use a subdirectory bundle); `0x14021fe10` and
   `0x1402f3fd0` are stale `rep_*` labels still worth a re-match; ~170 `.rdata`
   targets into `0x140070000–0x1401AFFFF` still have no function object.
+
+## Batch 8: `.rdata` creation + slots + audit (same day)
+
+Eighth wave, ten agents. Baseline at the start of the wave: **5,251 function
+objects, 3,772 named (71.83%), 197 `FUN_*`, 1,282 `rep_*`**. This wave is not a
+broad name sweep: agents 1–2 create the missing function objects behind the
+`.rdata` vtable slots, agent 3 closes the 73 open funclets, agents 4–7 re-match
+the remaining `rep_*`, agents 8–9 take the last real `FUN_*` and the Body/HGE
+slot families, and agent 10 only consolidates documentation (no renames).
+
+> **Results folded by the parent.** Agent 10 wrote the assignment table while
+> the wave was running; the parent reconciled all ten worker reports against
+> the live program and filled the results below.
+
+### Assignment
+
+| agent | role | scope | result |
+|---|---|---|---|
+| 1 | `.rdata` creation A | qwords in `0x140352000–0x14036A000` that point into `0x140070000–0x1400FFFFF` and have no function object; create + name/plate | **46 created**, all named + plated; re-scan reports 0 functionless targets left |
+| 2 | `.rdata` creation B | same for `0x140100000–0x1401AFFFF`; excludes the four HGE RNG slots (agent 9) | **120 created** (89 named + plated, 31 created/plated with name withheld as unprovable), 0 skipped |
+| 3 | open funclets | the 73 still-open funclets in `0x140336730–0x140350510` (owner first, then funclet) | 7 owners renamed + **7 funclets named/plated**, 66 still open (61 with an owner function object but no proven identity, 5 without a function object at the funclet address) |
+| 4 | `rep_*` re-match A | `rep_*` in `0x140000000–0x1400FFFFF`, minus funclet addresses; appends to `q1` | 410 audited, 26 renamed, 384 stale |
+| 5 | `rep_*` re-match B | `rep_*` in `0x140100000–0x1401FFFFF`; appends to `q2` | 382 audited, 54 renamed, 325 stale, 1 unreadable |
+| 6 | `rep_*` re-match C | `rep_*` in `0x140200000–0x1402FFFFF`; appends to `q3` | 317 audited, 29 renamed, 20 stale (rest already audited) |
+| 7 | `rep_*` re-match D | `rep_*` in `0x140300000–0x140336FFF`; appends to `q4` | 21 audited, **15 renamed**, 6 stale, 0 unreadable; q4 now 145 data rows (the 21 rows override earlier ones, so the consolidated row count does not move) |
+| 8 | last real `FUN_*` | the D3DEngine dispatch family, GUI callbacks, small predicates, padding/thunks, `__scrt_*`, `0x140319da0`, `0x1403340d8`, `0x14028b340` (~56) | **76 renamed** (63 `DtorGlobal_*` tail + 7 `Gfx_*` + 2 texture + 4 misc), 55 left |
+| 9 | slots | the four created-but-unnamed Body slots (`0x140018fb0`, `0x140053110`, `0x14004c7e0`, `0x14004d8e0`) and the four HGE RNG vtable slots (`0x140174350/320/2d0/310`) | 4 created + 3 renamed (`Body_OnClick`, `Body_LinkAdjacentParts`, `Body_DrawMeshPolygon`), 1 skipped |
+| 10 | documentation | `structures.md`, the audit TSV/`.md`, this section; no renames | done (below) |
+
+### Creation requests posted (not results)
+
+These are the blackboard `-> creation` posts as they stood when this skeleton
+was written. None of them is a completed count — the parent should replace each
+with the agent's actual `created` / `named` / `skipped` line.
+
+* **Agent 2** — 120 `.rdata` targets into `0x140100000–0x1401AFFFF` with no
+  function object, derived from the batch-7 agent-8 list; the four HGE RNG
+  slots are explicitly excluded (agent 9 owns them).
+* **Agent 1** — 46 `.rdata` targets into `0x140070000–0x1400FFFFF`, each
+  re-checked against the live program and attributed to a vtable through the
+  MSVC RTTI locator preceding the table. The posted family map (owning table ->
+  targets) is specific enough to name most of them: `.?AVCreature@@` slot 9,
+  `basic_ofstream` / `basic_filebuf` slots, `TextureSingle` / `RenderTarget`
+  slots 1–3, `Effect` / `IShader` slot 18, twelve `Shader*` tables
+  (`Init` / `EmitVerticesA` / `EmitInstances`), four `std::function<float(float)>`
+  lambda tables around `0x140092f30–0x1400930c0`, `Intel` / `Launched` scalar
+  deleting destructors, `MapShip@Escadra`, the three property containers,
+  `Escadra` / `Location` slot 43, `MapShipBody` slot 58 and two
+  `ShaderParam*New` slots.
+* **Agent 9** — 4 HGE RNG slots. The posted disassembly agrees with the
+  independent read now in
+  [../structures.md](../structures.md#hge-rng-one-msvc-rand-lcg-code-2026-10-29):
+  seed setter 0x140174350, int range 0x140174320, float range 0x1401742d0,
+  getter 0x140174310, LCG state `0x1439e8688`.
+
+### Worker results
+
+**Agent 3 (open funclets)** — full detail in
+[ghidra-sweep-2026-10-29-b8-agent3.md](ghidra-sweep-2026-10-29-b8-agent3.md).
+Of the 73 open funclets, **7 owners were proven and renamed, and their 7
+funclets named + plated; 66 remain open** (61 with an owner function object but
+no provable identity, 5 with no function object at the funclet address). The
+proved owners are all real game classes hiding behind stale `rep_*` labels:
+
+| owner addr | new owner name | funclet |
+|---|---|---|
+| 0x1401c7060 | `Fleet_CreateEscadraFromShips` | 0x140343460 |
+| 0x140202010 | `Moral_BuildMiniFigPanel` | 0x140343ff0 |
+| 0x1400eb460 | `Escadra_AddIntelEntry` | 0x14033d640 |
+| 0x1400e5530 | `Escadra_CopyFrom` | 0x14033d500 |
+| 0x140061000 | `Creature_AddLandingLights` | 0x140338a10 |
+| 0x14012c280 | `Gui_CopyConstructor` | 0x14033ec50 |
+| 0x140087790 | `Shader_AddParam` | 0x140339240 |
+
+The extra proof signal was the `FUNCINFO4` sized-delete operand: the funclet's
+`sz=` equals the size of the temporary the owner allocates (`New(sz)`), which
+confirms the owner↔funclet pair independently of the `.pdata` mapping. The 66
+open split into 31 generic container/allocator helpers, 2 FX spawners, 23
+subsystem procedures, 5 edge cases and 5 with no function object.
+
+**Agent 7 (`rep_*` re-match D)** — full detail in
+[ghidra-sweep-2026-10-29-b8-agent7.md](ghidra-sweep-2026-10-29-b8-agent7.md).
+Only 21 `rep_*` remained in its two ranges (not ~120: the earlier waves had
+renamed the rest), and 15 are now proven; the 6 stale are five EH funclets plus
+`0x1403182a0`.
+
+* **The VideoTask render dispatch is resolved.** `VideoTask_Dispatch`
+  (0x140300c20) has mutually exclusive branches that map to
+  `VideoTask_RenderEditorScene` 0x140300db0, `VideoTask_RenderBattleScene`
+  0x1403050a0, `VideoTask_RenderMapScene` 0x14030a6b0 and
+  `VideoTask_RenderMenuScene` 0x14030f250; the branch flags match the
+  `source-file-names.md` screen table and the probe run. The four bodies are
+  17–19 KB, so identity is caller-side, not from decompiling them.
+* **`0x140334b70` / `0x140334c28` are C initialisers, not `__scrt_*` stages.**
+  `mainCRTStartup` walks `_initterm_e(0x1403521b8, 0x1403521e0)` and both
+  addresses are entries of that table (`_set_app_type`, fmode, commode, onexit,
+  argv, locale …). Named `CRT_InitializeProcess` / `CRT_InitializeStdioOptions`.
+  This is a correction to the old "`__scrt_*` stubs" reading.
+* Also renamed: `MapMode_DrawRadarSweep` 0x140314290,
+  `Hud_DrawZoomViewOverlay` 0x140315580, `ShipCard_DrawBearingTrail` 0x140315b40,
+  `VideoTask_LayoutShipCards` 0x140316230, `Physics_ShapeDistance` 0x140318920,
+  `CRT_InitializeSListThunk` 0x14033535c, `CRT_GuardDispatchThunk` 0x1403353a4,
+  `sinf4` 0x140334de0 and `sinf4_ScalarShim` 0x140334e43.
+* `0x1403353a4` is the guard-**check** table walker, not the dispatch thunk; the
+  dispatch itself is the import thunk at 0x1403366f0.
+* **Open disagreement to settle:** agent 7 left the five bodies
+  `0x140336c80/d20/df0/ea0/f00` as EH funclets that belong to agent 3's band but
+  are absent from the ownership TSV; agent 3 replied that each has its own
+  `UNWIND_INFO` and a real prologue, so they are primary functions ICF-aliased
+  onto funclet-shaped bodies, not funclets, and did not rename them. The parent
+  should decide; they are inside agent 7's `0x140330000–0x140336FFF` range.
+
+**Other workers.** Agent 1 created the 46 targets in its slice and proved each
+one through the MSVC RTTI CompleteObjectLocator, so every target got a class +
+slot (`Effect+0xc0` projection matrix; four `std::function<float(float)>`
+wrappers around `Property_SetFloat148/158/168`; Escadra/Location slot-43
+virtuals with `ESCADRA_NAME_`/`LOCATION_NAME_`). Agent 2 created 120, resolving
+the full `HGE_Impl` vtable `0x1403672f0` and the GUI-element/ResDesc families.
+Agent 4 renamed 26 (the `InitBaseFields` family, seven `basic_filebuf`
+overrides, `Shader_CompileFromFile`, `RenderTarget_Create`, …) and found that
+this build's COL stores `pTypeDescriptor`/`pClassHierarchy` as **32-bit
+image-relative offsets at COL+0x0c/+0x10**, which resolves 247 vtables. Agent 5
+renamed 54 (HGE/I-O loaders, 17 GUI/map builders, FNV-1a hash map, game logic).
+Agent 6 renamed 29 (Node/Body, Sprite/Anistate, HUD markers, profiler,
+sound/shop, containers). Agent 8 renamed 76 (63 atexit `DtorGlobal_*`, 7
+`Gfx_*` dispatch, 2 texture size adapters, 4 misc) and mapped HGE `+0x18` =
+ID3D11Device, `+0x20` = DeviceContext, `+0x28` = SwapChain, `+0x1a0` = current
+shader. Agent 9 named the four HGE RNG slots and three Body slots.
+
+**Disagreement settled.** `0x140336c80/d20/df0/ea0/f00` are primary functions
+that carry stale `rep_..._CxxThrowException` labels and their own `UNWIND_INFO`
+— agent 3 is right; they are not funclets and remain for a `rep_*` re-match.
+
+### Documentation results (agent 10)
+
+These are done and do not depend on the worker agents:
+
+* `structures.md` gained the **HGE RNG** subsection (four vtable slots, 32-bit
+  LCG state `0x1439e8688`, `0x343fd` / `0x269ec3`, the high-16-bit output with
+  its ~2^-16 scale, and the note that the state lives in zero-initialised
+  `.data` and has no file bytes at load time).
+* `structures.md` resolved the Body slot +0x298 row: `0x14004bba0` is
+  **`Body_ClosePartInfoPanel`** (batch-7 caller proof), not "projectile cleanup";
+  the four created-but-unnamed slots now point at their recorded behaviour.
+* `data/rep-audit-2026-10-29.tsv` was rebuilt from `q1..q4` with `0x`
+  normalisation, de-duplication by address (newest row wins, order q1 -> q4) and
+  numeric sort. Snapshot after the batch-8 agent-7 append: **1,496 rows, 321
+  `renamed`, 1,174 `stale label`, 1 `unreadable`**. **TODO (parent):** re-run
+  the rebuild after agents 4–6 append and refresh both count tables.
+* Added the batch-8 assignment table, the agent-7 result summary and this
+  skeleton.
+
+### Counts
+
+Program after the wave: **5,421 function objects, 4,128 named (76.15%), 142
+`FUN_*`, 1,151 `rep_*`**. The wave reported **217 renames and 170 created
+functions** (139 of them named), so net named +356 over the 3,772 baseline.
+
+* Everybody's tabulated renames verify: 431 audit-TSV rows and the 13-row
+  `Gfx_*`/misc table all match the live program; 24 `Gfx_*` and 4 `HGE_Rand*`
+  functions all carry plates; 32 `FUN_*` carry plates (the created-but-unnamed
+  families) and 110 do not.
+* `.rdata` creation is complete for both slices: 166 new function objects, 0
+  functionless `.rdata` targets left in `0x140070000–0x1401AFFFF`.
+* HGE RNG (4 slots), the CInit table, the funclet tail and the Body vtable are
+  all resolved; the remaining work is the 73 open funclets, 1,151 stale `rep_*`,
+  and ~110 `FUN_*` (mostly open funclets/padding).
+
+## `!` functions
+
+Only two functions carry the `!` prefix in this database:
+
+* `!ClickFunc` (0x14012f120) - already had a plate comment from
+  [click-func.md](../rendering/click-func.md); unchanged.
+* `!FrameFunc` (0x1401a8970) - **new plate comment**. It is the game loop's
+  per-frame callback: frame delta from `QueryPerformanceCounter`, the global
+  `GameClock` advance, the day/night phase (`_DAT_143a119d0`, 15-hour cycle),
+  the current time-speed selection (`DAT_1403c1270`), then the fixed task chain
+  `SomethingPreTask -> SomethingPhysicTask -> SomethingInputTask ->
+  SomethingAITask -> SomethingGameTask -> SomethingSoundTask ->
+  SomethingVideoTask`. Read from the decompiler (it decompiled after all, with
+  the `!` name); no ASM pass was needed.
+
+## Left for a later pass
+
+The unnamed set at the start of the day was 2,201 `FUN_*` and 1,674 `rep_*`
+(3,875 total; 990 named). After all eight waves: **142 `FUN_*` and 1,151
+`rep_*`** remain unnamed, and the program has 4,128 named functions (76.15% of
+5,421). What is left:
+
+1. **66 open funclets** in `0x140336730–0x140350510`: 61 have an owner function
+   object but no proven identity (generic container/allocator helpers, FX
+   spawners, subsystem procedures), 5 have no function object at the funclet
+   address. Owner map: `data/funclet-ownership-2026-10-29.tsv`.
+2. **1,151 stale `rep_*`.** The audit has 1,496 rows (306 renamed); the rest are
+   real unnamed bodies whose embedded labels point into unrelated functions.
+   Per-row evidence: `data/rep-audit-2026-10-29-q*.tsv`. Known leftovers:
+   `0x14021fe10`, `0x1402f3fd0`, and the five primary functions at
+   `0x140336c80/d20/df0/ea0/f00` (stale `_CxxThrowException` labels, not
+   funclets).
+3. **~110 `FUN_*` without plates**: mostly the open funclets/padding plus the
+   small predicates and thunks agents 8/9 deliberately skipped
+   (`0x140073340`, `0x1400a6210`, `0x1400f51c0`, `0x1400bee20`, `0x1400fdec0`,
+   `0x140319da0` is named, `0x14028b340`, the `__scrt_*` stubs).
+4. **32 created-but-unnamed created functions**: 31 of agent 2's `.rdata`
+   targets (created and plated, name withheld as unprovable) and
+   `FUN_14004c7e0` (Body slot +0x240).
+5. **The last unproven slots**: the four HGE RNG slots are done; `0x14004c7e0`
+   is the only Body slot left.
+
+Suggested order for the next pass: the 66 funclets (owner-by-owner), then the
+1,151 `rep_*` body re-match, then the small predicates/thunks.
 
 ## `!` functions
 
