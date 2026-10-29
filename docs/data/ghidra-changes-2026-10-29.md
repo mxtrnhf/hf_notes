@@ -3,17 +3,15 @@
 Program `Highfleet.exe.unpacked.exe` v1.163, saved (version after the sweep). The
 check-in to the shared project is the user's.
 
-The sweep ran in four waves. The first was the single-agent pass documented in
-the tables below (`166` renames). Waves 2–4 were five parallel agents each on
-disjoint ranges (`221`, `575`, `372`). The per-wave details are summarised in
-their own sections and in the per-agent note files. After all four waves the
-unnamed set went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to
-**958 `FUN_*` + 1,592 `rep_*`**; the program now has **2,323 named functions**
-(1,325 renames of existing functions plus 8 functions created at missing
-vtable slots).
+The sweep ran in five waves. The first was the single-agent pass documented in
+the tables below (`166` renames). Waves 2–5 were five, five, five and ten
+parallel agents on disjoint ranges. After all five waves the unnamed set went
+from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to **822 `FUN_*` + 1,579
+`rep_*`**; the program now has **2,483 named functions** (1,478 renames of
+existing functions plus 15 functions created at missing vtable slots).
 
-Every rename in all four waves was verified against the live program after the
-agents finished (985 tabulated addresses compared by address and name; two
+Every rename in all five waves was verified against the live program after the
+agents finished (1,155 tabulated addresses compared by address and name; two
 mismatches found and fixed: `Sort3WithComparator` -> `Sort3ByComparator`, and
 `Body_Constructor`, whose entry moved 0x30 bytes down to `0x140015ed0` under
 re-analysis and needed its plate re-applied). Plate audits found and fixed two
@@ -414,6 +412,50 @@ What the batch corrected or added:
   (mis-named `rep_..._free` -> `ISerializable_Destructor`, the base destructor
   the `Captain_Destructor` thunks tail-jump into).
 
+## Batch 5: ten agents on the remainder (same day)
+
+The last wave split the remainder into ten disjoint ranges (5–10 agents is the
+practical range; ten works when most ranges are compiler output). It named
+**~160 more functions** (153 renames + 7 created), raising the program from
+2,323 to 2,483 named. Per-agent notes:
+`hf_notes/docs/data/ghidra-sweep-2026-10-29-b5-agent1..10.md`.
+
+| agent | range | result |
+|---|---|---|
+| 1 | 0x140330000–0x140336FFF | 1 rename + 5 created UCRT/SSE helpers (`__GSHandlerCheck*`, `__crt_thread_safe_statics_cleanup`, `__scrt_unhandled_exception_filter`, `__sse41_sinf4`) |
+| 2 | 0x140337000–0x14033FFFF | 8 funclet anchors; 233 clones catalogued |
+| 3 | 0x140340000–0x140347FFF | 32 `EhCleanup_*` anchors; 313 clones catalogued |
+| 4 | 0x140348000–0x140350510 | 23 (4 funclet anchors + 19 static-object destructors) |
+| 5 | 0x140000000–0x14006FFFF | 15 (RTTI-proved destructors, exception wrappers) |
+| 6 | 0x140070000–0x14011FFFF | 6 creature accessors (`SumOffensiveScore`, `ComputeFuelRange`, `HasTWRStat`, …) |
+| 7 | 0x140120000–0x14016FFFF | 25 (container clones, font glyph loops, the 4 Stats getters now proven: power/ammobox/ammobox-pri/rotation) |
+| 8 | 0x140170000–0x1401FFFFF | 13 (HGE `Texture_Load` resolved, ZIP central-directory readers, `Media_EnsureTexture`) |
+| 9 | 0x140200000–0x1402FFFFF | 16 (`Hud_DrawIncomingShellWarnings`, `Ship_UpdatePartElevation`, `Endgame_BuildEscadra`, prologue spawners) |
+| 10 | 0x140300000–0x14032FFFF | 13 (`b2PolygonShape_ComputeAABB`, `b2PrismaticJoint_Dump`, joint dtors, `World_Render`, `FrameLimiter_Update`) |
+
+What this wave established:
+
+* **`rep_*` names are not trustworthy ICF replicas.** Hashing every body in
+  `0x140000000–0x14006FFFF` showed **0 of 207** has an identical twin; 174 of 199
+  embedded targets point *inside* an unrelated function. The `rep_` prefix is a
+  stale 1.151 heuristic, and any earlier conclusion that relied on it should be
+  re-checked from the body. Only rename a `rep_*` when the body disproves the
+  embedded name.
+* **`0x1480xxxx` xrefs are `.pdata`/unwind, not vtables.** They do not identify
+  a class or a vtable slot.
+* **`b2Pair` is 12 bytes in this build** (pair buffer at `+0x40`, count at
+  `+0x4c`), not the stock 8.
+* **The funclet runs have no per-function ownership.** Parsing the unwind/scope
+  tables at `0x14808a000` would collapse the ~400 remaining clones into 20–30
+  class maps; that is the single highest-leverage next step for the tail.
+* **`create_function` can split the containing function.** Creating
+  `Gfx_RenderQuad` (0x14016cc80) carved it out of a larger body and produced
+  four new `FUN_*` fragments nearby, so raw `FUN_*` deltas undercount created
+  functions. Count named functions instead.
+* **`0x140324330` is `b2Island_SolveTOI`** and `0x1403345cc` is the UCRT
+  thread-safe-statics initialiser; both were re-named during reconciliation
+  because their `rep_*`/import labels were wrong.
+
 ## `!` functions
 
 Only two functions carry the `!` prefix in this database:
@@ -432,29 +474,34 @@ Only two functions carry the `!` prefix in this database:
 ## Left for a later pass
 
 The unnamed set at the start of the day was 2,201 `FUN_*` and 1,674 `rep_*`
-(3,875 total; 990 named). After all four waves: **958 `FUN_*` and 1,592
-`rep_*`** remain unnamed, and the program has 2,323 named functions. What is
+(3,875 total; 990 named). After all five waves: **822 `FUN_*` and 1,579
+`rep_*`** remain unnamed, and the program has 2,483 named functions. What is
 left is not renamed because a name would add no information:
 
-1. **Compiler-generated code**, and the bulk of the remainder: 514 functions in
-   `0x140340000–0x140350510` and 263 in `0x140330000–0x14033FFFF` are
-   `_eh`/`/GS` cleanup funclets and ICF clones of `free`-one-field destructors.
-   They are catalogued in batch-4 agent 2's note by span, frame offset and
-   destroying callee. 1,592 `rep_*` names are mostly the same thing (ICF replicas
-   whose target already carries the real name).
-2. **Large single functions not read deep enough for a certain name**:
-   `0x14021cf40` (70 KB), `0x140245180` (27 KB), `0x140295500` (31 KB),
-   `0x140256a90`, `0x1402943f0`, `0x140296530`, `0x140297100`,
-   `0x1402a7f60/8760/9090` and the `0x1402b0000`–`0x1402f0000` scene tails.
-3. **Container/sort internals** still unnamed in `0x140120000–0x1401AFFFF`
-   (about 85) and `0x140070000–0x14011FFFF` (about 34), plus the remaining GUI
-   quad/UV setup at `0x140172550–0x140172b10` and a few BASS attribute helpers.
+1. **Compiler-generated code** — most of the remainder. Roughly 200 `/EH`/`/GS`
+   funclets in `0x140337000–0x140347FFF` and 100+ more in
+   `0x140348000–0x140350510`, plus `atexit` static-object destructors and
+   ICF `free`-one-field clones. They are catalogued by span, family and frame
+   offset in the batch-5 agent 2/3/4 notes. **Next step:** parse the
+   unwind/scope tables at `0x14808a000`; that turns the clones into class maps
+   instead of one name per clone.
+2. **`rep_*` names that are stale, not replicas.** 1,579 `rep_*` remain; many
+   are real unnamed functions mislabelled with a 1.151 address. They need a
+   body-level pass (hash + callee/string check), not a rename by prefix. Bogus
+   examples already found: `0x1400c12a0` (editor mouse handler),
+   `0x14025d060` (base destructor), `0x1402b1a80`, `0x1400eaef0`,
+   `0x140153be0`.
+3. **Large single functions not read deep enough for a certain name**:
+   `0x14021cf40` (8.7 KB, only caller `repairSlider?`), `0x140211e60`,
+   `0x1402130b0`/`0x140213fc0` (the `DAT_143a13b08` singleton), `0x140216f00`,
+   `0x1402410b0`, `0x140247850`, `0x140269d00`, `0x14028bf80`, `0x140292820`,
+   `0x140296530`.
 4. **Unknown-field accessors** whose semantics need an unread struct:
-   `0x14015f7b0`..`0x14015f8a0`, `0x1400702a0`, `0x140079ed0`, `0x140078930`.
+   `0x14015f7b0..0x14015f8a0` (the `+0x1a0/+0x1a4` TextGrid setters remain),
+   `0x140073340`, `0x140073530`, `0x140088950`.
 5. **CRT plumbing** left as `rep_*`: `_invalid_parameter`/`free` forwarders and
-   `_set_app_type` stubs in `0x140000000–0x14006FFFF`.
+   the `_set_app_type` stubs in `0x140000000–0x14006FFFF`, and the `__scrt_*`
+   outline stubs.
 
-Suggested order for the next pass: the large single functions in item 2 (each
-needs a dedicated read), then the unknown-field accessors once
-[../structures.md](../structures.md) is extended, then the container clones if a
-specific analysis needs an instantiation.
+Suggested order for the next pass: the unwind-table parse (item 1), then the
+`rep_*` body-level re-match (item 2), then the large single functions (item 3).
