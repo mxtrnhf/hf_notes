@@ -3,16 +3,16 @@
 Program `Highfleet.exe.unpacked.exe` v1.163, saved (version after the sweep). The
 check-in to the shared project is the user's.
 
-The sweep ran in five waves. The first was the single-agent pass documented in
-the tables below (`166` renames). Waves 2–5 were five, five, five and ten
-parallel agents on disjoint ranges. After all five waves the unnamed set went
-from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to **822 `FUN_*` + 1,579
-`rep_*`**; the program now has **2,483 named functions** (1,478 renames of
-existing functions plus 15 functions created at missing vtable slots).
+The sweep ran in six waves. The first was the single-agent pass documented in
+the tables below (`166` renames). Waves 2–6 were five, five, five, ten and ten
+parallel agents on disjoint ranges. After all six waves the unnamed set went
+from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to **333 `FUN_*` + 1,446
+`rep_*`**; the program now has **3,141 named functions** (2,100 renames of
+existing functions plus 51 functions created at missing vtable slots).
 
-Every rename in all five waves was verified against the live program after the
-agents finished (1,155 tabulated addresses compared by address and name; two
-mismatches found and fixed: `Sort3WithComparator` -> `Sort3ByComparator`, and
+Every rename in all six waves was verified against the live program after the
+agents finished (over 1,200 tabulated addresses compared by address and name;
+two mismatches found and fixed: `Sort3WithComparator` -> `Sort3ByComparator`, and
 `Body_Constructor`, whose entry moved 0x30 bytes down to `0x140015ed0` under
 re-analysis and needed its plate re-applied). Plate audits found and fixed two
 missing plates (`Property_SetFloat`, `App_ReloadSeria`).
@@ -456,6 +456,121 @@ What this wave established:
   thread-safe-statics initialiser; both were re-named during reconciliation
   because their `rep_*`/import labels were wrong.
 
+## Batch 6: structural + volume (same day)
+
+Sixth wave, ten agents. Unlike waves 2–5 this one is not a name sweep: agent 1
+owns the unwind/scope-table pass, agents 2–5 re-match `rep_*` bodies by hash
+instead of by their embedded labels, and agents 6–9 work the large/remaining
+`FUN_*` clusters. Agent 10 only consolidates docs (`structures.md`, the audit
+TSV, this section) and renames nothing.
+
+Counts below are folded from the agents' `DONE` lines, notes and TSVs as they
+landed; the program totals and anything marked `TODO` are left for the parent to
+reconcile. Do not treat a `TODO` as a result.
+
+| agent | role | scope | result |
+|---|---|---|---|
+| 1 | unwind/funclet owner | `.pdata`/`RUNTIME_FUNCTION` + the FH4 `FuncInfo4` funclet lists; `funclet -> owner -> member` TSV; owner-named `/EH` funclets | 926/926 funclets owned (347 owners, 97 ICF-shared, 165 without a function object); 448 renamed, 176 left with a recorded owner |
+| 2 | `rep_*` re-match | `rep_*` in 0x140000000–0x1400FFFFF (minus the funclet range) | 513 audited, 21 renamed, 492 stale labels |
+| 3 | `rep_*` re-match | `rep_*` in 0x140100000–0x1401FFFFF | 498 audited, 49 renamed (TSV rows: 48), 448 stale, 1 unreadable |
+| 4 | `rep_*` re-match | `rep_*` in 0x140200000–0x1402FFFFF | 361 audited, 34 renamed, 327 stale |
+| 5 | `rep_*` re-match | `rep_*` in 0x140300000–0x140350510 (minus the funclet range) | 50 audited, 28 renamed (TSV rows: 27), 22 stale |
+| 6 | large functions A | `0x14021cf40`, `0x140211e60`, `0x1402130b0`, `0x140213fc0`, `0x140216f00`, `0x14021b110` | 6 renamed, 0 skipped |
+| 7 | large functions B | `0x1402410b0`, `0x140247850`, `0x140269d00`, `0x14028bf80`, `0x140292820`, `0x140296530`, quad/UV helpers `0x140172550–0x140172b10` | 10 targets: 7 renamed, 1 re-plated, 2 already named |
+| 8 | containers / accessors | `FUN_*` in 0x140070000–0x1401FFFFF; `0x14015f7b0..f8a0`, `0x140073340`, `0x140073530`, `0x140088950` | 24 renamed, 55 skipped |
+| 9 | CRT / Box2D remainder | `FUN_*` in 0x140000000–0x14006FFFF and 0x140300000–0x140336FFF; missing vtable slots | 4 renamed, **36 created** at Box2D joint/shape vtable slots, 33 skipped |
+| 10 | documentation | `structures.md`, `rep-audit-2026-10-29.tsv`, this section | no renames; see below |
+
+Program after the wave: **3,141 named functions, 333 `FUN_*`, 1,446 `rep_*`**
+(from 2,483 named, 822 `FUN_*`, 1,579 `rep_*` before it): 621 renames by the
+agents, 1 correction by the parent (`0x14016cd50` -> `Texture_Load`) and 36
+functions created. Per-agent notes:
+`hf_notes/docs/data/ghidra-sweep-2026-10-29-b6-agent1..10.md`.
+
+### Results by agent
+
+* **Agent 1 (funclet ownership)** — 926 funclets all owned (347 distinct owning
+  functions) from `.pdata` + the FH4 `FuncInfo4` funclet list; 829 single-owner,
+  97 ICF-shared by 2+ owners (up to 34 classes on one body); 761 have a Ghidra
+  function object, 165 do not. 448 renamed (112 owners) as
+  `<Owner>_EhCleanup_<member>`, 124 with an `_sz`/`_b` disambiguator; 176 `FUN_*`
+  keep a recorded owner but stay unnamed (73 ICF-shared, 72 owner is a `rep_*`
+  label, 27 owner is `!ClickFunc`). Also proved the handler census: 795
+  `__CxxFrameHandler4`, 447 `__GSHandlerCheck_EH4`, 135 `__GSHandlerCheck`, and
+  that there is **no FH3 data** in the image. Output:
+  `data/funclet-ownership-2026-10-29.tsv`.
+* **Agents 2–5 (`rep_*` re-match)** — 1,420 rows audited in total; the
+  consolidated `data/rep-audit-2026-10-29.tsv` records **130 `renamed`, 1,289
+  `stale label`, 1 `unreadable`**. Each slice independently found **0
+  byte-identical twins** in the whole image, so the batch-5 "the `rep_*` prefix
+  is not ICF evidence" conclusion now rests on all four slices. The two-row
+  difference between the `DONE` totals (49 + 28) and the TSV verdict counts
+  (48 + 27) was reconciled against the live program: all 131 tabulated renames
+  exist, and the live named count matches the agents' totals, so the two extra
+  renames are simply missing from the TSVs (a TSV omission, not a lost rename).
+* **Agent 6 (large functions A)** — all six proved: `Shipworks_BuildAutoRepairSteps`
+  0x14021cf40 (the 8.7 KB body), `Grid2D_MergeAdjacentCells` 0x140211e60,
+  `Gui_BlackoutOverlay_BeginClear` 0x1402130b0 /
+  `Gui_BlackoutOverlay_BeginOpaque` 0x140213fc0 (the `DAT_143a13b08` singleton
+  is the **"BLACK" blackout overlay**), `Fleet_RebuildShipListByValue`
+  0x140216f00 and `Scene_CloneNodeSubtreeByName` 0x14021b110. Docs bonus:
+  creature **+0x15d0 = ship total value** (single writer 0x14007171d),
+  **+0x8f8 = GUI alpha**, `DAT_1403ef4b0` = the auto-repair state block.
+* **Agent 7 (large functions B)** — 7 of the 10 targets proved: `Gfx_QuadRenderEx`
+  0x140172aa0, `Thunk_RebuildNodeFromCreature` 0x1402410b0,
+  `Hud_DrawRaycastStrip` 0x140247850, `Engine_ApplyThrustCommand` 0x140269d00,
+  `Profile_CheckNoNestedActiveNodes` 0x14028bf80,
+  `Thunk_Profile_BuildSavePath` 0x140292820, `Npc_RollAttitudeStats`
+  0x140296530; HGE slot +0x2e0 proved to be the quad draw (0x140085f40), sprite
+  corner record 0x58 B with colour at +0x18.
+* **Agent 8 (containers/accessors)** — 24 renames: RTTI-proved destructor clones
+  (`ResDesc` ×7, `Texture`, `MapShipBody`, `Anistate`, `IObject`,
+  `b2ContactFilter`/`Listener`/`DestructionListener`), `RepairStepNewBlock` ctor,
+  the quad helpers, five range-destroy thunks and `Media_EnsureRenderTarget`
+  (HGE +0x300 -> 0x1400839d0 -> vtable 0x140356768, so the slot is the
+  render-target factory). Corrections: 0x14015c1c0/e0 are destroy-range thunks
+  (not `vector` `_Xlen`/`_Xrange`), 0x1401a8510 belongs to `miiProperty`
+  (vtable 0x140369248), and `0x1403672f0` is `HGE_Impl`.
+* **Agent 9 (CRT/Box2D remainder)** — 4 renamed and **36 functions created** at
+  joint/shape vtable slots, so every table in `0x1403785e8–0x140378e00` and
+  `b2PolygonShape` 0x1403529d8 now resolves to a function object; 0x1403198c0
+  closed as `b2EdgeShape_GetChildCount`; 0x140334e00 identified as `__sincosf`.
+  Census after: 5 `FUN_*` left in 0x140000000–0x14006FFFF and 27 in
+  0x140300000–0x140336FFF (5 render helpers, 0x140319da0, 0x1403340d8, 7
+  `__scrt_*`, 13 `/EH` funclets). Two hand-offs: the CRT C-initialiser table
+  `0x1403519e8–0x1403521a8` (150 targets, all `LEA RCX,[global]; JMP ctor`,
+  `CInit_<Global>` naming is provable) and 19 Body/Node base-class vtable slots
+  with no function object.
+* **Agent 10 (documentation)** — updated `structures.md` (Stats +0xdc/+0xe8/
+  +0xf0/+0x108, the per-player input record, the HGE vtable, the Body vtable
+  slot map, the D3D11 shader-layer summary, `b2Pair` = 12 bytes, the `rep_*`
+  and funclet caveats, `+0x15d0`/`+0x8f8`), concatenated the four audit TSVs
+  into `data/rep-audit-2026-10-29.tsv` (+ a format note) and wrote this
+  skeleton. No renames.
+
+### What this wave established
+
+* **The funclet tail is a class map after all.** Owner attribution from the
+  `FuncInfo4` funclet list collapses the whole clone run into 347 owners, and
+  the four biggest owners are game code (`SomethingWithLevelSerias` 83 funclets,
+  `lootBoxCoins` 37, `Dialog_ExecuteChoiceActions` 35,
+  `TarkhanGUIDispatchOperator` 26). Naming is `<Owner>_EhCleanup_<member>` where
+  the scope guard offset and the destroyed-member offset agree; the ICF-shared
+  bodies keep a family anchor and a full owner list in the TSV.
+* **The `rep_*` labels are worthless as identity evidence.** 1,420 bodies
+  re-checked, 0 byte-identical twins, most embedded targets mid-function: the
+  prefix is a stale 1.151 FID artefact. 130 renamed from the body, 1,289 recorded
+  as stale with per-row evidence.
+* **Box2D is complete.** The joint/shape vtable sweep created the 36 missing
+  slots; no unnamed Box2D helper remains and every joint table resolves to a
+  function object.
+* **Verified on reconciliation:** all 131 tabulated `rep_*` renames exist under
+  their expected names, all 502 `EhCleanup_*` functions in the tail carry
+  plates, `0x140172550` settled on `Gfx_QuadSetCornerXY` (two agents raced on
+  it; the loser restored the name), and `0x14016cd50` was corrected from a stale
+  `MessageBoxA` label to `Texture_Load`. Final totals: 3,141 named, 333 `FUN_*`,
+  1,446 `rep_*`.
+
 ## `!` functions
 
 Only two functions carry the `!` prefix in this database:
@@ -474,34 +589,36 @@ Only two functions carry the `!` prefix in this database:
 ## Left for a later pass
 
 The unnamed set at the start of the day was 2,201 `FUN_*` and 1,674 `rep_*`
-(3,875 total; 990 named). After all five waves: **822 `FUN_*` and 1,579
-`rep_*`** remain unnamed, and the program has 2,483 named functions. What is
-left is not renamed because a name would add no information:
+(3,875 total; 990 named). After all six waves: **333 `FUN_*` and 1,446 `rep_*`**
+remain unnamed, and the program has 3,141 named functions. What is left:
 
-1. **Compiler-generated code** — most of the remainder. Roughly 200 `/EH`/`/GS`
-   funclets in `0x140337000–0x140347FFF` and 100+ more in
-   `0x140348000–0x140350510`, plus `atexit` static-object destructors and
-   ICF `free`-one-field clones. They are catalogued by span, family and frame
-   offset in the batch-5 agent 2/3/4 notes. **Next step:** parse the
-   unwind/scope tables at `0x14808a000`; that turns the clones into class maps
-   instead of one name per clone.
-2. **`rep_*` names that are stale, not replicas.** 1,579 `rep_*` remain; many
-   are real unnamed functions mislabelled with a 1.151 address. They need a
-   body-level pass (hash + callee/string check), not a rename by prefix. Bogus
-   examples already found: `0x1400c12a0` (editor mouse handler),
-   `0x14025d060` (base destructor), `0x1402b1a80`, `0x1400eaef0`,
-   `0x140153be0`.
-3. **Large single functions not read deep enough for a certain name**:
-   `0x14021cf40` (8.7 KB, only caller `repairSlider?`), `0x140211e60`,
-   `0x1402130b0`/`0x140213fc0` (the `DAT_143a13b08` singleton), `0x140216f00`,
-   `0x1402410b0`, `0x140247850`, `0x140269d00`, `0x14028bf80`, `0x140292820`,
-   `0x140296530`.
-4. **Unknown-field accessors** whose semantics need an unread struct:
-   `0x14015f7b0..0x14015f8a0` (the `+0x1a0/+0x1a4` TextGrid setters remain),
-   `0x140073340`, `0x140073530`, `0x140088950`.
-5. **CRT plumbing** left as `rep_*`: `_invalid_parameter`/`free` forwarders and
-   the `_set_app_type` stubs in `0x140000000–0x14006FFFF`, and the `__scrt_*`
-   outline stubs.
+1. **Funclet completion, not discovery.** The unwind map is done (926/926 owned,
+   347 owners). 448 funclets are named; 176 remain unnamed because their owner
+   is ICF-shared (73), still carries a stale `rep_*` label (72), is `!ClickFunc`
+   (27) or an edge case (4). 165 of those funclets have no function object yet.
+   **Next step:** rename the 72 stale `rep_*` owners (unblocking 72 funclets),
+   `create_function` the 165 missing slots, and name ICF-shared bodies by their
+   owner set. Output: `data/funclet-ownership-2026-10-29.tsv`.
+2. **`rep_*` names that are stale, not replicas.** 1,446 remain. 1,420 were
+   audited (130 renamed, 1,289 stale, 1 unreadable); the rest are in the
+   funclet tail and CRT. A body-level re-match is the only way; the TSVs in
+   `data/rep-audit-2026-10-29-q*.tsv` already carry per-row evidence.
+3. **Real `FUN_*` leftovers** (333, mostly compiler): ~260 are `/EH` funclets in
+   `0x14033–0x14034`, the rest are 5 CRT, ~31 engine, ~23 GUI, 3 AI, 6 physics
+   and a few padding/thunks. The non-funclet ones are listed in
+   `data/unnamed-2026-10-29.tsv`.
+4. **CRT C-initialiser table `0x1403519e8–0x1403521a8`** — 249 entries, 150
+   unique targets without function objects in `0x140001000–0x140004a60`, each
+   `LEA RCX,[global]; JMP <ctor>`. `CInit_<Global>` naming is mechanically
+   provable.
+5. **19 Body/Node base-class vtable slots** with no function object
+   (`0x140018b60`, `0x140018fb0`, `0x140019300`, `0x14001b7f0`,
+   `0x14001bf60`, `0x14002e290/300`, `0x140048020`, `0x140049e10`,
+   `0x14004a560`, `0x14004a8b0`, `0x14004a9f0`, `0x14004bba0`,
+   `0x14004c7e0`, `0x14004d8e0`, `0x14004eaa0`, `0x140051de0`,
+   `0x140053110`, `0x140054dd0`). Need a Node/Body slot-index map first;
+   `0x14004bba0` -> `Body_ClosePartInfoPanel` is proven.
 
-Suggested order for the next pass: the unwind-table parse (item 1), then the
-`rep_*` body-level re-match (item 2), then the large single functions (item 3).
+Suggested order for the next pass: the funclet completion (items 1, 4, 5), then
+the remaining `rep_*` body re-match (item 2), then the last real `FUN_*`
+(item 3).

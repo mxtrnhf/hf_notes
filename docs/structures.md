@@ -51,18 +51,19 @@ builds on the `Mark` constructor). The same factory gives the same sizes for the
 | +0x9b0 / +0x9b8 | `m_floor_type` bitmask / `m_floor` = **elevation** [game] |
 | +0xa28 | `m_ed_rotate` [code] |
 
-Vtable slots: +0x40 kill(this,1), +0x48 kill, (+0x48 kill goes `FUN_140049ea0` -> `FUN_1402805d0` -> vtbl+0x40(this,1)), +0x50 add child, +0x68 remove from master, +0x80/+0x88 editor "place" steps, +0xe0/+0xe8 master angle/position
-transform, +0x178 side (float; sign = friend/foe), +0x210 damage. Smart-ref = 0x18 bytes (vtable, pointer, ?): ctor `FUN_140194bd0(ref,node)`, copy
+Vtable slots [code]: +0x40 kill(this,1), +0x48 kill, (+0x48 kill goes `FUN_140049ea0` -> `FUN_1402805d0` -> vtbl+0x40(this,1)), +0x50 add child, +0x68 remove from master, +0x80/+0x88 editor "place" steps, +0xe0 master-angle transform and **+0xe8 world position** (the same group; +0xe8 is the getter the distance helpers go through), **+0xf0 local angle -> world frame**, **+0xf8 local point -> world frame**, **+0x150 dropped-body link collector** (the pass that re-collects the subtree's `Link`s), +0x178 side (float; sign = friend/foe), **+0x208 set health**, +0x210 damage, **+0x298 projectile cleanup**. Body/Frame/Creature/Missile vtables copy most of these slots, so a DATA xref from `0x14036xxxx` does not identify the class; `0x1480xxxx` xrefs are `.pdata`/unwind, not vtables, and say nothing about the class either. Smart-ref = 0x18 bytes (vtable, pointer, ?): ctor `FUN_140194bd0(ref,node)`, copy
 `FUN_140194b80`, dtor `FUN_140194d20`, assign `FUN_140194de0`; reallocating vector insert `FUN_140004b00(vec,pos,ref)`; `FUN_1402c7c90` = `vector<Node*>::insert(range of refs)`.
 
 ## Stats record (`GetStats(index)` `FUN_140281e00`; id -> index `FUN_140281cc0`) [code]
 +0x88 price (probe v1.3, 2026-10-14 [game]: `MDL_ARMOR2X1_01` 400, `MDL_LEG_01/02/03` 50 / 100 / 200, `MDL_FERMA2X2_01` 20, `MDL_AMMO_02` 1000; `+0xb0` category read as 8192 legs, 128 ferma, 16 ammo rack, 2 armor), +0x8c important, +0x90 timecost, +0x94 repair_cost, +0xb0 **category**, +0xb4 sort_index, +0xc4 armor, +0xd0 fuel_need, +0xc8 fuel capacity (double), +0xd4 crew capacity (int) [code, indirect: the 1.151 names plus the ship stats sum; `findings/sensors-and-crew.md`], +0xd8 crew_need,
-+0xe0 power_need, +0xf8 thrust, +0xfc thrust_map, +0x10c radar, +0x110 tracking, +0x114 guiding, +0x118 elint, +0x11c irst, +0x120 jammer, +0x128 sectors_type
++0xdc **power** (`ED_PROP_POWER`, the power a part *generates*; its +0xe0 neighbour is `power_need`), +0xe0 power_need, +0xe4 power_priority, +0xe8 **ammobox** (`m_mdl_ammobox`, `ED_PROP_AMMOBOX`), +0xf0 **ammobox priority** (`ED_PROP_AMMOBOX_PRI`), +0xf8 thrust, +0xfc thrust_map, +0x108 **rotation** (`ED_PROP_ROTATION`), +0x10c radar, +0x110 tracking, +0x114 guiding, +0x118 elint, +0x11c irst, +0x120 jammer, +0x128 sectors_type
 (non-zero = takes part in arc scanning), +0x12c sectors_shift, +0x130 sectors_threshold, +0x140 weapon_priority, +0x144 caliber, +0x148 load_amount, +0x14c load_time,
 +0x150 rate, +0x154 acceleration_time, +0x158 launched_speed, +0x15c speed2, +0x160 range, +0x164 missile_type, +0x168 explosive (> 100000 = nuclear), +0x16c cluster,
 +0x170 ap, +0x174 agility, +0x178 radar_range, +0x17c radar_cone, +0x180 fuze_type, +0x184 launched_health.
 Units [guide]: `m_weapon_load_time` in 4/7 s; `m_launched_range` km for strategic; `m_launched_speed` m/s on the map, `speed2` arcade; guns with the lowest priority value are
 auxiliary (ground units fire only priority <= 100). Caliber index ties to shell stats (ammo-extended `padding_cch`).
+
+The four fields +0xdc / +0xe8 / +0xf0 / +0x108 were proved twice in the batch-5 pass [code]: from the display branches of `setupPropsSecondaryMapModes` (each getter is called immediately before the props' `vtable+0x2f0` in the branch that had just matched an `ED_PROP_*` string) and from the `populateObjects` loader table, which registers each `.seria` key against its stats field (`m_mdl_power_need` -> +0xe0, `m_mdl_power_priority` -> +0xe4, `m_mdl_ammobox` -> +0xe8, ...). The four getters are 0x14015f840 (`ShipStats_GetPower`), 0x14015f7b0 (`ShipStats_GetAmmobox`), 0x14015f7e0 (`ShipStats_GetAmmoboxPriority`) and 0x14015f8a0 (`ShipStats_GetRotation`).
 
 ### `m_category` bits [game: read from every `m_stats` record of the 1.163 `OL.seria`]
 0-based bit = value 2^n. (The community guide numbers the same bits from the high end: guide N = bit 32 - N; its descriptions match.)
@@ -102,11 +103,25 @@ callsign/name strings. Ship (Creature) fields used: +0x1638/+0x1640 fuel current
 
 ## Creature (ship) fields seen in the AI and launch code [code]
 +0xad4 side float (negative non-zero = AI side, positive = player, 0 = neutral; inferred from where the difficulty byte applies [guess]) · +0xbbc..+0xbc0 control bytes, read in the per-creature update `FUN_14007eb50` [code, decompiled 2026-10-18]: **+0xbbc fires the weapon group-0 list (+0x13a8, LMB), +0xbbd the group-1 list (+0x13c0, RMB)** (both through `FireGuns`), +0xbbe drops from the list at +0x1438 (bombs, then clears itself), **+0xbc0 releases flares** (list +0x1408); [game] +0xbbc followed LMB in 1736 of 1741 LMB-only samples and +0xbbd lit only when RMB was also held (2 samples) · +0xc98 per-ship strategic/aircraft launch counter · +0xcb8 / +0xd60 / +0xd64 launch timers and cooldowns ·
-+0x13d8 anti-ship (Zenith) launch list [game: burst effect of the `LaunchZenithAtOwnerTarget` (`FUN_14002ff60`) wrapper] / +0x13f0 second launch list (AA launchers [guess]) (stride 0x18, entry +8 = part) · +0xd60 ship launch cooldown (float, 2.0 after a launch), +0xd70 launch mode (2 = per-target budget) · +0x1408..+0x1410 flare launcher list · +0x1840/+0x1844 centre of mass · **+0x1850 bounding radius** (written only in `CalculateStats` `0x14007ffaa`) · +0x1838/+0x183c weapon reach floats · +0x17ec/+0x17f0/+0x17f4 crew present / capacity / needed (int sums) · +0x1638/+0x1640 fuel (doubles).
++0x13d8 anti-ship (Zenith) launch list [game: burst effect of the `LaunchZenithAtOwnerTarget` (`FUN_14002ff60`) wrapper] / +0x13f0 second launch list (AA launchers [guess]) (stride 0x18, entry +8 = part) · +0xd60 ship launch cooldown (float, 2.0 after a launch), +0xd70 launch mode (2 = per-target budget) · +0x1408..+0x1410 flare launcher list · +0x1840/+0x1844 centre of mass · **+0x1850 bounding radius** (written only in `CalculateStats` `0x14007ffaa`) · +0x1838/+0x183c weapon reach floats · +0x17ec/+0x17f0/+0x17f4 crew present / capacity / needed (int sums) · +0x1638/+0x1640 fuel (doubles) · **+0x15d0 ship total value** (sum of each part's `GetValue` / Stats `+0x88`; the only writer is `0x14007171d` in the stats pass, read by the shop and the fleet sort) [code, 2026-10-29] · **+0x8f8 GUI alpha** (the `MapModeProps_HalveFloat8f8`/`RestoreFloat8f8` pair halves and restores it; guard byte `+0xc7c`) [code, 2026-10-29].
 Details and addresses: [findings/ai/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md), [findings/ai/ai-flares.md](findings/ai/ai-flares.md), [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
 
 ## Projectile logic ids (Body `+0x3c4`, set from the `Ammo` record's `caliber`) [code]
 100 plain shell · 130 rocket · 132 300 mm rocket (1.163) · 135 harpoon (1.163) · 140 laser guided · 160 proximity fuze · 0x44c (1100) flare. highfleet-rs also lists **150** (AP airburst) [guide]; no consumer found yet: [findings/ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md). `creatureLogic` (`0x140033b90`) branches on this id; it is the per-body behaviour dispatcher for projectiles, missiles and aircraft, not the ship AI. See [findings/firing-and-shells.md](findings/firing-and-shells.md).
+
+## Per-player input record [code, 2026-10-29]
+Stride **0xf0** in the global player vector `DAT_1439e9388..DAT_1439e9390`. `+0xe4` player index, `+0xe8` pad type (1 = "modern" — PS5 / Xbox Series X / any device name containing `PS`; 0 = legacy), `+0x10` the rebuilt move vector. Six held flags, in a y-then-x layout, not address order:
+
+| Offset | Flag | Read by |
+|---|---|---|
+| `+0xde` | move **up** (-1 on y) | `Input_IsMoveUpHeld` 0x140189280 |
+| `+0xdf` | move **left** (-1 on x) | `Input_IsMoveLeftHeld` 0x140189200 |
+| `+0xe0` | move **down** (+1 on y) | `Input_IsMoveDownHeld` 0x1401891c0 |
+| `+0xe1` | move **right** (+1 on x) | `Input_IsMoveRightHeld` 0x140189240 |
+| `+0xe2` | rotate **left** | `Input_IsRotateLeftFlagHeld` 0x1401892c0 |
+| `+0xe3` | rotate **right** | `Input_IsRotateRightFlagHeld` 0x140189300 |
+
+`Input_RebuildMoveVector` (0x14018d6c0) turns the four move flags into the vector at `+0x10`; `Player_SendThrustCommands` (0x1402a9300) reads the two rotation flags. `Editor_HandleEscapeKey` clears `+0xde..+0xe1`. Which physical key is "rotate left" vs "rotate right" (Q vs E) is still open. Key/pad sources: `Input_HandleKeyDown`, `Input_HandleJoystickEvent`, and the hat permutation `Input_MapHatToKeyModern` / `Input_MapHatToKeyLegacy`.
 
 ## Common types (names from [logdot/highfleet-rs](https://github.com/logdot/highfleet-rs); layouts from its `#[repr(C)]` types) [guide]
 * **EscadraString** (crate name; our `EscadraName` / `std::string` rows), `0x20` bytes: a 16-byte buffer (inline when capacity <= 15, else a heap pointer in the first 8 bytes), `u64` length at `+0x10`, `u64` capacity at `+0x18` (15 by default). This is the MSVC `std::string` layout and matches the `m_oid` row above and the `maxLength` / `string.ptr` use in `BulletImpact__` (`0xf < maxLength` selects the pointer) [code]. His `set_string` grows by doubling and uses libc `malloc` / `free`; whether a mod's allocator is compatible with the game's is **unverified** [guess], so prefer writing short strings in place.
@@ -135,3 +150,47 @@ Relayed by the probe session; one run, not re-checked here.
 
 ## Engines: names, mount types and which ones swivel (2026-10-20)
 `OL.seria` / `parts.seria` ids to in-game names (confirmed by the simulator session from battle data; "S" means static): `MDL_ENGINE_01` = RD-59 (swivels), `02` = RD-59S (static), `03` = D-30 (swivels), `04` = NK-25 (swivels), `05` = D-30S (static); `06` has no placeable prototype. The part prototype carries the mount type `m_slot_type` (before `m_oid` in `parts.seria`): 01 = 162, 03 and 04 = 146 (the same as all cannons, which rotate), 02 = 1121, 05 = 1105 (the type of rigid blocks such as ammo racks and fuel tanks), so the swivel follows the mount type (bit `0x80` set in 146 and 162 [guess for the mechanism]) [file]. The joint is a data object (serializer `FUN_1401943b0`: `m_angle_enable/min/max`, `m_motor_enable/torque/speed`, `m_cw`). Engine stats `+0x100` = `m_mdl_at` (angular thrust, summed into creature `+0x1684` / `+0x1688`), `+0x104` = `m_mdl_leg_force`; only static engines (02, 05) carry `m_mdl_sectors_type = 4`.
+
+## HGE vtable (`HGEVFTABLE` 0x1403672f0) [code, 2026-10-29]
+The vtable is populated with real code pointers, so every media/audio call in the game goes through these slots. The resource proxies (`Media_Ensure*` / `Media_Release*` at 0x140178xx–0x140179xx) are thin wrappers that fetch a handle from the matching slot.
+
+| Slot | Target | Meaning |
+|---|---|---|
+| +0x90 | 0x140174850 | `Resource_LoadFileData` — read a resource out of the attached ZIP packs, else the disk loader at +0x88 |
+| +0x98 | 0x140174840 | `Resource_FreeFileData` |
+| +0x138 | 0x14017c440 | `Sound_Load` — `BASS_SampleLoad`, with a stream-decode fallback |
+| +0x140 | 0x14017c420 | `Sound_Free` — `BASS_SampleFree` |
+| +0x160 | `Music_Load` | load a `BASS_MUSIC` module |
+| +0x168 | 0x14017c7a0 | `Music_Free` — `BASS_MusicFree` |
+| +0x178 | 0x14017c9c0 | `Music_SetAmplify` — `BASS_ATTRIB_MUSIC_AMPLIFY` (0x100) |
+| +0x180 | 0x14017c7c0 | `Music_GetAmplify` — same attribute, float -> int; -1 with no device |
+| +0x1c0 | `Stream_Load` | streaming file channel |
+| +0x1c8 | `Stream_Free` | close the stream channel |
+| +0x1e8 | 0x14017c220 | `Sound_ScaleChannelFrequency` — `BASS_ChannelGetInfo` then `SetAttribute(chan, BASS_ATTRIB_FREQ, info.freq * scale)` |
+| +0x2e0 | 0x14016cc80 | `Gfx_RenderQuad` — quad/geometry render; also bumps the draw statistics `0x1403ef304` (quad count) and `0x1403ef30c` (accumulated area) |
+| +0x300 | 0x14016cbb0 | resource-object factory: `ADD RCX,8; JMP 0x1400839d0`, builds a 0x60-byte object (vtable 0x140356768) from two read hooks |
+| +0x308 | 0x14016cba0 | sibling factory: `ADD RCX,8; JMP 0x1400838e0` |
+| +0x310 | 0x14016cd50 | **`Texture_Load`** — `(this, data, size, flag)`; size != 0 goes through `D3DX11CreateTextureFromMemory`, size == 0 through the disk loader. Still carries the bogus `rep_140161260_USER32.DLL::MessageBoxA` name in the database |
+| +0x320 | 0x14016cd10 | adapter: call `vtable+0x10`, truncate the float result to int |
+
+### D3D11 shader layer (0x140080000–0x14009FFFF, ~246 functions) [code]
+`0x1400817E0–0x14009FF80` is the game's whole D3D11 layer, not a "class factory" as the first pass guessed. Every class there was recovered from MSVC RTTI (`vtable[-1]` -> `CompleteObjectLocator` -> `TypeDescriptor` -> `.?AV<Class>@@`), because most of the members are virtual and have no direct callers. Layout of the block:
+
+* `0x1400817E0–0x1400866FF` — `ComputeShader` / `CSGlitch`, `Texture`, `TextureSingle`, `RenderTarget` helpers, the D3D11 render-state (blend / rasterizer / scissor) helpers, plus `std::bad_cast` / `std::codecvt` boilerplate.
+* `0x1400866FF–0x14009C430` — the `Effect` hierarchy: `Effect` (slots: release 5, draw 13, projection 17, matrix param 19, instance matrices 20, texture 21), `Shader` / `VShader` / `PShader`, **29 concrete `Shader*` classes** (`ShaderBackground`, `ShaderBloom`, `ShaderBlur`, `ShaderClouds`, `ShaderColor`, `ShaderDefault`, `ShaderDeferring*` ×7, `ShaderDepth`, `ShaderDithering`, `ShaderGlitch`, `ShaderLighting`, `ShaderLightingMap`, `ShaderMapPostProcessing`, `ShaderOutline`, `ShaderPost`, `ShaderPrebloom`, `ShaderPrebloomAndOutline(LOD)`, `ShaderRadialBlur`, `ShaderRainDrops`, `ShaderShadowMapping`, `ShaderShockwave`, …) and one `ConstantBuffer<CBConstants<ShaderX>>` per class (its upload is slot 0 of the CB vtable).
+* `0x14009F8C0–0x14009FF80` — the `ShaderParam*New` value-binding family: `ShaderData`, `ShaderResourceView`, `ShaderParam{New,Float,Int,Matrix,Vector,Texture,TextureArray,TextureVector,VectorArray}New`, their constructors and scalar-deleting destructors.
+
+Concrete-shader vtable slot convention: 1 = destructor, 2 = `Init`, slot 0 of the CB vtable = constant-buffer upload, 8 = `EmitVerticesA`, 9 = `EmitVerticesB`. The full per-class table (vtable address + every renamed member) is in [data/ghidra-sweep-2026-10-29-b3-agent1.md](data/ghidra-sweep-2026-10-29-b3-agent1.md); the renderer that drives the shader objects is in [rendering/render-pipeline.md](rendering/render-pipeline.md).
+
+## Box2D build quirks [code, 2026-10-29]
+The embedded engine is **Box2D 2.3.1**-shaped (the edge/polygon path is the `b2EPCollider` class, which 2.4 removed), but several layouts differ from the stock source:
+
+* **`b2Pair` is 12 bytes here, not stock 8.** The broadphase pair buffer is at `b2BroadPhase+0x40`, count at `+0x4c`; the buffer is indexed as `index * 3 * 4`, and the pair sort (`b2SortHeapAdjustPairs` 0x140321930, called from `b2BroadPhase_UpdatePairs` 0x140321240) divides the byte length by 0xc. Bytes +0/+4 are `proxyIdA` / `proxyIdB`; the third dword is unidentified. Walk them with stride 0xc, not 8.
+* **Joint vtables are six slots in a non-stock order**: `[0] GetAnchorA`, `[1] GetAnchorB`, `[2] GetReactionForce`, `[3] GetReactionTorque`, `[4] Dump`, `[5]` scalar deleting destructor. The joint `Dump` prints its own `b2XxxJointDef` reconstruction, so reading slot [4] names the class in one step.
+* **Contact vtables are two slots** (`[0] Evaluate`, `[1]` scalar deleting destructor), with the destructor ICF-merged to `b2Contact_DeletingDtor` 0x140325a40 for all seven classes.
+* **`b2ContactSolver` has seven methods**; the pair `SolvePositionConstraints` (Baumgarte 0.2, -0.015) / `SolveTOIPositionConstraints` (0.75, -0.0075) is the discrete-vs-TOI split. Details and the full map: [findings/box2d-function-map.md](findings/box2d-function-map.md), layouts in [findings/box2d-struct-layouts.md](findings/box2d-struct-layouts.md).
+
+## Naming caveats: `rep_*` and `/EH` funclets [code, 2026-10-29]
+
+* **The `rep_*` prefix is not evidence of identity.** It is a stale 1.151 signature-database label: hashing every `rep_*` body in `0x140000000–0x14006FFFF` found **0 of 207** with a byte-identical twin anywhere in the image, and 174 of the 199 embedded `<hex>` targets point *inside* an unrelated function (or mid-instruction). Sizes contradict the claimed imports too (`sqrtf`/`free` "replicas" of 2–5 KB). Consequences: never infer a call target's meaning from its `rep_...` label, and never leave a body unnamed just because it is a "replica" — it needs a body-level read. Known wrong examples: `0x140184430` (`..._atoi64` that is really `LinkVector_InsertAt`), `0x14025ecf0` (`..._free` that is a ~1.5 KB string builder), `0x140324330` (`..._FastFail?` that is `b2Island::SolveTOI`), `0x14016cd50` (`..._MessageBoxA` that is `Texture_Load`). A body-level re-match pass and its audit table are in `data/rep-audit-2026-10-29.tsv` (batch 6).
+* **`/EH` funclets are owner-attributed, not individual functions.** The ~926 cleanup clones in `0x140337000–0x14034b77f` all have the shape "test a mask bit in the frame, clear it, destroy/free one member at frame+OFF, or deallocate and rethrow". The owning class is not recoverable from the funclet's own body or its own unwind record (all of them share one generic 6-byte-prolog `UNWIND_INFO`); it comes from the parent's FH4 `FuncInfo4` funclet list, reached from the `.pdata` `RUNTIME_FUNCTION` array (`0x148078000–0x14808c1ff`, 6869 × 12-byte records). The `0x1480xxxx` data xrefs are unwind records, **not** vtables, and the image has no FH3 data at all. Batch 6 parsed those tables and wrote `data/funclet-ownership-2026-10-29.tsv` (`funclet -> owner -> member offset`); funclets are named `<Owner>_EhCleanup_<member>` (e.g. `Body_EhCleanup_Mass`, `ShaderBloom_EhCleanup_0x30`) only where ownership is proved, and ownerless clones keep a family anchor and stay catalogued. Result [code]: **all 926 funclets in `0x140337000–0x14034b77f` have a proved owner** — 347 distinct owning functions, 829 with exactly one owner and 97 ICF-shared by 2+ owners (one body serving up to 34 classes); 761 have a Ghidra function object, 165 do not. 448 were renamed (112 distinct owners — `SomethingWithLevelSerias` 83 funclets, `lootBoxCoins` 37, `Dialog_ExecuteChoiceActions` 35, `TarkhanGUIDispatchOperator` 26, `salvageMiniGame?` 23), 124 of them needing an `_sz<hex>`/`_b<bit>` disambiguator because one owner destroys the same frame slot under several guards. 176 `FUN_*` keep a proven owner but stay unnamed: 73 are ICF-shared (naming after one owner would be wrong), 72 have an owner that is itself a `rep_*` replica label, 27 have an uncertain owner name (`!ClickFunc`). Family split of the 926: string 382, freeField 369, rethrow 104, linkFree 40, vdtor 16, vector 6, captain 3, other 5, nobody 1. The range now holds 762 function objects (176 `FUN_*`, 82 untouched `rep_*`, 504 named).
