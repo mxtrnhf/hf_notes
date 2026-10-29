@@ -313,9 +313,42 @@ re-proving the names. Full reasons:
 | `0x14017c800` | returns `-1` unconditionally |
 | `0x140190c10` | property `WriteField` via `Node::WriteParameter_`; subclass unknown |
 
-**TODO (parent):** replace this list with batch-9's proven names as they land;
-the count of remaining `FUN_*` here is 31 until the batch-9 `.rdata` agent
-reports.
+Batch 9 resolved 29 of the 31 withheld `.rdata` slots plus the Body slot (it
+named `Slider_SetValue`, `Gui_ActivateElement` / `Gui_DeactivateElement`,
+`Gui_OnHoverEnter`, `Gui_DrawElement`, `Gui_Update`, the `List_*` /
+`ObjectList_*` accessors, `Frame_IsStatic`, `Escadra_OnElementRemoved`,
+`lProperty_WriteField`, …); the table above is the batch-8 record, not the
+current name list. Only **three names are still withheld** and are batch 10
+agent 6's scope: `0x14017c780` (forwards through the runtime-resolved pointer
+`DAT_1439e89b0`), `0x14017c800` (returns `-1` unconditionally) and
+`0x14004c7e0` (Body vtable slot 72, `+0x240`, the fixed-`0.0f` forwarder to the
+draw at `+0x238`). **TODO (parent):** replace those three rows with the
+batch-10 result.
+
+### `Cloud` / `Ground` / `Landpart` slots with no function object [code, 2026-10-29]
+
+Six `.text` addresses are referenced from these three vtables but still had no
+Ghidra function object after batch 9 (batch 10 agent 6 owns creating/naming
+them):
+
+| addr | table / slot |
+|---|---|
+| `0x1402f4b70` | `?AVLandpart@@` 0x140377060 or `?AVCloud@@` 0x1403770a0 / `?AVGround@@` 0x1403770e8 — exact slot TODO |
+| `0x1402f4500` | same family — exact slot TODO |
+| `0x1402f4140` | same family — exact slot TODO |
+| `0x1402f4d90` | same family — exact slot TODO |
+| `0x140316150` | same family — exact slot TODO |
+| `0x1403365ac` | shared body used by two `Landpart` slots (+0x18 and +0x20, the same body twice) |
+
+The vtable layout already proved by batch 9: `Landpart` 0x140377060 has slots
+0x0 (dtor), +0x8, +0x10, +0x18/+0x20 (two copies of `0x1403365ac`), +0x28
+(guard), +0x30; `Cloud` 0x1403770a0 and `Ground` 0x1403770e8 add the same slots
+and **+0x38 = `Cloud_SetSpawnParams` / `Ground_SetSpawnParams`**. The spawn
+object is 0x68 bytes (`Cloud`) / 0xa0 bytes (`Ground`): +0x0 vtable, +0x8 index,
++0xc x, +0x10 y, +0x18/+0x20/+0x28 child sprite vector, +0x30..+0x3c spawn
+params, +0x44 scale, +0x48 timer (999 default int64), +0x50 -1.0, +0x54 word
+flags, +0x58 = 2, +0x5c = 0.5, +0x60 param. **TODO (parent):** fill the slot
+column and add the six names from batch 10 agent 6.
 
 ## Box2D build quirks [code, 2026-10-29]
 The embedded engine is **Box2D 2.3.1**-shaped (the edge/polygon path is the `b2EPCollider` class, which 2.4 removed), but several layouts differ from the stock source:
@@ -353,4 +386,13 @@ written — see the batch-7 section of
 * **The `rep_*` prefix is not evidence of identity.** It is a stale 1.151 signature-database label: hashing every `rep_*` body in `0x140000000–0x14006FFFF` found **0 of 207** with a byte-identical twin anywhere in the image, and 174 of the 199 embedded `<hex>` targets point *inside* an unrelated function (or mid-instruction). Sizes contradict the claimed imports too (`sqrtf`/`free` "replicas" of 2–5 KB). Consequences: never infer a call target's meaning from its `rep_...` label, and never leave a body unnamed just because it is a "replica" — it needs a body-level read. Known wrong examples: `0x140184430` (`..._atoi64` that is really `LinkVector_InsertAt`), `0x14025ecf0` (`..._free` that is a ~1.5 KB string builder), `0x140324330` (`..._FastFail?` that is `b2Island::SolveTOI`), `0x14016cd50` (`..._MessageBoxA` that is `Texture_Load`). A body-level re-match pass and its audit table are in `data/rep-audit-2026-10-29.tsv` (batch 6).
 * **`/EH` funclets are owner-attributed, not individual functions.** The ~926 cleanup clones in `0x140337000–0x14034b77f` all have the shape "test a mask bit in the frame, clear it, destroy/free one member at frame+OFF, or deallocate and rethrow". The owning class is not recoverable from the funclet's own body or its own unwind record (all of them share one generic 6-byte-prolog `UNWIND_INFO`); it comes from the parent's FH4 `FuncInfo4` funclet list, reached from the `.pdata` `RUNTIME_FUNCTION` array (`0x148078000–0x14808c1ff`, 6869 × 12-byte records). The `0x1480xxxx` data xrefs are unwind records, **not** vtables, and the image has no FH3 data at all. Batch 6 parsed those tables and wrote `data/funclet-ownership-2026-10-29.tsv` (`funclet -> owner -> member offset`); funclets are named `<Owner>_EhCleanup_<member>` (e.g. `Body_EhCleanup_Mass`, `ShaderBloom_EhCleanup_0x30`) only where ownership is proved, and ownerless clones keep a family anchor and stay catalogued. Result [code]: **all 926 funclets in `0x140337000–0x14034b77f` have a proved owner** — 347 distinct owning functions, 829 with exactly one owner and 97 ICF-shared by 2+ owners (one body serving up to 34 classes); 761 have a Ghidra function object, 165 do not. 448 were renamed (112 distinct owners — `SomethingWithLevelSerias` 83 funclets, `lootBoxCoins` 37, `Dialog_ExecuteChoiceActions` 35, `TarkhanGUIDispatchOperator` 26, `salvageMiniGame?` 23), 124 of them needing an `_sz<hex>`/`_b<bit>` disambiguator because one owner destroys the same frame slot under several guards. 176 `FUN_*` keep a proven owner but stay unnamed: 73 are ICF-shared (naming after one owner would be wrong), 72 have an owner that is itself a `rep_*` replica label, 27 have an uncertain owner name (`!ClickFunc`). Family split of the 926: string 382, freeField 369, rethrow 104, linkFree 40, vdtor 16, vector 6, captain 3, other 5, nobody 1. The range now holds 762 function objects (176 `FUN_*`, 82 untouched `rep_*`, 504 named). Batch 8 then proved 7 more owners from their bodies (all stale-`rep_*` game classes: `Fleet_CreateEscadraFromShips`, `Moral_BuildMiniFigPanel`, `Escadra_AddIntelEntry`, `Escadra_CopyFrom`, `Creature_AddLandingLights`, `Gui_CopyConstructor`, `Shader_AddParam`) and named/plated their 7 funclets, leaving **66 open** — 31 generic container/allocator helpers, 2 FX spawners, 23 subsystem procedures, 5 edge cases and 5 with no function object. The split and every owner→member→funclet row are in [data/ghidra-sweep-2026-10-29-b8-agent3.md](data/ghidra-sweep-2026-10-29-b8-agent3.md) §3. Batch 9's funclet agents are working that 66; their notes, not this paragraph, are the live count.
 
-**The five `_CxxThrowException` primaries.** `0x140336c80`, `0x140336d20`, `0x140336df0`, `0x140336ea0` and `0x140336f00` (0x3e/0x3e/0x3b/0x59/0x3f bytes) sit inside the funclet range but are **primary functions, not funclets**: each has its own prologue and `UNWIND_INFO`, each is absent from the ownership TSV, and each decompiles as a container rethrow guard — destroy/free a range at the frame fields `+0x28/+0x38/+0x40/+0x48/+0x50/+0x58/+0x70/+0x78/+0x80/+0x88/+0xd0` (one of `Array_DestroyRange24`, `DeleteArray32`, `DeleteArray56`, `deallocate`), or `memmove` the saved begin/end back, then `_CxxThrowException(0,0)`. They still carry stale `rep_..._CxxThrowException` labels from the 1.151 signature DB; the labels were batch 8's open disagreement and are settled here [code, 2026-10-29]. Batch 9's `rep_*` agent owns renaming them.
+**The five `_CxxThrowException` bodies are funclets, not primaries.** `0x140336c80`, `0x140336d20`, `0x140336df0`, `0x140336ea0` and `0x140336f00` sit inside the funclet range and carry stale `rep_..._CxxThrowException` labels from the 1.151 signature DB. Batch 8 read their own prologues/`UNWIND_INFO` and called them primaries; batch 9 reversed that from the `FuncInfo4` lists: no CALL xref, establisher frame in RDX, `UNWIND_INFO` flags 0, `_CxxThrowException(0,0)` rethrow epilogue, in the funclet-only band [code, 2026-10-29]. Each is a container rethrow guard — destroy/free a range at the frame fields `+0x28/+0x38/+0x40/+0x48/+0x50/+0x58/+0x70/+0x78/+0x80/+0x88/+0xd0` (one of `Array_DestroyRange24`, `DeleteArray32`, `DeleteArray56`, `deallocate`), or `memmove` the saved begin/end back. Three are named after their proved owners — `0x140336c80` = `Vector24_InsertReallocate_EhCleanup_0x70`, `0x140336d20` = `VectorString56_InsertReallocate_EhCleanup_0xd0`, `0x140336df0` = `VectorString_InsertReallocate_EhCleanup_0x70`; `0x140336ea0` / `0x140336f00` are the `+0x98` family of the same owner `0x140013160` (still a stale `rep_*`), which batch 10 agent 9 owns.
+
+**Batch-10 funclet owners (pending).** Batch 10 agents 1–2 close the last 52
+open funclets in `0x140336730–0x140350510` by proving the owner first and then
+naming the funclet. Any new owner class they prove (and the funclet→owner pairs)
+belongs here; at the time this section was written the agents had not posted
+their results. **TODO (parent):** fold the proved owner classes from
+`data/ghidra-sweep-2026-10-29-b10-agent1.md` / `-agent2.md` into this
+paragraph, and update the funclet counts in the bullet above (52 open at the
+start of the wave). Do not treat this paragraph as a result.
