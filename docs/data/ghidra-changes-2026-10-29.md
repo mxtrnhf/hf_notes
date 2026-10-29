@@ -3,18 +3,20 @@
 Program `Highfleet.exe.unpacked.exe` v1.163, saved (version after the sweep). The
 check-in to the shared project is the user's.
 
-The sweep ran in two waves. The first was the single-agent pass documented in
+The sweep ran in three waves. The first was the single-agent pass documented in
 the tables below (`166` renames). The second wave was **five parallel agents on
-disjoint address ranges**; their 221 renames are summarised in "Batch 2" below
-and detailed in the per-agent note files. After the two waves the unnamed set
-went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to **1,826 `FUN_*` +
-1,663 `rep_*`**.
+disjoint address ranges** (`221`); the third was **five more agents** on the
+remaining game code (`575`). The batch-2 and batch-3 details are summarised in
+their own sections below and in the per-agent note files. After all three waves
+the unnamed set went from 3,875 functions (2,201 `FUN_*` + 1,674 `rep_*`) to
+**1,277 `FUN_*` + 1,637 `rep_*`** (961 functions named).
 
-Every rename in both waves was verified against the live program after the
-agents finished (387 claimed addresses compared by address and name; two
+Every rename in all three waves was verified against the live program after the
+agents finished (714 claimed addresses compared by address and name; two
 mismatches found and fixed: `Sort3WithComparator` -> `Sort3ByComparator`, and
 `Body_Constructor`, whose entry moved 0x30 bytes down to `0x140015ed0` under
-re-analysis and needed its plate re-applied).
+re-analysis and needed its plate re-applied). Two missing plates found by the
+plate audit (`Property_SetFloat`, `App_ReloadSeria`) were written by hand.
 
 This pass started from the full function list and worked through the unnamed
 `FUN_*` / `rep_*` functions, prioritising (a) helpers that almost every game
@@ -331,6 +333,47 @@ What the batch added that is worth remembering:
   own `b2XxxJointDef` string. Read vtable slot [4] and follow it; the literal in
   the body names the class in one step.
 
+## Batch 3: five more agents (same day)
+
+A second wave of five agents covered the remaining game code. Total: **575
+renames**, all plated. Per-agent tables and skip lists:
+
+| agent | range | renames | note |
+|---|---|---|---|
+| 1 | 0x140080000–0x14009FFFF | 246 | [ghidra-sweep-2026-10-29-b3-agent1.md](ghidra-sweep-2026-10-29-b3-agent1.md) |
+| 2 | 0x140070000–0x14007FFFF + 0x1400A0000–0x14011FFFF | 74 | [ghidra-sweep-2026-10-29-b3-agent2.md](ghidra-sweep-2026-10-29-b3-agent2.md) |
+| 3 | 0x140120000–0x14016FFFF | 46 | [ghidra-sweep-2026-10-29-b3-agent3.md](ghidra-sweep-2026-10-29-b3-agent3.md) |
+| 4 | 0x140170000–0x1401FFFFF | 68 | [ghidra-sweep-2026-10-29-b3-agent4.md](ghidra-sweep-2026-10-29-b3-agent4.md) |
+| 5 | 0x140200000–0x1402FFFFF | 141 | [ghidra-sweep-2026-10-29-b3-agent5.md](ghidra-sweep-2026-10-29-b3-agent5.md) |
+
+What the batch corrected or added:
+
+* **The "class factory block" is the D3D11 shader layer, not a factory.**
+  `0x140080000–0x14009FFFF` holds the game's shader classes: `ComputeShader` /
+  `CSGlitch`, `Texture`, the `RenderState_*` and D3D11 blend/rasterizer helpers,
+  `Effect` / `Shader` / `VShader` / `PShader`, 29 concrete `Shader*` classes with
+  their `ConstantBuffer<CBConstants<...>>`, and `ShaderData` /
+  `ShaderResourceView` / the `ShaderParam*New` family. Every class was taken
+  from MSVC RTTI (`vtable[-1]` -> CompleteObjectLocator -> TypeDescriptor ->
+  `.?AV<Class>@@`), not guessed. This closes the biggest open cluster in the
+  first-pass note.
+* **The "ship-zoom LOD" cluster is the trail/world-sprite system**:
+  `Trail_CreateForBody`, `Trail_AddSprite`, `Trail_UpdateAll/Geometry/
+  LayerTransforms`, `Trail_DrawLayer`, `Trail_Render`. Source of the
+  `trail_black_*` sprites: burning bodies at `ZOOM_LEVEL > 2`.
+* **Pre-combat card drag identified** (`Precombat_PickUpCard`,
+  `Precombat_DragCard`, `Precombat_ApplyCardOrder`) and `0x1401574b0` corrected
+  from "slider factory" to `Gui_HandleSliderChange`, the one change callback for
+  every slider.
+* **The input record is documented**: `+0xde..+0xe1` move flags, `+0xe2/+0xe3`
+  rotate flags, plus `Input_MapHatToKeyModern/Legacy` and joystick lookup.
+* **Large game-logic haul** in 0x140200000–0x1402FFFFF: battle/fleet
+  (`Roster_*`, `Fleet_*`, `Body_GetSlotWorldPos`), shop/shipworks
+  (`Shop_TransferItemForLocation`, `Shipyard_SpawnShip`), the `Hud_Marker*`
+  family, and the `+0x1604` introsort family used by `SCR_BOMBERS`.
+* **`.seria` is a ZIP** confirmed again from the resource side, with `Inflate_*`
+  and `Crc32_GetTable` named.
+
 ## `!` functions
 
 Only two functions carry the `!` prefix in this database:
@@ -349,41 +392,36 @@ Only two functions carry the `!` prefix in this database:
 ## Left for a later pass
 
 The unnamed set at the start of the day was 2201 `FUN_*` and 1674 `rep_*`
-(4865 total functions). After both waves: **1826 `FUN_*` and 1663 `rep_*`**
-(386 named). What remains is deliberately not renamed yet, because a name would
-be a guess:
+(4865 total functions). After all three waves: **1277 `FUN_*` and 1637
+`rep_*`** (961 named). What remains is deliberately not renamed yet, because a
+name would be a guess:
 
-1. **CRT / compiler boilerplate at the bottom of the image.** `_eh` cleanup
-   funclets, duplicated `free`-one-field destructors (0x140344000..0x140345000
-   is a long run of identical 0x20-byte functions), exception copy helpers and
+1. **CRT / compiler boilerplate at the bottom of the image**, including
+   `0x140000000–0x14006FFFF` and the run of identical 0x20-byte functions at
+   `0x140344000..0x140345000`: `_eh` cleanup funclets, exception copy helpers and
    the `atexit` stubs. Naming these adds noise; they are compiler output, not
-   game logic. This is also most of the 1663 `rep_*` names that remain: they
+   game logic. This is also most of the 1,637 `rep_*` names that remain: they
    keep the `rep_` prefix because the target already carries the real name
    (e.g. `rep_140004e70_GetStats`); only the genuinely unnamed ones are worth
    touching.
-2. **The `FUN_*` factory block 0x140086000..0x14009b000.** Some 300 small
-   three-line functions that each `New` a derived object, call a specific
-   constructor (`FUN_14009f9xx`, `FUN_14009faxx`) and push it into one of the
-   owner's vectors. They are one class factory per GUI/serialiser type; naming
-   them needs the class of each constructor, which the constructors do not
-   reveal (they only differ in vtable). Agent 3 left it untouched. This is the
-   single biggest remaining cluster.
-3. **The rest of the engine half 0x140070000..0x14011FFFF** (about 1,750
-   functions): per-class serialisation boilerplate, `Property`/`ISerializable`
-   copies, Escadra/Creature accessors whose semantics need
-   [../structures.md](../structures.md). Agent 3 listed the specific skips
-   (lazy texture creators, property registration, quality settings).
-4. **Box2D leftovers** are now only (a) vtable slots with no function object in
-   Ghidra (the gear/pulley/mouse/wheel virtuals listed in agent 3's note; they
-   need `create_function` first) and (b) a handful of ambiguous helpers
-   (`0x140321930` heap sift, `0x140319da0` empty stub, `0x140318b20`).
-5. **Functions whose identity depends on an unread global.** e.g.
-   0x1400dd0d0 (0x950, called from `!ClickFunc`, Shipworks commit/exit),
-   0x1401c7270 (0x25d0, called by `World_ThermalPass`), 0x1400b1440 (0x77d0,
-   `mainDialogWithChoices` and `!ClickFunc`), plus the slider factory
-   0x1401574b0 and the ship-zoom LOD family. These are good next targets once
-   their main caller is read.
+2. **Embedded-Box2D leftovers 0x140330000–0x140350510.** Mostly (a) vtable slots
+   with no function object in Ghidra (the gear/pulley/mouse/wheel virtuals
+   listed in batch-2 agent 3's note; they need `create_function` first) and
+   (b) ambiguous helpers (`0x140321930` heap sift, `0x140319da0` empty stub,
+   `0x140318b20`) plus compiler clones.
+3. **Large single functions whose semantics need a full read**: 0x1400b1440
+   (0x77d0, `mainDialogWithChoices` / `!ClickFunc`), 0x1400dd0d0 (0x950,
+   Shipworks commit/exit), 0x1400f5be0 / 0x1400f9a40 (map encounter/intercept),
+   0x1401c7270 (0x25d0 particle spawner), 0x140206950, 0x14021cf40 (70 KB),
+   0x140245180 (27 KB), 0x140295500 (31 KB), 0x14029b3e0, 0x1402da8f0.
+4. **Container/sort internals** (about 150 `FUN_*`): `std::vector`/`_Tree`/
+   introsort clones and ICF-merged destructors across 0x140120000–0x1401FFFFF
+   and the engine half. They are mechanical; name them only if a specific
+   analysis needs the instantiation.
+5. **Unread quality/settings helpers**: `0x1403169c0`, `0x140316a50`,
+   `0x140316ba0`, `0x140316d00`, `0x140309d70`, `0x140110340` (named only as a
+   group so far).
 
-Suggested order for the next pass: the remaining engine cluster (agent 3's
-skip list, one class at a time), then the `create_function` pass over the
-Box2D vtable slots, then the factory block only if something needs it.
+Suggested order for the next pass: the `create_function` pass over the Box2D
+vtable slots, then the large single functions in item 3 (highest value), then
+the container clones.
