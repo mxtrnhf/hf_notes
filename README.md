@@ -72,6 +72,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 |---|---|
 | [docs/findings/ai/ai-hf-ai-design.md](docs/findings/ai/ai-hf-ai-design.md) | why a DLL is the way to change the AI, the `hf_ai` design (log-only steering hook, `decide()`), the `ai_flares` missile-panic algorithm, the overshoot-dodge idea, hook-ownership clash |
 | [docs/findings/ai/ai-flares.md](docs/findings/ai/ai-flares.md) | why AI ships never use flares (missing trigger, not missing parts) and a mod design |
+| [docs/findings/mercenary-ships.md](docs/findings/mercenary-ships.md) | where the mercenary/reinforcement ships offered for money come from: hard-coded tier pools in `addReinforceingShips` 0x14021b8c0, tier chosen by the `ASK_REINFORCE` dialog, not by the city; also why `m_npcs` is Tarkhans, not ships |
 | [docs/findings/ai/ai-tick-patch-sites.md](docs/findings/ai/ai-tick-patch-sites.md) | the tactical AI in 1.163: close-range cutoff, stand-off retreat, ammo choice, launch limits, byte-exact patch sites |
 | [docs/findings/ai/ai-telemetry.md](docs/findings/ai/ai-telemetry.md) | battle telemetry in `hf_ally` (feature `telemetry`): the three CSVs, part list and part health, ship name `+0xa90`, aim signal `vc2/vc3`, flying-body array and per-frame birth/death log, first captures, missile overshoot test |
 | [docs/findings/ai/ai-aircraft-launch.md](docs/findings/ai/ai-aircraft-launch.md) | why the strategic AI launches all aircraft at once, launch conditions, patch sites |
