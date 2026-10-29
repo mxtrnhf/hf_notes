@@ -54,6 +54,50 @@ builds on the `Mark` constructor). The same factory gives the same sizes for the
 Vtable slots [code]: +0x40 kill(this,1), +0x48 kill, (+0x48 kill goes `FUN_140049ea0` -> `FUN_1402805d0` -> vtbl+0x40(this,1)), +0x50 add child, +0x68 remove from master, +0x80/+0x88 editor "place" steps, +0xe0 master-angle transform and **+0xe8 world position** (the same group; +0xe8 is the getter the distance helpers go through), **+0xf0 local angle -> world frame**, **+0xf8 local point -> world frame**, **+0x150 dropped-body link collector** (the pass that re-collects the subtree's `Link`s), +0x178 side (float; sign = friend/foe), **+0x208 set health**, +0x210 damage, **+0x298 projectile cleanup**. Body/Frame/Creature/Missile vtables copy most of these slots, so a DATA xref from `0x14036xxxx` does not identify the class; `0x1480xxxx` xrefs are `.pdata`/unwind, not vtables, and say nothing about the class either. Smart-ref = 0x18 bytes (vtable, pointer, ?): ctor `FUN_140194bd0(ref,node)`, copy
 `FUN_140194b80`, dtor `FUN_140194d20`, assign `FUN_140194de0`; reallocating vector insert `FUN_140004b00(vec,pos,ref)`; `FUN_1402c7c90` = `vector<Node*>::insert(range of refs)`.
 
+### Body vtable slot map `0x140352a30` [code, 2026-10-29]
+Slot *n* lives at `0x140352a30 + 8n`; the RTTI CompleteObjectLocator is the
+qword just before slot 0 (`0x140352a28` -> `0x140379a98`), so slot 0
+(`0x140018b60`) is the first virtual. The 19 addresses the batch-6 hand-off
+listed as "Body/Node slots with no function object" are **all slots of this one
+table** — locating them does not need a separate Node table (which slot is
+declared on Node vs Body is still open):
+
+| slot | offset | target | note |
+|---|---|---|---|
+| 0 | `+0x0` | 0x140018b60 | first virtual |
+| 24 | `+0xc0` | 0x14002e300 | |
+| 25 | `+0xc8` | 0x14002e290 | |
+| 33 | `+0x108` | 0x140018fb0 | |
+| 48 | `+0x180` | 0x14001bf60 | |
+| 49 | `+0x188` | 0x14001b7f0 | |
+| 53 | `+0x1a8` | 0x140049e10 | |
+| 54 | `+0x1b0` | 0x14004a560 | |
+| 56 | `+0x1c0` | 0x14004a9f0 | |
+| 57 | `+0x1c8` | 0x14004a8b0 | |
+| 58 | `+0x1d0` | 0x140048020 | |
+| 65 | `+0x208` | 0x140051de0 | documented as "set health"; body tests the byte at +0x2d0 and the float at +0x2c8 (the health pair), consistent |
+| 67 | `+0x218` | 0x140019300 | |
+| 68 | `+0x220` | 0x140053110 | |
+| 72 | `+0x240` | 0x14004c7e0 | |
+| 73 | `+0x248` | 0x14004d8e0 | |
+| 78 | `+0x270` | 0x140054dd0 | |
+| 83 | `+0x298` | 0x14004bba0 | see caveat below |
+| 87 | `+0x2b8` | 0x14004eaa0 | |
+
+None of the nine other slots in this table is a bare gap: the neighbouring
+entries are ordinary function objects (e.g. +0x40 `0x1402805e0`, +0x48
+`0x140049ea0`, matching the kill pair documented above). What each unnamed slot
+*does* still has to come from the body; the offsets above only say where it is
+declared.
+
+**Slot +0x298 conflict.** The batch-6 hand-off called `0x14004bba0`
+`Body_ClosePartInfoPanel` and the batch-6 vtable note called +0x298 "projectile
+cleanup"; the bytes support neither name. The body is a five-instruction
+forwarder: `MOV RCX,[RCX+0x9d0]; TEST RCX,RCX; JZ ret; MOV RAX,[RCX]; JMP
+[RAX+0x48]` — it forwards to slot +0x48 (the kill/remove slot) of the object
+stored at Body `+0x9d0`, if present. Re-read the callers before naming it.
+[code, 2026-10-29]
+
 ## Stats record (`GetStats(index)` `FUN_140281e00`; id -> index `FUN_140281cc0`) [code]
 +0x88 price (probe v1.3, 2026-10-14 [game]: `MDL_ARMOR2X1_01` 400, `MDL_LEG_01/02/03` 50 / 100 / 200, `MDL_FERMA2X2_01` 20, `MDL_AMMO_02` 1000; `+0xb0` category read as 8192 legs, 128 ferma, 16 ammo rack, 2 armor), +0x8c important, +0x90 timecost, +0x94 repair_cost, +0xb0 **category**, +0xb4 sort_index, +0xc4 armor, +0xd0 fuel_need, +0xc8 fuel capacity (double), +0xd4 crew capacity (int) [code, indirect: the 1.151 names plus the ship stats sum; `findings/sensors-and-crew.md`], +0xd8 crew_need,
 +0xdc **power** (`ED_PROP_POWER`, the power a part *generates*; its +0xe0 neighbour is `power_need`), +0xe0 power_need, +0xe4 power_priority, +0xe8 **ammobox** (`m_mdl_ammobox`, `ED_PROP_AMMOBOX`), +0xf0 **ammobox priority** (`ED_PROP_AMMOBOX_PRI`), +0xf8 thrust, +0xfc thrust_map, +0x108 **rotation** (`ED_PROP_ROTATION`), +0x10c radar, +0x110 tracking, +0x114 guiding, +0x118 elint, +0x11c irst, +0x120 jammer, +0x128 sectors_type
@@ -189,6 +233,29 @@ The embedded engine is **Box2D 2.3.1**-shaped (the edge/polygon path is the `b2E
 * **Joint vtables are six slots in a non-stock order**: `[0] GetAnchorA`, `[1] GetAnchorB`, `[2] GetReactionForce`, `[3] GetReactionTorque`, `[4] Dump`, `[5]` scalar deleting destructor. The joint `Dump` prints its own `b2XxxJointDef` reconstruction, so reading slot [4] names the class in one step.
 * **Contact vtables are two slots** (`[0] Evaluate`, `[1]` scalar deleting destructor), with the destructor ICF-merged to `b2Contact_DeletingDtor` 0x140325a40 for all seven classes.
 * **`b2ContactSolver` has seven methods**; the pair `SolvePositionConstraints` (Baumgarte 0.2, -0.015) / `SolveTOIPositionConstraints` (0.75, -0.0075) is the discrete-vs-TOI split. Details and the full map: [findings/box2d-function-map.md](findings/box2d-function-map.md), layouts in [findings/box2d-struct-layouts.md](findings/box2d-struct-layouts.md).
+
+## CRT C-initialiser table `0x1403519e0`–`0x1403521a8` [code, 2026-10-29]
+The `.rdata` run the batch-6 hand-off called `0x1403519e8–0x1403521a8` actually
+starts one qword earlier, at `0x1403519e0`, and ends at `0x1403521a8` inclusive:
+**249 pointers** (0x7c8 bytes). 247 point into the CRT-constructor block
+`0x140001000–0x140004a60`; one entry is null (an unused CRT initialiser slot)
+and one is `0x140334c38`, in the `/EH` funclet tail. Save for that one, none of
+the targets had a Ghidra function object at the start of batch 7.
+
+The entry shape is **not uniform**, so the `LEA RCX,[global]` derivation only
+works on a subset:
+
+* one-instruction stub, `LEA RCX,[<global>]; JMP <ctor>` — e.g. `0x140004a5c`
+  = `LEA RCX,[0x140350510]; JMP 0x14033447c`;
+* full C++ constructor — e.g. `0x140001000` = `SUB RSP,0x28; MOV ECX,0x40;
+  CALL 0x140334094; LEA RCX,[0x14034b780]; ...`, which may initialise several
+  globals in one body.
+
+So `CInit_<Global>` is provable for the stub entries from the `LEA` operand; the
+full-constructor entries need their global list read from the body instead. The
+`CInit_*` family grouping was still being built by batch-7 agent 6 when this was
+written — see the batch-7 section of
+[data/ghidra-changes-2026-10-29.md](data/ghidra-changes-2026-10-29.md).
 
 ## Naming caveats: `rep_*` and `/EH` funclets [code, 2026-10-29]
 
