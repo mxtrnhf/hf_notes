@@ -469,3 +469,36 @@ part list (7 bodies).
 
 **Profile**: `+0x3f0` tutorial trigger value; `+0x1f8/+0x200` is the fleet list
 also reached through `Get_Profile_`.
+
+## NPCs (`Profile+0x2c0` = `m_npcs`) and the hire screen [code, 2026-10-30]
+
+`m_npcs` is a `DLL<NPC>` head at Profile `+0x2c0`, count at `+0x2c8`. The name
+comes from the serializer, which registers the property as `"m_npcs"` at
+`profile+0x2c0` (`0x140297a60`), so the list is part of the save.
+
+Population chain:
+
+* `Profile::Profile` `0x140289530` creates it **empty**: `New(0x18)` sentinel,
+  self-linked, stored at `+0x2c0` (object size 0x5e8).
+* `NPC_ConstructRecord` `0x14028b960` allocates a 0x158-byte NPC, constructs it,
+  appends a node and increments `+0x2c8` (`_Xlength_error("list too long")` on
+  overflow).
+* Callers: event/prologue setup `0x1402a37c0` (16 sites), `Prologue_SpawnEventGroups`
+  `0x1402a7f60`, endgame spawn `0x140261a20`. Event data sets NPC flags, e.g.
+  `*(npc+0xf9)=1`.
+
+NPC record (`NPC`, 0x158 bytes): `+0x00` vftable, `+0x08` class name,
+`+0x50` LabelName, `+0x70` HUD name, `+0x90` third name, **`+0xb0` city name**,
+**`+0xd0` card name**, `+0xf0` int RNG seed, `+0xf6` isPrologueNpc, `+0xf9`
+availability/hired byte. All five names are `EscadraName` (0x20 bytes).
+
+Hire screen: `somethingHireShips_` `0x140266100` (called from `0x140265d80`
+with `CURRENT_LOCATION`) iterates `m_npcs`, keeps NPCs whose `+0xb0` string
+equals `Location+0xc8`, reseeds from `+0xf0`, prices `Creature+0x15d0/100` and
+draws the `for_hire` / `for_join` card (`+0xf9` suppresses the FOR_HIRE label).
+**There is no per-ship mercenary flag**: after hiring the ship is an ordinary
+fleet `Escadra`; nothing marks it. No string "merc" exists in the exe or game
+data, and no code compares `Location+0x25c` (city type) to 6 — the only tests
+are 2/3/5.
+
+Full write-up: `../HF_MERCENARY_SHIPS.md` (workspace root).
