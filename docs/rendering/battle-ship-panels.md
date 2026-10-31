@@ -23,3 +23,10 @@ Status: **read statically (ds3-subview report, 2026-10-26; call sites, panel siz
 * **Cost:** one scan of the body grid, one quad per part (100+ for a big ship) and 12 noise sprites per panel; four extra panels roughly quadruple the schematic cost. The game is single-threaded per frame, so sequential calls are fine.
 * **Who is ally or enemy in the frame:** battle creatures are the 0x18-byte records from `0x143faa5d8` (creature pointer at `+8`, the list the AI chooser uses); side is the float `creature+0xad4` (positive = player side, ground defence is -1.0); skip `+0x48 == 0`, evac pods (`0x140074080`) and non-ships (`(+0x28 & 0x2f) == 0x2f`, `+0x1c0 != 0xd`).
 * Open: which part category each flag bit means, the `[0x147fc6fca]` meaning, the transient third path, the 287 x 197 pair of surfaces (`0x14800efc8/eff8`, a third smaller HUD view not chased), the source of the HUD enable byte `[0x143a11961]` beyond `handleBattleBackgrounds`.
+
+## Implemented in `highfleet-allies` (v0.14.4) [code, not yet run in game]
+`ally/src/ally_panels.rs` uses two private 350 x 300 target pairs and sprites, created lazily from the HGE `+0x300` slot and `hgeSprite` constructor. Two hooks:
+* the own-panel call `0x140309ab4` renders each living ship in `ALLIES` with `0x1402fde80(myA, myB, 3)` after saving `player+0xb00`, writing the ally and restoring it at once. The following game call then draws the player's own panel into the stock left pair, so the two paths do not share surfaces.
+* the panel-composite flush `0x14030915f` runs after the stock left/right panel sprites have been drawn, where the renderer is already in the sprite state, and draws the private sprites with `FUN_140172aa0` at scale 0.5. Two 175 x 150 panels sit at `(350, H-300)` and `(350, H-150)` and therefore appear one frame after their render, like the stock panels.
+
+The earlier attempt reused the stock left surfaces and composited immediately after the offscreen render; that kept the panel function's offscreen renderer state and drew nothing visible. Hooks are installed only with `spawn_ally` and the `ally_panels` option; a live ally is required. In-game appearance and cost are unverified.
