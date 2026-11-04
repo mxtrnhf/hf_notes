@@ -1,6 +1,6 @@
 # How the game draws: frame, video task, scene dispatcher, text
 
-Question: where can a mod draw its own text (the elevation hints) so it looks native and lands in the same pass as the game's labels? Steam 1.163, image base `0x140000000`. Tags: legend in `../../README.md`. Ghidra stayed read-only.
+Question: where can a mod draw its own text (the elevation hints) so it looks native and lands in the same pass as the game's labels? Steam 1.163, image base `0x140000000`. Tags: legend in `../README.md`. Ghidra stayed read-only.
 
 ## Frame and video task [code]
 `Init_HGE` (`0x1401ad080`) registers only `HGE_FRAMEFUNC` = `_FrameFunc` (`0x1401a8970`); there is no `HGE_RENDERFUNC`, so the game renders inside the frame function. Task order in `_FrameFunc`:
@@ -15,7 +15,7 @@ Question: where can a mod draw its own text (the elevation hints) so it looks na
 | Sound | `0x1402dd890` |
 | Video | `0x140316e20` (takes a "render this frame" bool from a frame-skip heuristic) |
 
-`SomethingVideoTask` calls the **scene dispatcher `0x140300c20`** as `f(DAT_14800ee28, DAT_14800ee20, 0, 0)`. Ghidra calls it `rep_1402d5b50_WriteToClientLog`. It is anchored by the error string `D:\!ESSENTIALS\PROJECTS\HYBRID FLEET 2013EX\VideoTask.cpp` (line `0x2849`) in its branch for an unexpected mode. The scene dispatcher and all four screen renderers reference that string, so this code lives in VideoTask.cpp; see [source-file-names.md](../findings/source-file-names.md) for the per-file function cross-reference. It first sets render state on the shader objects (`DAT_143a13960`, `DAT_143a13a20`), then dispatches on `param_4` and the game-mode flags:
+`SomethingVideoTask` calls the **scene dispatcher `0x140300c20`** as `f(DAT_14800ee28, DAT_14800ee20, 0, 0)`. Ghidra calls it `rep_1402d5b50_WriteToClientLog`. It is anchored by the error string `D:\!ESSENTIALS\PROJECTS\HYBRID FLEET 2013EX\VideoTask.cpp` (line `0x2849`) in its branch for an unexpected mode. The scene dispatcher and all four screen renderers reference that string, so this code lives in VideoTask.cpp; see [source-file-names.md](../findings/engine/source-file-names.md) for the per-file function cross-reference. It first sets render state on the shader objects (`DAT_143a13960`, `DAT_143a13a20`), then dispatches on `param_4` and the game-mode flags:
 
 | Condition | Renderer |
 |---|---|

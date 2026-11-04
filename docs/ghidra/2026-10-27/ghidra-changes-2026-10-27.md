@@ -1,0 +1,28 @@
+# Ghidra changes, 2026-10-27 (ghidra-curator, after the hot-reload study)
+Program `Highfleet.exe.unpacked.exe` v1.163 (path `/Highfleet.exe.unpacked.exe v1.163`); the check-in to the shared project is the user's. Old names are in the plate comments (rule of 2026-10-26). Study: [../findings/hot-reload-feasibility.md](../../findings/engine/hot-reload-feasibility.md).
+
+| kind | address | change |
+|---|---|---|
+| rename | 0x140224c60 | `FUN_140224c60` -> `ReadConfigIniFile` (`LoadConfigIni` collided with `Load`) |
+| rename | 0x14024d520 | `FUN_14024d520` -> `WriteConfigIniFile` (`SaveConfigIni` collided with `Save`) |
+| rename | 0x14018d3d0 | `FUN_14018d3d0` -> `SetDefaultKeyBindings` (VK codes W S A D ... for ids 0x1000..0x1017; the ds4-files report called it "apply keys") |
+| rename | 0x140211e10 | `FUN_140211e10` -> `ExitGame` (log string `APP::exit_game`) |
+| rename | 0x1402db350 | `FUN_1402db350` -> `SetSkirmishFlagsFromLevelName` |
+| rename | 0x1402e4b50 | `FUN_1402e4b50` -> `FreeFlaggedAudioObjects` |
+| rename (data) | 0x143a11909 | `doRecoil_global` -> `g_bGameTimeFreezeFlag` (it freezes game time only) |
+| rename (data) | 0x143a11901 | unnamed -> `g_bExitRequested` |
+| comment (eol) | 0x1401a8eb8 | hot-reload hook site S1 (`CALL SomethingPreTask`, bytes `E8 83 DF 0D 00`) |
+
+## Second batch (same day)
+| kind | address | change |
+|---|---|---|
+| rename | 0x14000e430 | `FUN_14000e430` -> `ResetLevelListHeads` (resets eight intrusive list heads; what they hold is not determined) |
+| rename | 0x140281fa0 | `rep_14025fcf0_New` -> `BuildStatsNameIndexMap` (name -> index map over the stats vector) |
+| plate | 0x140286e40 | `SomethingPreTask`: gate byte, SeriaToLoad transaction |
+| plate | 0x140240b90 | `reload_sg`: caller, failure path (OL.seria/Config.ini part from report, not re-checked) |
+| plate | 0x140225930 | `LoadSeriaFile`: opens the file on every call, no cache |
+| plate | 0x1402253a0 | `LoadDialogue`: live language re-read |
+| plate | 0x140281e00 | `GetStats`: bounds-checked index lookup, in-place edits hot, reordering breaks parts |
+| plate (data) | 0x1403c2b11, 0x1403c13b0 | PreTask gate byte (1, never written); last level name (writer from report) |
+
+Verified this session by re-reading decompile/bytes: the S1 bytes, `ExitGame` body, the freeze byte's writers and readers, both config functions, `SomethingPreTask` flow, `SetLevelSeriaToLoad_`, `LoadSeriaFile` (no cache), `LoadDialogue`, `GetStats`, gate byte 0x1403c2b11 (value 1, one reader). Still not renamed: 0x1400beea0 (editor/shipworks entry, purpose varies by argument).

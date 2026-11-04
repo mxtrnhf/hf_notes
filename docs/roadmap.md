@@ -4,40 +4,40 @@
 Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, QoL, Feature, AI, Mod Scope, Physics Engine.
 
 ## Version scope
-**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed, [mods/speed.md](mods/speed.md)) and the **damage changes**. The code-side differences are listed in [ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md) (per-ammo shell lifetime, rocket warheads, incendiary power and more). Other 1.163 changes found: the close-range weapon cutoff, the 3500/3000 special-target ranges and the 0.025 rad aim tolerance in the AI weapon controller ([findings/ai/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md)), the harpoon, KAZ ammo and a removed debug overlay ([version-differences.md](version-differences.md)). Damage changes: done, see [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md) (compared live on both versions; what stays open is listed there).
+**Focus is 1.163.** Some players still use 1.151 because of gameplay differences from later versions. The ones that matter for us are the **speed curve** (already fixed, [mods/speed.md](mods/speed.md)) and the **damage changes**. The code-side differences are listed in [ammo-1151-vs-1163.md](findings/combat/ammo-1151-vs-1163.md) (per-ammo shell lifetime, rocket warheads, incendiary power and more). Other 1.163 changes found: the close-range weapon cutoff, the 3500/3000 special-target ranges and the 0.025 rad aim tolerance in the AI weapon controller ([findings/ai/ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md)), the harpoon, KAZ ammo and a removed debug overlay ([version-differences.md](version-differences.md)). Damage changes: done, see [findings/explosion-damage-1151-vs-1163.md](findings/combat/explosion-damage-1151-vs-1163.md) (compared live on both versions; what stays open is listed there).
 
 ## Items
 
 ### Bugs and QoL
 * **[Bug]** A proximity-fused missile colliding with flares crashes the game. *(done upstream: highfleet-qol `enable_flare_crash_fix`, 1.163 only; nothing to build here)*
-  * Site and null pointer (property link at `0x14021b070`, hook `0x140036bb5` in `creatureLogic`), plus the flare body and release path: [findings/flare-crash-hunt.md](findings/flare-crash-hunt.md).
+  * Site and null pointer (property link at `0x14021b070`, hook `0x140036bb5` in `creatureLogic`), plus the flare body and release path: [findings/flare-crash-hunt.md](findings/crashes/flare-crash-hunt.md).
 * **[QoL]** Remove the mechanic by which rockets (A220) lower mouse sensitivity globally for all weapon systems. *(partial: path mapped, cause not found)*
-  * Partial: the sensitivity path is mapped and the slowdown is shown NOT to be a write to the device scale or global; location still unknown: [mouse-sensitivity.md](findings/mouse-sensitivity.md).
+  * Partial: the sensitivity path is mapped and the slowdown is shown NOT to be a write to the device scale or global; location still unknown: [mouse-sensitivity.md](findings/engine/mouse-sensitivity.md).
 * **[QoL / Bug]** Changing an A220 rocket's weapon priority (to change hotkey grouping) removes the extended aiming reticle for rocket weapons. *(open)*
 * **[QoL / Inconsistent behavior]** Salvage minigame: when a safety hazard occurs while the wreck site is out of focus, the game enters auto-mode instead of pausing. *(open)*
 * **[QoL]** Option to disable Pytor's map-pointing interactions. *(open)*
 * **[QoL]** Audio cue (or auto-pause) when aircraft intercept enemy forces on the strategic map. *(partial: hook point found, nothing built)*
-  * Hook point: the two `SetLevelSeriaToLoad_` calls in the map aircraft group update; the existing intercept cue is `radio_kill_06` on `MAPMODE_RADIO_HANDSET`: [findings/map-air-groups.md](findings/map-air-groups.md); how to play a sound from a mod: [sound.md](sound.md).
+  * Hook point: the two `SetLevelSeriaToLoad_` calls in the map aircraft group update; the existing intercept cue is `radio_kill_06` on `MAPMODE_RADIO_HANDSET`: [findings/map-air-groups.md](findings/aircraft/map-air-groups.md); how to play a sound from a mod: [sound.md](sound.md).
 * **[QoL]** Toggle for auto-pause on the strategic map. *(open)*
 * **[Bug]** Capturing all cities around Khiva before the end-game event causes a crash loop / infinite loading. *(partial: probable cause and patch recipe, not reproduced or built)*
-  * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [end-game.md](findings/end-game.md#the-khiva-end-game-crash-unguarded-list-writes-1163-probable-cause). Not reproduced in game.
+  * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [end-game.md](findings/strategy/end-game.md#the-khiva-end-game-crash-unguarded-list-writes-1163-probable-cause). Not reproduced in game.
 
 ### New features
 * **[Feature]** Cruise-missile barrage mechanic (for example salvos of 4 simultaneous incoming cruise missiles). *(partial: the standalone salvo mod)*
   * Partly done by the standalone salvo mod: `map_launch_delay` lets a volley leave together (AI fleets too) and `group_missiles` merges a salvo into one fight (3-4 missiles verified [game]): [mods/salvo.md](mods/salvo.md). The AI's per-target salvo caps are untouched.
 * **[Feature, missing]** A functional crew-requirement system. *(partial: research only)*
-  * The per-ship totals already exist (`+0x17ec` present, `+0x17f0` capacity, `+0x17f4` needed); what consumes them was not looked for: [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
+  * The per-ship totals already exist (`+0x17ec` present, `+0x17f0` capacity, `+0x17f4` needed); what consumes them was not looked for: [findings/sensors-and-crew.md](findings/ships/sensors-and-crew.md).
 * **[Feature / Mod Scope]** The missile drum `m_oid=MDL_MISSILE_DRUM_01`: see how it works, figure out multi-charge for it, and restore the cut content. *(open: only noted so far)*
-  * Known so far: the stats record is new in 1.163 (absent from 1.151), listed in [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md); `structures.md` lists a "missile drum" among the ammo-category parts. Nothing else has been read. Steps: (1) how it launches and what the player sees (stats record, part body, launch path); (2) whether the multicharge approach ([mods/multicharge.md](mods/multicharge.md): charge level = part id) carries over to it; (3) find the cut content (unused ids, stats, text or assets left in the files) and restore it. Related: `MDL_MISSILE_CLUSTER_SFW_01`, `MDL_TORPEDO_300` are also new in 1.163.
+  * Known so far: the stats record is new in 1.163 (absent from 1.151), listed in [findings/explosion-damage-1151-vs-1163.md](findings/combat/explosion-damage-1151-vs-1163.md); `structures.md` lists a "missile drum" among the ammo-category parts. Nothing else has been read. Steps: (1) how it launches and what the player sees (stats record, part body, launch path); (2) whether the multicharge approach ([mods/multicharge.md](mods/multicharge.md): charge level = part id) carries over to it; (3) find the cut content (unused ids, stats, text or assets left in the files) and restore it. Related: `MDL_MISSILE_CLUSTER_SFW_01`, `MDL_TORPEDO_300` are also new in 1.163.
 * **[Feature]** Tracking of ballistic missiles in the terminal phase (near the target) on the strategic map. *(open)*
 * **[Feature]** Editing of new enemy ship spawning events. *(open: saved strike groups can be rewritten, see `content.md`)*
-* **[Feature]** Ally ships can assist in battle: second and later fleet ships fight beside you under AI control. *(partial: `hf_ally` spawns them, per-ship buttons on the pre-combat screen choose who may come, retreat with or without them works; several allies, replacement, ally flares and prize-safe targeting built; stances (cycling their behaviour) untested or open: [findings/battle-ally.md](findings/battle-ally.md))*
+* **[Feature]** Ally ships can assist in battle: second and later fleet ships fight beside you under AI control. *(partial: `hf_ally` spawns them, per-ship buttons on the pre-combat screen choose who may come, retreat with or without them works; several allies, replacement, ally flares and prize-safe targeting built; stances (cycling their behaviour) untested or open: [findings/battle-ally.md](findings/ships/battle-ally.md))*
 
 ### AI
 * **[Strategic]** The AI launches all its aircraft when it detects the player within strike range, so none are left for defensive interception. *(partial: cause and patch sites found, not applied)*
   * Cause and byte-level patch sites: [ai-aircraft-launch.md](findings/ai/ai-aircraft-launch.md). Not applied or run in game.
 * **[Strategic]** The AI has no evasive manoeuvring against cruise missiles on the strategic map. *(open)*
-  * Related, but interception odds, not evasion (no evasion code has been read): the intercept probabilities (75% missiles, 66% aircraft) are two literal `Random_Float` compares in `FUN_140111110`: [findings/map-air-groups.md](findings/map-air-groups.md).
+  * Related, but interception odds, not evasion (no evasion code has been read): the intercept probabilities (75% missiles, 66% aircraft) are two literal `Random_Float` compares in `FUN_140111110`: [findings/map-air-groups.md](findings/aircraft/map-air-groups.md).
 * **[Tactical, exploitable]** Closing to very short range of an enemy ship in tactical combat disables all of its weapon systems. *(partial: patch sites found, not applied)*
   * Found, and a 1.163 addition: the cutoff and its patch sites are in [ai-tick-patch-sites.md](findings/ai/ai-tick-patch-sites.md) (section 1). Not applied or run in game.
 * **[Tactical, exploitable]** The AI consistently gives way to the player's ship, which gives the player easy positional advantage. *(partial: patch sites listed, guess, untested)*
@@ -50,18 +50,18 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
 
 ### Mod scope
 * **[Mod Scope / Bug]** Support for combined sensors. Sensor range calculation is currently bugged (accumulative) with two or more sensor types. *(partial: code reading done, live test not run)*
-  * Code reading says sensors combine by per-sector maximum per type; only jammers sum, and the later stage that turns the arrays into a detection strength was read on 2026-10-20 (radar maximum only, no two types combined), so the accumulation claim is false as stated: [findings/sensors-and-crew.md](findings/sensors-and-crew.md). Test: two radars vs one in the range readout.
+  * Code reading says sensors combine by per-sector maximum per type; only jammers sum, and the later stage that turns the arrays into a detection strength was read on 2026-10-20 (radar maximum only, no two types combined), so the accumulation claim is false as stated: [findings/sensors-and-crew.md](findings/ships/sensors-and-crew.md). Test: two radars vs one in the range readout.
 * **[Mod Scope]** HP modification for missiles (Zenith), aircraft, rockets (A220) and cannon shells. *(partial: constants located, no mod)*
-  * Where each constant lives: all cannon shells have 1 HP (a single argument to `BulletImpact__`), rockets 10 HP in `FireShell`, canister pellets 30/10: [findings/firing-and-shells.md](findings/firing-and-shells.md). Missile HP is the stats-record field `+0x184 launched_health` ([structures.md](structures.md)); aircraft and missile HP are not tied in yet.
+  * Where each constant lives: all cannon shells have 1 HP (a single argument to `BulletImpact__`), rockets 10 HP in `FireShell`, canister pellets 30/10: [findings/firing-and-shells.md](findings/combat/firing-and-shells.md). Missile HP is the stats-record field `+0x184 launched_health` ([structures.md](structures.md)); aircraft and missile HP are not tied in yet.
 * **[Mod Scope]** Wider ship-roster modification (additional ship variants, adjustable composition ratio). *(open)*
 * **[Mod Scope]** Editing the repair-part composition menu (hull, armor, landing gear, etc.). *(open)*
 * **[Mod Scope]** Adjustable time-to-live (TTL) for cluster munitions and mine bomblets. *(partial: spawn function and call sites found)*
-  * Spawn function and its two call sites (`0x140036c68`, `0x140036886`) found (sixth argument): [cluster-bomblet-ttl.md](findings/cluster-bomblet-ttl.md). TTL source at the second call site not traced; not applied or run in game.
+  * Spawn function and its two call sites (`0x140036c68`, `0x140036886`) found (sixth argument): [cluster-bomblet-ttl.md](findings/combat/cluster-bomblet-ttl.md). TTL source at the second call site not traced; not applied or run in game.
 * **[Mod Scope]** Damage model: calibers above 30 mm should not destroy missiles (Zenith), aircraft, rockets (A220) or cannon shells in a single shot. *(partial: mechanism pieces located, no mod)*
-  * Starts from the `Ammo` fields (`explosivePower`, `penetrativePower`, `apDrag`) and `BulletImpact__`: [findings/firing-and-shells.md](findings/firing-and-shells.md), [findings/ammo-1151-vs-1163.md](findings/ammo-1151-vs-1163.md).
-  * 1.163 multiplies area damage x5 on bodies with an aircraft-logic pointer (aircraft and missiles) [code, not live-tested]: [findings/explosion-damage-1151-vs-1163.md](findings/explosion-damage-1151-vs-1163.md).
+  * Starts from the `Ammo` fields (`explosivePower`, `penetrativePower`, `apDrag`) and `BulletImpact__`: [findings/firing-and-shells.md](findings/combat/firing-and-shells.md), [findings/ammo-1151-vs-1163.md](findings/combat/ammo-1151-vs-1163.md).
+  * 1.163 multiplies area damage x5 on bodies with an aircraft-logic pointer (aircraft and missiles) [code, not live-tested]: [findings/explosion-damage-1151-vs-1163.md](findings/combat/explosion-damage-1151-vs-1163.md).
 * **[Mod Scope]** Acceleration and top-velocity modification for rockets (A220). *(partial: constants located, no mod)*
-  * Rocket speed lives partly in the `Ammo` record (`speed` 150) and partly in the guidance branch of `creatureLogic` (logic id 130); `FireShell` sets `logicF2 = 1.5`: [findings/firing-and-shells.md](findings/firing-and-shells.md).
+  * Rocket speed lives partly in the `Ammo` record (`speed` 150) and partly in the guidance branch of `creatureLogic` (logic id 130); `FireShell` sets `logicF2 = 1.5`: [findings/firing-and-shells.md](findings/combat/firing-and-shells.md).
 
 ### Content pipeline
 * Inject names/descriptions and part definitions at runtime instead of editing game files (removes the Python step and the update-overwrite problem).
@@ -78,7 +78,7 @@ Same status as above: wish list, partly started (see the markers). What exists t
 * `dec`/`enc` (C++ with build script) in the local dialog-source tree, another language-pack decoder; a `binwalk` binary in the local unpack tools.
 * Per-mod log files, the modloader 4.1.0 logging SDK (`setup.md`), and Ghidra with an MCP bridge.
 * `hf_probe` ([docs/mods/probe.md](mods/probe.md); log-only debug DLL, local, not a mod to ship): input and memory diff, `MODE`, `CLICK`/`TEXT`/`SOUND`/`LOAD` hooks, ammo dump, `MARK` hotkey (F9), HUD watch panel, and the 1.151/1.163 `BLAST`/`DMG` mode ([runs/probe-run-1.md](runs/probe-run-1.md), [runs/ui-events-and-screens.md](rendering/ui-events-and-screens.md)); `hf_draw_test` (throwaway draw test, debug only). Beyond these, work is mostly hand-edited text.
-Ordered by how much time each would save, not by effort. Tag: **[guess]** is an expected benefit (legend in `../README.md`); other claims are from problems we hit in practice.
+Ordered by how much time each would save, not by effort. Tag: **[guess]** is an expected benefit (legend in `README.md`); other claims are from problems we hit in practice.
 
 ### 1. `.seria` library and CLI (parse, query, patch, diff) *(partial: `apply_data.py` is only a generator)*
 * **Why (hit in practice):** `.seria` is picky (nested `header=number { }`, braces alone on a line, never indented, defaults omitted, repeated `attr=value` lines are arrays), so by-hand edits

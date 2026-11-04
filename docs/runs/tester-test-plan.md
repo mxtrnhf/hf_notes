@@ -1,6 +1,6 @@
 # Tester test plan for the ally pack (2026-10-16; kept as dated evidence, current pack v0.14.15)
 
-The list shipped in the pack's `README.txt` (a local release pack, not part of this repo). Items 4 and 8 are the ones with **no direct evidence in play yet** (an ally destroyed in battle with a replacement; prize-safe targeting after the v0.9.1 fix); control passing to an ally when the flagship is disabled has since been seen. What each test checks in the code is described in [../findings/battle-ally.md](../findings/battle-ally.md) and [ally-runs.md](ally-runs.md).
+The list shipped in the pack's `README.txt` (a local release pack, not part of this repo). Items 4 and 8 are the ones with **no direct evidence in play yet** (an ally destroyed in battle with a replacement; prize-safe targeting after the v0.9.1 fix); control passing to an ally when the flagship is disabled has since been seen. What each test checks in the code is described in [../findings/battle-ally.md](../findings/ships/battle-ally.md) and [ally-runs.md](ally-runs.md).
 
 ```
 TESTS WE WOULD LIKE YOU TO RUN  (all optional; tell us which ones you did)

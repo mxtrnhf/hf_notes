@@ -15,7 +15,7 @@ Date: 2026-10-29. This is the plan as written; current counts and remaining work
 | Coverage | **85.40%** |
 
 **Progress:** phases 0, 1 and 2 are done (2026-10-30) — see
-[../data/ghidra-changes-2026-10-30.md](../data/ghidra-changes-2026-10-30.md).
+[../data/ghidra-changes-2026-10-30.md](../ghidra/2026-10-30/ghidra-changes-2026-10-30.md).
 Classification produced 94 nameable / 457 needs-structures / 347 CRT-noise / 30
 ambiguous; the funclet walk closed 20 and renamed 17 owners (17 remain open);
 the five family agents added 137 names. The remaining tail is 59 `FUN_*` and
@@ -31,7 +31,7 @@ Remaining composition (agent estimates from batches 9–10):
 | Genuinely ambiguous / corrupt records | ~10% | no — record and close |
 
 The audit already holds per-address evidence:
-`docs/data/rep-audit-2026-10-29.tsv` (1,496 rows: 685 renamed, 811 stale) and
+`docs/ghidra/2026-10-29/rep-audit-2026-10-29.tsv` (1,496 rows: 685 renamed, 811 stale) and
 `q1..q4.tsv` (raw rows).
 
 ## Definition of done
@@ -55,7 +55,7 @@ number of families. Classify before naming.
    string refs, referenced vtables, element stride (from `New`/alloc size and
    index scaling), and the owning region.
 2. Cluster into families (same callee signature + stride + string cluster).
-3. Write `docs/data/unnamed-classification-2026-10-30.tsv` and a summary in
+3. Write `docs/ghidra/2026-10-30/unnamed-classification-2026-10-30.tsv` and a summary in
    `docs/findings/` with per-family counts and a verdict: `nameable`,
    `needs structures`, `CRT noise`, `ambiguous`.
 4. Pick the top 5 families by count × nameability for Phase 2.
@@ -103,9 +103,9 @@ accessor; otherwise classify and close.
 1. Rebuild `rep-audit-2026-10-29.tsv` from the q-files; refresh
    `rep-audit-2026-10-29.md`.
 2. **Remove the duplicated Batch-7 section** in
-   `docs/data/ghidra-changes-2026-10-29.md` (it appears twice, around the
+   `docs/ghidra/2026-10-29/ghidra-changes-2026-10-29.md` (it appears twice, around the
    batch-7 and batch-10 sections) and re-check the final counts paragraph.
-3. Update `structures.md`, `STATUS.md`, `README.md`.
+3. Update `structures.md`, `STATUS.md`, `docs/README.md`.
 4. Save the program, commit, push (user checks in Ghidra).
 
 ## Guardrails

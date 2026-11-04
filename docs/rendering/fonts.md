@@ -1,6 +1,6 @@
 # Fonts: what the game ships and how to draw with them
 
-Everything about the game's bitmap fonts: where they are defined, every font's metrics, what the editor uses, what they look like on screen, and how a mod draws text with them. Steam 1.163, image base `0x140000000`. Tags: legend in `../../README.md`.
+Everything about the game's bitmap fonts: where they are defined, every font's metrics, what the editor uses, what they look like on screen, and how a mod draws text with them. Steam 1.163, image base `0x140000000`. Tags: legend in `../README.md`.
 
 ## Where fonts are defined [code]
 * `Media/Fnt/fonts.res` declares **58 fonts**: `Font <name>`, then `{ filename=Media\Fnt\<name>.fnt }`. `media.res` includes `Media/Tex/Fnt1.res` and `Fnt2.res`; the glyph bitmaps live in the texture atlases, not as PNGs in `Media/Fnt`.

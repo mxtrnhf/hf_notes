@@ -1,6 +1,6 @@
 # File formats
 
-Tags: legend in `../README.md`.
+Tags: legend in `README.md`.
 
 ## `.seria` (parts, ships, saves, levels, config)
 * Nested nodes `header=number` + `{` ... `}`; braces alone on their own line; **never indent** (breaks the file). Defaults are omitted.
@@ -17,7 +17,7 @@ The game folder (`<game dir>`, for example the Steam `steamapps/common/HighFleet
 * Quick checks: `grep -n "m_oid=MDL_MISSILE_01" -A40 Libraries/OL.seria`, or load the file with a small script and compare the stats of two versions field by field (what the explosion finding did).
 
 ## Part libraries (`Libraries/`)
-* `OL.seria`: `m_stats` (class code 2051; the shipped file has 176 records, per the hot-reload study, [findings/hot-reload-feasibility.md](findings/hot-reload-feasibility.md)), one per part id `m_oid`: price, category, crew/power/ammo needs, weapon and missile stats
+* `OL.seria`: `m_stats` (class code 2051; the shipped file has 176 records, per the hot-reload study, [findings/hot-reload-feasibility.md](findings/engine/hot-reload-feasibility.md)), one per part id `m_oid`: price, category, crew/power/ammo needs, weapon and missile stats
   (`m_weapon_load_amount/time/rate/caliber`, `m_launched_speed/range`, `m_missile_explosive/ap`, ...; offsets in `structures.md`).
   Not stored in saves, so edits apply to a running campaign after restart. `m_category` is a bit field (table in `structures.md`).
 * `parts.seria`: Body prototypes `m_children=15`: `m_oid`, `m_id` (also in each slot's `m_master.id`: cloning needs every occurrence replaced),
@@ -73,7 +73,7 @@ Empty shells: `LVL_SCRIPT=SCR_*`, `LVL_HIGH/LOW` (arena size), `LVL_WIND_FORCE`,
 (missile defence), `Bombers` (air raid), `CraftsVsMissile`, `CraftsVsCrafts`, `Combat`, `Editor`, `EditorExtended`, `Dungeon`, `Builder`, `Title`, `Hall`, ...
 Arena size can be edited; new levels cannot be added, but a level file can be swapped under another name (e.g. `EditorExtended.seria` as `Editor.seria`: extended editor
 that places non-part sprites and ships) [guide].
-1.163 adds skirmish and PVP levels (`EditorSkirmish`, `PreselectSkirmish`, `PreselectSkirmishPVP`, `CombatSkirmish`, `CombatSkirmishPVP`, `City_generatedSkirmish`, with scripts `SCR_*_SKIRMISH*`, `SCR_ED_RUN`, `SCR_DUNGEON`, `SCR_EMPTY`, `SCR_START`, `SCR_TITLE`) and a separate save directory `SavesSkirmish/Profile_1..3`; the list above is for the campaign. Details: [version-differences.md](version-differences.md). The map code starts `Missile`, `Bombers`, `Combat` from the fleet update and `CraftsVsMissile`/`CraftsVsCrafts` from the map aircraft group update ([findings/map-air-groups.md](findings/map-air-groups.md)).
+1.163 adds skirmish and PVP levels (`EditorSkirmish`, `PreselectSkirmish`, `PreselectSkirmishPVP`, `CombatSkirmish`, `CombatSkirmishPVP`, `City_generatedSkirmish`, with scripts `SCR_*_SKIRMISH*`, `SCR_ED_RUN`, `SCR_DUNGEON`, `SCR_EMPTY`, `SCR_START`, `SCR_TITLE`) and a separate save directory `SavesSkirmish/Profile_1..3`; the list above is for the campaign. Details: [version-differences.md](version-differences.md). The map code starts `Missile`, `Bombers`, `Combat` from the fleet update and `CraftsVsMissile`/`CraftsVsCrafts` from the map aircraft group update ([findings/map-air-groups.md](findings/aircraft/map-air-groups.md)).
 
 ## `Config.ini`
 Keys and an extended list of optional ones: `ref/config-ini.md`.

@@ -1,6 +1,6 @@
 # Editor frame, input and the label-pass calls (1.163)
 
-What the editor's per-frame code looks like and which calls draw its labels. This is the reference behind the native elevation hint; how a mod draws text: [render-pipeline.md](render-pipeline.md), [fonts.md](fonts.md), [../mods/elevation.md](../mods/elevation.md). Tags: legend in `../../README.md`. Addresses are 1.163 (image base `0x140000000`, the unpacked exe).
+What the editor's per-frame code looks like and which calls draw its labels. This is the reference behind the native elevation hint; how a mod draws text: [render-pipeline.md](render-pipeline.md), [fonts.md](fonts.md), [../mods/elevation.md](../mods/elevation.md). Tags: legend in `../README.md`. Addresses are 1.163 (image base `0x140000000`, the unpacked exe).
 
 ## What is established [code]
 | Finding | Where |

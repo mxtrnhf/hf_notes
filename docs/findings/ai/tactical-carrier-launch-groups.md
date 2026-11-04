@@ -40,7 +40,7 @@ scripted-scenario byte `0x147fc6fdb` == 0, plus the carrier AI flag `+0xbd4` and
 alive state. Selector mapping is independently confirmed in
 `AircraftLogic_InitAndPickMode` (`0x14000ae90`): SCR_COMBAT = 4;
 bomber scenes = 2/3; aircraft-vs-* = 0/1. See
-[plane-combat-modes-and-gunpods.md](../plane-combat-modes-and-gunpods.md).
+[plane-combat-modes-and-gunpods.md](../aircraft/plane-combat-modes-and-gunpods.md).
 Player-controlled manual launch `PlayerLaunchPlane` (`0x14007a4c0`) is untouched.
 
 Group state is separate per carrier pointer and node id (`+0x18`). It never retains dereferenceable game pointers for callbacks. An extra hf_ally battle-id guard was removed in v0.14.3 together with the public telemetry cleanup.

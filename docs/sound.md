@@ -1,6 +1,6 @@
 # Playing a sound from a mod
 
-How a DLL mod makes the game play one of its own sounds (a radio line, an alarm, an effect). Confirmed in play with `hf_ally` v0.10.1 on Steam **1.163** (2026-10-17). All addresses are 1.163; the 1.151 addresses are **[not read]**. Tags: legend in [../README.md](../README.md).
+How a DLL mod makes the game play one of its own sounds (a radio line, an alarm, an effect). Confirmed in play with `hf_ally` v0.10.1 on Steam **1.163** (2026-10-17). All addresses are 1.163; the 1.151 addresses are **[not read]**. Tags: legend in [../README.md](README.md).
 
 ## Summary (all confirmed in play, 2026-10-17) [game]
 * A mod plays a game sound by calling `playSFXSound_` (`0x1402e30e0`) on the game thread; the volume pointer must hold 1.0.

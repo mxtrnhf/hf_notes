@@ -1,6 +1,6 @@
 # Ally probe run 1 (hf_ally v0.3.1)
 
-Evidence report, not reference. Date 2026-10-15, Steam 1.163 under Proton, campaign fights, `ally_mode = 0`, log `Highfleet_2026-10-15_19-05-48.log`. Tags: legend in `../../README.md`. Method: for the first 60 s of each battle (or until it ends) the mod writes one `ALLY probe ally` and one `ALLY probe enemy` line per game second (the enemy is the one nearest to the ally at that moment), and counts launches and shots every frame. Summary script: `highfleet-allies/ally/tools/probe_summary.py`.
+Evidence report, not reference. Date 2026-10-15, Steam 1.163 under Proton, campaign fights, `ally_mode = 0`, log `Highfleet_2026-10-15_19-05-48.log`. Tags: legend in `../README.md`. Method: for the first 60 s of each battle (or until it ends) the mod writes one `ALLY probe ally` and one `ALLY probe enemy` line per game second (the enemy is the one nearest to the ally at that moment), and counts launches and shots every frame. Summary script: `highfleet-allies/ally/tools/probe_summary.py`.
 
 ## Numbers [game]
 Three battles, 29, 39 and 42 probe seconds. All lines were in state 1 (attack) for both sides, mode 0 for both.
@@ -21,5 +21,5 @@ Three battles, 29, 39 and 42 probe seconds. All lines were in state 1 (attack) f
 ## Player observations from the same sessions [game]
 * Bombs were never dropped by the ally; the ship probably never got into a diving position (conditions not read).
 * An ally died from a **bomb explosion after taking enemy fire**, and its loss was counted on the end-of-battle screen: allies are full participants in the casualty accounting.
-* When the player's ship leaves, control passes to the ally and there is no way to retreat (see `../findings/battle-ally.md`).
+* When the player's ship leaves, control passes to the ally and there is no way to retreat (see `../findings/ships/battle-ally.md`).
 * Hypothesis from the player: the stock AI is tuned conservatively because bolder settings made ships ram the ground or fire too aggressively [guess, not tested].
