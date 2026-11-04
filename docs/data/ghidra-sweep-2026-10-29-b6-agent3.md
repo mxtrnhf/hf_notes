@@ -92,7 +92,7 @@ intrusive `Link` ring at `+0x30`; their read methods insert nodes and throw
 `std::_Xlength_error("list too long")` at the per-container sentinel
 (0x0aaa… for 24-bit nodes, 0x0666… for 40-byte nodes). The 7 renamed
 `*_ReadField`/`*_WriteField` pairs reduce the "unknown accessor" families
-(`hf_notes/docs/structures.md` audit item) to the concrete list above.
+(`docs/structures.md` audit item) to the concrete list above.
 
 ### Text-serialization separator
 `DAT_140352a14` is the separator written between property name and value; the

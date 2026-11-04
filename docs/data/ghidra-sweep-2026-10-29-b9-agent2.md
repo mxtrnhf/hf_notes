@@ -2,7 +2,7 @@
 
 Program `Highfleet.exe.unpacked.exe` v1.163, project `HighfleetServer`.
 Scope: the open funclets in `0x140340000–0x140347FFF` from the batch-8
-open-66 list (`/tmp/opencode/hf_ghidra_sweep/b8a3_open66_live.tsv`), owner-mapped
+open-66 list (`b8a3_open66_live.tsv`), owner-mapped
 in `docs/data/funclet-ownership-2026-10-29.tsv`.
 
 **Note on the count:** the batch-9 blackboard repeats "66 open funclets" for all

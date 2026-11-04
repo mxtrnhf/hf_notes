@@ -25,7 +25,7 @@ agents 3/7 plus batch 7's own 27.
 
 1. Enumerated the current `rep_*` set with an inline script (entry, body size,
    SHA-1 of the exact body bytes, current label, callee set, instruction
-   string references, callers) into `/tmp/opencode/hf_ghidra_sweep/b8a4_list.tsv`,
+   string references, callers) into `b8a4_list.tsv`,
    `b8a4_refs.tsv`, `b8a4_callers.tsv`, `b8a4_vtstore.tsv`.
 2. Rebuilt the RTTI reader for this binary: **the COL stores its
    `TypeDescriptor` / `ClassHierarchyDescriptor` pointers as 32-bit image
@@ -162,10 +162,10 @@ the callee signature.
 
 ## Output
 
-* Appended **410** rows to `hf_notes/docs/data/rep-audit-2026-10-29-q1.tsv`
+* Appended **410** rows to `docs/data/rep-audit-2026-10-29-q1.tsv`
   (`addr<TAB>old_label<TAB>verdict<TAB>new_name_or_identity<TAB>evidence`);
   the 1,006 batch-6/7 rows are untouched (file now 1,416 rows).
-* Working dumps: `/tmp/opencode/hf_ghidra_sweep/b8a4_list.tsv`,
+* Working dumps: `b8a4_list.tsv`,
   `b8a4_refs.tsv`, `b8a4_callers.tsv`, `b8a4_vtstore.tsv`,
   `b8a4_funcentries.txt`, `b8a4_exclude.txt`.
 

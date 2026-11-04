@@ -39,7 +39,7 @@ vtable-installation initialisers.
 
 ## Correction for agent 6's C-init map
 
-`/tmp/opencode/hf_ghidra_sweep/cinit_names.tsv` classifies **0x140004a40 and
+`cinit_names.tsv` classifies **0x140004a40 and
 0x140004a50 as `CInit_Atexit_*`**. They are not atexit calls: both thunks are
 
 ```

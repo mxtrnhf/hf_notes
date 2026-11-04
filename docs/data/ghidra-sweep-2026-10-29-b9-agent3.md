@@ -92,5 +92,5 @@ existing function. Posted on the blackboard before creating, per protocol.
 Same method as batch 8 agent 3 (`.pdata` owner/member + body proof + `sz=`
 cross-check), plus the vector/link consumers at the call sites to fix the
 element type for the three container helpers. The batch-7 pending pass
-(`/tmp/opencode/hf_ghidra_sweep/b7a1_pending.tsv` + `B7A1Pending.java`) is not
+(`b7a1_pending.tsv` + `B7A1Pending.java`) is not
 needed for this slice: every funclet with a proven owner is now named.

@@ -79,7 +79,7 @@ Decompiled at `0x14017e080`; quoted lines, my reading after each `[code]`:
 * `uVar2` is HGE's fixed-frame-time in ms (state `HGE_FPS`). `Init_HGE` `0x1401ad080` calls
   `SetStateInt` (`+0x50`) only with ids `0x18`, `0x11`, `0x12`, `0x13` — i.e. the
   screen-state ids, not an FPS id (`0x11/0x12/0x13` are width/height/bpp per
-  [engine-hge.md](../hf_notes/docs/engine-hge.md)) `[code, disasm 0x1401ad280..0x1401ad2ec]`.
+  [engine-hge.md](../../docs/engine-hge.md)) `[code, disasm 0x1401ad280..0x1401ad2ec]`.
   So `HGE+0xd70 == 0` at runtime is the strong reading `[guess]`; worth confirming with a
   one-line log. With it 0, the `break` and therefore the `Sleep(1)` at `0x14017e2aa` are
   never reached in normal play (`[guess]`, same premise).
@@ -303,7 +303,7 @@ Why this exact site and shape:
   starts with the same `RSP`. patchy's `build_call` (see `src/arch.rs`) pushes 7 registers
   and then emits `SUB RSP,8` (`ALIGN_STACK`) precisely for that assumption. At a *function
   entry* `RSP % 16 == 8` and the same code produces a misaligned call — the documented
-  `ACCESS_VIOLATION ...FA2514FB` crash in [sound.md](../hf_notes/docs/sound.md) `[notes]`.
+  `ACCESS_VIOLATION ...FA2514FB` crash in [sound.md](../../docs/sound.md) `[notes]`.
 * **No relative-call relocation.** With `save_overwritten = true` patchy copies the stolen
   bytes verbatim into its `mmap` trampoline; the stolen bytes here are themselves a `call
   rel32`, which would land in the wrong place after the copy. `patch_call(..., false, ...)`
@@ -366,7 +366,7 @@ was not checked); and the frame after the load sees a large wall dt (§2.4).
   `0x14017e3e5`) calls two game-side functions (`CALL 0x14024c0b0` at `0x14017e438`,
   `CALL 0x14025f810` at `0x14017e443`; bodies not read), and the `WM_KILLFOCUS` branch
   (`message 8`, at `0x14017e3a5`) calls into the object at `HGE+0x2e8`, which
-  [engine-hge.md](../hf_notes/docs/engine-hge.md) calls a renderer-like object `[code,
+  [engine-hge.md](../../docs/engine-hge.md) calls a renderer-like object `[code,
   notes]`. It is not a "game does nothing" moment.
   Worse, `MessageBoxA` is imported and called from five places (`0x14016cdec`,
   `0x140170d9f`, `0x140202df5`, `0x140089141`, `0x140085b1d`), each of which runs a nested
@@ -455,7 +455,7 @@ Verdict: **feasible with caveats**; the old DLL is never unloaded, which is the 
 
 * The game has no JSON code at all: an ASCII-`json` string search returns 0 matches in
   `Highfleet.exe.unpacked.exe` `[code]`. Only mods read `Modloader/config/*.json`
-  (e.g. `hf_qol_fork/src/lib.rs:42 let config = Config::load("Modloader/config/qol.json")`,
+  (e.g. `highfleet-allies/qol/src/lib.rs:42 let config = Config::load("Modloader/config/qol.json")`,
   parsed once with serde in `init`) `[code]`.
 * So this is a mod-side feature. Two classes of values, with different costs:
   * **Read at hook time from a `static`**: e.g. `zoom.rs` installs `set_zoom_level` /

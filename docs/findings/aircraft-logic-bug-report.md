@@ -87,8 +87,8 @@ Evidence: (a) [V] the else-branch is exactly "copy someone else's target link"; 
 * **Impact:** loses an unsaved battle; the risk grows with the number of aircraft created. The same defect could in principle (garbage exactly 500) corrupt memory instead of crashing; never observed.
 * **Gameplay side effect:** the "follow the other plane's target" branch is permanently dead; effect on play is probably tiny (planes still choose load-balanced targets).
 
-## 8. Candidate fix (NOT APPLIED; needs the user's OK and a mod/patch to carry it)
-Change **2 bytes** at `0x140010a53`-`0x140010a54`: `C4 03` -> `48 00`, so the instruction at `0x140010a51` becomes
+## 8. Fix (shipped in the bundled QoL as `fix_plane_ai_crash`, default on)
+The shipped fix changes **2 bytes** at `0x140010a53`-`0x140010a54`: `C4 03` -> `48 00`, so the instruction at `0x140010a51` becomes
 `41 81 BE 48 00 00 00 F4 01 00 00` = `CMP dword ptr [R14+0x48], 0x1F4` (compare the brain's own alive/state int, which is never 500).
 * **Side effects / equivalence:** the test becomes constantly "not 500", so `JNZ` always jumps to `0x140010a8c` = "choose own target", **which is exactly what the game does in practice today** (garbage not 500). It removes the out-of-bounds read (and the unreachable `[this+0xa20]` read). It does **not** restore the intended leader-follow behaviour.
 * **Rare case garbage == 500:** the original would enter the else-branch with garbage pointers (crash or corruption); the patched code always takes the safe "choose own target" path. So the patch is strictly safer and behaves identically in every case that works today.

@@ -3,7 +3,7 @@
 Status: **complete** (checked twice at the end).
 Program: `Highfleet.exe.unpacked.exe` v1.163, image base `0x140000000`, read-only Ghidra.
 Second source used for the loader (not the game): `Modloader.v4/bass.dll` import table and
-`hge_src/` (stock HGE 1.8 source), both local files.
+the stock HGE 1.8 source, both local files.
 Tags: `[code]` = read in this session at the cited address with a quoted line;
 `[guess]` = inference plus what would confirm it; `[notes]` = repo note or decompiler
 comment written earlier, not re-verified here; `[game]` = behaviour somebody observed in a
@@ -96,7 +96,7 @@ Its call sites (13, from xrefs `[code]`): `PrepareMainLoop`, `PreLoadLibraries_`
 loader `rep_1401a0a70_LoadSeriaFile`, `loadShipBackups?`, `loadSeriaForLibraries_`,
 `rep_140208020_LoadSeriaFile` (wrapper), `!ClickFunc` ×2, `Load`, and `reload_sg`. The ones
 that matter for data files are in §2. It is hooked (log-only) by `hf_probe` today
-(`hf_notes/docs/hooks.md`).
+(`../../docs/hooks.md`).
 
 ### 1.2 `ISerializable::SerializeToFile` — the one `.seria` writer
 
@@ -149,7 +149,7 @@ is fixed-purpose: logs, `Config.ini`, profile, volume.
 ### 1.4 HGE's file loader — media only
 
 `Resource_Load` is slot 18 (`0x140174850`), `Resource_Free` slot 19, `Resource_AttachPack` slot 20
-(`0x1401744e0`), `Resource_MakePath` slot 23 — addresses as in `hf_notes/docs/engine-hge.md`; in
+(`0x1401744e0`), `Resource_MakePath` slot 23 — addresses as in `../../docs/engine-hge.md`; in
 this program those functions are **not defined as functions** (`decompile_function` →
 "No function found"), so I read the raw instructions.
 
@@ -174,7 +174,7 @@ are therefore re-openable at any time; what is cached is the *parsed resource*, 
 
 `Resource_AttachPack` has **no call sites** — the only xrefs are the vtable slot
 (`0x140367390`) and a vtable copy (`0x1480801fc`) `[code]`. With no attached packs the pack
-list HGE searches (`hge_src/src/core/resource.cpp`, `while(resItem) ... unzOpen`) is empty, and
+list HGE searches (`src/core/resource.cpp` in the HGE source, `while(resItem) ... unzOpen`) is empty, and
 every `Resource_Load` goes to the disk loader. That is good news for mods: nothing on disk is
 shadowed by a zip.
 
@@ -238,7 +238,7 @@ Read of every data-file reader in this session unless marked otherwise.
 | `Config.ini` | `LoadConfig` `0x140224c60` | once, from `Main` `0x14027e976` | no (function re-callable, §4.5) |
 | `Config.ini` | HGE `Ini_GetString` `0x140173620` → `GetPrivateProfileStringA` | on each call (Win32 profile API reads the file) | per call, but callers are vtable calls I did not enumerate |
 | `Saves/Profile_N/profile.seria` | `Load` `0x140293f90` (`/profile.seria` built into a path) | when the `Profiles.seria` level is entered | functionally yes — loading a save is a level load |
-| `Modloader/config/*.json` | **our DLLs**, `std::fs::read_to_string` (`hf_qol_fork/src/config.rs:219`) | once in `init` | mod's own choice (§6) |
+| `Modloader/config/*.json` | **our DLLs**, `std::fs::read_to_string` (`highfleet-allies/qol/src/config.rs:219`) | once in `init` | mod's own choice (§6) |
 
 Nothing in that table is read from a memory-mapped file, and nothing is read ahead by a worker
 thread: all these readers run on the game thread (the only other threads are the modloader's
@@ -360,7 +360,7 @@ AssignRandomId(PARTS_CONSTRUCTOR_SERIA,1);
 So the same file is loaded into two different trees: `ALL_PARTS`/`LIB_EDITOR` once at startup,
 and `PARTS_CONSTRUCTOR_SERIA`/`EDITOR_LIBRARY` every time the editor setup runs. The second one
 is the one that can be refreshed at runtime for free, and the third-party Shipworks palette
-builds on it (`[notes]` `hf_notes/docs/formats.md`; not read here).
+builds on it (`[notes]` `../../docs/formats.md`; not read here).
 
 Callers of `loadSeriaForLibraries_`: `FUN_1400beea0` at `0x1400beff5` and `0x1400bf2ea`; the
 `SCR_*` dispatcher `SomethingWithLevelSerias` `0x1402ac970` calls `FUN_1400beea0` at
@@ -556,7 +556,7 @@ the loaded record is a fresh object.
 
 ### 4.8 `Media/*.res` and textures: registered once, no re-definition
 
-HGE's resource manager, from the stock source `hge_src/src/helpers/resources.cpp:324` `[code:
+HGE's resource manager, from the stock source `src/helpers/resources.cpp:324` in the HGE source `[code:
 local source, not Ghidra]`:
 
 ```c
@@ -593,7 +593,7 @@ the sane *installation* path (the HGE mechanism exists, the game just never uses
   `FindNextFileW`, `DisableThreadLibraryCalls` — and **not** `ReadDirectoryChangesW` `[code:
   objdump -p]`. Strings include `./Modloader/mods`, `./Modloader/config`, `Failed to find mods: `. 
   So the loader enumerates the mods folder once, `LoadLibrary`s each DLL, reads `logging.json` once,
-  and (per `hf_notes/docs/setup.md`) never unloads a mod (`mem::forget`).
+  and (per `../../docs/setup.md`) never unloads a mod (`mem::forget`).
 * Consequence for (a): "hot-swap a mod DLL" cannot be built on any game facility, and Windows
   will not let you `FreeLibrary` a DLL whose detours are live in the game's code pages. Any
   workable scheme is "load v2 next to v1, hand over patch ownership, leave v1 resident" (part C).
@@ -606,7 +606,7 @@ the sane *installation* path (the HGE mechanism exists, the game just never uses
 ## 6. Mod JSON configs: what the file layer shows
 
 The game never reads `Modloader/config/*.json`. Our DLLs read them with the CRT:
-`hf_qol_fork/src/config.rs:219` `[code: source]`
+`highfleet-allies/qol/src/config.rs:219` `[code: source]`
 
 ```rust
 pub fn load(path: &str) -> Result<Self, Box<dyn Error>> {
@@ -615,7 +615,7 @@ pub fn load(path: &str) -> Result<Self, Box<dyn Error>> {
 }
 ```
 
-called once from `init()` (`hf_qol_fork/src/lib.rs:42`), before patches are prepared. There is
+called once from `init()` (`highfleet-allies/qol/src/lib.rs:42`), before patches are prepared. There is
 no lock, no cache, no handle held between calls, and no format registration in the game. So
 re-reading the file while the game runs is trivial at the I/O level; whether the new values do
 anything depends on the mod: in the QoL fork most values are consumed at patch-preparation time,

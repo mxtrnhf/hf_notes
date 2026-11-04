@@ -1,6 +1,6 @@
 # Contact damage, part tear-off and the fire (heat) model (1.163)
 
-Status: **read in Ghidra 2026-10-20 [code]**; formulas not yet compared with a fire or ram in the logs. Source report with all addresses: `hf_ml/out/ds2-contact-fire/REPORT.md`. Tags: legend in `../../README.md`.
+Status: **read in Ghidra 2026-10-20 [code]**; formulas not yet compared with a fire or ram in the logs. Source report with all addresses: the local DeepSeek contact/fire report. Tags: legend in `../../README.md`.
 
 ## Contact (collision) damage
 * Handler `FUN_1402849a0(rec)` (callers `+0x2856c0` / `+0x2857ab` of the log): `rec+0x08` / `rec+0x20` = the two bodies, `rec+0x40` = raw impulse. The scale constant `__05` is the float `0.05` at `0x1403c0e10`, so impulse `I = rec[+0x40] / 0.05^4 = rec[+0x40] * 160000`, damage `d = I * 5e-6 = 0.8 * rec[+0x40]` [code]. Masses are not in the damage formula (only in the hit-sound volume); they act inside the physics solver that produced the impulse.

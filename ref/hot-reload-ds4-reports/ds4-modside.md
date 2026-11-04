@@ -7,14 +7,14 @@ cited by file:line and were read this session.
 Sources read:
 
 * `~/.cargo/git/checkouts/highfleet-modloader-9d58f70c80d6c7ea/9b64b34/` — Modloader v4.1.0 source
-  (per `hf_notes/docs/setup.md`), `src/{lib,loader,host_logging}.rs`,
+  (per `../../docs/setup.md`), `src/{lib,loader,host_logging}.rs`,
   `crates/highfleet-mod-api/src/logging.rs`.
 * `~/.cargo/git/checkouts/patchy-rs-4acddf7b6571a3b5/2d49f4b/` — `patchy-rs` tag v0.1.0,
   `src/{session,patch,trampoline,relative_jump}.rs`. **All four of our mods link this exact tag**
-  (`hf_ally/Cargo.toml:20`, `hf_ai/Cargo.toml:14`, `hf_probe/Cargo.toml:13`,
-  `hf_qol_fork/Cargo.toml`).
-* Mod sources: `hf_qol_fork/src/*` (2026-10-26 checkout), `hf_ally/src/lib.rs`, `hf_ai/src/lib.rs`.
-* Notes (leads only, verified where I say `[code]`): `hf_notes/docs/{hooks,setup}.md`,
+  (`highfleet-allies/ally/Cargo.toml`, `highfleet-allies/ai/Cargo.toml`, `hf_probe/Cargo.toml`,
+  `highfleet-allies/qol/Cargo.toml`).
+* Mod sources: `highfleet-allies/qol/src/*` (2026-10-26 checkout), `highfleet-allies/ally/src/lib.rs`, `highfleet-allies/ai/src/lib.rs`.
+* Notes (leads only, verified where I say `[code]`): `../../docs/{hooks,setup}.md`,
   `Modloader.v4/README.md`.
 
 Honesty tags: `[code]` = read in this session at the cited place (Ghidra address, or repo
@@ -328,22 +328,22 @@ update, `[notes, hooks.md:26]`), `0x140036bb5` (creatureLogic, `[notes, hooks.md
 
 ### 5.1 Today the file is read once
 
-`[code, hf_qol_fork/src/lib.rs:42-66]` `init()` calls `Config::load("Modloader/config/qol.json")`
+`[code, highfleet-allies/qol/src/lib.rs:42-66]` `init()` calls `Config::load("Modloader/config/qol.json")`
 exactly once, on the loader thread, then uses the values to decide *which patches to prepare* and to
 initialise statics. Nothing re-reads the file. `Config::load` / `save` are
 `fs::read_to_string` + serde `[code, config.rs:212-240]`, so reading again is trivial; the work is in
 what to do with the new values.
 
 Same picture elsewhere: hf_ally reads `Modloader/config/ally.json` once in `init`
-`[code, hf_ally/src/lib.rs:2052-2059]`, hf_ai reads `Modloader/config/hf_ai.json`
-(`CONFIG_PATH`, `lib.rs:53`) once `[code, hf_ai/src/lib.rs:396-403]`, and the loader's own
+`[code, highfleet-allies/ally/src/lib.rs:2052-2059]`, hf_ai reads `Modloader/config/hf_ai.json`
+(`CONFIG_PATH`, `lib.rs:53`) once `[code, highfleet-allies/ai/src/lib.rs:396-403]`, and the loader's own
 `logging.json` is a `OnceLock`
 `[code, host_logging.rs:149-157]` with the README explicitly saying changes apply next start
 `[notes, Modloader.v4/README.md:51]`.
 
 There *is* a runtime-file precedent in the repo: hf_ai reads `Modloader/current_battle.txt` at
 runtime and its doc comment describes the re-read semantics
-`[code, hf_ai/src/lib.rs:109-118]`. So "a file that is read while the game runs" is already an
+`[code, highfleet-allies/ai/src/lib.rs:109-118]`. So "a file that is read while the game runs" is already an
 accepted pattern here; what is missing is a *config* file with that treatment.
 
 ### 5.2 The three classes — this is the answer to (b)
@@ -358,8 +358,8 @@ bytes, no game code, no restart.
 | `zoom.min_zoom_level`, `max_zoom_level` | `static mut u32` | `set_zoom_level` hook, which also writes the two game globals | `[code, zoom.rs:3-19, 74-85]` |
 | `zoom.zoom_levels` | `static mut Vec<f32>` | `calc_zoom_value` per call | `[code, zoom.rs:5, 95-112]` |
 | `shop_parts` probabilities | `static mut Vec<CustomPart>` | shop generation hook | `[code, parts.rs:31, 85-165]` |
-| hf_ally: whole config | a dozen atomics + one `Mutex<String>` | at use | `[code, hf_ally/src/lib.rs:2071-2093]` |
-| hf_ai: `log_steering`, scan/log knobs | atomics | at use | `[code, hf_ai/src/lib.rs:413-416]` |
+| hf_ally: whole config | a dozen atomics + one `Mutex<String>` | at use | `[code, highfleet-allies/ally/src/lib.rs:2071-2093]` |
+| hf_ai: `log_steering`, scan/log knobs | atomics | at use | `[code, highfleet-allies/ai/src/lib.rs:413-416]` |
 
 Caveat for class L: `static mut` holding a `Vec` is a data race if the writer grows it while the
 game thread reads it (realloc frees the old buffer under the reader). Fix: keep the value in an
@@ -407,7 +407,7 @@ to hot-reload.
 1. Add `reload_config()` **inside** the mod (not a new export the loader would have to know about).
 2. Trigger: a 500 ms mtime poll on `Modloader/config/qol.json` from a worker thread. The mod already
    spawns worker threads (`elevation.rs:225-236`) and the crate's `windows-sys` features do **not**
-   include `Win32_Storage_FileSystem` `[code, hf_qol_fork/Cargo.toml]`, so `ReadDirectoryChangesW`
+   include `Win32_Storage_FileSystem` `[code, highfleet-allies/qol/Cargo.toml]`, so `ReadDirectoryChangesW`
    would mean adding a feature; polling needs only `std::fs`.
 3. Apply class-L values immediately (atomics). Log every changed key old -> new, once.
 4. For class-C keys: if the key changed, **refuse and log loudly**, unless the mod owns a complete

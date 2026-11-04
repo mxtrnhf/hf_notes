@@ -28,7 +28,7 @@ Routine: 1.151 `handleExplosionSFX?` `0x140028520`, 1.163 `FUN_140029b60` (calle
 * Other differences read in the area routine, not observed in play: 1.163 multiplies blast damage x5 on bodies with an aircraft-logic pointer (`+0xa20`, i.e. aircraft and missiles) and divides it by 5 on armored parts against a flagged low-explosive (<100) source. [code, not live-tested]
 
 ## Evidence from the logs [game]
-`hf_probe` 2.4 (`hf_probe_build/logs/`): `probe_v2.3_1.163_blast_run.log.gz` (1.163, first battle, hooks active), `probe_v2.4_1.151_first_battle.log.gz`, `probe_v2.4_1.151_kormoran_180mm.log.gz`, `probe_v2.4_1.163_kormoran_180mm.log.gz`. One `BLAST` line per explosion (fields above) and one `DMG` line per damage call from the explosion code (part name, damage, HP/max HP, caller).
+`hf_probe` 2.4 (the local probe run archive): `probe_v2.3_1.163_blast_run.log.gz` (1.163, first battle, hooks active), `probe_v2.4_1.151_first_battle.log.gz`, `probe_v2.4_1.151_kormoran_180mm.log.gz`, `probe_v2.4_1.163_kormoran_180mm.log.gz`. One `BLAST` line per explosion (fields above) and one `DMG` line per damage call from the explosion code (part name, damage, HP/max HP, caller).
 
 **A budget-15 chain, 1.163 (blast #280):** damage by part = 15, 15, 15, 13.5, 9.5, 5.5, 5.5, 5.5, 4.0, 4.0, 2.5. Fuel (30 HP) costs 1.5, legs (80 HP) cost 4, trusses cost 0: the sequence is exact.
 **A budget-15 chain, 1.151 (blast #24):** engine 15 (costs 5), three trusses 10 (free), ammo box 10 (costs 5), then 5, 5. First armored part hit: 30 (1.151) vs 60 (1.163).

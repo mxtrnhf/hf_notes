@@ -9,7 +9,7 @@ commit. Nothing outside `0x140337000–0x14034b77f` was modified (the
 `atexit`-destructor cluster above it was not touched, and no `rep_*` was
 touched).
 
-Output: `hf_notes/docs/data/funclet-ownership-2026-10-29.tsv` (926 rows,
+Output: `docs/data/funclet-ownership-2026-10-29.tsv` (926 rows,
 `funclet_addr → owner_addr → owner_name → member_offset → family → evidence`).
 
 ## The open question this pass closes

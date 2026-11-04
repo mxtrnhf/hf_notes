@@ -38,7 +38,7 @@ Two in-range `rep_*` were renamed by other agents **during** this pass
 `run_script_inline` listing: address, size, SHA-1 of the body bytes, embedded
 target class (entry / inside-function / outside / no-address), direct callees,
 referenced string literals, callers, data-xref count for all 349
-(`/tmp/opencode/b7a4_before.tsv`). Body hash index over all 5,155+ functions:
+(`b7a4_before.tsv`). Body hash index over all 5,155+ functions:
 no in-range `rep_*` has a byte-identical twin, confirming the b5/b6 result for
 this sub-range again. Then `decompile_function` on ~30 candidates (always
 ≤0x2000 bytes), plus targeted reads of vtable/dispatch/callers. A name was
@@ -47,11 +47,11 @@ role; otherwise the row keeps `stale label` with a sharper partial identity.
 
 ### Operational note for the batch
 
-The shared script bundle `/home/maksim/ghidra_scripts` was stuck in a permanent
+The shared script bundle the local Ghidra script bundle was stuck in a permanent
 compile-failure state ("hasn't changed, with 78 files failing") because several
 `McpInline_*`/`PlateAudit`/Python-in-`.java` sources were deleted from disk
 after failing once. **A subdirectory is its own bundle**: all of this pass ran
-from `/home/maksim/ghidra_scripts/b7a4/` (own build state, immune to the other
+from its `b7a4/` subdirectory (own build state, immune to the other
 agents' inline scripts). Recommended for any later batch.
 
 ## Renames (9)

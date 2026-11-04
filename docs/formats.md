@@ -9,11 +9,11 @@ Tags: legend in `../README.md`.
 * Serializer `FUN_14004f010`, Body field loader `FUN_140025240`.
 
 ## Check the game's own data files before guessing [guide]
-The game folder (`~/.local/share/Steam/steamapps/common/HighFleet/`) is ground truth for anything that is data and not code. Before reasoning from the decompilation or from probe logs, grep the `.seria` files there:
+The game folder (`<game dir>`, for example the Steam `steamapps/common/HighFleet` folder) is ground truth for anything that is data and not code. Before reasoning from the decompilation or from probe logs, grep the `.seria` files there:
 * `Libraries/OL.seria`: per-part **stats** (price, crew/power/ammo needs, armor, `m_missile_explosive`, `m_missile_ap`, `m_weapon_load_time`, ...). Example: the blast "strength" in the probe's `BLAST` lines is the missile's `m_missile_ap`, and the Zenith warhead (`MDL_MISSILE_01`) is `m_missile_explosive` 200 in 1.151 and 300 in 1.163, found by diffing the two files.
 * `Libraries/parts.seria`: **bodies** (`m_health`, `m_health_max`, density, mass, meshes) per `m_oid`.
 * `Data/Dialogs/*.seria_enc`: part names (`MDL_MISSILE_01` is "R-5 ZENITH"); decode with the cipher below. `Ships/*.seria` and saves: real ship layouts with part HP.
-* **The folder holds whichever version is installed.** Switching the Steam branch overwrites these files, so copy `Libraries/` (and `Data/Dialogs/`) to a versioned folder (for example `hf_notes/ref/game-data-1.151/`) while the other version is installed, then diff. The 1.151 `OL.seria` was seen once and not kept; the 1.163 copies are `~/Downloads/OL.seria`, `~/Downloads/parts.seria`, `hf_aa_missile/backup/*.orig`.
+* **The folder holds whichever version is installed.** Switching the Steam branch overwrites these files, so copy `Libraries/` (and `Data/Dialogs/`) to a versioned folder (for example a `game-data-1.151/` folder outside the repo) while the other version is installed, then diff. The 1.151 `OL.seria` was seen once and not kept; the 1.163 copies were kept from the installed game and a mod's `.orig` backups.
 * Quick checks: `grep -n "m_oid=MDL_MISSILE_01" -A40 Libraries/OL.seria`, or load the file with a small script and compare the stats of two versions field by field (what the explosion finding did).
 
 ## Part libraries (`Libraries/`)

@@ -1,7 +1,7 @@
 # Tactical AI carrier launch groups (Steam 1.163)
 
 Status: code and bytes checked against the live Ghidra program on 2026-10-30;
-implemented in hf_ai v0.10.3. In-game validation is reserved for the user.
+implemented in hf_ai v0.10.3 and still present in v0.10.13. In-game validation is reserved for the user.
 This is separate from strategic `TryLaunchAiAircraftGroup` at `0x1400ef910`.
 
 ## Stock tactical flow
@@ -43,9 +43,7 @@ bomber scenes = 2/3; aircraft-vs-* = 0/1. See
 [plane-combat-modes-and-gunpods.md](../plane-combat-modes-and-gunpods.md).
 Player-controlled manual launch `PlayerLaunchPlane` (`0x14007a4c0`) is untouched.
 
-Group state is separate per carrier pointer, node id (`+0x18`), and available
-hf_ally battle id. It never retains dereferenceable game pointers for callbacks.
-The battle id is only an extra identity guard, not a telemetry-enabled gate.
+Group state is separate per carrier pointer and node id (`+0x18`). It never retains dereferenceable game pointers for callbacks. An extra hf_ally battle-id guard was removed in v0.14.3 together with the public telemetry cleanup.
 Clock reversal, stale entries, failed stock attempts, and changed identities
 end the partial group. The table is capped at 256 entries. The ordinary stock
 six-second pause returns after the configured number of successful launches.
@@ -57,12 +55,12 @@ plane-group hooks. Top-level `plane_group_launch_delay_seconds`: default 0.5,
 clamped to 0.05..60 game seconds; non-finite values use 0.5. Restart to apply.
 These settings are independent of TWR, tactics, flare settings, and missile dumping.
 
-Six host regression tests cover group count, delay/frame compensation, stock
+Six host regression tests covered group count, delay/frame compensation, stock
 cadence with size 1, failed-attempt cancellation, clock resets/staleness,
-independent carriers, and invalid configuration. Windows tests are compile-only;
+independent carriers, and invalid configuration. Automated tests were removed in hf_ai v0.10.8, so these are historical; Windows builds are compile-only;
 no DLL or game is executed by the agent.
 
-User test recipe: HighFleet Steam 1.163, hf_ai v0.10.3, the two new defaults.
+User test recipe: HighFleet Steam 1.163, hf_ai v0.10.3 or newer (current v0.10.13), the two new defaults.
 Start Combat.seria against a carrier with at least three ready aircraft and a
 clear deck. Expect launches near t, t+0.5, t+1.0, then the stock six-second wait.
 Repeat with allied AI and multiple carriers; with only one/two ready planes;
@@ -75,7 +73,7 @@ Record logs/video and the exact JSON when reporting in-game results.
 
 Both source copies cross-built as v0.10.3 for x86_64-pc-windows-msvc.
 The release Windows test binaries compiled; they were not executed.
-All 74 host math tests passed (6 group, 3 TWR, 19 panic, 35 tactics, 11 curtain)
+All 74 host math tests passed at the time (6 group, 3 TWR, 19 panic, 35 tactics, 11 curtain); the suites were removed in v0.10.8
 from the release source in `highfleet-allies/ai`. New modules pass rustfmt;
 crate-wide formatting checks report existing formatting differences.
 

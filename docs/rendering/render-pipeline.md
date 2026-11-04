@@ -27,7 +27,7 @@ Question: where can a mod draw its own text (the elevation hints) so it looks na
 
 `IsInEditor` is `0x1403ef368`, the same editor-active flag the elevation mod polls. The call to `0x140300db0` is at **`0x140300d63`**, bytes `E8 48 00 00 00` (rel32).
 
-Both `0x140300db0` and `0x14030f250` call the **label pass `0x1400d4380`** (body `0x1400d4380`-`0x1400d6f63`, Ghidra `rep_1400cf430_VCRUNTIME140.DLL::memmove`; the number in a `rep_` name is the 1.151 address, see `setup.md`). So call it "the shipworks/editor label pass, also reached from the non-editor branch", not simply "the editor draw". `0x1400d6f70` (body to `0x1400da61c`) is a second label function called from it. The 38 KB `FUN_1400c7400` is the editor GUI **builder**, run once when the editor opens; it draws nothing.
+Both `0x140300db0` and `0x14030f250` call the **label pass `0x1400d4380`** (body `0x1400d4380`-`0x1400d6f63`, Ghidra `rep_1400cf430_VCRUNTIME140.DLL::memmove`; the number in a `rep_` name is the 1.151 address, see [../setup.md](../setup.md)). So call it "the shipworks/editor label pass, also reached from the non-editor branch", not simply "the editor draw". `0x1400d6f70` (body to `0x1400da61c`) is a second label function called from it. The 38 KB `FUN_1400c7400` is the editor GUI **builder**, run once when the editor opens; it draws nothing.
 
 Rest of `SomethingVideoTask` [code, shallow]: it drives shader parameters with `compareAndUpdateFloatArray_` on GUI objects (`DAT_143a139a8`, `DAT_143a13a20`, `DAT_143a139d0`, `DAT_143a13a58`), binds targets with `FUN_1400835a0`, renders sprites such as `DAT_14800ee20` with `FUN_1401725c0`, and scales to the window when `ScreenWidth`/`ScreenHeight` differ from `graphicsFrameWidth`/`graphicsFrameHeight`. [guess] The level is drawn to an internal target, post-processed through the shader objects, then composited to the backbuffer with letterboxing; not confirmed until the renderer callees are read.
 
@@ -70,9 +70,9 @@ Fonts defined in the game's `Media/Fnt/fonts.res` (**58 declared plus one undecl
 4. Seam: wrap the `E8 rel32` call at **`0x140303fb4`** (bytes `E8 C7 03 DD FF`, calls the label pass `0x1400d4380`) with a `patchy::Trampoline` (`absolute_call` the original, `preserved_call` ours, `relative_jump` to `0x140303fb9`). Never use `save_overwritten` on a rel32 call (patchy copies the bytes verbatim). Wrapping the call at `0x140300d63` instead draws nothing visible (below).
 
 ## Live test (debug DLL `hf_draw_test`)
-Crate `$HF_DEV/hf_draw_test` (local git, commit `45b477c`, no remote; built DLL in `hf_draw_test_build/Modloader/mods/`), Rust + `patchy::Trampoline`, installed by the user on the Steam 1.163 install next to `highfleet_qol.dll`. Per editor frame it draws four yellow lines with `dinpro_45_black`: font from `GetFont` `0x1401703e0` on `Media.res` `0x143a119e8` (that pointer is the resource manager and works), style via `0x1401a8710(name, 0.5, 2, 0xffffff00)`, text via `0x14016eb40 Render(font, x, y, align, text, null, null, 0, 0.0)`, then the style is restored from the saved `+0x100c`/`+0x1020`/`+0x1028`. Lines: `QOL TEST left (100,100)` align 0, `QOL TEST centre (960,540)` align 2, `QOL TEST right (1820,1000)` align 1, `frame N` at (100,200).
+Crate `hf_draw_test` (local git, commit `45b477c`, no remote; built DLL installed into the game's `Modloader/mods/`), Rust + `patchy::Trampoline`, installed by the user on the Steam 1.163 install next to `highfleet_qol.dll`. Per editor frame it draws four yellow lines with `dinpro_45_black`: font from `GetFont` `0x1401703e0` on `Media.res` `0x143a119e8` (that pointer is the resource manager and works), style via `0x1401a8710(name, 0.5, 2, 0xffffff00)`, text via `0x14016eb40 Render(font, x, y, align, text, null, null, 0, 0.0)`, then the style is restored from the saved `+0x100c`/`+0x1020`/`+0x1028`. Lines: `QOL TEST left (100,100)` align 0, `QOL TEST centre (960,540)` align 2, `QOL TEST right (1820,1000)` align 1, `frame N` at (100,200).
 
-**Hook at `0x140300d63`** (the call to the editor renderer `0x140300db0`; original call first, then ours). Screenshot `$HF_DEV/hf_draw_test_build/Screenshot_20261014_123328.png`.
+**Hook at `0x140300d63`** (the call to the editor renderer `0x140300db0`; original call first, then ours). Screenshot `Screenshot_20261014_123328.png`.
 * Log: `hook installed at 0x140300d63`, `first editor frame, font 0x1b93b780, scale 1, colour 0xff73604c, blend 2` [game]. The hook ran, the font was found and already carries the editor's own style (colour `0xff73604c`, blend 2).
 * **No test text visible** [game]. The QoL GDI overlay is visible top-left and reads `ELEVATION  U up  P down  Backslash auto` (the configurable keys work).
 * Likely reason [guess]: the editor labels are drawn into an offscreen target that is flushed and composited inside `0x140300db0`, so output issued after it returns is lost.
@@ -87,7 +87,7 @@ Crate `$HF_DEV/hf_draw_test` (local git, commit `45b477c`, no remote; built DLL 
 
 The whole bind, labels, flush block is skipped when byte `[0x1403bd09f]` is 0 (`JZ` at `0x140303f9d`). That byte has only **read** xrefs (`0x140303f96` in the editor renderer, `0x14030c673` in the campaign renderer `0x14030a6b0`, `0x1403124b8` in `0x14030f250`), no writer, and is 1 in the process dump together with its neighbours `0x1403bd098`..`0x1403bd0a3` (all 1) [code]. So it is a static "layer enabled" flag, not a UI-hide toggle, and the block runs in the editor every frame; the neighbouring flags are probably per-layer switches [guess].
 
-**Hook at `0x140303fb4`** (the call to the label pass; original call first, then ours). Screenshot `$HF_DEV/hf_draw_test_build/screenshot_working.png` (2560x1440, 16:9).
+**Hook at `0x140303fb4`** (the call to the label pass; original call first, then ours). Screenshot `screenshot_working.png` (2560x1440, 16:9).
 * Log: `hook installed at 0x140303fb4`, `first editor frame, font 0x1ae0c820, scale 1, colour 0xff73604c, blend 2` [game].
 * All markers visible and sharp, `frame N` counting (345 in the shot) [game].
 
@@ -122,7 +122,7 @@ Shipped in the QoL fork `elevation` branch ([../mods/elevation.md](../mods/eleva
 2. Log-only detour on `0x14016eb40` printing font, `x`, `y`, align and text for editor frames.
 
 ## Font decision [user decision]
-The hint uses `fixed_16`, white `0xffffffff`, scale 1.0, blend 2, right-aligned at x=1880, y=24; `dinpro_14_bold` (the editor's own font) was too bold and not pixel-like enough (screenshot `$HF_DEV/hf_draw_test_build/screenshot_working_2.png`). `fixed_16` was picked after a 20-font live sampler ([game], `screenshot_font_test.png` in the same folder). Every game font is ASCII only; see [fonts.md](fonts.md).
+The hint uses `fixed_16`, white `0xffffffff`, scale 1.0, blend 2, right-aligned at x=1880, y=24; `dinpro_14_bold` (the editor's own font) was too bold and not pixel-like enough (screenshot `screenshot_working_2.png`). `fixed_16` was picked after a 20-font live sampler ([game], `screenshot_font_test.png` in the same folder). Every game font is ASCII only; see [fonts.md](fonts.md).
 
 ## Map and battle renderers: flush sites, state bytes [code]
 Data only. The label-pass equivalents of the editor's bind, labels, flush pattern (`0x140303faf` / `fb4` / `fc2`) are not found for these renderers.

@@ -22,10 +22,10 @@ What the editor's per-frame code looks like and which calls draw its labels. Thi
 * The game has native help strings `HLP_EDITOR_01` / `_02` and a `_HINT` suffix string (`0x14036e1c8`, used in `setPlayerControls` and `FUN_1401dac00`) [guess: a hover-hint naming convention].
 
 ## Input [guess until checked]
-* HGE slots from 17 on are +8 in 1.163 (`engine-hge.md`), so `KeyDown` (1.151 slot 81) would be `+0x290` and `GetKeyState` `+0x2a0`.
+* HGE slots from 17 on are +8 in 1.163 ([../engine-hge.md](../engine-hge.md)), so `KeyDown` (1.151 slot 81) would be `+0x290` and `GetKeyState` `+0x2a0`.
 * Instruction search for `call qword ptr [reg+0x290]` over the whole program: **one hit**, `FUN_140019310` at `0x14001934a`, and it is a call through a **Body** vtable (`param_1`), not the HGE interface.
 * `call qword ptr [reg+0x2a0]`: `FUN_14011c880` at `0x14011c94e` and `FUN_14021b240` at `0x14021b3a0`; **not inspected yet**.
-* So no obvious direct HGE `KeyDown` use was found, and the slot arithmetic is unverified. The elevation mod itself polls the global `GetAsyncKeyState` on its own thread (`mods/elevation.md`).
+* So no obvious direct HGE `KeyDown` use was found, and the slot arithmetic is unverified. The elevation mod itself polls the global `GetAsyncKeyState` on its own thread ([../mods/elevation.md](../mods/elevation.md)).
 
 ## The label pass and its calls [code]
 The string `EDITOR_TOTAL_REPAIR_TIME` (`0x14035be20`, used at `0x1400d4c86`) is in the label pass `0x1400d4380` (body `0x1400d4380`-`0x1400d6f63`, Ghidra `rep_1400cf430_VCRUNTIME140.DLL::memmove`; the number in a `rep_` name is the 1.151 address), not in the 38 KB `FUN_1400c7400`, which is the editor GUI builder that runs once on entry and draws nothing. `FUN_1400d6f70` is a second label function called from the pass. See [render-pipeline.md](render-pipeline.md). The code around the string is:

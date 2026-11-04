@@ -1,6 +1,6 @@
 # The engine: HGE (Haaf's Game Engine)
 
-The game is built on **HGE 1.8** (open source; stock copy in `~/Development_Highfleet/hge_src`, GitHub masonm12/HGE, with core source, helpers, and the tools). The game's build is **modified** (64-bit, extra log lines,
+The game is built on **HGE 1.8** (open source; stock source at GitHub masonm12/HGE, with core source, helpers and the tools). The game's build is **modified** (64-bit, extra log lines,
 64-bit minizip) but keeps HGE's structure, which explains much of what we found by hand (`.res` scripts, `hge.log`, `.fnt`, `.psi`, BASS audio).
 
 ## Evidence [code, Ghidra on the dump]
@@ -62,7 +62,7 @@ Same order as the stock header, except one System_ method is missing between slo
 * Extra useful hook: `Resource_AttachPack` is slot 19 in 1.151 and **slot 20** in 1.163 (consistent with the table above).
 
 ## HGE helpers compiled into the exe [code]
-The helper classes of stock HGE are in the game, found by matching offsets and logic against `hge_src/src/helpers` (details and offsets: [rendering/render-pipeline.md](rendering/render-pipeline.md)):
+The helper classes of stock HGE are in the game, found by matching offsets and logic against the HGE source `src/helpers` (details and offsets: [rendering/render-pipeline.md](rendering/render-pipeline.md)):
 
 | Address | Stock counterpart |
 |---|---|

@@ -1,6 +1,6 @@
-# Tester test plan for the ally pack (2026-10-16)
+# Tester test plan for the ally pack (2026-10-16; kept as dated evidence, current pack v0.14.15)
 
-The list shipped in the pack's `README.txt` (`hf_release_pack/` in the workspace). Items 4, 7 and 8 are the ones with **no evidence in play yet** (an ally destroyed in battle with a replacement; control passing to an ally when the flagship is disabled is seen, but not a destroyed flagship; prize-safe targeting after the v0.9.1 fix). What each test checks in the code is described in [../findings/battle-ally.md](../findings/battle-ally.md) and [ally-runs.md](ally-runs.md).
+The list shipped in the pack's `README.txt` (a local release pack, not part of this repo). Items 4 and 8 are the ones with **no direct evidence in play yet** (an ally destroyed in battle with a replacement; prize-safe targeting after the v0.9.1 fix); control passing to an ally when the flagship is disabled has since been seen. What each test checks in the code is described in [../findings/battle-ally.md](../findings/battle-ally.md) and [ally-runs.md](ally-runs.md).
 
 ```
 TESTS WE WOULD LIKE YOU TO RUN  (all optional; tell us which ones you did)
@@ -27,8 +27,8 @@ TESTS WE WOULD LIKE YOU TO RUN  (all optional; tell us which ones you did)
      ship; kill the escorts yourself and the trade ship is captured. Send the log: look for
      "prize enemies" and "ALLY target:" lines. If an ally shot the prize, tell us.
   9. FLARES: let enemies fire missiles at an allied ship. Expect flares and dodging (also
-     for the ally). To compare, set "allies": false in qol.json and try once more.
- 10. BATTLE PLAN SCREEN: swap the order of your ships; the ally buttons should stay under the
+     for the ally). To compare, set "allies": false under "ai_flares" in hf_ai.json and try once more.
+ 10. BATTLE PLAN SCREEN: swap the order of your ships; the ally buttons should travel with their cards and settle under the
      numbers 2, 3, 4 ... (the on/off choice belongs to the number, not the ship). Send a
      screenshot if a button is missing, overlaps something or does not respond.
  11. AMMO SELECTOR: with ships that have an ammo choice (the round shell icon), check that the
@@ -46,7 +46,7 @@ TESTS WE WOULD LIKE YOU TO RUN  (all optional; tell us which ones you did)
 
 ## Added after the first tester crash reports (2026-10-16, v0.9.3)
 Reports: re-engaging a convoy crashed; ELINT plus missiles from a strike group crashed (without opening the battle screen); the ally choice is missing when a convoy is re-engaged; all sound is relative to the last spawned ship (an ally spawn moves the listener, NOT investigated: Ghidra was offline). Patched by static analysis only, **not run**: v0.9.3 arms the ally logic only for a battle entered through the pre-combat screen (log line `ALLY battle start ... armed / NOT armed`), the prize hook only touches ships the mod brought in, F8 needs a flying flagship (0.9.2), log caps reset per battle and the log is flushed at key lines.
-Note: the vanilla missile and plane defense battles already have allied AI ships (side > 0, AI flag set); the QoL `ai_flares.allies` option treats them like our allies and is NOT narrowed yet.
+Note: the vanilla missile and plane defense battles already have allied AI ships (side > 0, AI flag set); the hf_ai `ai_flares.allies` option treats them like our allies and is NOT narrowed yet.
 Checklist for the next round (each with `ai_flares.allies` true and then false):
 1. Re-engage a convoy after a retreat: expect `NOT armed`, vanilla play, no ally.
 2. Let a strike group fire missiles at the fleet with ELINT on, do not open the battle screen.

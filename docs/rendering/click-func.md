@@ -6,12 +6,12 @@ The function that decides what an accepted GUI click does. It is huge, and it is
 | | v1.151 | v1.163 |
 |---|---|---|
 | Entry | `0x1401261d0` | `0x14012f120` |
-| Ghidra name | `!ClickFunc` (a real name; the leading `!` is only how this database shows it) | `FUN_14012f120` (not renamed) |
+| Ghidra name | `!ClickFunc` (a real name; the leading `!` is only how this database shows it) | `!ClickFunc` (current name; old name `FUN_14012f120`) |
 | Body | `0x1401261d0`-`0x14013435f`, 0xE190 = 57,744 bytes | `0x14012f120`-`0x14013e45f`, 0xF33F = 62,271 bytes |
 | Only caller | `?HandleClick` at `0x140124300` | `?HandleClick` at `0x14012d050` |
 | String reference | "GL_CLICK_AND_CLOSE" (`0x1403383c8`) at `0x1401262ba` | "GL_CLICK_AND_CLOSE" (`0x140364618`) at `0x14012f207` |
 
-[game] in Ghidra, read-only. Same shape, same caller name and same string, so `FUN_14012f120` is the 1.163 version of `ClickFunc` [code, strong; matched by shape, not a byte-for-byte diff]. Suggested name for the 1.163 database: `ClickFunc`. Renaming is left to the user (the database is treated as read-only here).
+[game] in Ghidra, read-only. Same shape, same caller name and same string, so `FUN_14012f120` is the 1.163 version of `ClickFunc` [code, strong; matched by shape, not a byte-for-byte diff]. The 1.163 function is now named `!ClickFunc` in the database (see [click-func-analysis.md](click-func-analysis.md)).
 
 Size [observed, v1.163, read-only Ghidra script]: decompiling `FUN_14012f120` gives **8,589 lines** of C, **538,685 characters**, from a function body of 62,272 addresses. The user had heard "10,000+ lines"; Ghidra's line count depends on decompiler width settings, so this is the same order of magnitude. The decompiler needed its payload limit raised (default fails with "Response buffer size exceeded"); it took about 45 s with max payload 1000 MB.
 
@@ -56,14 +56,14 @@ Most-called callees (names in `?` are Ghidra database names, a [guess] about mea
 Interpretation [code, from the numbers above]: this is one huge chain of independent `if (name == "...")` style tests plus deeply nested logic, not a switch and not a table; it reaches its single return through gotos. A click walks the tests until its element name matches; the cost is negligible. The Ghidra names (Get_Profile?, copyIntoEscadraName?, diffArrayDivBy24, multElementsBy24) are guesses [guess], but they suggest the handler does fleet/profile work directly (shop, fleet naming, etc.), i.e. it contains game logic, not only UI dispatch. (Giant if-chain functions like this are common in other games too.)
 
 ## What the probe knows about it
-`hf_probe` hooks its entry (26 stolen bytes) and logs `CLICK` lines. Arguments: RCX = ctx, RDX = `gui*`, R8D = button, R9 = `[gui+0xa80]`. The GUI element name is at `gui+0xa40`, its class string at `+0x8`, the fx/distortion name at `+0xad8`. Verified detail is in [ui-events-and-screens.md](ui-events-and-screens.md); not copied here.
+`hf_probe` hooks its entry (26 stolen bytes) and logs `CLICK` lines. Arguments: RCX = ctx, RDX = `gui*`, R8D = button, XMM3 = `[gui+0xa80]` as a float (not R9; see [click-func-analysis.md](click-func-analysis.md)). The GUI element name is at `gui+0xa40`, its class string at `+0x8`, the fx/distortion name at `+0xad8`. Verified detail is in [ui-events-and-screens.md](ui-events-and-screens.md); not copied here.
 
 ## Element-name catalog
 The GUI element names that `ClickFunc` compares a clicked element against: 252 unique names from 256 compare calls, in [../data/clickfunc-elements.tsv](../data/clickfunc-elements.tsv) (columns: group by name prefix, address of the first test, name, number of `CLICK` lines that carried it, mod idea). It is a **lower bound**, not the full list of clickable elements.
 
 **Method [code]:** a read-only Ghidra script collected every call to `stringCompLengthAndContent` (`0x140004a70`) in `FUN_14012f120` and took the string literal found within 10 instructions before the call as the compared name. A literal is paired with the nearest preceding string reference, so a few pairings could be wrong; not hand-verified per entry [guess about accuracy]. Groups are by prefix, not by verified screen [guess]. Names tested twice or more carry `(xN)` in the table (`ED_SHPWRK_EXIT` x3, `KEY_SPACE` x2, `KEY_ESC` x2). One test at `0x140135d75` had no readable string nearby and is listed as `<none>`.
 
-**Numbers [game]:** 43 of the 252 names appear in the CLICK logs of the 4 probe runs (`hf_probe_build/logs/*/probe.log`) plus the current `probe.log`; 209 were never seen. The function also calls `FindGuiElement` x89, `memcmp` x42 and `FUN_140006d70` x185, so other elements are matched by other means (prefix compares or similar) [guess].
+**Numbers [game]:** 43 of the 252 names appear in the CLICK logs of the 4 probe runs (the probe run logs) plus the current `probe.log`; 209 were never seen. The function also calls `FindGuiElement` x89, `memcmp` x42 and `FUN_140006d70` x185, so other elements are matched by other means (prefix compares or similar) [guess].
 
 `EDC_TEST_LANDING` is listed under City / landing and `LOADGAME_SLOT` under Quit/save/load because of the prefix rules; both sit near the editor part of the function by address.
 
@@ -183,4 +183,4 @@ Interpretation [guess from names]: mission-planning fuel-load presets for a stri
 
 
 ## Update 2026-10-26
-The ClickFunc analysis workspace (`hf_ml/analysis/clickfunc/`) was reviewed and its verified parts applied to Ghidra: corrections to this page (the 4th argument is a float in XMM3, the element name is a `std::string`, the function does decompile, `HELLO_OMAR_1` is not an element) and the identified helpers are in [click-func-analysis.md](click-func-analysis.md).
+The local ClickFunc analysis workspace was reviewed and its verified parts applied to Ghidra: corrections to this page (the 4th argument is a float in XMM3, the element name is a `std::string`, the function does decompile, `HELLO_OMAR_1` is not an element) and the identified helpers are in [click-func-analysis.md](click-func-analysis.md).

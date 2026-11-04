@@ -238,7 +238,7 @@ created from the `RUNTIME_FUNCTION` extent (24–47 bytes here).
   vftable/string-backed type, that pair proves the owner↔funclet relation.
 * Once any of the 66 owners is renamed for another reason, its funclet can be
   completed mechanically by the batch-7 pending pass
-  (`/tmp/opencode/hf_ghidra_sweep/b7a1_pending.tsv` + `B7A1Pending.java`), which
+  (`b7a1_pending.tsv` + `B7A1Pending.java`), which
   re-reads the owner name at run time. The 5 no-object rows additionally need
   the function object created first.
 * Highest-value future targets, in order: `0x1400f6b70`

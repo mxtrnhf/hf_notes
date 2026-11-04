@@ -419,7 +419,7 @@ The last wave split the remainder into ten disjoint ranges (5–10 agents is the
 practical range; ten works when most ranges are compiler output). It named
 **~160 more functions** (153 renames + 7 created), raising the program from
 2,323 to 2,483 named. Per-agent notes:
-`hf_notes/docs/data/ghidra-sweep-2026-10-29-b5-agent1..10.md`.
+`docs/data/ghidra-sweep-2026-10-29-b5-agent1..10.md`.
 
 | agent | range | result |
 |---|---|---|
@@ -486,7 +486,7 @@ Program after the wave: **3,141 named functions, 333 `FUN_*`, 1,446 `rep_*`**
 (from 2,483 named, 822 `FUN_*`, 1,579 `rep_*` before it): 621 renames by the
 agents, 1 correction by the parent (`0x14016cd50` -> `Texture_Load`) and 36
 functions created. Per-agent notes:
-`hf_notes/docs/data/ghidra-sweep-2026-10-29-b6-agent1..10.md`.
+`docs/data/ghidra-sweep-2026-10-29-b6-agent1..10.md`.
 
 ### Results by agent
 
@@ -811,8 +811,7 @@ These are done and do not depend on the worker agents:
 * `data/rep-audit-2026-10-29.tsv` was rebuilt from `q1..q4` with `0x`
   normalisation, de-duplication by address (newest row wins, order q1 -> q4) and
   numeric sort. Snapshot after the batch-8 agent-7 append: **1,496 rows, 321
-  `renamed`, 1,174 `stale label`, 1 `unreadable`**. **TODO (parent):** re-run
-  the rebuild after agents 4–6 append and refresh both count tables.
+  `renamed`, 1,174 `stale label`, 1 `unreadable`**. *Superseded by the Batch 10 rebuild below (1,496 rows, 685 renamed, 811 stale); the snapshot above is the batch-8 intermediate.*
 * Added the batch-8 assignment table, the agent-7 result summary and this
   skeleton.
 

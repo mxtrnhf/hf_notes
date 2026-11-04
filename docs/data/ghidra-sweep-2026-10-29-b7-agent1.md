@@ -318,7 +318,7 @@ The 6 in the block `0x140336730–0x140336f50` (owners are 0x1400dfa70,
 | `0x140336f50` | `rep_1400163f10_..._invalid_parameter_noinfo_noreturn` | `0x50` | freeField |
 
 These will be named mechanically once the owners are renamed: the pending pass
-(`/tmp/opencode/hf_ghidra_sweep/b7a1_pending.tsv` + `B7A1Pending.java`) re-reads
+(`b7a1_pending.tsv` + `B7A1Pending.java`) re-reads
 the owner name at each run, so it can simply be re-executed.
 
 ### 6b. Edge cases (5) — recorded, not named

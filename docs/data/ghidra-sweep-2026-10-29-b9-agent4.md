@@ -22,7 +22,7 @@ No `save_program`, no tags, no README/STATUS edits, no commits, no
 ## Method
 
 1. Enumerated the live `rep_*` set with an inline script into
-   `/tmp/opencode/hf_ghidra_sweep/b9a4_shapes.tsv` (entry, body size, exact
+   `b9a4_shapes.tsv` (entry, body size, exact
    body SHA-1, a **masked shape hash**, strings) and `b9a4_info.tsv`
    (vtable class, string literals, data symbols, callees, callers).
 2. Shape hash = SHA-1 over mnemonic + operand kinds, with all 64-bit
@@ -172,11 +172,11 @@ any, the first string literals, up to two callers and the callee signature.
 
 ## Output
 
-* Appended **394** rows to `hf_notes/docs/data/rep-audit-2026-10-29-q1.tsv`
+* Appended **394** rows to `docs/data/rep-audit-2026-10-29-q1.tsv`
   (384 audited + 5 delta rows for the two agent-7 renames and the three
   `vector<0x38>` emplace overloads, + 5 CORRECTION rows that supersede the
   placeholder SHA-1 values in the first delta block). Existing rows untouched.
-* Working dumps: `/tmp/opencode/hf_ghidra_sweep/b9a4_shapes.tsv`,
+* Working dumps: `b9a4_shapes.tsv`,
   `b9a4_info.tsv`, `b9a4_vtables.tsv`, `b9a4_final.txt`, `b9a4_rem.json`.
 
 ## Counts

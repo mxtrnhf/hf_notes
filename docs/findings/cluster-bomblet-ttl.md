@@ -26,9 +26,9 @@ Reading: the first call (condition `EBX` is a missile-type switch; the code befo
 So scaling the sixth argument **inside `FUN_140032fb0`** (one place) still covers both calls.
 
 ## Open [not read]
-* What `XMM10` holds here. It is callee-saved and `creatureLogic` blocks do not run in address order, so the absence of a writer in the low addresses proves nothing. Candidates: `0x14003b658` (`MOVSS XMM10,[RBX+0x68]` then `MULSS` by `[0x140354810]`), and constant loads at `0x14003fd76`, `0x140040f27`, `0x140042053`, `0x14004232e`, `0x140043753`. Not decided. Only matters for the second call; the first uses the literal `0.3`.
+* What `XMM10` holds here. It is callee-saved and `creatureLogic` blocks do not run in address order, so the absence of a writer in the low addresses proves nothing. Candidates: `0x14003b658` (`MOVSS XMM10,[RBX+0x68]` then `MULSS` by `[0x140354810]`), and constant loads at `0x14003fd76`, `0x140040f27`, `0x140042053`, `0x14004232e`, `0x140043753`. Resolved in the 2026-10-26 update below: `XMM10` is the constant 1.0 f loaded at `0x140036276`; only the second call uses it, the first uses the literal `0.3`.
 * Whether mine bomblets use this same call site (there is no other caller, so they should).
-* Which projectile logic id reaches this branch (cluster missile vs mine); the TTL may differ per ammo.
+* Which projectile logic id reaches this branch (cluster missile vs mine) is answered in the 2026-10-26 table below: logic 160 and 150, and missile body ids 1/3/4; the TTL is a fixed per-call constant.
 
 ## Live-test recipe
 Breakpoints `0x140036886` and `0x140036c68` (the two calls). Read the sixth argument at `[rsp+0x28]` (float) and `R8D` (bomblet count) at each. Fire a cluster missile and trigger a mine; if both reach this address the TTL values show directly. To test the patch idea, scale the float at `[rsp+0x28]` before the call and watch the bomblets live longer or shorter.

@@ -18,14 +18,14 @@ Present in 1.151 as a named function; **not matched** by the fuzzy tool, **locat
 * **Finale:** `BASRA`'s record is cleared; then, **"Start the nuclear war"** (logdot's comment): if `Profile.escalation == 0` it shows `THE_BEGINNING` / `NUCLEAR_WAR`, plays `dram_hit_01`, and sets
   `escalation = max(escalation, 1)`; finally **`Profile.endWar = true`**. This is what `GetPartPrice` (version-differences.md, stats record) checks, so after this function runs, part prices become 0.
 
-* **Lead for the Khiva crash/loop bug: superseded.** The first write to each of the four quadrant lists is **unguarded**, in both versions; the 1.163 counterpart `FUN_140261a20` is located. Cause, patch recipe and confirmation: [the Khiva crash section below](the Khiva crash section below).
+* **Lead for the Khiva crash/loop bug: superseded.** The first write to each of the four quadrant lists is **unguarded**, in both versions; the 1.163 counterpart `FUN_140261a20` is located. Cause, patch recipe and confirmation: [the Khiva crash section below](#the-khiva-end-game-crash-unguarded-list-writes-1163-probable-cause).
 
 ## Other differences between the 1.151 and 1.163 versions of the function [code]
-The phase structure, the `100.0/200.0/300.0` strike strengths (`hardMode`), the `2000`-`4000` search ring, the `700` exclusion and the `Tarantul` split (66%) are unchanged. 1.163 adds `CopyEscadraName` calls with a state flag set through bit marks (`local_234 |= 1/2/4`, unused locals as far as seen). The Ghidra names `escalation`/`enigmaKey10` at offsets 660/744 come from the stale 1.151 `Profile` struct: at the shifted layout they line up with 1.151 `escalation`/`endWar`; the two names are not resolved.
+The phase structure, the `100.0/200.0/300.0` strike strengths (`hardMode`), the `2000`-`4000` search ring, the `700` exclusion and the `Tarantul` split (66%) are unchanged. 1.163 adds `CopyEscadraName` calls with a state flag set through bit marks (`local_234 |= 1/2/4`, unused locals as far as seen). The Ghidra names `escalation`/`enigmaKey10` at offsets 660/744 come from the stale 1.151 `Profile` struct: at the shifted layout they line up with 1.151 `escalation`/`endWar`; the two names are resolved in the 2026-10-26 update below (`endWar` at `+0x2e9`, `escalation` at `+0x2ec`).
 
 ## The Khiva end-game crash: unguarded list writes (1.163, probable cause)
 
-Status: **probable cause found in the code; not reproduced in game; no patch applied.** Tags: legend in `../../README.md`.
+Status: **cause confirmed from the code (see the 2026-10-26 update below); not reproduced in game; no patch applied.** Tags: legend in `../../README.md`.
 Addresses are 1.163 (image base `0x140000000`, the unpacked exe) unless marked 1.151. Origin: roadmap bug "capturing all cities around Khiva before the end-game event causes a crash loop / infinite loading".
 
 ### Short answer
@@ -80,4 +80,4 @@ Moved from the retired `systems.md` (2026-10-19).
 * **The four sorts are inlined**, not calls to `MergeSortObjectListByScratchKeyDescending` as the 1.151 decompile suggested.
 
 **The crash, confirmed.** The four writes are the 84 bytes `0x140262226`-`0x140262279` (four 21-byte blocks `mov rax,[rbp-N]; mov rax,[rax]; mov rax,[rax+0x10]; mov dword [rax+0x19c],2`, bytes read). The four list heads are circular lists made with `New(0x18)`; `New` is `malloc` with no zeroing, so an empty list's sentinel has `next` and `prev` set but a garbage payload at `+0x10`. An **empty quadrant** (no city with state != 0 and no side>0 fleet within 700) therefore writes `+0x19c` through garbage. This is not a list overflow and the base is not always null. Because the gate stays open (`endWar` is only set at the end), the crash repeats on every map tick, and a save made before it crashes again on load (crash loop; "capture every city of a quadrant" as the trigger is still a guess: no code stores 0 into a city's `+0x19c`).
-**Guard (not applied):** a per-list `cmp rdx,rax; je` needs 104 bytes and only 84 exist, so use a 5-byte `E9` at `0x140262226` into a code cave that does the four guarded writes and jumps back to `0x14026227a` (registers RAX/RDX are dead there). The empty quadrant then simply gets no strike group; the campaign still ends. Full cave bytes and the rejected alternatives: `hf_ml/out/ds3-endgame/REPORT.md` section 4.
+**Guard (not applied):** a per-list `cmp rdx,rax; je` needs 104 bytes and only 84 exist, so use a 5-byte `E9` at `0x140262226` into a code cave that does the four guarded writes and jumps back to `0x14026227a` (registers RAX/RDX are dead there). The empty quadrant then simply gets no strike group; the campaign still ends. Full cave bytes and the rejected alternatives: the local `ds3-endgame` report section 4.

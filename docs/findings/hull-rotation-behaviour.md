@@ -9,7 +9,7 @@ Written 2026-10-21 from telemetry of Lightning variants (Shipworks test flights)
 * **What it is not.** Not Box2D (step, solver, damping 0.05 are stock), not antennas, not contacts, not joint motors, not hull air drag, not the AI attitude hold (a separate system on the AI list), not an editor-only effect.
 * **Who gets it.** The player ship and AI ships alike (the same case runs on the enemy ship's engines).
 * **Geometry facts this needed.** The Frame body origin is the Frame node's position in the design file, not the file's coordinate origin (checked on 17 ships of 10 designs: COM offset, mass and inertia equal the logged values). Landing legs sit folded at their joint limits in flight (section 7c). The two MDL_EVAC parts are also free bodies (section 7b).
-* **Open.** Why the response to the Frame's angular impulse after the joint solver shares it is best matched by about 0.75 of the whole body set's inertia and not by a single value across designs; behaviour on other ship classes, arcade and campaign; what zeroes the per-tick bank sums.
+* **Open.** Why the response to the Frame's angular impulse after the joint solver shares it is best matched by about 0.75 of the whole body set's inertia and not by a single value across designs; behaviour on other ship classes, arcade and campaign.
 
 ## 1. What you see in the game
 
@@ -100,7 +100,7 @@ Idle-bank statistics on the player's active ticks: four swivels 8.5%, two static
 ## 6. AI ships get it too [data]
 The probe's calls from the enemy ship (gate 2e7, `m_at` 1e7 per call, I = 1.0e8 to 1.2e8) follow the same formula to five digits. AI ships therefore have this stabiliser on top of the steering attitude hold in `AiShip_SteerController`; any analysis of AI hull motion has to include both.
 
-## 7. Open
+## 7. Open (the Frame body origin below is resolved)
 * **Frame body origin** [resolved]: `I` uses the offset of the COM from the Frame body's origin. That origin is the Frame node's position in the design file (the bridge sits at the node's local (0, 0)), not the file's coordinate origin. With it, the COM offset computed from the part data is 0.335 / 0.327 / 0.350 / 0.335 m for the four Lightning variants against 0.334 / 0.327 / 0.350 / 0.335 m logged. The node's position is a non-zero point in the shared coordinates (for example (-3.63, 3.15) game units for the stock design); measuring from the coordinate origin instead gives 0.45 to 0.51 m on two of the designs and wrong gains. Checked on ten other designs from earlier battles (Archangel, Negev, Nimrod, Gladiator, Fearsome, Sarma, Flower, Navarin, Slogger, Courageous; 17 ships): the COM offset, Frame mass and inertia about the COM computed from the design with this origin equal the game's logged Frame values exactly; from the file's coordinate origin the offsets are wrong by 0.13 to 1.46 m.
 * **Ship classes beyond Lightning**, and campaign or arcade battles. All flights were Lightning variants in Shipworks test flights. A thrust-scaling rule in `Engine_ApplyThrustForce` (factor `f(X)` gated to editor and test flights, see `static-engine-force-path.md`) was not needed for the rotation but may matter for linear motion.
 * **How the solver redistributes the impulse** to engines, legs and guns that sit on their own joints in the steps after the Frame's jump. A model that lets the whole welded assembly absorb the impulse reproduces 14 flights; a sweep of that share from 0 to 1.3 has a flat optimum at 0.85 to 1.0. A direct measurement was too confounded by engine force. Not proven.

@@ -1,6 +1,6 @@
 # Enemy AI and combat: what the 2026-10-23 logs confirm (simulator session, v1.163)
 
-Written by the simulator session from measurements on battle logs (`.hftm`), tools in `hf_ml/sim` (commits in `hf_ml`, see handover `hf_ml/handover/sim-enemy-combat-handover-2026-10-23.md`).
+Written by the simulator session from measurements on battle logs (`.hftm`), tools in the local simulator repo (handover `sim-enemy-combat-handover-2026-10-23.md`, not in this repo).
 Tags: **[log]** measured on logs, **[code]** from the Ghidra notes by ghidra-curator and agreeing with the logs, **[model]** a simulator choice that reproduces the logs but is not read from the code.
 Sessions: AI ships 1792760120, 1792771275, 1792772114, 1792773413/500/595 (hf_ai 0.7-0.8 steer/scan logs); combat 1792777340 (five ships) and 1792777398 (hf_ally sim.52 hit log).
 
@@ -23,7 +23,7 @@ Checked per tick against the hook EA rows of the AI engines (command angle + str
 ## 3. Shells  [log]
 * Plain shells (logic 100): straight line, no gravity, no aerodynamic drag (ammo ap_drag 0), **only Box2D linear damping 0.05 /s** (996/1100 = exp(-0.05 * 2.0)); lifetime = ammo ttl. 110 timed-out shells (1792612053): end position error median 19 u = one frame of flight at 1000 u/s (107 u without the damping).
 * 226 of 365 shells ended by a hit: 138 end within about 11 u of another ship's part polygon, 69 of the other 88 within 40 u of the ground polyline; timed-out shells end about 1000 u from everything.
-* Ammo table: probe live dump parsed (`hf_ml/data/ammo_dump_1.163.txt`): 37 mm speed 1000 ttl 2.0 expl 0.30, 57 mm 700 / 3.0 / 2.0, 100 mm 700 / 4.0 / 14, 130 mm 700 / 7.0 / 20, 180 mm 700 / 30 / 82, 203 mm 10 s / 118, 305 mm 400; AP rounds speed 1500 ttl 1.0 expl 1.0 pen 16-34 drag 0.0007; rockets 130 speed 150 ttl 10.
+* Ammo table: probe live dump parsed (the local `ammo_dump_1.163.txt`): 37 mm speed 1000 ttl 2.0 expl 0.30, 57 mm 700 / 3.0 / 2.0, 100 mm 700 / 4.0 / 14, 130 mm 700 / 7.0 / 20, 180 mm 700 / 30 / 82, 203 mm 10 s / 118, 305 mm 400; AP rounds speed 1500 ttl 1.0 expl 1.0 pen 16-34 drag 0.0007; rockets 130 speed 150 ttl 10.
 
 ## 4. Contacts and blasts (hit log sim.52, 104 + 25 shell contacts, 179 blasts)  [log]
 * Shell arming threshold `arm` (+0x38c) = 25 * shell mass exactly (all 129 armed projectiles). Every contact with I = raw * 160000 > arm detonated in the same step (104 of 104 and 24 of 25).

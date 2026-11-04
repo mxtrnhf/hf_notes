@@ -5,7 +5,7 @@
 A modloader DLL that **only reads** the game and writes what it sees to `Modloader/probe.log`. It never patches game logic (the entry hooks are log-only; the HUD and seam test draw text). It exists to answer "what does the game do when I do X" for the notes; every finding that cites a probe run is under `findings/`. Source: `hf_probe` (crate `hf-probe`, local git, no remote; the header comment of `src/lib.rs` is the full version history). Never ship it together with QoL: it hooks the same editor label site (`0x140303fb4`) as the elevation hint, see [../hooks.md](../hooks.md).
 
 ## Install and run
-* Build: `cargo xwin build --release` in `hf_probe` (target `x86_64-pc-windows-msvc`). Release DLLs carry the version in the file name and are archived in `hf_probe_build/versions/` (`hf_probe_v2.4.dll`); copy one into `Modloader/mods/` and **remove older probe DLLs** from there.
+* Build: `cargo xwin build --release` in `hf_probe` (target `x86_64-pc-windows-msvc`). Release DLLs carry the version in the file name (current build `hf_probe_v3.5.1.dll`); copy one into `Modloader/mods/` and **remove older probe DLLs** from there.
 * Config: `Modloader/config/probe.json` (all keys optional; defaults below). Log: `Modloader/probe.log`, **created fresh at every game start** (the writer is not in append mode: truncating the file while the game runs leaves a run of NUL bytes at the start; `tr -d '\0'` strips them). Archive a log before the next launch.
 * Games: `Steam 1.163` runs everything. `Steam 1.151` (probe 2.4) runs **only the BLAST/DMG hooks** at 1.151 addresses; the rest of the probe uses 1.163 addresses and stays off there. Other versions: the probe refuses to start.
 * The first lines of a log are `HOOK <name> installed at ...` or `HOOK <name> skipped: bytes at ... are not the expected ones`. A `skipped` hook means the game bytes differ (another version or another mod hooked the site); nothing was patched.
@@ -41,4 +41,4 @@ A modloader DLL that **only reads** the game and writes what it sees to `Modload
 GUI click handler `0x14012f120`, text lookup `0x1401ae090`, sound `0x1402e30e0`, .seria loader `0x140225930`, explosion routine `0x140029b60`, Body damage `0x1400519d0`, editor label pass `0x140303fb4` (HUD), plus the seam sites listed in the seam-test finding. 1.151: explosion routine `0x140028520`, Body damage `0x14004f540`. The ownership table, with which site each shipping mod uses, is [../hooks.md](../hooks.md).
 
 ## Logs
-Archived runs are in `hf_probe_build/logs/` (v2.0, v2.2, and the 1.151/1.163 damage runs as `.log.gz`).
+Archived runs are in the local probe run archive (v2.0, v2.2, and the 1.151/1.163 damage runs as `.log.gz`).

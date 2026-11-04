@@ -2,7 +2,7 @@
 
 Status: read in Ghidra 2026-10-21 [code] unless marked. Program `Highfleet.exe.unpacked.exe` 1.163. Companion: [blast-and-penetration.md](blast-and-penetration.md), [firing-and-shells.md](firing-and-shells.md). Ammo index to gun: [ammo-1151-vs-1163.md](ammo-1151-vs-1163.md).
 
-Program `Highfleet.exe.unpacked.exe` (1.163). Tags: **[code]** read by me today in decompile; **[agent]** from the DeepSeek report `hf_ml/out/ds-gunaim/REPORT.md`, not re-read; **[guess]**.
+Program `Highfleet.exe.unpacked.exe` (1.163). Tags: **[code]** read by me today in decompile; **[agent]** from the DeepSeek report the local DeepSeek gun-aim report, not re-read; **[guess]**.
 
 ## 1. How a gun turns (NOT instant)  [code]
 * The gun barrel is a part on a **revolute joint with a motor**; it is steered by the same servo as the engine swivel: message id 200 `{200, angle}` -> dispatcher `0x1400533f0` -> handler `0x140053870` (not renamed yet; it is a servo update, not an "atan2f").
@@ -40,7 +40,7 @@ Fields (gun part): `+0x860` loaded rounds (float), `+0x858` reserve rounds (int)
 * `DAT_147fc6fe0` reload-pause conditions (`FUN_1402213e0`, `FUN_14021ccb0`).
 * Player-side aim sender (who pushes the player's `+0xbb4` into `{200, angle}`): not found; likely through a vtable.
 * (Answered, section 7: yes.)
-* Gun part 2: section 7 (done 2026-10-21); still open there: the per-ammo shell size/density constants in `FireShell`, the AI trigger decision.
+* Gun part 2: section 7 (done 2026-10-21; the per-ammo shell size/density constants are tabulated there); still open: the AI trigger decision.
 
 ## 7. Part 2 (2026-10-21): shell velocity, recoil, flight, how a shell hit becomes damage [code]
 **Initial velocity and recoil** (`Body::BulletImpact__` `0x140052a80`, helper `0x140051e20` = `Body_SetLinearVelocity(body, vx, vy)`, which writes `+0x130/+0x134` and `b2 v = 0.05 * v`):
@@ -65,7 +65,7 @@ Fields (gun part): `+0x860` loaded rounds (float), `+0x858` reserve rounds (int)
 * So the damage of a plain explosive shell on a ship = contact damage `0.8 * impulse` to the part touched (armour threshold Stats `+0xc4` for direct hits) **plus** the area blast from the shell's death (shadow-cast model in blast-and-penetration.md); AP shells (explosive 1.0, radius 1) do their damage through the contact plus the penetration chain.
 
 **SUPERSEDED (2026-10-21 later, 2026-10-23 index)**: the detonation trigger IS established, see shell-detonation-paths.md (arming after 20/|v| s, then contact impulse x 160000 > 25 x mass). The text below is kept as history.
-**Still open here**: what actually triggers a plain shell's detonation (above), the armour-threshold gate for shell-vs-armour direct hits in `Body_ApplyDamage` (`param_3` and Stats `+0xc4` per part), the AI trigger decision in `AiWeaponController` (range / lead gates beyond the 0.025 rad aim error), the ship parts' `+0x1f0`.
+**Still open here**: the armour-threshold gate for shell-vs-armour direct hits in `Body_ApplyDamage` (`param_3` and Stats `+0xc4` per part), the AI trigger decision in `AiWeaponController` (range / lead gates beyond the 0.025 rad aim error), the ship parts' `+0x1f0`.
 
 ### Shell body constants per ammo index (`FireShell` 1.163, read in full 2026-10-21) [code]
 `CreateShell?(body, ..., size A, density rho, n)`: a regular `n`-gon inscribed in an ellipse with half-extents `0.5 * A` x `0.5 * A` (xDir and param_5 are the same number A for the cannon shells), `n = 3` (a **triangle**) for all cannon shells; mass (Box2D, then `/0.05^3`) is `min(w,h) * rho * area`; for a triangle `min(w,h) = 1.5 r`, `area = 1.299 r^2`, `r = A/2`, so `m = 1.949 * rho * r^3`. `BulletImpact__` arguments in the same call: speed factor 1.0, hp 1.0, spread 0.05 (ammo 5, 10, 15) or 0.02 (others).

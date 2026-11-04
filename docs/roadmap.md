@@ -23,8 +23,8 @@ Item names (Zenith, A220, Pytor, Khiva) are the game's own. Category tags: Bug, 
   * Probable cause found in the code (four unguarded list-head writes, same code in 1.151), with a patch recipe: [end-game.md](findings/end-game.md#the-khiva-end-game-crash-unguarded-list-writes-1163-probable-cause). Not reproduced in game.
 
 ### New features
-* **[Feature]** Cruise-missile barrage mechanic (for example salvos of 4 simultaneous incoming cruise missiles). *(partial: old_standalone/hf_salvo)*
-  * Partly done by old_standalone/hf_salvo: `map_launch_delay` lets a volley leave together (AI fleets too) and `group_missiles` merges a salvo into one fight (3-4 missiles verified [game]): [mods/salvo.md](mods/salvo.md). The AI's per-target salvo caps are untouched.
+* **[Feature]** Cruise-missile barrage mechanic (for example salvos of 4 simultaneous incoming cruise missiles). *(partial: the standalone salvo mod)*
+  * Partly done by the standalone salvo mod: `map_launch_delay` lets a volley leave together (AI fleets too) and `group_missiles` merges a salvo into one fight (3-4 missiles verified [game]): [mods/salvo.md](mods/salvo.md). The AI's per-target salvo caps are untouched.
 * **[Feature, missing]** A functional crew-requirement system. *(partial: research only)*
   * The per-ship totals already exist (`+0x17ec` present, `+0x17f0` capacity, `+0x17f4` needed); what consumes them was not looked for: [findings/sensors-and-crew.md](findings/sensors-and-crew.md).
 * **[Feature / Mod Scope]** The missile drum `m_oid=MDL_MISSILE_DRUM_01`: see how it works, figure out multi-charge for it, and restore the cut content. *(open: only noted so far)*
@@ -75,7 +75,7 @@ Same status as above: wish list, partly started (see the markers). What exists t
 * `apply_data.py` (identical copies in the multicharge and multimissile repos): creates variants of parts by cloning stats into `OL.seria`, body prototypes into `parts.seria`,
   text into the language packs and entries into `Shipworks.json`. Idempotent, makes a `.bak` once, supports `--dry-run`. It is a generator for one specific job (charge-level
   variants), not a general editor, but it holds working code for reading and appending `.seria` blocks.
-* `dec`/`enc` (C++ with build script) in `hf_dialog_src`, another language-pack decoder; a `binwalk` binary in `hf_mods_unpack/tools/bin`.
+* `dec`/`enc` (C++ with build script) in the local dialog-source tree, another language-pack decoder; a `binwalk` binary in the local unpack tools.
 * Per-mod log files, the modloader 4.1.0 logging SDK (`setup.md`), and Ghidra with an MCP bridge.
 * `hf_probe` ([docs/mods/probe.md](mods/probe.md); log-only debug DLL, local, not a mod to ship): input and memory diff, `MODE`, `CLICK`/`TEXT`/`SOUND`/`LOAD` hooks, ammo dump, `MARK` hotkey (F9), HUD watch panel, and the 1.151/1.163 `BLAST`/`DMG` mode ([runs/probe-run-1.md](runs/probe-run-1.md), [runs/ui-events-and-screens.md](rendering/ui-events-and-screens.md)); `hf_draw_test` (throwaway draw test, debug only). Beyond these, work is mostly hand-edited text.
 Ordered by how much time each would save, not by effort. Tag: **[guess]** is an expected benefit (legend in `../README.md`); other claims are from problems we hit in practice.
@@ -128,7 +128,7 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
   (the MapCraft size was wrong for a while).
 * Game-file fingerprint (hash of `Libraries/`, `Data/`, exe) stored with each report, so a bug report says which build it came from.
 
-### 6. Ghidra side (for the sync work between versions) *(partial: 1.151 function names and data labels ported to 1.163 on 2026-10-15, see setup.md; 340 signatures ported too; types and structs not done)*
+### 6. Ghidra side (for the sync work between versions) *(partial: 1.151 function names and data labels ported to 1.163 on 2026-10-15, see setup.md; 339 signatures ported too; types and structs not done)*
 * Export names, signatures and structs of a program to text in this repo (and import them back), so annotations live in git and can be reviewed. Complements Version Tracking
   for carrying 1.151 work to 1.163 and gives the second person a diffable view of changes.
 * A checked-in list of named functions with address, and a script to flag the ones whose bytes differ between builds.
@@ -143,15 +143,15 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
 3. Crash capture and the direct-to-scenario launcher (3): unblocks the crash bugs and combat testing in the roadmap. (Partly served by `hf_probe`; crash capture and the launcher are still open.)
 4. The rest as the work needs it.
 
-### AI: allied bombers, friendly AI tactics (requested 2026-10-18; no work started)
+### AI: allied bombers, friendly AI tactics (requested 2026-10-18; allied bombers shipped as `ally_bombers` in hf_ally v0.14.3)
 * **Allied bombers** are very requested by the user's testers. Data to start from: Navarin sessions ([runs/ai-intrepid-benchmark.md](runs/ai-intrepid-benchmark.md)): bombs only on **landed** enemy ships (`mode` 3), released from 210-1490 u altitude at 140-250 u/s without boost, 1.2-13.8 s fall; landed enemies shoot back. Open: bomb release is not visible in the telemetry (the control byte clears within a frame), no altitude / landed / target-class columns.
-* **Friendly AI** (evade vs last stand, retreat decisions) cannot be a pure state machine; it needs more play data, ideally from testers (telemetry build).
+* **Friendly AI** (evade vs last stand, retreat decisions) cannot be a pure state machine; it needs more play data, ideally from testers (local telemetry build).
 
 ### AI: tactics ideas (undated wish list; the current queue is in [../STATUS.md](../STATUS.md))
 * **Dive + overpass**: the user meant enemies that themselves make dive or overpass passes against the player; they added it may be unnecessary because deny-the-dive already triggers for a target both below and above. Parked until numbers on the share of time the player spends over the enemy and the damage from above versus below say otherwise.
 * **Armored-sides ships hold height and range** (user idea, Intrepid-like): stay level with the target, deny the dive from underneath, keep distance because point-blank salvos are easy to aim.
 * **React earlier to fast ships**: scale `dive_dwell_s` / `dive_range` with the target's speed.
-* **Allied bombers + bomb telemetry**: the telemetry (hf_ally f2) logs only the bomb control byte; it has no bomb inventory, release counter or altitude. Telemetry upgrade first, then a bombing-run state.
+* **Allied bombers**: the bombing-run state is implemented as `ally_bombers` in hf_ally v0.14.3; the old telemetry-first plan is obsolete for this feature. Historical background: the sim-era telemetry logged only the bomb control byte, with no bomb inventory, release counter or altitude.
 * **Break-off and friendly AI** need user decisions (and tester data) before any code.
 * **Strafe in the band** is unproven (it did not show in play; `strafe_enabled` is false).
 
@@ -160,4 +160,4 @@ Ordered by how much time each would save, not by effort. Tag: **[guess]** is an 
 * Where it helps: observe-only hooks (the probe) can share one patched address through a callback list. Where it cannot: two mods that both OVERRIDE the same value (hf_ai's steering waypoint vs qol's evasion) still need one owner; the host can only refuse the second claim loudly.
 * Costs to weigh: load-order dependency for every mod, one more file for testers, a C-style interface (Rust has no stable ABI across DLLs).
 * Today's collision map (Argon's read, hand-check pending): hf_ai vs qol share three AI addresses (hf_ai sorts first and wins); hf_probe vs hf_ally/hf_voice (sound, click, input task, battle seams) only when probe hooks are on; hf_probe vs hf_draw_test vs qol at the editor label call.
-* Until then each mod keeps its own logging. Probe v3.0.0 (read-only default, game clock on every line, panic guard) is the first step.
+* Until then each mod keeps its own logging. Probe v3.5.1 (read-only default, game clock on every line, panic guard) is the first step.

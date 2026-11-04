@@ -109,7 +109,7 @@ Bodies are real, labels are provably unrelated, but no unique name is proven:
   would create near-duplicate names, which the batch rules forbid.
 * **HGE/shader layer** `0x140070000–0x1400B0000` (the `CS*`/`Texture*`
   destructor families not covered above). Their vtables are recorded in
-  `/tmp/opencode/vtables.tsv` for a later pass.
+  `vtables.tsv` for a later pass.
 * **Game logic** `0x1400B0000–0x140100000` (UI panels, radio text, list
   helpers). Several read/write offsets whose role is not established
   (`+0x94`, `+0x2cc`, `+0x9ac`, `+0x818/+0x820`), so naming would be guessing.
@@ -122,10 +122,10 @@ agent 1's excluded range was renamed here.
 
 ## Output
 
-* TSV: `hf_notes/docs/data/rep-audit-2026-10-29-q1.tsv`
+* TSV: `docs/data/rep-audit-2026-10-29-q1.tsv`
   `addr<TAB>old_label<TAB>verdict<TAB>new_name_or_identity<TAB>evidence`
-* Rename/plate reference dump used for the audit: `/tmp/opencode/rep_base.tsv`,
-  vtable/RTTI map: `/tmp/opencode/vtables.tsv`.
+* Rename/plate reference dump used for the audit: `rep_base.tsv`,
+  vtable/RTTI map: `vtables.tsv`.
 
 ## Counts
 

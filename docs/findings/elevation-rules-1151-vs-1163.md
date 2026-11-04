@@ -1,6 +1,6 @@
 # Elevation rules, gun-arc blocking and KAZ angles: 1.151 vs 1.163
 
-Question from testers (2026-10-26): "port the 1.151 elevation logic into 1.163: engines and guns don't block gun arcs; the KAZ (Palash) angle checks are not as strict." Two DeepSeek agents read both builds (reports `~/Development_Highfleet/elevation_port/a-blocking/REPORT.md` and `b-kaz-angles/REPORT.md`, ~650 and ~720 lines). Claude re-read the key bytes below. Everything else is **[agent]**.
+Question from testers (2026-10-26): "port the 1.151 elevation logic into 1.163: engines and guns don't block gun arcs; the KAZ (Palash) angle checks are not as strict." Two DeepSeek agents read both builds (reports local elevation-port agent reports (`a-blocking`, `b-kaz-angles`, not in this repo), ~650 and ~720 lines). Claude re-read the key bytes below. Everything else is **[agent]**.
 
 "Elevation" here is the part floor `m_floor`: 1.163 `Body+0x9b8` (type `+0x9b0`), 1.151 `Body+0x980` (type `+0x978`). **[code]** 1.151 `Deserealize` writes the save key `m_floor_type` to `[RSI+0x978]` (`0x140024679`) and `m_floor` to `[RSI+0x980]` (`0x1400246bf`). So the shift is **+0x38**, not +0x30 as `version-differences.md` had it (fixed there).
 

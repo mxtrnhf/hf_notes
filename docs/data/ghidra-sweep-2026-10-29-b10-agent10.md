@@ -14,7 +14,7 @@ Baseline at the start of the wave: **5,422 function objects, 4,350 named
 | `docs/data/rep-audit-2026-10-29.tsv` | rebuilt from `q1..q4` with `0x` normalisation, de-duplication by address (newest row wins, order q1 -> q4), numeric sort and the header row restored. |
 | `docs/data/rep-audit-2026-10-29.md` | header now says rebuilt in batches 7, 8, 9 and 10; added the batch-10 rebuild snapshot paragraph. |
 | `docs/data/ghidra-changes-2026-10-29.md` | added the **Batch 10** skeleton section (assignment table, worker-results TODO, documentation results, counts TODO). |
-| `/tmp/opencode/hf_ghidra_sweep/blackboard_b10.md` (outside the repo) | appended the `DONE agent10` status line. |
+| `blackboard_b10.md` (outside the repo) | appended the `DONE agent10` status line. |
 
 ## Audit rebuild snapshot
 
@@ -36,7 +36,7 @@ re-run in place (append-only q-files, later row wins).
 ## Live program checks (read-only)
 
 * `switch_program` confirmed `Highfleet.exe.unpacked.exe v1.163`
-  (`D:/Games/Highfleet/Highfleet v1.163/Highfleet.exe.unpacked.exe`, base
+  (`<game dir>/Highfleet.exe.unpacked.exe`, base
   `0x140000000`). Never switched to the 1.151 program.
 * `list_functions` at ~15:40 still reported 5,422 rows: 4,349 named, 94
   `FUN_*`, 979 `rep_*` (one extra `FUN_*` fragment vs the 93 baseline).

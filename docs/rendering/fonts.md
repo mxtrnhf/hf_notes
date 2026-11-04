@@ -90,7 +90,7 @@ The editor label pass (`0x1400d4380`) asks `0x1401a8710` for these fonts, all at
 | `dinpro_80_black` | `0x0cffffff` | `0x1400d6f70`: the big faint `DOCK A` background text ([game]: visible in screenshots) |
 
 ## What they look like (live sampler) [game]
-2026-10-14: the debug DLL `hf_draw_test` (`$HF_DEV/hf_draw_test`, commit `0383a69`, local git) drew one line per font, right-aligned at x=1900 (1920x1080 frame), y = 90 + 40 i, white `0xffffffff`, scale 1.0, blend 2, text `<fontname>   ELEVATION  U up  P down  holding: ITEM_GUN_30  floor=2 (manual)`. Screenshot (2560x1440): `$HF_DEV/hf_draw_test_build/screenshot_font_test.png`. 20 fonts were sampled; the other 38 are **visual: pending** (a second sampler, all remaining fonts normalised to about 24 px height through `fHeight`, is being built). The first elevation hint (bold `dinpro_14_bold`) is in `$HF_DEV/hf_draw_test_build/screenshot_working_2.png`, next to the lighter DIN-style stats panel.
+2026-10-14: the debug DLL `hf_draw_test` (`hf_draw_test`, commit `0383a69`, local git) drew one line per font, right-aligned at x=1900 (1920x1080 frame), y = 90 + 40 i, white `0xffffffff`, scale 1.0, blend 2, text `<fontname>   ELEVATION  U up  P down  holding: ITEM_GUN_30  floor=2 (manual)`. Screenshot (2560x1440): `screenshot_font_test.png`. 20 fonts were sampled; the other 38 are **visual: pending** (a second sampler, all remaining fonts normalised to about 24 px height through `fHeight`, is being built). The first elevation hint (bold `dinpro_14_bold`) is in `screenshot_working_2.png`, next to the lighter DIN-style stats panel.
 
 | Font | Look | Used by the editor |
 |---|---|---|
@@ -159,7 +159,7 @@ The editor label pass (`0x1400d4380`) asks `0x1401a8710` for these fonts, all at
 |---|---|
 | Small readable UI text | `dinpro_14_reg`, `dinpro_14_med`, `fixed_16`, `vcr_14` |
 | Bold emphasis | `dinpro_14_bold`, `sourcepro_14_bold`, `impact_18` |
-| Pixel / terminal look | `fixed_16` (chosen for the elevation hint), `vcr_12/14/16` (`vcr_12` at scale 1.5, white: the `hf_ally` pre-combat "PLAYER" label [game], same `StyleFn` + `Render` recipe as the elevation hint), `flash_small` (tiny, caps only) |
+| Pixel / terminal look | `fixed_16` (chosen for the elevation hint), `vcr_12/14/16` (`vcr_12` at scale 1.5, white, was the `hf_ally` pre-combat "PLAYER" label in older builds; current builds use `flash_large_shadow` at scale 1.0, same `StyleFn` + `Render` recipe as the elevation hint), `flash_small` (tiny, caps only) |
 | Digits only (counters, readouts) | `nixies_30`, `radio_20`, `dinpro_200_black` |
 
 ## How a mod draws text [code, proven by the elevation hint [game]]
@@ -172,13 +172,13 @@ The editor label pass (`0x1400d4380`) asks `0x1401a8710` for these fonts, all at
 ### Recipe that matches the game's own yellow labels [game, hf_ally rel.19 to rel.23, user-confirmed "looks GOOD"]
 Use this to make mod text indistinguishable from the pre-combat ammo picker label ("ФУГАСНЫЙ" and the like), whose text markup is `{font=flash_large_shadow}{color=4293514025}{align=2}` (`findings/carrier-plane-loadouts.md` section 15):
 * **Font** `flash_large_shadow` (the drop shadow is baked into the glyphs: do **not** draw a second, black copy; that made it look doubled).
-* **Colour** `0xFFE9D329` (ARGB, yellow-gold; decimal 4293514025). The `0xFFE0E0DB` grey-white is what the "PLAYER" label used before.
+* **Colour** `0xFFE9D329` (ARGB, yellow-gold; decimal 4293514025). The `0xFFE0E0DB` grey-white is still the "PLAYER" label's colour.
 * **Scale 1.0, blend 2.** Do not scale: a bitmap font scaled to 0.75 looked blurry. If you want smaller text, pick a smaller font, but note that `vcr_12` looked ragged next to this one.
 * **Whole pixels.** Round `x` and `y` before `Render` (`(960.0 + gui_x).round()`): text at a fractional position is resampled and looks soft. This was the last thing between "rough" and "clean".
 * **Align** 0 (left edge at `x`) for a label beside a button, 2 (centred on `x`) for text above one. Mistaking 2 for left put the text under the button.
 * **Vertical position**: `y` is the top of the line; for text centred on a button at GUI height `by` use `540 + by - 8` with this font.
-* **Where to draw**: the pre-combat render seam (see `precombat-screen.md`, B24), after the game's own labels, and only while the screen is live (hide the text when the doors/covers are closed). Save and restore the font's scale, colour and blend (`+0x100c`, `+0x1020`, `+0x1028`) around the call, because fonts are shared.
-* **Working code**: `hf_ally_release/src/lib.rs`, `draw_plane_labels` and `draw_marker_text` (constants `LABEL_FONT`, `LABEL_COLOR`, `MARKER_FONT`).
+* **Where to draw**: the pre-combat render seam (see `precombat-screen.md`, B23 by default; B24 runs only in the glitch pass), after the game's own labels, and only while the screen is live (hide the text when the doors/covers are closed). Save and restore the font's scale, colour and blend (`+0x100c`, `+0x1020`, `+0x1028`) around the call, because fonts are shared.
+* **Working code**: `highfleet-allies/ally/src/lib.rs`, `draw_plane_labels` and `draw_marker_text` (constants `LABEL_FONT`, `LABEL_COLOR`, `MARKER_FONT`).
 
 ## Unknowns
 * What draws the stats panel (Cyrillic) text, and with which font.

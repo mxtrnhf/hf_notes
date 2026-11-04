@@ -23,8 +23,8 @@ Append only; no prior row rewritten.
 ## Method
 
 Fresh listing script `B10A5List` dumped all 5,424 function names to
-`/tmp/opencode/b10a5_names.txt` and the 195 in-scope `rep_*` to
-`/tmp/opencode/b10a5_list.tsv` (address, body size, label, direct callees,
+`b10a5_names.txt` and the 195 in-scope `rep_*` to
+`b10a5_list.tsv` (address, body size, label, direct callees,
 string literals, callers, data-xref count).
 
 Bodies were read with `batch_decompile` (≤10 per call). All reads were

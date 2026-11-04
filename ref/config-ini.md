@@ -6,7 +6,7 @@ against the game). Keys of `Config.ini` in the game folder. Write them as `KEY=v
 ## Nightfall event
 | Key | Meaning |
 |---|---|
-| `GAME COUNTDOWN` | days until nightfall (INT32) |
+| `GAME_COUNTDOWN` | days until nightfall (INT32) |
 
 ## Fly-mode background colors
 All values are UINT32 ARGB. The digit is the time of day: **0 night, 1 morning, 2 noon, 3 evening**.

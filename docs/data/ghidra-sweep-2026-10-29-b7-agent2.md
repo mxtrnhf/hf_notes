@@ -19,7 +19,7 @@ No `save_program`, no tags, no README/STATUS edits, no commits, no
 
 1. Enumerated every `rep_*` in range with a script (address, body size,
    SHA-1 of exact body bytes, embedded address parsed from the label, callee
-   set, referenced string literals) into `/tmp/opencode/hf_ghidra_sweep/b7a2_list.tsv`.
+   set, referenced string literals) into `b7a2_list.tsv`.
 2. Re-ran the byte-identical-twin test against all non-`rep_*` functions
    **after** batch 6's 448 funclet renames: **0 of 492** bodies is
    byte-identical to any named function. The "replica" premise is still false;
@@ -106,10 +106,10 @@ No `save_program`, no tags, no README/STATUS edits, no commits, no
 
 ## Output
 
-* Appended 492 rows to `hf_notes/docs/data/rep-audit-2026-10-29-q1.tsv`
+* Appended 492 rows to `docs/data/rep-audit-2026-10-29-q1.tsv`
   (`addr<TAB>old_label<TAB>verdict<TAB>new_name_or_identity<TAB>evidence`);
   previous b6 rows kept intact.
-* Working dumps: `/tmp/opencode/hf_ghidra_sweep/b7a2_list.tsv`,
+* Working dumps: `b7a2_list.tsv`,
   `b7a2_vtstore.tsv`, `b7a2_vtclass.tsv`, `b7a2_twins.tsv` (0 twins).
 
 ## Counts

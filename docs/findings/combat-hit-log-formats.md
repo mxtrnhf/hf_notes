@@ -1,5 +1,7 @@
 # Combat event log: `hf_ally_hit_<id>.csv` row formats (hf_ally sim.49 / sim.50), probe-dev, 2026-10-23
 
+> Produced by the local telemetry build (not in public hf_ally packs since v0.14.3; older commits/releases still contain it). The format is kept because the telemetry code is still developed locally.
+
 hftm kind `hit` (packed automatically). Needs `probe_hooks` on. All rows start `t,step,kind,...`; `step` = the physics step counter shared with the hook/swivel logs (see below for births). At most 600 rows per step. The file's own `#` header repeats this list. **Untested in play at the time of writing**: sim.49 hooks C/A/P, sim.50 adds S/K/M/Z/Y. Hook sites and register maps: `combat-hit-hook-sites.md` (ghidra-curator).
 
 Common body fields (17, in this order, used by C): `P` (pointer), `ship` (telemetry id, 0 = player, -1 = not a tracked ship part, -2 = lock busy), `part` (part number within the ship, -1 none), `cls` (+0x28), `logic` (+0x3c4), `oid` (+0x190 string), `expl` (+0x2dc), `hp` (+0x2c8), `hpmax` (+0x2cc), `arm` (+0x38c, detonation threshold in I units, -1 = not armed), `st` (+0x3cc), `ttl` (+0x3d0), `mass` (+0x1d8), `x`,`y` (+0x128/+0x12c), `vx`,`vy` (+0x130/+0x134), `owner` (+0xb8 creature pointer).

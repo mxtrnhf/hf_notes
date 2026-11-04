@@ -1,12 +1,12 @@
 # Hull "engine anti-tilt" stabiliser: formula, closed-form behaviour, parameter sensitivity (v1.163)
 
-Compiled 2026-10-22 from the notes in `hf_notes/docs/findings/` and the simulator `hf_ml/sim/hfsim/flight.py`. Read-only research: no Ghidra access, no new measurements. Tags as in the notes: [code] read in Ghidra by ghidra-miner/curator, [log] measured on flight logs, [inference] derived here or in a note, [open] unresolved. Numbers not found in a source are marked "not in sources".
+Compiled 2026-10-22 from the notes in `docs/findings/` and the local simulator's `hfsim/flight.py`. Read-only research: no Ghidra access, no new measurements. Tags as in the notes: [code] read in Ghidra by ghidra-miner/curator, [log] measured on flight logs, [inference] derived here or in a note, [open] unresolved. Numbers not found in a source are marked "not in sources".
 
-Sources: `hull-stabiliser-engine-logic.md` (main decompile, sections "Formula", Corrections 1-2), `hull-stabiliser-coupling.md` (verification, inertia table, clamp regimes), `player-attitude-stabiliser.md` (where `m_mdl_at` is read), `hull-rotation-behaviour.md` (player-visible summary), `static-engine-force-path.md` (how thrust reaches the hull), `flight.py` `Flight._stabiliser`, `hf_ml/data/Libraries/OL.seria`.
+Sources: `hull-stabiliser-engine-logic.md` (main decompile, sections "Formula", Corrections 1-2), `hull-stabiliser-coupling.md` (verification, inertia table, clamp regimes), `player-attitude-stabiliser.md` (where `m_mdl_at` is read), `hull-rotation-behaviour.md` (player-visible summary), `static-engine-force-path.md` (how thrust reaches the hull), `flight.py` `Flight._stabiliser`, the game's `Libraries/OL.seria`.
 
 ## 0. Is this "the headache parameter"? Not defined anywhere
 
-A case-insensitive grep for `headache` over `hf_notes`, `hf_ml` (incl. `notes`, `handover`, `DESIGN_NOTES.md`, `ROADMAP.md`, `TASK.md`, `sim/`) and the rest of the project tree found **no occurrence** (also none for "migraine", "head-ache"). No source defines a "headache parameter". The notes call the mechanism "stabiliser", "anti-tilt" (`m_mdl_at`, "angular thrust" in `structures.md`), "PD-style hull stabiliser". So the identification with the user's nickname cannot be confirmed from the project; it is the user's own term. Candidate quantities that could be meant (none confirmed):
+A case-insensitive grep for `headache` over `hf_notes`, the local simulator repo (including its notes and handover files) and the rest of the project tree found **no occurrence** (also none for "migraine", "head-ache"). No source defines a "headache parameter". The notes call the mechanism "stabiliser", "anti-tilt" (`m_mdl_at`, "angular thrust" in `structures.md`), "PD-style hull stabiliser". So the identification with the user's nickname cannot be confirmed from the project; it is the user's own term. Candidate quantities that could be meant (none confirmed):
 
 | candidate | what it is | why it could be a "headache" |
 |---|---|---|
@@ -109,7 +109,7 @@ Engines (checked by loading `Designs/Lightning.seria` with `hfsim.seria`): per b
 
 ## 4. How each OL.seria parameter enters
 
-OL.seria `m_mdl_at` per engine (`hf_ml/data/Libraries/OL.seria`, read directly): ENGINE_01 7e7, 02 7e7, 02_OLD 7e7, 03 1e7, 03_OLD 1e7, 04 1e7, 05 1.5e7, 05_OLD 1.5e7, 06 4e6. Thrust `m_mdl_thrust` (+0xf8): 01 9e7, 02 1.1e8, 03 2.5e7, 04 3.6e7, 05 3.2e7, 06 4e6. Mod copy `hf_mods_unpack/hara_vera/.../OL.seria` adds `MDL_ENGINE_NERVA`: thrust 1.9e8, m_at 7e7 (other values identical).
+OL.seria `m_mdl_at` per engine (the game's `Libraries/OL.seria`, read directly): ENGINE_01 7e7, 02 7e7, 02_OLD 7e7, 03 1e7, 03_OLD 1e7, 04 1e7, 05 1.5e7, 05_OLD 1.5e7, 06 4e6. Thrust `m_mdl_thrust` (+0xf8): 01 9e7, 02 1.1e8, 03 2.5e7, 04 3.6e7, 05 3.2e7, 06 4e6. The Hara Vera mod's `OL.seria` adds `MDL_ENGINE_NERVA`: thrust 1.9e8, m_at 7e7 (other values identical).
 
 | parameter | effect on the anti-tilt | tag |
 |---|---|---|

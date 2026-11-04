@@ -17,16 +17,16 @@ renames inside the range during this pass (e.g. `0x14023c820` →
 
 Appended **100 rows** to `rep-audit-2026-10-29-q3.tsv` (now 547 lines = 546 data
 rows; 157 renamed / 389 stale after append): 85 `renamed` + 15 `stale label`.
-Append only; no prior row rewritten (`/tmp/opencode/q3_before.tsv` is the
+Append only; no prior row rewritten (`q3_before.tsv` is the
 pre-append copy).
 
 ## Method
 
 All 287 were already present in `q3` from batches 6–8, so this was a re-match.
-Listing script `B9A6List` (bundle root `/home/maksim/ghidra_scripts/`) produced
+Listing script `B9A6List` (local Ghidra script bundle) produced
 address, body size, current label, direct callees, callers and string literals
-for the whole range (`/tmp/opencode/b9a6_list.tsv`); a second script dumped all
-function names (`/tmp/opencode/b9a6_names.txt`) so every proposed name could be
+for the whole range (`b9a6_list.tsv`); a second script dumped all
+function names (`b9a6_names.txt`) so every proposed name could be
 checked against the name-collision rule (token-subset) before writing.
 
 Then ~110 bodies were read with `batch_decompile` (≤10 per call). All reads were

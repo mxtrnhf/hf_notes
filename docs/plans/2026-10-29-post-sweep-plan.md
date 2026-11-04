@@ -1,6 +1,6 @@
 # Post-sweep plan — Highfleet 1.163 RE coverage
 
-Date: 2026-10-29. Baseline from the saved program
+Date: 2026-10-29. This is the plan as written; current counts and remaining work are in [../../STATUS.md](../../STATUS.md). Baseline from the saved program
 `Highfleet.exe.unpacked.exe v1.163` (project `HighfleetServer`).
 
 ## Current state
@@ -112,7 +112,7 @@ accessor; otherwise classify and close.
 
 * **1.163 only** — never write to `Highfleet.exe.unpacked.exe v1.151`.
 * Wrap any `startTransaction` in `try/finally`; a leaked transaction blocks
-  `save_program` (see `RE_SUBAGENT_INSTRUCTIONS.md`).
+  `save_program` (see the local agent instructions).
 * Agents do not `save_program`/commit; the parent saves once.
 * Plate style: summary / `Algorithm:` / `Parameters:` / `Returns:`.
 * Proof bar: body, RTTI/vtable, callees or strings. Skip rather than guess.

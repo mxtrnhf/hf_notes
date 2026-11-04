@@ -103,7 +103,7 @@ the object: there is no standalone predicate in either body.
 ## Tool notes
 
 * `tools.ghidra.*` was absent again; everything went through
-  `/tmp/opencode/hf_ghidra_sweep/call.py` (UDS) and a thin `p2c/api.py` wrapper.
+  `call.py` (UDS) and a thin `p2c/api.py` wrapper.
 * `decompile_function` and `get_function_by_address` take `address` as a **query**
   param, so `call.py GET <endpoint> '{"address":"0x…"}'` works while `POST` returns
   `{"error":"Address or function name is required"}`. `rename_function_by_address` /

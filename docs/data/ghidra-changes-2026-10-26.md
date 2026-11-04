@@ -30,7 +30,7 @@ Old names are in the plate comments (rule of 2026-10-26).
 | comments | 0x140036288, 0x14003641e, 0x14003635b, 0x140036318, 0x1400367c7, 0x140036886, 0x140036c68, 0x140034269, 0x140034448, 0x140037245, 0x1400361a2 | missile block: flare rule, constants, fuse, bomblet calls, steering, give-up state (two of these addresses already held a comment, which the batch overwrote) |
 Verified by the curator (bytes or disassembly re-read): flare gate and `0x44c` compare, constants pi/4, 400, 0.01, 0.001, 20, 0.1; the four Khiva write blocks (84 bytes) and the `endWar` store; the detection function head and its callers. Not independently verified: the panel colours and zoom, the ELINT/IRST formulas, the steering aim table, the per-id table beyond the ids named above.
 
-## Third batch: ClickFunc analysis workspace (hf_ml/analysis/clickfunc), verified items only
+## Third batch: ClickFunc analysis workspace (kept outside this repo), verified items only
 Old names are in the plate comments. Re-read by the curator: decompile or disassembly of every function below, the `XMM3` call site, the `m_spasmcode` and `m_intel_data` strings and the three difficulty writes.
 | kind | address | change |
 |---|---|---|

@@ -1,6 +1,6 @@
 # AI ship steering: obstacle avoidance, force law, attitude hold (v1.163), ghidra-miner, 2026-10-21
 
-Tags: **[V]** = read in the 1.163 program (decompile plus disassembly, constants read from memory). Names: `AiShip_SteerController` `0x14006cb30` (driver states 0 and 4), `AiShip_ScanObstacles` `0x14024cc20`, `AiShip_AddObstacleNode` `0x14024ce50` (renamed 2026-10-21 from `rep_14022bc20_New`; adds one obstacle; the old name carried the 1.151 address, do not decompile that address in 1.163). `AiShipTick` `0x140062f90` carries an inlined copy of the avoidance scan (scan call at `0x140064e6f`, same parameters). **CORRECTION 2026-10-23: the force law (s3) and the per-bank clamp (s5.1) are NOT the same in the two paths**; the AiShipTick numbers are in the boxes marked AiShipTick below, they are the ones that matched logged AI commands (simulator check on 10 sessions, `hf_ml/sim/ai_cmd_check.py`).
+Tags: **[V]** = read in the 1.163 program (decompile plus disassembly, constants read from memory). Names: `AiShip_SteerController` `0x14006cb30` (driver states 0 and 4), `AiShip_ScanObstacles` `0x14024cc20`, `AiShip_AddObstacleNode` `0x14024ce50` (renamed 2026-10-21 from `rep_14022bc20_New`; adds one obstacle; the old name carried the 1.151 address, do not decompile that address in 1.163). `AiShipTick` `0x140062f90` carries an inlined copy of the avoidance scan (scan call at `0x140064e6f`, same parameters). **CORRECTION 2026-10-23: the force law (s3) and the per-bank clamp (s5.1) are NOT the same in the two paths**; the AiShipTick numbers are in the boxes marked AiShipTick below, they are the ones that matched logged AI commands (simulator check on 10 sessions, the local simulator's `ai_cmd_check.py`).
 
 ## 1. What the avoidance sees (ScanObstacles) [V]
 Called with `range = clamp(4 * |v|, 200, 800)` (v = own hull velocity, root body `+0x130/+0x134`), `minMass = 0.1 * own mass (+0x15b8)`, `maxExplosive = 500.0`.
@@ -26,7 +26,7 @@ Per surviving node: `closing = (v_self - v_obs) . dir` (positive = approaching),
 * `cmd_max = accel * 25.0`; but if byte `+0xc74` is set and `accel < 4.0`: `cmd_max = a4 * 40.0`.
 * `s = clamp(sqrt(dist + 0.1) / 20, 0, 1)` multiplies `cmd_max` (skipped when the driver state `iVar33 == 2`).
 * `ts = 10.0 / a4`; `F = ((dir_t + A) * (s * cmd_max) * m) / ts - (v * m) / ts - (0, m * 9.82)`; `A = -sum(w_i dir_i)`, `w = ((t - 10) * 0.1)^2` as in s2.
-So `F = m * (s * cmd_max * (dir_t + A) - v) * a4 / 10 - (0, 9.82 m)`: a velocity controller whose desired speed is `25 * accel * s` and whose gain is `min(accel, 4) / 10` per second. This matches the simulator port `hf_ml/sim/hfsim/aisteer.py`.
+So `F = m * (s * cmd_max * (dir_t + A) - v) * a4 / 10 - (0, 9.82 m)`: a velocity controller whose desired speed is `25 * accel * s` and whose gain is `min(accel, 4) / 10` per second. This matches the local simulator's port in `hfsim/aisteer.py`.
 
 **AiShip_SteerController `0x14006cb30` (driver states 0 and 4) [V; constants read: 9.82, 10, 20, 100, 0.1, 3.0]; not what the logged AI engines follow:**
 * `dir_t` = unit vector from hull to waypoint (`creature +0xbf0/+0xbf4`), `dist` = distance; `s = clamp(sqrt(dist + 0.1) / 20, 0, 1)` (s reaches 1 at dist 400).

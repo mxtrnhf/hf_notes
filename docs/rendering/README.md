@@ -46,7 +46,7 @@ A **seam** is the place right after one of those flush calls (an `E8 rel32` call
 **A second route**: instead of drawing from a seam, create a real GUI object the game draws and clicks itself: [gui-elements.md](gui-elements.md) (proven on the pre-combat screen). **Which seam where** is in section 4. Seam text is drawn after the whole GUI pass, so it covers GUI elements such as sliding panels; see [gui-elements.md](gui-elements.md) "Layering". Drawing only shows while a scene is being rendered, so always draw from inside a seam, on the render thread. [code]
 
 ## 4. Best seams per screen
-Seam ids are `M` (map renderer `SEAMS_MAP`, 19 sites), `B` (battle `SEAMS_BATTLE`, 29) and `O` (other `SEAMS_OTHER`, 31); the number is the zero-based index in that array in `hf_probe/src/lib.rs` (addresses below were checked against it) [code]. Evidence: [seam-test-run-1.md](seam-test-run-1.md).
+Seam ids are `M` (map renderer `SEAMS_MAP`, 19 sites), `B` (battle `SEAMS_BATTLE`, 29) and `O` (other `SEAMS_OTHER`, 31); the number is the zero-based index in that array in `hf_probe`'s `src/lib.rs` (addresses below were checked against it) [code]. Evidence: [seam-test-run-1.md](seam-test-run-1.md).
 
 | Screen | Seam | Call address | Status |
 |---|---|---|---|
@@ -77,12 +77,12 @@ Not seen at all: B14, B15, B18, B25-B28 never fired. [game]
 * **Virtual 1920x1080 frame**: the coordinate space of `x`/`y` for text and sprites, scaled to the real window. [game]
 
 ## 6. Testing a seam with the hf_probe seam test
-The seam test is in `hf_probe` v2.2 (`$HF_DEV/hf_probe`; built DLL `hf_probe_build/versions/hf_probe_v2.2.dll`). It wraps the flush calls and draws the seam id (for example `M11`) in `fixed_16`, white, after each one. The highest visible label in a screenshot is the topmost seam. [code]
-1. Put the DLL in `Modloader/mods/` and a `Modloader/config/probe.json` next to the others. Keys: `seam_test`, `seam_map`, `seam_battle`, `seam_other` (group switches) and `seam_only` (a list such as `["M10","M11","M16"]`; empty means all enabled groups); `seam_key` defaults to `F7`. The example used for the map run is `hf_probe_build/run_map_clean/Modloader/config/probe.json`: `{"seam_battle": false, "seam_other": false, "seam_only": ["M10","M11","M12","M13","M14","M15","M16"], "sprite_test": false}`. [code][game]
+The seam test is in `hf_probe` v2.2 (`hf_probe`; built DLL `hf_probe_v2.2.dll`). It wraps the flush calls and draws the seam id (for example `M11`) in `fixed_16`, white, after each one. The highest visible label in a screenshot is the topmost seam. [code]
+1. Put the DLL in `Modloader/mods/` and a `Modloader/config/probe.json` next to the others. Keys: `seam_test`, `seam_map`, `seam_battle`, `seam_other` (group switches) and `seam_only` (a list such as `["M10","M11","M16"]`; empty means all enabled groups); `seam_key` defaults to `F7`. The example used for the map run is the local `run_map_clean` probe config: `{"seam_battle": false, "seam_other": false, "seam_only": ["M10","M11","M12","M13","M14","M15","M16"], "sprite_test": false}`. [code][game]
 2. Start the game, go to the screen under test, and take screenshots with nothing else open (no dialogue unless that is the case under test).
 3. **F7 toggles drawing** on and off (`SEAM drawing on/off` in `probe.log`), so an A/B screenshot pair shows exactly what the labels cover. [code]
 4. Read the label positions: each id sits at y = 40 + 17 * position in the **filtered** list (not the global id), at x=1890 right-aligned and x=760 left-aligned. For ids from 40 up the right column moves 90 px left and the left column 90 px right per block of 40. [code][game]
 5. Judge per label: readable, in the right place, stable under zoom and pan, not glitching, above the UI. Also check `SEAMS hits/5s` in `probe.log` (a seam that never fires on your screen is useless; one that fires only with a modal overlay is conditional). `SEAM <id> first frame` lines show when each seam first fires. [code]
-6. The probe log is written to `Modloader/probe.log` (default `log_path`); runs so far were copied into `hf_probe_build/logs/`.
+6. The probe log is written to `Modloader/probe.log` (default `log_path`); runs so far were copied into the local probe run archive.
 
 Next tests wanted: a deliberate screenshot of O24/O25/O28 on the menu and difficulty screens; B21-B24 on a city shop screen versus combat; every non-16:9 resolution for the 1920x1080 frame; the layer order of the battle seams between B12 and B22. [guess]

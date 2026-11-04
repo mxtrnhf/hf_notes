@@ -50,7 +50,7 @@ becomes a *permanent file change* at quit, whether the mod wants that or not. De
 | name → index map (MSVC `std::map` root) | `0x143a33c08` | `[code]` `GetPartIndex` `0x140281cc0` walks it, `compareEscadraString` on key at node+0x20, value at node+0x40 (int) |
 | `ObjectsLibrary` singleton pointer | `0x143a1c428` | `[code]` ctor `0x140281538`: `MOV qword ptr [0x143a1c428],RDI`; also `ObjectsLibrarySingleton` symbol |
 | record class code / size | `0x803` (2051) / `0x188` | `[code]` factory `DynNewSerializable` `0x1402024e0`: `param_1 == 0x803` → `New(0x188)` → `initStats2` `0x140281660` |
-| number of records in the shipped file | **176** | `[file]` `grep -c '^m_stats=' ~/Downloads/OL.seria` = 176, same as `m_oid=`; each line is `m_stats=2051` followed by a `{ m_classname=Stats ... }` block (2051 is the class code, not a count — `formats.md` is wrong here) |
+| number of records in the shipped file | **176** | `[file]` `grep -c '^m_stats=' the local `OL.seria` copy` = 176, same as `m_oid=`; each line is `m_stats=2051` followed by a `{ m_classname=Stats ... }` block (2051 is the class code, not a count) |
 | path string | `0x14036ae10` = `"Libraries/OL.seria"` | `[code]` `search_strings` |
 
 `GetStats(int partOID)` `[code]`, verbatim:
@@ -66,7 +66,7 @@ return (void *)0x0;
 
 Reading: `GetStats` is a **bounds-checked index into a pointer vector**; `-1` and out-of-range
 give NULL (callers check for NULL, e.g. `Part_Tick`). The record fields are at the offsets in
-`hf_notes/docs/structures.md` §"Stats record" (price +0x88, category +0xb0, load_amount +0x148,
+`../../docs/structures.md` §"Stats record" (price +0x88, category +0xb0, load_amount +0x148,
 load_time +0x14c, thrust +0xf8, ...).
 
 ### 1.2 How it is filled
@@ -353,7 +353,7 @@ that screen. Two honest caveats:
 * `SetLink` `0x140194de0` only re-points the `Link` (`RemoveNodeLink(old)` + `AddNodeLink(new)`);
   I saw no destructor call for the old node on this path → the previous library tree is leaked
   (its child `Body` prototypes included). Size: the shipped `parts.seria` has **162** Body
-  prototypes (`[file]` `grep -c '^m_children=15' ~/Downloads/parts.seria` = 162), 162 x 0xa40 ≈
+  prototypes (`[file]` `grep -c '^m_children=15' the local `parts.seria` copy` = 162), 162 x 0xa40 ≈
   415 KiB per entry;
 * the campaign copy (`ALL_PARTS`) is a *different* global from the editor/constructor copy
   (`0x1403ef4f8`), so re-entering the editor does not refresh the campaign's prototypes.
@@ -676,7 +676,7 @@ whole "hot-edit data tables" idea and measures the exit-dump side effect.
 (a) *cheap*: on a hotkey call `LoadSeriaFile(*(void**)0x143a1c428, "Libraries/OL.seria")`
 (`0x140225930`; the container is the ObjectsLibrary singleton at `0x143a1c428`) and log
 `(StatListMax - StatListBase)>>3` before and after (`0x143a33bf0/0x143a33bf8`). Expect 176 → 176
-(clear-then-refill of §1.3; 176 is the record count of the `~/Downloads/OL.seria` copy, see §1.1)
+(clear-then-refill of §1.3; 176 is the record count of the `the local `OL.seria` copy` copy, see §1.1)
 and a working game; this is the whole "re-read the game's data file" feature in one call;
 (b) *clean*: `(*(code**)singleton)(singleton,1)` (dtor `0x140281aa0`), then
 `newlib = New(0x48); ObjectsLibrary::ObjectsLibrary(newlib)` (`0x140281500`), then the same load.
@@ -716,10 +716,10 @@ hot-reload for parts.seria.
   call `GetStats` at use time. A cheap check for the rest: search the disassembly for
   `MOV [reg+disp], rax` right after a `GetStats` call and follow one; or test E1 with a longer
   delay and see whether anything reads stale data.
-* The record count in the *installed* game folder. I read the copy at `~/Downloads/OL.seria`
+* The record count in the *installed* game folder. I read the copy at `the local `OL.seria` copy`
   (42,900 bytes; notes call it the 1.163 copy): **176** `m_stats` records. `formats.md` says
-  "2051 records" — that is the **class code** at the start of each record
-  (`m_stats=2051` is `m_stats=<class code>`, not a count), so the notes are wrong on this number;
+  "176 records" — and 2051 is the **class code** at the start of each record
+  (`m_stats=2051` is `m_stats=<class code>`, not a count); the older notes wrongly read it as the count;
   the record count is the number of `m_stats=` lines.
 * Whether `RemoveNodeLink` (`SetLink` path) ever frees a node when `linkCount` reaches 0. The
   loader does not call a destructor explicitly, so the "old tree leaked" line in the matrix is a
@@ -777,7 +777,7 @@ Additional checks done for the same rules:
 * **Arithmetic**: `+0x188 = 0x31 qwords` (0x31 x 8 = 0x188) — the `GetStats((int)param_1[0x31])`
   argument in `Part_Tick`; `+0x190 = 400 decimal` (the `LEA RCX,[RBX+0x190]` argument);
   index bound `(StatListMax - StatListBase) >> 3` (`-` before `>>`); `176 x 0x188 = 68,992`.
-* **The file format was cross-checked against the real file** (`~/Downloads/OL.seria`): 176 lines
+* **The file format was cross-checked against the real file** (`the local `OL.seria` copy`): 176 lines
   of `m_stats=2051`, each followed by a `{ m_classname=Stats ... }` block, which confirms that the
   number after `=` is the element's class code (written from element+0x28 by
   `VProperty::Serialize_` `0x1401912a0`) and that `2051` in `formats.md` is not a count.

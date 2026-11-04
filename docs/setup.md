@@ -6,7 +6,7 @@ Runs under Proton on Linux; our DLLs are plain 64-bit Windows DLLs.
 ## Analysis
 * `Highfleet.exe` on disk is Steam-DRM packed. The shared Ghidra project's main program is the **DRM-stripped `Highfleet.exe.unpacked.exe`** (v1.163, with names and structs).
   A **memory dump** of the running process (`/proc/<pid>/mem`, file offset = RVA) is kept as a reference copy (`Highfleet_1.163_dump.exe`): same code addresses and the same
-  instruction bytes at the sites we compared, but a different section layout (`.bind` section, split `.data`) and fewer analysed functions (4,638 vs 5,115).
+  instruction bytes at the sites we compared, but a different section layout (`.bind` section, split `.data`) and fewer analysed functions than the unpacked program.
   Neither is a full-file hash match; verify patch-site bytes before trusting an address on a new build.
 * Ghidra + a Ghidra MCP bridge: decompile, xrefs, `search_instructions`, `disassemble_bytes`, `read_memory`.
   Huge functions (the scenario script `FUN_1402ac970`) time out: read the jump tables with `read_memory` and disassemble the blocks.
@@ -44,8 +44,14 @@ There is no injector: the loader is a **proxy DLL**. The game already loads `bas
 * **Shops** come from logdot's highfleet-qol (`Modloader/config/qol.json`): `enable_shop_parts` and `shop_parts.<ID> = [{probability, min_parts, max_parts, city_types}]`. Rolled **only when a city's shop is first generated**. City types: 1 UR, 2 repair, 3 merchant, 4 fuel, 5 intel, 6 mercenary, 7 fleet HQ.
 
 ## Build
-MinGW-w64 cross compiler, static (`-static -static-libgcc -static-libstdc++`), C++17; one `Makefile` per repo (`make`, `make dist`).
-Editor support: a `.clangd` pointing at the MinGW headers.
+The current mods are Rust crates (nightly/stable ≥ 1.88) built with `cargo-xwin`, which cross-compiles the Windows MSVC DLLs from Linux:
+
+```
+cd highfleet-allies/ally && cargo xwin build --release --target x86_64-pc-windows-msvc
+cd highfleet-allies/ai   && cargo xwin build --release --target x86_64-pc-windows-msvc
+```
+
+`hf_probe`, `hf_voice` and `hf_draw_test` use the same command in their own crates. Older standalone experiments used a MinGW-w64 C++ toolchain (`-static -static-libgcc -static-libstdc++`, C++17, one `Makefile` per repo) with a `.clangd` pointing at the MinGW headers; that setup is historical.
 
 ## Pitfalls
 * Memory scans must accept `PAGE_WRITECOPY`. The "window focused" check fails under Proton: hotkey mods must not depend on it.

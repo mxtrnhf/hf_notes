@@ -22,9 +22,9 @@ sharpened. Append only; no prior row was rewritten.
 
 All 317 in-scope `rep_*` are already present in `q3` (b6 agent 4 / b7 agent 4),
 so this was a true re-match, not a first pass. Listing script
-`/home/maksim/ghidra_scripts/B8A6List.java` produced address, body size, SHA-1,
+`B8A6List.java` (local Ghidra script bundle) produced address, body size, SHA-1,
 embedded target class, direct callees, string literals, callers and data-xref
-count for the whole range (`/tmp/opencode/b8a6_list.tsv`). No in-range `rep_*`
+count for the whole range (`b8a6_list.tsv`). No in-range `rep_*`
 has a byte-identical twin. Then ~60 bodies were read with `batch_decompile`
 (≤10 per call, all ≤0x2000 bytes except one 8,650-byte body at `0x140217470`
 that was skipped by rule 6), plus targeted re-reads of already-named neighbours

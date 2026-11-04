@@ -1,7 +1,7 @@
 # Ghidra sweep 2026-10-30 — Phase 2 agent D (vector / constructor / destructor families)
 
 Program: `Highfleet.exe.unpacked.exe` v1.163 only (project `HighfleetServer`,
-image base `0x140000000`, `D:/Games/Highfleet/Highfleet v1.163/`). 1.151 was never
+image base `0x140000000`, `<game dir>`). 1.151 was never
 opened. No `save_program`, no commit, no `create_function`, no transaction
 (the rename/plate MCP endpoints were used, so no `startTransaction` was needed).
 

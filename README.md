@@ -13,9 +13,9 @@ Tags (one legend for all docs):
 - **[tool]** -- Ghidra fuzzy-match result (a similarity score, not proof).
 - **[not read]** -- known gap.
 - **[file]** -- read from game files. 
-- **[agent]** -- a DeepSeek agent's reading of the code (reports in `hf_ml/out/ds2-*`), NOT re-read by Claude. Treat as a lead. Claims Claude re-read in the bytes or decompile are plain **[code]**.
+- **[agent]** -- a DeepSeek agent's reading of the code (raw reports are kept outside this repo), NOT re-read by Claude. Treat as a lead. Claims Claude re-read in the bytes or decompile are plain **[code]**.
 
-`docs/version-differences.md` adds **[V]** / **[C]** / **[?]** for offset confidence (defined there). Paths in the docs are relative to the workspace root (`$HF_DEV`, e.g. `~/Development_Highfleet`) and the game folder is `<game dir>`.
+`docs/version-differences.md` adds **[V]** / **[C]** / **[?]** for offset confidence (defined there). Paths in the docs are relative to the notes repo; the game folder is `<game dir>`, and local-only working data is marked as such.
 
 Layout: 
 - `docs/` reference docs;
@@ -35,6 +35,7 @@ Layout:
 | [docs/porting-1151-1163.md](docs/porting-1151-1163.md) | **porting a mod between 1.151 and 1.163**: what changed, how to guard builds, step-by-step site porting, anchor addresses, what each of our mods would need |
 | [docs/open-questions.md](docs/open-questions.md) | what is unknown or undecided, and the list of Ghidra fixes to raise with logdot |
 | [docs/roadmap.md](docs/roadmap.md) | long-term mod wish list (bugs, QoL, AI, mod scope) and wanted modder tooling; not scheduled, do not act on it unasked |
+| [docs/mishaps.md](docs/mishaps.md) | dated log of things that went wrong: what happened, why, and what was learned |
 | [docs/mods/README.md](docs/mods/README.md) | every mod with its status, repo and page, plus the debug and experiment tools |
 
 ## Reference (how the game is built)
@@ -74,10 +75,13 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/ai/ai-flares.md](docs/findings/ai/ai-flares.md) | why AI ships never use flares (missing trigger, not missing parts) and a mod design |
 | [docs/findings/mercenary-ships.md](docs/findings/mercenary-ships.md) | where the mercenary/reinforcement ships offered for money come from: hard-coded tier pools in `addReinforceingShips` 0x14021b8c0, tier chosen by the `ASK_REINFORCE` dialog, not by the city; also why `m_npcs` is Tarkhans, not ships |
 | [docs/findings/ai/ai-tick-patch-sites.md](docs/findings/ai/ai-tick-patch-sites.md) | the tactical AI in 1.163: close-range cutoff, stand-off retreat, ammo choice, launch limits, byte-exact patch sites |
-| [docs/findings/ai/ai-telemetry.md](docs/findings/ai/ai-telemetry.md) | battle telemetry in `hf_ally` (feature `telemetry`): the three CSVs, part list and part health, ship name `+0xa90`, aim signal `vc2/vc3`, flying-body array and per-frame birth/death log, first captures, missile overshoot test |
+| [docs/findings/ai/ai-telemetry.md](docs/findings/ai/ai-telemetry.md) | battle telemetry in `hf_ally` (local development build; feature `telemetry`; not in public packs since v0.14.3, still in older `highfleet-allies` commits/releases): the CSVs, part list and part health, ship name `+0xa90`, aim signal `vc2/vc3`, flying-body array and per-frame birth/death log, first captures, missile overshoot test |
 | [docs/findings/ai/ai-aircraft-launch.md](docs/findings/ai/ai-aircraft-launch.md) | why the strategic AI launches all aircraft at once, launch conditions, patch sites |
 | [docs/findings/ship-profiles.md](docs/findings/ship-profiles.md) | how the game computes mass, TWR and gun reach, validated profiles of 20 designs for the AI self-knowledge data |
 | [docs/findings/battle-ally.md](docs/findings/battle-ally.md) | the AI ally in battle (`hf_ally`, running in game): what makes a Creature AI-run, how the vanilla deploy spawns the ally, the retreat point and extraction (why a promoted ship could not retreat), the ORDER role table in `+0xd70` (1 unset, 2 bombing, 3 support), prize ships and trade convoys, ally flares, the AI's ammo flags, checklist, AI plan |
+| [docs/findings/ai/ai-obstacle-hook-sites.md](docs/findings/ai/ai-obstacle-hook-sites.md) | byte-exact AI obstacle-scan and steering hook sites for `hf_ai`: stolen-byte counts, scan call, list layout, weight loop |
+| [docs/findings/ai/tactical-carrier-launch-groups.md](docs/findings/ai/tactical-carrier-launch-groups.md) | tactical carrier launch groups (hf_ai v0.10.3, still present in 0.10.13): stock flow, group-size and clearance keys, partial launches, build/install record |
+| [docs/findings/hf-ai-hot-config-reload.md](docs/findings/hf-ai-hot-config-reload.md) | source study of hot-reloading `hf_ai.json`/`ally.json` without restarting; current state, blockers, design and conflicts |
 
 ### Combat, ships and the map
 | Read | For |
@@ -99,7 +103,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/ai/ai-steering-and-avoidance.md](docs/findings/ai/ai-steering-and-avoidance.md) | AI steering: obstacle scan and weights, velocity force law, attitude hold, bank clamp and smoothing |
 | [docs/findings/battle-terrain.md](docs/findings/battle-terrain.md) | how the ground is generated (height polyline, 150-unit steps, hill factor), queried (`FUN_1402ee0c0`), and collided with; what `+0xb84` really is; what is still unmapped |
 | [docs/findings/landscape-generator-spec.md](docs/findings/landscape-generator-spec.md) | exact recipe to regenerate the battle ground from (seed, size, L1, hill, zero): HGE and CRT random generators, Perlin tables and evaluation, polyline steps, layer 7; reference code `docs/data/landscape_gen.py` (reproduces the logged grounds) |
-| [docs/findings/flares-and-missiles.md](docs/findings/flares-and-missiles.md) | the flare body (mask 0, 5 s, 360-600 u/s), Stats category 0x80 is trusses not flares (correction), missile ejection, what is still open (seeker law) |
+| [docs/findings/flares-and-missiles.md](docs/findings/flares-and-missiles.md) | the flare body (mask 0, 5 s, 360-600 u/s), Stats category 0x80 is trusses not flares (correction), missile ejection, and the seeker/proximity law |
 | [docs/findings/hull-stabiliser-coupling.md](docs/findings/hull-stabiliser-coupling.md) | the stabiliser torque, verified against logs (spin jump = sum T * 0.05^5 * invI_com exactly), the inertia in T (I about origin, R per design), which parts are separate b2 bodies and their joints (swivel engines / guns: revolute + motor, legs: revolute + soft distance, statics: Frame fixtures), 10/10 iterations |
 | [docs/findings/player-thrust-keys-and-engine-heat.md](docs/findings/player-thrust-keys-and-engine-heat.md) | Q/E/S keys to command angles (exact atan2 and wrap rules, +-pi tie), swivel servo law, Shift strength, spool, every gate that zeroes an engine's force, engine overheat lockout (500 / 3 s) and why the Kormoran barely spins |
 | [docs/findings/box2d-function-map.md](docs/findings/box2d-function-map.md) | Names applied in Ghidra for the embedded Box2D 2.3 (world, tree, broadphase, contacts, narrowphase, joints), what was verified, unit scaling 0.05, flight-input helpers, helper-agent claims that were wrong |
@@ -122,6 +126,10 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/plane-combat-modes-and-gunpods.md](docs/findings/plane-combat-modes-and-gunpods.md) | real-time plane modes (0/2/3/6), which mode fires bombs/rockets/gun, why FAB/NURS planes have no 37 mm in vanilla, the class-3 stock auto-draw leak, and the tactical-only `extra_gunpod` design |
 | [docs/findings/end-game.md](docs/findings/end-game.md) | the scripted end game: phases, `endWar`, escalation; the Khiva crash (unguarded list writes) and its patch recipe |
 | [docs/findings/level-seria-dispatcher.md](docs/findings/level-seria-dispatcher.md) | `SomethingWithLevelSerias`: the SCR_* scenario dispatcher in 1.151 and 1.163, label addresses, string refs (names only, body unread) |
+| [docs/findings/antitilt-stabiliser-formula-report.md](docs/findings/antitilt-stabiliser-formula-report.md) | archived derived report: closed-form stabiliser formula, per-tick algebra, parameter sensitivity; current references are the hull-stabiliser pages |
+| [docs/findings/combat-hit-log-formats.md](docs/findings/combat-hit-log-formats.md) | `hf_ally_hit_<id>.csv` row formats (sim.49/50): common body fields and per-kind field lists; produced by telemetry builds |
+| [docs/findings/logic-120-delayed-airbrake-warhead.md](docs/findings/logic-120-delayed-airbrake-warhead.md) | creatureLogic id 120: two-stage air-braked warhead spawned by `FireShell` case 70, not plane code |
+| [docs/findings/plane-flight-speed-vs-maneuverability.md](docs/findings/plane-flight-speed-vs-maneuverability.md) | plane speed vs turn rate: maneuverability hardcoded in `Aircraft_ApplyFlightForces`; hook design |
 
 ### Crashes, input and the executable
 | Read | For |
@@ -137,7 +145,8 @@ Status, repo and page for every mod: [docs/mods/README.md](docs/mods/README.md).
 | Read | For |
 |---|---|
 | [docs/mods/hf-ai.md](docs/mods/hf-ai.md) | `hf_ai`: the tactical AI layer, config, versions, measured results |
-| [docs/mods/hf-ally.md](docs/mods/hf-ally.md) | `hf_ally`: AI allies from the reserve, pre-combat buttons, telemetry |
+| [docs/mods/hf-ai-tuning-guide.md](docs/mods/hf-ai-tuning-guide.md) | plain-language `hf_ai` tuning guide (archived at v0.9.0; the current guide is in the public repo) |
+| [docs/mods/hf-ally.md](docs/mods/hf-ally.md) | `hf_ally`: AI allies from the reserve, pre-combat buttons, ship panels and switching; telemetry is a local development build |
 | [docs/mods/qol.md](docs/mods/qol.md) | the QoL fork: which features are upstream, which are local, the `enabled` rule |
 | [docs/mods/elevation.md](docs/mods/elevation.md) | set the elevation (`m_floor`) of the held shipworks part; keys, config, mechanism |
 | [docs/mods/speed.md](docs/mods/speed.md) | configurable map cruise speed: `vanilla` / `classic` / `custom` presets and the QoL port |
@@ -159,9 +168,11 @@ Dated reports: evidence, not reference. (`docs/runs/`; probe and seam-test runs 
 | [docs/runs/ai-intrepid-benchmark.md](docs/runs/ai-intrepid-benchmark.md) | measured expert-pilot and enemy behaviour from 15 stock-INTREPID battles, 11 Lightning sessions and 7 Navarin campaign sessions, missile-dump collision rate, suggested numbers for the tactics |
 | [docs/runs/ai-underside.md](docs/runs/ai-underside.md) | measured under/over-the-ship advantage (38 sessions): hit rate, lower-third damage, what enemies do, "deny the dive" proposal |
 | [docs/runs/tester-test-plan.md](docs/runs/tester-test-plan.md) | the list of tests shipped in the tester pack README; which items still have no evidence in play |
+| [docs/findings/sim-fidelity-audit-2026-10-22.md](docs/findings/sim-fidelity-audit-2026-10-22.md) | dated simulator fidelity audit against nine logged battles: error budget, flagged windows, ruled-out causes, tool fixes |
+| [docs/findings/sim-enemy-ai-and-combat-validation-2026-10-23.md](docs/findings/sim-enemy-ai-and-combat-validation-2026-10-23.md) | dated simulator-session validation: AI command pipeline, obstacle scan, shells, contacts and blasts |
 
 ## Data
-Tables. (`docs/data/`)
+Tables and dated Ghidra change/sweep reports. (`docs/data/`; the change logs are the entry point, the per-agent sweep reports are evidence.)
 
 | Read | For |
 |---|---|
@@ -183,6 +194,20 @@ Tables. (`docs/data/`)
 | [docs/data/port-1151-1163-labels-review.tsv](docs/data/port-1151-1163-labels-review.tsv) | data labels not ported: already named the same, conflicting, or no reference |
 | [docs/data/gui-dump-precombat-ammo-2026-10-16.txt](docs/data/gui-dump-precombat-ammo-2026-10-16.txt) | `hf_ally` `gui_inspect` dump of the pre-combat screen with the native ammo selector (evidence for [precombat-screen.md](docs/rendering/precombat-screen.md)) |
 | [docs/data/mail-trade-convoy-2026-10-16.txt](docs/data/mail-trade-convoy-2026-10-16.txt) | a HighFleet Knowledge Base answer on how trade convoys are spawned (`spawnTradeConvoy_`); an outside source, unverified here (context in [battle-ally.md](docs/findings/battle-ally.md)) |
+| [docs/data/ghidra-changes-2026-10-27.md](docs/data/ghidra-changes-2026-10-27.md) | hot-reload study renames: `Config.ini` read/write, default key bindings, exit, time-freeze/exit globals (historical change log) |
+| [docs/data/ghidra-changes-2026-10-26.md](docs/data/ghidra-changes-2026-10-26.md) | 2026-10-26 agent round: battle ship panels, bomblet call sites/TTL, two crash sites, end-game gate, ClickFunc review, target cursor/aim (historical change log) |
+| [docs/data/ghidra-changes-2026-10-21.md](docs/data/ghidra-changes-2026-10-21.md) | earliest change log: Box2D 2.3 and Creature naming pass (historical) |
+| [docs/data/ghidra-sweep-2026-10-30-p1a.md](docs/data/ghidra-sweep-2026-10-30-p1a.md) | Phase 0–2 per-agent reports (`p1a`/`p1b` funclets, `p2a`–`p2e` family naming, `parent` incident/hardening); `p2e` §3 is the structures-blocker list (dated evidence) |
+| [docs/data/ghidra-sweep-2026-10-29-agent1.md](docs/data/ghidra-sweep-2026-10-29-agent1.md) | 75 per-agent sweep reports (first wave and batches 3–10): scope, counts, per-address evidence and remaining clusters (dated evidence) |
+| [docs/data/funclet-ownership-2026-10-29.tsv](docs/data/funclet-ownership-2026-10-29.tsv) | `/EH` funclet owner map: 934 rows; funclet, owner, member offset, family, evidence, status (20 closed, 3 closed in Phase 1b, 17 open) |
+| [docs/data/rep-audit-2026-10-29.md](docs/data/rep-audit-2026-10-29.md) | how the consolidated `rep_*` audit was built/rebuilt (q1→q4, de-duplication, counts); format and provenance |
+| [docs/data/rep-audit-2026-10-29.tsv](docs/data/rep-audit-2026-10-29.tsv) | consolidated `rep_*` audit: 1,496 unique addresses, 685 renamed / 811 stale label, one row each |
+| [docs/data/rep-audit-2026-10-29-q1.tsv](docs/data/rep-audit-2026-10-29-q1.tsv) | the four raw per-agent audit inputs (q1–q4; q2 has no header); kept for provenance and superseded by the consolidated TSV |
+| [docs/data/unnamed-classification-2026-10-30.tsv](docs/data/unnamed-classification-2026-10-30.tsv) | Phase 0 classification of all 928 unnamed functions: region, callers/callees, strings, stride, family, verdict, note |
+| [docs/findings/unnamed-classification-2026-10-30.md](docs/findings/unnamed-classification-2026-10-30.md) | prose report for the same Phase 0 classification: method, family rules, counts and open rows |
+| [docs/data/unnamed-2026-10-29.tsv](docs/data/unnamed-2026-10-29.tsv) | archived pre-sweep snapshot: address, old label, body size; superseded by the 2026-10-30 classification |
+| [docs/data/landscape_gen.py](docs/data/landscape_gen.py) | reference Python rebuild of `generateCityLandscape` (main polyline and layer 7); used by `landscape-generator-spec.md` |
+| [docs/data/ghidra-miner-worklist-2026-10-20.md](docs/data/ghidra-miner-worklist-2026-10-20.md) | dated eight-item work list with 2026-10-21 statuses (archived, mostly completed) |
 
 ## Third-party reference
 Config.ini reference, summaries of community guides and prior art. (`ref/`)
@@ -192,5 +217,6 @@ Config.ini reference, summaries of community guides and prior art. (`ref/`)
 | [ref/config-ini.md](ref/config-ini.md) | `Config.ini` keys (unverified, from a community document) |
 | [ref/community-guides.md](ref/community-guides.md) | summaries of community guides and prior art (the Steam guide PDF is kept locally, not committed) |
 | [ref/total-conversion-hara-vera.md](ref/total-conversion-hara-vera.md) | study of the "Flight to Hara Vera" total conversion |
+| [ref/hot-reload-ds4-reports/README.md](ref/hot-reload-ds4-reports/README.md) | index and caveats for the five raw 2026-10-27 agent reports behind the hot-reload study (unverified except where cited) |
 
-Mods run on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader). Public repos: [highfleet-elevation](https://github.com/mxtrnhf/highfleet-elevation), [highfleet-speed](https://github.com/mxtrnhf/highfleet-speed); the rest, and the open pull requests to logdot's `highfleet-qol`: [docs/mods/README.md](docs/mods/README.md), [STATUS.md](STATUS.md).
+Mods run on [Highfleet-Modloader](https://github.com/logdot/Highfleet-Modloader). Public repos: [highfleet-allies](https://github.com/mxtrnhf/highfleet-allies) (`hf_ai`, `hf_ally` and the bundled QoL build), [highfleet-elevation](https://github.com/mxtrnhf/highfleet-elevation), [highfleet-speed](https://github.com/mxtrnhf/highfleet-speed); the rest, and the open pull requests to logdot's `highfleet-qol`: [docs/mods/README.md](docs/mods/README.md), [STATUS.md](STATUS.md).

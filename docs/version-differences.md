@@ -14,7 +14,7 @@ Porting a mod? Start with the guide: [porting-1151-1163.md](porting-1151-1163.md
 | Names only in 1.151 / only in 1.163 | 354 / 25 | |
 | Image base | `0x140000000` | `0x140000000` |
 
-The `rep_<addr>_<name>` names are machine-propagated from one program to the other (the Version Tracking session `1.15TO1.16Test` or an earlier matcher run), so
+*These totals are the 2026-10-15 snapshot, before the 2026-10-29/30 sweep and the 2026-11-03 renames; current program counts are in [../STATUS.md](../STATUS.md).* The `rep_<addr>_<name>` names are machine-propagated from one program to the other (the Version Tracking session `1.15TO1.16Test` or an earlier matcher run), so
 they are not independent evidence. The ~875 hand names and the data types are the real annotation work.
 
 ## 1.151 names that confirm what the 1.163 notes say

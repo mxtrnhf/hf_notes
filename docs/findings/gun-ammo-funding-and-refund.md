@@ -37,8 +37,8 @@ So every click refunds the ship's current pool to the profile and then re-splits
 * The refund also runs on every pre-combat ammo pick. A hook that empties or rewrites pools at this entry during the pre-combat screen discards the share the player just allocated: **ammo vanishes**. Seen with `hf_ally` v0.13.3/0.13.4 when the same type was picked for the player and the ally (log `Highfleet_2026-10-28_20-38-27.log`: refund lines at 20:50:31/32 while the cards were up, for the ship that had been an ally in the previous battle).
 * A reserve ship keeps its creature pointer across battles, so mod bookkeeping keyed on the pointer must be cleared before the next pre-combat screen, not at the next battle start.
 
-## The `hf_ally` fix (v0.13.5, commit `20ec6bb`)
-* The refund hook does nothing while the pre-combat screen is up (`PRECOMBAT_LIVE` or a live `PRECOMBAT_A` card).
+## The `hf_ally` fix (v0.13.5, commit `20ec6bb`; still present in v0.14.15)
+* The refund hook does nothing while the pre-combat screen is up (`PRECOMBAT_LIVE`, a live `PRECOMBAT_A` card, or an incomplete card scan).
 * At ally deploy, before the AI starts rewriting the index, it records `(creature, gun, +0x850, +0x854)` in `AMMO_FUNDING`. At a real refund it restores those indices first, so paid rounds go back under the type they were bought as while a free base pool is still not credited. Guns without a record keep the old empty-the-pool safeguard.
 * Tested in game 2026-10-28: same ammo on player and ally, inventory holds before/after the battle.
 

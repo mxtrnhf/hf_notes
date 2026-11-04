@@ -14,7 +14,7 @@ This note does not repeat formulas; the linked section has the pseudocode and co
 | FireShell dispatch | `FireShell 0x1400300d0`: ammo index 5/10/15/20/25/30/40/90 shells, 51/52/54/55 rockets, 60/70 canister, 80 EMP | [firing-and-shells.md](firing-and-shells.md), guns s5 and s7 table | shells [code]; rockets, canister, EMP only partly tabulated |
 | Shell body, spawn, spread, muzzle speed, recoil | `Body::BulletImpact__ 0x140052a80`, `CreateShell? 0x14004edd0`, `Body_SetLinearVelocity 0x140051e20` | guns s5 and s7 | [code]; ship velocity IS inherited, recoil is player-only |
 | Ammo table | `DefineAmmos 0x140256f10..0x14025afc4`, `AMMO_LIST_BEGIN 0x143a13be0`, stride `0x188` | [ammo-1151-vs-1163.md](ammo-1151-vs-1163.md) | [code], live dump on 1.163 |
-| Gun servo and motor | message id 200 -> `0x1400533f0` -> handler `0x140053870` (deadband 0.01, sqrt easing, `P^2 * Stats+0x108`, torque `mass/100`) | guns s1; [ref/engine-servo-error.md](../../ref/engine-servo-error.md) (untracked, not mine) | [code] |
+| Gun servo and motor | message id 200 -> `0x1400533f0` -> handler `0x140053870` (deadband 0.01, sqrt easing, `P^2 * Stats+0x108`, torque `mass/100`) | guns s1; [ref/engine-servo-error.md](../../ref/engine-servo-error.md) | [code] |
 | Parallax and lead | parallax in the handler; plain solver `0x1402333c0` / `0x1401a8780` (quadratic); accelerating solver `FUN_140233490` (ammo 52 only) | guns s1, s8, s9 | [code] |
 | AI aim angle | `AiWeaponController 0x14007a8d0` (aim stored `+0xbf8/+0xbfc`, lead `+0xbc8/+0xbcc`, one angle for all guns); tolerance 0.025 rad at `0x140354678` | guns s8; [ai/ai-intercept-targets.md](ai/ai-intercept-targets.md) (gate order, line 69) | [code]; tolerance re-read in section 3 below |
 | AI fire decision | same function: latch skip, `+0x860 <= 0` skip, range gates `+0x1838/+0x183c`, zoom, friendly-fire segment test `FUN_14021c790`; ammo re-roll `AiRerollAmmoFlags 0x140079810` | guns s8; [ai/ai-tick-patch-sites.md](ai/ai-tick-patch-sites.md); [ai/ai-intercept-targets.md](ai/ai-intercept-targets.md) | [code] |
@@ -33,7 +33,7 @@ This note does not repeat formulas; the linked section has the pseudocode and co
 | Strategic missiles | `FUN_1400eced0` (map level) | [strategic-missile-target-assignment.md](strategic-missile-target-assignment.md) | separate from combat |
 | Logic id table | `creatureLogic` dispatch, ids 100/110/120/135/200/400 read | [creature-logic-id-map.md](creature-logic-id-map.md) | ids 130/132/137/140/150/160/190/210 not read |
 | Cluster bomblets | `FUN_140032fb0`, `Projectile_ExplodeAndCluster` | [cluster-bomblet-ttl.md](cluster-bomblet-ttl.md) | partial |
-| Randomness of the above | FireShell spread/speed, AI ammo and launch rolls | [determinism-randomness-audit.md](determinism-randomness-audit.md) (untracked, not mine) | [code] |
+| Randomness of the above | FireShell spread/speed, AI ammo and launch rolls | [determinism-randomness-audit.md](determinism-randomness-audit.md) | [code] |
 
 ## 2. Superseded or wrong statements (read before using the old notes)
 
@@ -41,7 +41,7 @@ This note does not repeat formulas; the linked section has the pseudocode and co
 2. **blast-and-penetration.md, bullet 1: "a plain shell has 1 hp and dies from contact damage".** Wrong: contact damage is 0.003 to 0.3 against 1 hp. The detonation is `Projectile_DetonateOnImpulse`, see 1.
 3. **blast-and-penetration.md, last bullet "NOT decoded: ... whether the ship velocity is inherited".** Answered: inherited (guns s7, slope ~1 in the telemetry).
 4. **guns s1: "lead uses `FUN_140233490`".** Only for ammo 52 and targets beyond 300. The plain-shell solver is `0x1402333c0` / `0x1401a8780` (guns s9).
-5. **`hf_ml/DESIGN_NOTES.md`, section "ghidra-miner gun part 1"** (simulator's file, not edited here): "the shooter's Frame body gets the equal and opposite impulse (true recoil)" is wrong, recoil is applied only to the player's ship (guns s7). "Ship velocity added to the shell: not seen in the code" is answered, it is added.
+5. **the simulator's local design notes, section "ghidra-miner gun part 1"** (simulator's file, not edited here): "the shooter's Frame body gets the equal and opposite impulse (true recoil)" is wrong, recoil is applied only to the player's ship (guns s7). "Ship velocity added to the shell: not seen in the code" is answered, it is added.
 6. **guns s8: the target-speed clamp "for |v| > 200"** is flagged as non-monotonic; see section 3 below for the disassembly check.
 7. Shell mass table in guns s7 is computed from the `CreateShell?` literals, not read from a running game.
 

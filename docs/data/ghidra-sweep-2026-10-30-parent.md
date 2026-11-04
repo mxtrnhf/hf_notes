@@ -30,7 +30,7 @@ reference `Frame_BuildLinkList` instead of the old `FUN_` address.
 
 ## Doc cleanup (Phase 4 item 2)
 
-`hf_notes/docs/data/ghidra-changes-2026-10-29.md` had accumulated duplicated
+`docs/data/ghidra-changes-2026-10-29.md` had accumulated duplicated
 tails: a stale batch-7 documentation/counts block inside the Batch 10 section,
 a second full Batch 8 section, and three repeated `! functions` + `Left for a
 later pass` pairs (batch 7/8/9 text). Removed; the Batch 10 section now carries
@@ -51,8 +51,7 @@ behind it in `EventQueue.invokeAndWait`.
 Recovery: the Ghidra JVM was restarted (new pid 3194354, 17:47). The program
 was reopened from the shared project unchanged (5,430 function objects).
 
-Hardening applied to `/home/maksim/ghidra_scripts/EhWalk.java` (backup in
-`/tmp/opencode/EhWalk.java.bak`):
+Hardening applied to `EhWalk.java` (local Ghidra script bundle; backup outside the repo):
 
 * `readUnsigned` rejects any pointer outside `0x140000000..0x140400000` and
   zeroes the cursor, so a bad record ends the walk instead of running on.
@@ -65,7 +64,7 @@ and cannot be cancelled from outside the JVM.
 
 Side effect: the MCP tool catalog for the parent session dropped the Ghidra
 server when the bridge exited. All parent Ghidra work now goes through
-`/tmp/opencode/hf_ghidra_sweep/call.py` (direct UDS client, same API).
+`call.py` (direct UDS client, same API).
 
 Unsaved parent renames were lost in the restart and re-applied afterwards:
 `ResDesc_CopyBaseFields` (0x1401783c0) and `Frame_BuildLinkList` (0x1400458c0),

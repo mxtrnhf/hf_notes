@@ -75,7 +75,7 @@ No already-named function in this slice was proved wrong/misleading, so no
   suffix to name apart. `0x1400fb610` / `0x1400fbc10` — aircraft-group attack-waypoint and
   landing-approach state machines, both called only from `UpdateMapAircraftGroup`.
 
-All 24 rows were appended to `hf_notes/docs/data/rep-audit-2026-10-29-q1.tsv`; existing
+All 24 rows were appended to `docs/data/rep-audit-2026-10-29-q1.tsv`; existing
 rows untouched.
 
 ## Negative results
@@ -90,8 +90,8 @@ rows untouched.
 
 ## Output
 
-* 24 appended rows in `hf_notes/docs/data/rep-audit-2026-10-29-q1.tsv`.
-* Working dumps: `/tmp/opencode/hf_ghidra_sweep/b10a3_live.tsv`, `b10a3_allfunc.tsv`,
+* 24 appended rows in `docs/data/rep-audit-2026-10-29-q1.tsv`.
+* Working dumps: `b10a3_live.tsv`, `b10a3_allfunc.tsv`,
   `b10a3_meta.txt`, `b10a3_extra.txt`, `b10a3_names.txt`, `decomp/`.
 
 ## Counts

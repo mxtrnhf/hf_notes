@@ -1,6 +1,6 @@
 # Ally probe run 1 (hf_ally v0.3.1)
 
-Evidence report, not reference. Date 2026-10-15, Steam 1.163 under Proton, campaign fights, `ally_mode = 0`, log `Highfleet_2026-10-15_19-05-48.log`. Tags: legend in `../../README.md`. Method: for the first 60 s of each battle (or until it ends) the mod writes one `ALLY probe ally` and one `ALLY probe enemy` line per game second (the enemy is the one nearest to the ally at that moment), and counts launches and shots every frame. Summary script: `hf_ally/tools/probe_summary.py`.
+Evidence report, not reference. Date 2026-10-15, Steam 1.163 under Proton, campaign fights, `ally_mode = 0`, log `Highfleet_2026-10-15_19-05-48.log`. Tags: legend in `../../README.md`. Method: for the first 60 s of each battle (or until it ends) the mod writes one `ALLY probe ally` and one `ALLY probe enemy` line per game second (the enemy is the one nearest to the ally at that moment), and counts launches and shots every frame. Summary script: `highfleet-allies/ally/tools/probe_summary.py`.
 
 ## Numbers [game]
 Three battles, 29, 39 and 42 probe seconds. All lines were in state 1 (attack) for both sides, mode 0 for both.

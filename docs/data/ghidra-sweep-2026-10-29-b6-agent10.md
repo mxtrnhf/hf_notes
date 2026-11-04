@@ -10,11 +10,11 @@ which slots already have a function object.
 
 | file | change |
 |---|---|
-| `hf_notes/docs/structures.md` | eight edits, listed below |
-| `hf_notes/docs/data/ghidra-changes-2026-10-29.md` | new "Batch 6" section skeleton (placeholders only) |
-| `hf_notes/docs/data/rep-audit-2026-10-29.md` | new — one-line format note + provenance for the consolidated TSV |
-| `hf_notes/docs/data/rep-audit-2026-10-29.tsv` | consolidated audit table (see "Audit TSV" below) |
-| `hf_notes/docs/data/ghidra-sweep-2026-10-29-b6-agent10.md` | this note |
+| `docs/structures.md` | eight edits, listed below |
+| `docs/data/ghidra-changes-2026-10-29.md` | new "Batch 6" section skeleton (placeholders only) |
+| `docs/data/rep-audit-2026-10-29.md` | new — one-line format note + provenance for the consolidated TSV |
+| `docs/data/rep-audit-2026-10-29.tsv` | consolidated audit table (see "Audit TSV" below) |
+| `docs/data/ghidra-sweep-2026-10-29-b6-agent10.md` | this note |
 
 ## `structures.md`
 

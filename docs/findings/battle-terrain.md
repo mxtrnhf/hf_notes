@@ -23,7 +23,7 @@ Builds a polyline `P[i] = (x_i, y_i)`, global array at `0x14801fd30` (x, y float
 * `x_0 = -size/2`, `y_0 = 0`; then `x` steps by **150** up to `+size/2`.
 * `y = -(cos(x * 0.0020943952 + 0.4) + 1) * 0.5 * 400 * env * hill + noise(seed, (x + size/2)/size)` with `env = clamp(1 - (x/1500)^2, 0, 1)` (period 3000, hills only inside |x| < 1500, i.e. under the arena; amplitude up to 400 units times `hill`).
 * Smoothing pass(es): each point is clamped to within **+-50** of its neighbour (max slope 50/150 = 1/3, 18 deg).
-* The sign (y = -height) matches the render code (`screenY = H/2 - h - 100`); the game's y axis points down, and the logged flights put the ground at y +160..+420 (older estimate in `runs/ai-underside.md`).
+* The sign (y = -height) matches the render code (`screenY = H/2 - h - 100`); the game's y axis points down, and the logged flights put the ground at y +160..+420 (older estimate in `../runs/ai-underside.md`).
 The noise term is resolved in section 7 (10-octave Perlin sum, amplitude `L1`).
 
 ## 4. Query [V]
@@ -31,7 +31,7 @@ The noise term is resolved in section 7 (10-octave Perlin sum, amplitude `L1`).
 
 ## 5. Physical ground and collision [V, partly]
 After the polyline the generator copies prototype bodies (`CopyObject` from the preloaded libraries `Objects/Land` = `lnd_close_01..06` and `Objects/Rock` = `lnd_rock_01..06`, loaded in `PreLoadLibraries`; all are static polygon Bodies, `m_density 0`, `m_health 1e10`) and places one **`lnd_brick`** body per ground segment (midpoint, rotated to the segment slope), sets `Body+0x1f0 = 0x1f` (collision-layer mask), stage `+0x8d8 = 0x2a`, `+0x2d0 = 1` style flags, and rectangle fixtures from the body's bbox (`+0x21c`, `+0x218`). Decorative `lnd_rock` bodies (stage 0x29) are placed by the editor drag tool (`memcmp_editor` calls `Editor_DragPlaceRocks` `0x1400c0560`), not by combat.
-Collision: Box2D's own filter never blocks (category 1, mask 0xFFFF); the decision is `b2CFilter::ShouldCollide` `0x1402858c0` rule 1: collide only if `(A+0x1f0 & B+0x1f0) != 0` ([box2d-physics-setup.md](box2d-physics-setup.md) section 5). The brick mask is `0x1f`; I did **not** read the ship parts' `+0x1f0`. That ships do collide is shown by landed enemies (legs on the ground, `runs/ai-intrepid-benchmark.md`) and by the existing leg rule in [landing-legs.md](landing-legs.md). Ground contact damage goes through the normal contact path ([contact-damage-and-fire.md](contact-damage-and-fire.md)); the ground cannot be damaged (health 1e10, invulnerable flag).
+Collision: Box2D's own filter never blocks (category 1, mask 0xFFFF); the decision is `b2CFilter::ShouldCollide` `0x1402858c0` rule 1: collide only if `(A+0x1f0 & B+0x1f0) != 0` ([box2d-physics-setup.md](box2d-physics-setup.md) section 5). The brick mask is `0x1f`; I did **not** read the ship parts' `+0x1f0`. That ships do collide is shown by landed enemies (legs on the ground, `../runs/ai-intrepid-benchmark.md`) and by the existing leg rule in [landing-legs.md](landing-legs.md). Ground contact damage goes through the normal contact path ([contact-damage-and-fire.md](contact-damage-and-fire.md)); the ground cannot be damaged (health 1e10, invulnerable flag).
 
 ## 6. Not established
 * (Done, section 7: call sites mapped, noise and zero level resolved.) Still the cheapest ground truth: log the polyline (`0x14801fd30`, count `0x14800ee1c`) at battle start from a probe.

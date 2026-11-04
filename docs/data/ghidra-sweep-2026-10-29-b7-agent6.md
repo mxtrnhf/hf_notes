@@ -17,8 +17,8 @@ function object. **149 created + named + plated, 1 skipped/recorded.**
   its target, no body overlaps the next function entry, and every one has a
   plate.
 
-Name map produced by the pass: `/tmp/opencode/hf_ghidra_sweep/cinit_live.tsv`;
-plate source: `/tmp/opencode/hf_ghidra_sweep/cinit_plates.tsv`.
+Name map produced by the pass: `cinit_live.tsv`;
+plate source: `cinit_plates.tsv`.
 
 ## Corrected pattern (supersedes b6 agent 9's description)
 

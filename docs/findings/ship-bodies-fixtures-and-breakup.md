@@ -35,7 +35,7 @@ For up to 8 vertices (`n = min(mesh vertex count, 8)`: the FIRST 8 in mesh order
 
 ### (5) Density and skin  [V + guess]
 * Fixture density = `0.05 * Body_GetFixtureDensity(part)` = `0.05 * min(part +0x218, part +0x21c) * part +0x1d0` where `+0x218/+0x21c` are the mesh bounding-box WIDTH and HEIGHT (`+0x210/+0x214` its centre). Friction `+0x1d4`, restitution 0.001, filter category 1 / mask 0xffff.
-* The polygon radius (0.01) does not enter `ComputeMass` in standard Box2D 2.3 (it uses the vertices only) [guess: the game's Box2D is stock 2.3; the project ships `Box2D-2.3.2.tar.gz` in `hf_ml`].
+* The polygon radius (0.01) does not enter `ComputeMass` in standard Box2D 2.3 (it uses the vertices only) [guess: the game's Box2D is stock 2.3; the project ships `Box2D-2.3.2.tar.gz` in the local simulator repo].
 
 ### What I would check next (cheap, decisive)
 Mass matching to 1e-5 but COM/inertia off points at geometry. Candidates, in order: (a) meshes with MORE than 8 vertices: the game keeps only the first 8 (then hulls them); (b) concave meshes: hull vs your raw polygon; (c) the rotation matrix `+0x8fc` vs the angle (mounted parts); (d) parts you give a fixture that the game does not (no mesh) or that live under a non-Frame master. A one-shot probe dump of the Frame b2 body's fixture list (vertex count and the first fixture's vertices) for ONE small ship would settle (a)-(c).

@@ -1,6 +1,6 @@
 # Seam test, runs 1 and 2 (probe v2.2, 2026-10-14; run 1 at 18:01) [game, observed unless marked]
 
-Goal: find where extra text can be drawn on the map, battle/city and menu screens, as the editor label pass (`0x140303fb4`) allows in the editor. Log: `hf_probe_build/logs/2026-10-14_1801_v2.2/probe.log`, probe `t = 0` is `18:01:09`.
+Goal: find where extra text can be drawn on the map, battle/city and menu screens, as the editor label pass (`0x140303fb4`) allows in the editor. Log: the local 2026-10-14 18:01 probe run, probe `t = 0` is `18:01:09`.
 
 ## Method [code]
 Probe 2.2 wraps every `call 0x140083b50` (flush) in three renderers with a trampoline: call the flush, then draw a label. 79 sites: map `M00..M18` (renderer `0x14030a6b0`, sites in [render-pipeline.md](render-pipeline.md)), battle `B00..B28` (`0x1403050a0`), other `O00..O30` (`0x14030f250`). Label = id in `fixed_16`, white, blend 2, at x=1890 right-aligned and x=760 left-aligned, y = 40 + 17 * id (a second column for ids from 40). `F7` toggles drawing; `SEAMS hits/5s` lines count hits per seam.
@@ -20,7 +20,7 @@ Probe 2.2 wraps every `call 0x140083b50` (flush) in three renderers with a tramp
 * B00-B09: faded or glitched (under glitch/blur layers).
 * Map M16 and especially M17: **inside the glitch distortion pass**, labels glitch (user report).
 * Map M08/M09: labels at wrong positions (about x 480-490, y 44 and 114 in 2000 px screenshot coordinates; a 70 px gap instead of 17 px), so a transformed layer [guess: map world space].
-* M14-M16 visible on dialogue frames. M13-M15 are not visible in the Esc-menu screenshots.
+* M14 and M15 are visible on dialogue frames; M16 glitched there in run 1 (see above). M13-M15 are not visible in the Esc-menu screenshots.
 
 ## Static check (Ghidra read-only, objdump) [code]
 After flush M05 (`0x14030c639`): `[0x1403bd09f]` is read at `0x14030c673`; if set, one global sprite is drawn (`0x1401725c0`) and flush M06 (`0x14030c721`) runs. The map has no `0x1400835a0` binds; it uses the bind variant `0x1400834e0` once.
@@ -32,7 +32,7 @@ After flush M05 (`0x14030c639`): `[0x1403bd09f]` is read at `0x14030c673`; if se
 * `TEXT` `LOCATION_NAME_*` keys are requested for every map city on the first map frame (caller `+0x1ae078`).
 
 ## Run 2: map only (probe.json `seam_only` M10-M16) [game, observed]
-Log: `hf_probe_build/logs/2026-10-14_run_map_clean_v2.2/probe.log`; 7 screenshots in `hf_probe_build/seams_screenshots_2` (real strategic map inside the cockpit frame, no dialogue: docked, flying, zoomed, panned, paused).
+Log: the local `run_map_clean` probe run; 7 screenshots in the local `seams_screenshots_2` folder (real strategic map inside the cockpit frame, no dialogue: docked, flying, zoomed, panned, paused).
 * **Seam ids in a filtered run are positions in the filtered list**, so y = 40 + 17 * position: M10 y=40, M11 y=57, M12 74, M13 91, M14 108, M15 125, M16 142. Labels are at x=760 (left aligned) and x=1890 (right aligned, over the launch-controls panel).
 * **M11 and M16 are drawn on top of the whole cockpit frame, clean (no glitch), in fixed screen space**: same screen position while the map is panned, zoomed, paused and with the fleet flying; both x copies visible.
 * **M10 was not visible anywhere**: hidden under the cockpit frame and panels at both x positions, although it fires about 75 % of frames [observed absence].
@@ -42,7 +42,7 @@ Log: `hf_probe_build/logs/2026-10-14_run_map_clean_v2.2/probe.log`; 7 screenshot
 * Keys seen as `KEY` lines: F7 toggles the labels (at 27.4, 28.0, 28.8, 29.0, 76.8, 77.1 s), Esc, WASD.
 
 ## Live-test recipe for the map seam
-1. Install probe v2.2; copy `hf_probe_build/run_map_clean/Modloader/config/probe.json` (keeps M10-M16 only).
+1. Install probe v2.2; copy the local `run_map_clean` probe config (keeps M10-M16 only).
 2. Take screenshots with **no dialogue open**: map docked; fleet flying; zoomed in and out; panned; a city selected; a panel open.
 3. Per label: readable? at the right place? stable under zoom and pan? glitching? Pick the highest clean seam; prefer one that fires every frame (M10 and M12-M15 are conditional).
 4. Check `SEAMS hits/5s` for that seam on the same screen.
