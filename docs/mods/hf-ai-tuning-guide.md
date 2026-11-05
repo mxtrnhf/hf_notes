@@ -1,8 +1,8 @@
 # Tuning hf_ai: a plain-language guide (v0.9.0, archived)
 
-> **Archived.** This page describes `hf_ai` v0.9.0 and is kept for history. The current guide (v0.10.13) is maintained in the public `mxtrnhf/highfleet-allies` repo (`docs/hf-ai-tuning-guide.md`), with the complete key list in `docs/hf-ai-config-reference.md`.
+> **Archived.** This page describes `hf_ai` v0.9.0 and is kept for history. The current guide (v0.10.15) is maintained in the public `mxtrnhf/highfleet-allies` repo (`docs/hf-ai-tuning-guide.md`), with the complete key list in `docs/hf-ai-config-reference.md`.
 >
-> What changed after v0.9.0: `twr_cutoff` replaced the per-tactic acceleration gates (0.10.4); `tactics.apply_to_allies` was renamed `tactics.allies` (0.10.5); strafe/band positioning was removed (0.10.6); curtain sheltering was retired (0.10.11); aim dodging became universal (enemies dodge player and ally aim, allies dodge enemy aim); early fire moved from fire-byte writes to a detour of the native group-0 range gate (0.10.12); dive/aim/panic boosts now dash (0.10.13). The public preset has 49 leaf settings. Telemetry keeps being developed locally, but it is not in public builds since v0.14.3; older `highfleet-allies` commits/releases still contain it.
+> What changed after v0.9.0: `twr_cutoff` replaced the per-tactic acceleration gates (0.10.4); `tactics.apply_to_allies` was renamed `tactics.allies` (0.10.5); strafe/band positioning was removed (0.10.6); curtain sheltering was retired (0.10.11); aim dodging became universal (enemies dodge player and ally aim, allies dodge enemy aim); early fire moved from fire-byte writes to a detour of the native group-0 range gate (0.10.12); dive/aim/panic boosts now dash (0.10.13); Creature/Body/PartStats/AircraftLogic offsets moved to highfleet-rs `05c6207` (0.10.14); dive denial now requires an airborne target and tactical courses retain the ground-clearance floor with boosts disabled at/below it (0.10.15). The public preset has 49 leaf settings and is unchanged since 0.10.11. Telemetry keeps being developed locally, but it is not in public builds since v0.14.3; older `highfleet-allies` commits/releases still contain it.
 
 Written 2026-10-24 for the person who tunes the AI, not for the person who reads the code. Every number below is a key in `Modloader/config/hf_ai.json`; the code defaults are in `highfleet-allies/ai/src/tactics_math.rs` (`TacticsParams::default`) and `flares_config.rs`. Where I only know something from reading the code and not from playing, it says so.
 
@@ -17,7 +17,7 @@ Yes, with two corrections.
 ## 2. What happens every tick
 
 1. **Gates** (cheap checks first). hf_ai stays out (`stock`) unless: the ship is AI-flown (never the ship you fly), it is airborne (mode 1), it has a living target that is not itself, the arena bounds are readable, and the ship is on a side that is allowed (enemy always; your allies only with `tactics.allies`, renamed from `apply_to_allies` in v0.10.5).
-2. **Thrust gate.** The ship's acceleration (thrust / mass, in m/s^2; Lightning ~128, Intrepid ~56, heavies like Gryphon ~22) must reach the top-level `twr_cutoff` (default 2.0 strategic TWR; the old `dive_min_accel` / `min_accel` keys were retired in v0.10.4). Heavy ships below the cutoff keep stock behaviour. If a big ship "never does anything", this is why.
+2. **Thrust gate.** The ship's acceleration (thrust / mass, in m/s^2; Lightning ~128, Intrepid ~56, heavies like Gryphon ~22) must reach the top-level `twr_cutoff` (default 2.0 strategic TWR; the old `dive_min_accel` / `min_accel` keys were retired in v0.10.4). Heavy ships below the cutoff keep stock steering/manoeuvring behaviour (current hf_ai still allows flare bursts and curtain drops below it). If a big ship "never dodges", this is why.
 3. **Priority order** (first match wins): **panic** > **aim** > **dive** > **strafe (far / band / close)** > stock.
 4. The winning state produces a direction. It is mixed with the game's own direction as `stock_direction + weight * tactic_direction` and re-normalised, so a large weight means "mostly my direction", weight 0 means stock. Ground, arena edges and "never steer down when low" limits are applied after.
 5. Some states ask for an engine boost (like holding Shift). In v0.9.0 the boost was applied by the `ai_flares` engine hook; since v0.10.11 `dive_boost` / `aim_boost` work independently of `ai_flares.enabled`, and since v0.10.13 values above 1.0 also dash along the dodge direction.
@@ -83,9 +83,9 @@ Unconfirmed in play: whether allies really dodge as intended. The ally curtain a
 3. **Look at the replay**, not only the CSV: `build_viz.py` builds an HTML replay from the telemetry (the local `visualizer/` folder).
 4. **Measure, then judge.** Useful numbers: share of enemy missiles that hit; share of curtain drops still in the air when the missile arrives (target: most); how often each `state` appears; time under your keel before the ship moves (dive); damage taken per minute. Do not judge from one fight: dice are rolled per ship.
 5. **Safe order for a "harder" AI:** raise `reaction_probability`, then the dive weights, then the aim window frequency, last the early fire. For an "easier" one reverse it. Early fire is the one that makes the AI visibly dangerous, so move it in steps of 0.1.
-6. **Pitfalls.** (a) Since v0.10.11 boosts work independently of `ai_flares.enabled`. (b) Qol's own `ai_flares` must be false while hf_ai's is true: both patch the same sites. (c) A ship below `twr_cutoff` never does anything, so heavies feel "stock". (d) Settings are read at game start (no hot reload; restart the game after editing). (e) Wrong key names are silently ignored (every key is optional), so check the `hf_ai: tactics ON (...)` log line shows your numbers.
+6. **Pitfalls.** (a) Since v0.10.11 boosts work independently of `ai_flares.enabled`. (b) Qol's own `ai_flares` must be false while hf_ai's is true: both patch the same sites. (c) A ship below `twr_cutoff` never uses tactics or missile manoeuvres, so heavies feel "stock" (current hf_ai still releases flares and curtains below it). (d) Settings are read at game start (no hot reload; restart the game after editing). (e) Wrong key names are silently ignored (every key is optional), so check the `hf_ai: tactics ON (...)` log line shows your numbers.
 
-## 6. Release defaults (current: pack v0.14.15, hf_ai 0.10.11-0.10.13)
+## 6. Release defaults (current: pack v0.14.17, hf_ai 0.10.11-0.10.15)
 
 `enabled` true; `twr_cutoff` 2.0; `ai_flares`: enabled, allies, evade, `panic_evasion_probability` 0.1 (installed config 0.4), `launch_flares_probability` 0.6, `log_panic` false, `launch_flares_evade_range` 400, everything else at the code defaults; `tactics`: enabled, allies, dive and aim enabled, `dive_dwell_s` 0.5, `dive_cooldown_s` 2.0, `aim_chance` 0.75, `aim_fire_probability` 0.5; `ai_missile_dump_chance` 0.4. The v0.9.0 keys `apply_to_allies`, `strafe_enabled`, `dive_min_accel`, `min_accel` and `launch_flares_shelter` no longer exist.
 
@@ -104,7 +104,7 @@ All keys live in `Modloader/config/hf_ai.json`. Keep a `.bak`, change one line, 
 | The AI is too easy to hit with missiles | The opposite: raise `reaction_probability`, `trigger_range` (400) and `stray_missile_*` radius. |
 | Ships keep shooting at me from below | Section 3.3: lower `dive_under_dwell_s`, raise `dive_weight` / `dive_boost`. |
 | Enemies hit me too early or from far away | `aim_fire_probability` to `0` turns off early fire. |
-| Heavy ships never dodge | Not a bug: below the top-level `twr_cutoff` (2.0) they keep stock behaviour. Lowering it makes slow ships twitch. |
+| Heavy ships never dodge | Not a bug: below the top-level `twr_cutoff` (2.0) they keep stock manoeuvring (current hf_ai still drops flares). Lowering it makes slow ships twitch. |
 
 ## 8. Why flares start at "wrong" times (what the code does)
 

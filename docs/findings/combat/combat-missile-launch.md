@@ -1,6 +1,6 @@
 # Combat missile launch: how enemy ships fire Zenith (1.163)
 
-Status: **launch path found by reading plus in-game probes; one mod patch (burst) confirmed in game.** Tags: legend in `../../README.md`. Addresses are 1.163. Evidence date 2026-10-15 (qol fork debug build, three tactical battles).
+Status: **launch path found by reading plus in-game probes; one mod patch (burst) confirmed in game.** Tags: legend in `../../README.md`. Addresses are 1.163. Evidence date 2026-10-15 (qol fork debug build, three tactical battles); the burst section was refreshed on 2026-11-05 for `hf_ai` v0.10.15.
 
 ## What a Zenith is
 * `MDL_MISSILE_01` ("R-5 ZENITH"): stats index **130** (Body `+0x188`), `m_category=16384` (0x4000), anti-ship module, `m_missile_explosive=300`, `m_missile_ap=30` [game]. Its `m_launched_*` stats feed the map-level missile code; it has no `m_weapon_caliber`, so it is not fired through `FireGuns -> FireGun -> FireShell` [code].
@@ -25,7 +25,7 @@ A probe wrapping the call at `0x140037809` logged every part leaving a ship: all
 * The map-level launch (`FUN_1400eced0`, timer `fleet+0x50c` = 300.0, store at `0x1400ed598`) is strategic-map missiles only and does not affect combat launches.
 
 ## Our patch: burst (now in `hf_ai`, `ai/src/missile_dump.rs`; originally the QoL fork branch `ai-flares`, the old branch kept as tag `old/ai-missile-dump`)
-`ai_missile_dump_chance` (0.0 = vanilla). Replaces the 5-byte call at `0x140065edb` with a patchy `patch_call` wrapper (`ReturnType::Rax`, arguments pass through) that calls `FUN_14002ff60` and, when the launcher's owner has side < 0 (`owner+0xad4`) and a random roll is below the chance, returns 0 although the launch succeeded (the roll site is `0x140065c6c`, the wrapped call `0x140065edb`). The loop then goes on to the next launcher in the same tick. **Confirmed in game: a ship launched 4 missiles at the same moment.** Caveats: a burst that uses the whole list never starts the 2.0 s cooldown; no cap on burst size. Site owner: `hf_ai` (`ai/src/missile_dump.rs`), moved from the highfleet-qol fork.
+`ai_missile_dump_chance` (0.0 = vanilla). Two patchy call-site wrappers are used: the random roll at `0x140065c6c` and the launch call at `0x140065edb` (`ReturnType::Rax`, arguments pass through). The launch wrapper calls `FUN_14002ff60`; when the launcher's owner is eligible (side < 0, or an allied AI ship when `ai_flares.allies` or `tactics.allies` is on) and a random roll is below the chance, it returns 0 although the launch succeeded and starts a burst. The roll wrapper then makes the next stock launch attempt pass only after `ai_missile_dump_min_delay..max_delay` (default 0.6-1.5 s). Later launchers in the same tick are suppressed until that time. Every launch rolls again, so a burst continues until a roll fails; a burst that cannot launch times out after 4 s. This replaces the earlier same-tick behaviour (the in-game "4 missiles at the same moment" observation belongs to that pre-delay build), and it is no longer accurate to say the burst has no cap. Site owner: `hf_ai` (`ai/src/missile_dump.rs`), moved from the highfleet-qol fork.
 
 ## Method notes
 1. Wrapping a call site with `patch_call` and logging is a quick test of whether a function is reached; the arguments arrive as at the original call (up to four register arguments verified, stack arguments not).
@@ -33,7 +33,7 @@ A probe wrapping the call at `0x140037809` logged every part leaving a ship: all
 3. Offset search: list every instruction that writes a field (for example `+0x8b0`) with the `search_instructions` tool to see which functions really use it.
 
 ## Open [guess]
-The ship launch gate reads the cooldown at `0x140065dac` (`MOVSS XMM0,[R14+0xd60]`, 9 bytes). A controlled short delay between burst launches would need that gate (and the ~1% roll) changed; not done.
+The ship launch gate reads the cooldown at `0x140065dac` (`MOVSS XMM0,[R14+0xd60]`, 9 bytes). The current burst does not edit that gate: it spaces launches by overriding the roll at `0x140065c6c`, so the stock 1% roll and the 2.0 s cooldown are bypassed only while the burst state is active. A burst that never gets a successful launch expires after 4 s.
 
 ## Player input, list rebuilds, anti-air launchers and part copies
 Moved from the retired `systems.md` (2026-10-19).

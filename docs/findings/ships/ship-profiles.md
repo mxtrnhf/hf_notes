@@ -1,6 +1,6 @@
 # Ship self-knowledge profiles: how the game computes mass, TWR and reach (1.163)
 
-Status: derived from the `.seria` files and validated against the game's own stored `m_tele_*` values (164 designs) and telemetry. The profile tables are not yet consumed by the AI; the strategic-TWR scalar is (hf_ai v0.10.8+). Data and details: the local `tuning_telemetry/ship_profiles/` (`report.md`, `ship_profiles*.json`, `scripts/`). Purpose: let the hf_ai tactic layer derive "this ship is quick / heavy / short-ranged" from numbers instead of hard-coded ship rules. Tags: [code], [data], [guess].
+Status: derived from the `.seria` files and validated against the game's own stored `m_tele_*` values (164 designs) and telemetry. The profile tables are not yet consumed by the AI; the strategic-TWR scalar is (hf_ai v0.10.8+, still used in v0.10.15). Data and details: the local `tuning_telemetry/ship_profiles/` (`report.md`, `ship_profiles*.json`, `scripts/`). Purpose: let the hf_ai tactic layer derive "this ship is quick / heavy / short-ranged" from numbers instead of hard-coded ship rules. Tags: [code], [data], [guess].
 
 * `Creature::CalculateStats` = `0x14007fcf0` (calls the per-part accumulator `FUN_140071380`). Mass (+0x15b8) = sum of `m_mass` (body +0x1d8) over bodies with a null/root master; no fuel or ammo mass. Engines add stats +0xf8 to bank +0x1664 (spasmcode 102, left) or +0x1668 (103, right). Battle TWR (+0x1604) = (L+R)/(mass x 9.82), 0 if a bank is empty, not damage-scaled; map TWR (+0x160c) uses the map thrust (damage-scaled); map speed = 50 x sqrt(map TWR - 1). [code]
 * Gun reach (creature +0x1838 / +0x183c per fire group) is a caliber table: 37/57mm 800, 100/130mm 1500, 180/203/305mm 3000, 220mm rocket 6000, else 1000; 500 with AP loaded. [code]
@@ -14,10 +14,12 @@ Verified against the live Steam 1.163 Ghidra program: `displayinShipworks?`
 (`0x1400d6f70`) reads the float at creature `+0x160c` at `0x1400d7443`, converts
 it to double and passes it to the numeric TWR display (`0x1400d7489`), following
 the `TWR_STAT` label. This is the shipbuilder's strategic TWR, not battle TWR at
-`+0x1604`. hf_ai v0.10.8 uses the same guarded scalar read for `twr_cutoff`;
-comparison uses the unrounded value and is inclusive. Existing maneuver scopes,
-flare exceptions and the zero-cutoff bypass are unchanged. Upstream highfleet-rs
-at `8a6a8a399d89af035adb0087b19ac1021fc9c2f8` has no Creature layout.
+`+0x1604`. hf_ai v0.10.8 through v0.10.15 use the same guarded scalar read for
+`twr_cutoff`; comparison uses the unrounded value and is inclusive. Existing
+maneuver scopes, flare exceptions and the zero-cutoff bypass are unchanged.
+The pinned highfleet-rs revision `05c6207` now models the `Creature` layout used
+by hf_ai, but it does not model `+0x160c`; that field stays local in
+`ai/src/native_layout.rs` / `ai/src/lib.rs`.
 Native display/offset verified statically; new cutoff behavior still needs an
 in-game A/B check.
 

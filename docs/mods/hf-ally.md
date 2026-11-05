@@ -42,6 +42,7 @@ Seen: several allies, replacement after a retreat order, per-ship buttons, summa
 | 0.13.0 to 0.13.5 (2026-10-25 to 10-28) | custom aircraft / loadouts read from the game's craft and ammo tables; PLAYER / plane labels hidden once pre-combat is gone and under the Esc shade (0.13.4); ally ammo doctrine and the refund fixes (0.13.3 then 0.13.5) |
 | 0.13.6 to 0.13.7 (2026-10-28) | `extra_gunpod`; 0.13.7 disables the vanilla class-3 stock draw for every chosen loadout |
 | 0.14.0 to 0.14.15 (2026-10-30 to 11-04) | HEX ally damage colour (0.14.0); GLITCH-off label fix (0.14.1); enemy waves, ally ship bombers, crash fixes moved to QoL, public telemetry removed (0.14.3); ally ship panels and target boxes (0.14.4); combat ship switching and reticle scale (0.14.5); panel marker fixes (0.14.6-0.14.10); pre-combat buttons follow moving cards and the plane column follows its ship (0.14.11-0.14.13); debug overlay with hf_ai state and waypoints (0.14.14-0.14.15) |
+| 0.14.16 / 0.14.17 (2026-11-05) | highfleet-rs `05c6207` layouts for aircraft/loadout, Creature, AircraftLogic, PartStats and Body (0.14.16); stock pre-combat button click sound (0.14.17, local build) |
 
 Per-version commits: `git log` in `highfleet-allies` (`ally/`).
 

@@ -1,9 +1,11 @@
 # Hot-editing `hf_ai.json` (and `ally.json`) without restarting: source study (2026-10-27)
 
+**Historical note (2026-11-05):** this study was written against `hf_ai` v0.10.0. At v0.10.15 the conclusion still holds (no config reload), but the line numbers, the `Params` type name, the `log_scan` hooks and the logging details below are from v0.10.0; public telemetry and scan logging were removed in v0.14.3.
+
 Question: can testers edit `Modloader/config/hf_ai.json` and see the change without restarting the game? Method: read `hf_ai` (then v0.10.0, now in `mxtrnhf/highfleet-allies` under `ai/`; `src/lib.rs`, `tactics.rs`, `ai_flares.rs`, `missile_dump.rs`, `*_config.rs`) and `hf_ally` (`highfleet-allies/ally/src/lib.rs`) by hand. No code was changed and nothing was run. The game-side frame-loop facts come from [hot-reload-feasibility.md](../engine/hot-reload-feasibility.md).
 
 ## Short answer
-**Yes, for hf_ai, with a modest change (roughly 150 to 250 lines, one new module), and no game patching beyond what hf_ai already does.** Today nothing re-reads the file: `init()` reads it once (`lib.rs`, `CONFIG_PATH`), there is no reload or mtime code in either mod (grep of both source trees), and [`hf-ai-tuning-guide.md`](../../mods/hf-ai-tuning-guide.md) pitfall (d) says "restart the game after editing". The blockers are in how the config is stored and which hooks get installed, not in the game.
+**Yes, for hf_ai, with a modest change (roughly 150 to 250 lines, one new module), and no game patching beyond what hf_ai already does.** At v0.10.15 nothing re-reads the file: `init()` reads it once (`lib.rs`, `CONFIG_PATH`), there is no reload or mtime code in either mod (grep of both source trees), and [`hf-ai-tuning-guide.md`](../../mods/hf-ai-tuning-guide.md) pitfall (d) says "restart the game after editing". The blockers are in how the config is stored and which hooks get installed, not in the game.
 
 ## Why it does not work today (hf_ai, all `[code]`)
 1. **Write-once storage.** `tactics.rs:33` `static PARAMS: OnceLock<Params>` (set in `tactics::init`, `PARAMS.set` ignores a second call). `ai_flares.rs:191` `static RUNTIME: OnceLock<Runtime>`; `Runtime` holds the whole sanitized `AiFlaresConfig`, the derived `Params` and `curtain_math::Params`, plus function pointers and addresses; set in `patch_ai_flares` (`RUNTIME.set(..)`, a second set logs "already prepared"). Readers: `tactics.rs:217`, `ai_flares.rs:648, 1146, 1165, 1250, 1316`.
@@ -12,7 +14,7 @@ Question: can testers edit `Modloader/config/hf_ai.json` and see the change with
    * the five `ai_flares` sites and the flare-hook detour (`0x14007f864`): only when `ai_flares.enabled` was true at start (`prepare(config.ai_flares.enabled, ..)`). If the key was false at start, flipping it later changes nothing.
    * engine-command boost hook (`BOOST_RVA`): only if the config at start asked for a boost (`panic_boost > 1` with panic evasion, a barrel roll, a curtain boost, or tactics `dive_boost`/`aim_boost` > 1; see `patch_ai_flares`, variable `boost`).
    * missile dump hooks (`0x140065c6c`, `0x140065edb`): only if `ai_missile_dump_chance > 0` at start (`patch_ai_missile_dump` returns early otherwise).
-   * scan-log hooks: only with `log_scan` at start.
+   * scan-log hooks: only with `log_scan` at start (v0.10.0-era telemetry; removed from public builds, ignore for current hf_ai).
 3. **A few values are copied once into statics at init** (`INCLUDE_ALLIES`, `LOG_HZ`, `LOG_STEERING`, `DIVE_BOOST`, `AIM_BOOST`, `ENABLED`). Most of these are already atomics, so a reload only has to store them again. `INCLUDE_ALLIES` is stored only inside `patch_ai_flares`.
 
 ## What is already easy
@@ -32,7 +34,7 @@ Question: can testers edit `Modloader/config/hf_ai.json` and see the change with
 
 ## What stays restart-only (or needs a decision)
 * `enabled` (master) as a way to remove hooks; with the always-install rule it becomes a runtime gate instead.
-* `log_scan` hooks (they hook the scan code; same always-install option, but they cost 50 Hz per ship, so keep this one restart-only).
+* `log_scan` hooks (v0.10.0 telemetry only; removed from public builds, so no current decision is needed).
 * The build/version guards (`Steam 1.163`, image base, site bytes): startup only.
 * The first line of the log row files (battle ids, file names): unaffected.
 

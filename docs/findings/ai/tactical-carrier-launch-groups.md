@@ -1,7 +1,7 @@
 # Tactical AI carrier launch groups (Steam 1.163)
 
 Status: code and bytes checked against the live Ghidra program on 2026-10-30;
-implemented in hf_ai v0.10.3 and still present in v0.10.13. In-game validation is reserved for the user.
+implemented in hf_ai v0.10.3 and still present in v0.10.15 (the plane-group code moved to highfleet-rs Body layouts in v0.10.14, with no behaviour change). In-game validation is reserved for the user.
 This is separate from strategic `TryLaunchAiAircraftGroup` at `0x1400ef910`.
 
 ## Stock tactical flow
@@ -60,7 +60,7 @@ cadence with size 1, failed-attempt cancellation, clock resets/staleness,
 independent carriers, and invalid configuration. Automated tests were removed in hf_ai v0.10.8, so these are historical; Windows builds are compile-only;
 no DLL or game is executed by the agent.
 
-User test recipe: HighFleet Steam 1.163, hf_ai v0.10.3 or newer (current v0.10.13), the two new defaults.
+User test recipe: HighFleet Steam 1.163, hf_ai v0.10.3 or newer (current v0.10.15), the two new defaults.
 Start Combat.seria against a carrier with at least three ready aircraft and a
 clear deck. Expect launches near t, t+0.5, t+1.0, then the stock six-second wait.
 Repeat with allied AI and multiple carriers; with only one/two ready planes;

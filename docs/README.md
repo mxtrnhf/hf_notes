@@ -86,7 +86,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/ships/ship-profiles.md](findings/ships/ship-profiles.md) | how the game computes mass, TWR and gun reach, validated profiles of 20 designs for the AI self-knowledge data |
 | [docs/findings/ships/battle-ally.md](findings/ships/battle-ally.md) | the AI ally in battle (`hf_ally`, running in game): what makes a Creature AI-run, how the vanilla deploy spawns the ally, the retreat point and extraction (why a promoted ship could not retreat), the ORDER role table in `+0xd70` (1 unset, 2 bombing, 3 support), prize ships and trade convoys, ally flares, the AI's ammo flags, checklist, AI plan |
 | [docs/findings/ai/ai-obstacle-hook-sites.md](findings/ai/ai-obstacle-hook-sites.md) | byte-exact AI obstacle-scan and steering hook sites for `hf_ai`: stolen-byte counts, scan call, list layout, weight loop |
-| [docs/findings/ai/tactical-carrier-launch-groups.md](findings/ai/tactical-carrier-launch-groups.md) | tactical carrier launch groups (hf_ai v0.10.3, still present in 0.10.13): stock flow, group-size and clearance keys, partial launches, build/install record |
+| [docs/findings/ai/tactical-carrier-launch-groups.md](findings/ai/tactical-carrier-launch-groups.md) | tactical carrier launch groups (hf_ai v0.10.3, still present in 0.10.15): stock flow, group-size and clearance keys, partial launches, build/install record |
 | [docs/findings/ai/hf-ai-hot-config-reload.md](findings/ai/hf-ai-hot-config-reload.md) | source study of hot-reloading `hf_ai.json`/`ally.json` without restarting; current state, blockers, design and conflicts |
 
 ### Combat, ships and the map
