@@ -7,6 +7,7 @@
 - [Tactical tick patch sites](ai-tick-patch-sites.md)
 - [Obstacle hook sites](ai-obstacle-hook-sites.md)
 - [Intercept targets](ai-intercept-targets.md)
+- [Allied tactics targeting](ally-tactics-targeting.md)
 - [Flares](ai-flares.md)
 - [Strategic aircraft launch](ai-aircraft-launch.md)
 - [Tactical carrier launch groups](tactical-carrier-launch-groups.md)
