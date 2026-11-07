@@ -43,7 +43,7 @@ Argument 6 is stored in the sound object (`+0x88`). The per-frame updater (`0x14
 * Debug rule: a logged `-> 1` with no audio points at volume (this pointer, argument 4, the game's volume sliders), not at the name lookup.
 
 ## Names and failures
-* `sound.res` has 449 `Sound <name> { filename=Media\Snd\...wav  resgroup=3 }` blocks [file]. Radio lines live in `Media/Snd/RADIO/`; the `_eng` blocks (`mission_danger_01_eng` -> `RADIO_ENG/`) are the English set. How the game chooses the language set is **[not read]**; `hf_ally` passes the plain (Russian) names, and the stock radio does too.
+* `sound.res` has 449 `Sound <name> { filename=Media\Snd\...wav  resgroup=3 }` blocks [file]. Radio lines live in `Media/Snd/RADIO/`; the `_eng` blocks (`mission_danger_01_eng` -> `RADIO_ENG/`) are the English set. The language is the `coreLanguage` global (`0x1403c0e1c`; 1 = Russian, 2 = English): the radio calls `String_AppendEngSuffix` (`0x1401b20f0`), which appends the literal `_eng` only when it is 2 [code, 1.163; decompiled 2026-11-07]. `hf_ally` v0.14.26 does the same for its lines; before that it passed only the plain (Russian) names.
 * A name that is not in `sound.res`: returns -1.0 and writes `ERR: SX::play failed to get effect = <name>` to `client.log` (seen for `radio_landing_start_02`) [game: [runs/ui-events-and-screens.md](rendering/ui-events-and-screens.md)].
 * Other -1.0 causes [code]: the `DEBUG_SOUND` flag is off, the kind's channel limit (`DAT_1403c2cc0[kind]`) is reached, HGE fails to start the channel. Per-kind tables: channel limit `DAT_1403c2cc0`, falloff radius `DAT_1403c2c88`, replace mode `DAT_147fc7668`; their values are **[not read]**.
 * `hf_probe` (`hook_sounds`) detours this entry; a mod with a 15-byte precheck (`hf_ally`) then turns its sounds off. The hook list is in [hooks.md](hooks.md).
@@ -67,7 +67,7 @@ The call must run on the **game thread**. A per-frame, always-running site that 
 | ally destroyed | `radio_stall_01` or `radio_lost_energy_01`, one at random | v0.10.1 (trigger: state 6/7 in the roster) **did not fire** when an ally died [game]: a destroyed ship is not flagged 6/7, it leaves the roster with state still 1. v0.10.2 triggers on leaving the roster unless the last state was 2 (retreating) or 6/7, the ally was extracted, or no enemy was left; **untested** |
 
 ## Open
-* The language choice (`_eng`), the kind tables, arguments 7-11 and 13, other threads, NULL for argument 6.
+* The kind tables, arguments 7-11 and 13, other threads, NULL for argument 6.
 * Roadmap item "audio cue when aircraft intercept" ([roadmap.md](roadmap.md)) now has its play recipe: `radio_kill_06` through this call.
 
 ## Sounds seen in the map code [code, 1.151 names]
