@@ -1,0 +1,103 @@
+addr163	addr151	tier	ev
+0000000140007d70	0000000140007840	caller3r0	callers 11/11
+0000000140009a30	0000000140009450	caller3r0	callers 4/4
+0000000140011780	0000000140011630	caller3r0	callers 4/4
+00000001400127f0	00000001400127d0	caller3r0	callers 25/26
+0000000140012a30	0000000140012bb0	caller3r0	callers 6/6
+0000000140012e20	0000000140012da0	caller3r0	callers 20/20
+0000000140013160	00000001400130e0	prop3r0	callee 4/4 via vectorTooLong,_Change_array,rep_14001bb00_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn
+00000001400173e0	0000000140017560	caller3r0	callers 11/11
+0000000140018a70	0000000140011300	caller3r0	callers 4/7
+0000000140023a30	0000000140022af0	caller3r0	callers 6/6
+0000000140033b50	0000000140033570	caller3r0	callers 11/11
+0000000140049c10	00000001400477d0	caller3r0	callers 3/3
+000000014004aee0	0000000140070630	caller3r0	callers 5/6
+000000014004eab0	000000014004c620	caller3r0	callers 7/8
+0000000140054fb0	0000000140052e80	prop3r0	callee 5/5 via Link_ConstructFromBody,GetStats,Creature_BurnFuel
+0000000140055f50	0000000140053eb0	caller3r0	callers 16/16
+0000000140055fd0	0000000140053f30	caller3r0	callers 11/11
+0000000140058270	0000000140056260	hash-dup	dupname1
+000000014005b6e0	0000000140059560	prop3r0	callee 3/3 via memmove,SortInsertionByFloat88,SortElem16ByFloat88
+000000014005c620	000000014005a4a0	caller3r0	callers 4/4
+000000014005e6c0	000000014005c340	prop3r0	callee 7/8 via rep_14005c0a0_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free,Body_Destructor,rep_14005c280_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free
+0000000140079c20	0000000140075660	caller3r0	callers 9/9
+000000014007a220	0000000140075c70	caller3r0	callers 4/4
+0000000140082120	000000014007d8d0	caller3r0	callers 4/4
+0000000140083c50	000000014007f400	caller3r0	callers 32/32
+0000000140087510	0000000140082cc0	prop3r0	callee 3/3 via ShaderParamFloatNew_Constructor,vec_realloc_insert,New
+0000000140087590	0000000140082d40	prop3r0	callee 3/3 via vec_realloc_insert,New,ShaderParamVectorNew_Constructor
+0000000140087610	0000000140082dc0	prop3r0	callee 3/3 via ShaderParamFloatNew_ConstructorBound,vec_realloc_insert,New
+0000000140087690	0000000140082e40	prop3r0	callee 3/3 via vec_realloc_insert,New,ShaderParamIntNew_Constructor
+0000000140087710	0000000140082ec0	prop3r0	callee 3/3 via vec_realloc_insert,New,ShaderParamMatrixNew_Constructor
+0000000140087830	0000000140082fe0	prop3r0	callee 3/3 via ShaderParamVectorNew_ConstructorBound,vec_realloc_insert,New
+00000001400878b0	0000000140083060	prop3r0	callee 4/4 via ShaderParamTextureNew_Constructor,vec_realloc_insert,New
+0000000140087990	0000000140083140	prop3r0	callee 4/4 via vec_realloc_insert,ShaderParamTextureArrayNew_Constructor,New
+0000000140089b90	0000000140085340	caller3r0	callers 10/10
+00000001400912a0	000000014008ca50	prop3r0	callee 3/3 via Effect_BaseDestructor,free,rep_14008c9d0_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free
+00000001400956e0	0000000140090e90	prop3r0	callee 3/3 via Effect_BaseDestructor,free,rep_140090dd0_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free
+0000000140098d50	0000000140094500	caller3r0	callers 6/6
+000000014009b370	0000000140096b20	prop3r0	callee 3/3 via Vector_FreeStride12,Effect_BaseDestructor,free
+000000014009c430	0000000140097c00	caller3r0	callers 3/3
+000000014009fb40	000000014009b310	caller3r0	callers 14/14
+00000001400bb800	00000001400b7900	prop3r0	callee 4/4 via memmove,_Change_array,AllocateArrayOf8Byte
+00000001400c2400	00000001400bd800	caller3r0	callers 7/8
+00000001400db0b0	00000001400d5810	caller3r0	callers 4/4
+00000001400dfde0	00000001400da790	caller3r0	callers 3/3
+00000001400e6100	00000001400e0a80	hash-dup	dupname1
+00000001400e7e00	00000001400e2780	prop3r0	callee 3/3 via Link_UnlinkFromNode,ISerializable_Destructor,free
+00000001400e8140	00000001400e2ac0	prop3r0	callee 3/3 via Link_UnlinkFromNode,Body_Destructor,free
+00000001400e82d0	00000001400e2c50	prop3r0	callee 4/4 via ThrowBadArrayLengthException,New,FillRange8
+00000001400ebbc0	00000001400e6540	caller3r0	callers 3/3
+00000001400f1490	00000001400ebe00	prop3r0	callee 4/4 via sqrtf,rep_1400e2320_API-MS-WIN-CRT-MATH-L1-1-0.DLL::sqrtf,rep_140113d80_Get_Profile?
+000000014011bd40	0000000140115e50	prop3r0	callee 3/3 via free,Body_Destructor,rep_140004d90_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn
+0000000140129a10	00000001401210f0	prop3r0	callee 3/3 via Sort_Median9IntKey114,memmove,Sort_IntrosortBy114
+000000014012cb40	0000000140123df0	prop3r0	callee 3/3 via rep_1401229d0_API-MS-WIN-CRT-RUNTIME-L1-1-0.DLL::_invalid_parameter_noinfo_noreturn,free,Gui_Destructor
+000000014012cde0	0000000140124090	prop3r0	callee 3/3 via free,Gui_Destructor,Link_UnlinkFromNode
+000000014016fed0	00000001401643e0	caller3r0	callers 3/3
+0000000140184640	0000000140178a70	caller3r0	callers 3/3
+0000000140185ca0	000000014017a160	prop3r0	callee 3/3 via free,Input_RestoreCursorClip,ISerializable_Destructor
+0000000140187910	000000014017c820	caller3r0	callers 4/4
+0000000140188040	000000014017ce90	caller3r0	callers 3/3
+000000014018f8a0	0000000140181d70	caller3r0	callers 3/3
+0000000140194a50	0000000140186d90	caller3r0	callers 3/3
+0000000140199120	000000014018b140	hash-dup	dupname2
+0000000140199b60	000000014018bb80	prop3r0	callee 7/7 via free,vectorTooLong,ShipEntry_CopyConstructor
+000000014019a0f0	000000014018c110	prop3r0	callee 7/7 via free,Stride72_CopyConstructor,vectorTooLong
+00000001401a0610	0000000140191e40	caller3r0	callers 4/4
+00000001401a2e50	0000000140194510	caller3r0	callers 3/3
+00000001401a5f10	0000000140197550	caller3r0	callers 3/3
+00000001401ae260	000000014019e980	prop3r0	callee 4/4 via New,ThrowBadArrayLengthException,Array_Fill8
+00000001401af320	0000000140019af0	hash-dup	dupname1
+00000001401af630	0000000140019b80	hash-dup	dupname2
+00000001401b46e0	00000001401a4770	caller3r0	callers 5/5
+00000001401b5420	00000001401a5350	prop3r0	callee 5/5 via VectorStride12_InsertValue,sqrtf,somethingEvacPods
+00000001401c7060	00000001401b4600	prop3r0	callee 9/9 via New,Creature_DistributeRepairPoints,renderShipPhoto??
+000000014020ff80	00000001401f4b30	caller3r0	callers 11/13
+000000014020ffd0	00000001401f4b80	caller3r0	callers 4/4
+0000000140215f00	00000001401f9f60	caller3r0	callers 5/5
+000000014024d360	000000014022c130	prop3r0	callee 5/5 via rep_1402afb60_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free,CreateShell?,rep_1402afc70_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free
+0000000140265b40	0000000140243d50	caller3r0	callers 3/3
+0000000140269d00	0000000140248040	prop3r0	callee 4/4 via rep_1400515a0_VCRUNTIME140.DLL::memmove,VectorStride4_InsertValue,Math_NormalizeAngleDifference
+000000014027f0e0	000000014025ce30	hash-dup	dupname2
+0000000140281330	000000014025f080	caller3r0	callers 12/13
+0000000140287730	0000000140264be0	caller3r0	callers 5/5
+000000014028bf80	0000000140269990	prop3r0	callee 8/8 via _Reallocate_exactly,New,rep_140005e10_VCRUNTIME140.DLL::memmove
+000000014028c460	0000000140269eb0	caller3r0	callers 4/4
+0000000140292ce0	0000000140270050	caller3r0	callers 11/14
+00000001402a9300	00000001402855e0	prop3r0	callee 6/6 via cosf,sinf,Part_HandleCommand
+00000001402ac2b0	0000000140289350	caller3r0	callers 3/3
+00000001402ca070	00000001402a3210	prop3r0	callee 4/4 via Link_UnlinkFromNode,free,Battle_PruneRoster
+00000001402d1510	00000001402a8030	prop3r0	callee 8/9 via vec_realloc_insert,Link_UnlinkFromNode,free
+00000001402d4f20	00000001402ab190	prop3r0	callee 4/4 via Link_UnlinkFromNode,rep_1401f3c10_APP:MoveVolume,sinf
+0000000140322210	00000001402f7220	caller3r0	callers 4/4
+0000000140336c80	000000014030bd40	prop3r0	callee 3/3 via deallocate,_CxxThrowException,Array_DestroyRange24
+0000000140339700	000000014030e780	prop3r0	callee 3/3 via _CxxThrowException,DeleteArray56,EhCleanup_IdentityWrapper
+00000001403416b0	00000001403166e0	prop3r0	callee 3/3 via deallocate,_CxxThrowException,EhCleanup_IdentityWrapper
+0000000140342110	0000000140317080	prop3r0	callee 3/3 via Heap_FreeOverAlignedStride272,_CxxThrowException,Array_FreeStride272
+00000001403429d0	00000001403177c0	prop3r0	callee 3/3 via _CxxThrowException,DeleteArray16,EhCleanup_IdentityWrapper
+0000000140346c70	000000014031b790	prop3r0	callee 3/3 via _CxxThrowException,Vector64_DestroyRangeThunk,rep_14008a010_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free
+0000000140346cf0	000000014031b7d0	prop3r1	callee 3/3 via Array_DestroyRange80,_CxxThrowException,deallocate
+0000000140346d40	000000014031b820	prop3r0	callee 4/4 via Array_DestroyRange80,_CxxThrowException,deallocate
+0000000140347c30	000000014031c6b0	prop3r0	callee 3/3 via NPC_ReleaseIteratorRange,deallocate,_CxxThrowException
+000000014034a8b0	000000014031ed10	prop3r0	callee 3/3 via _CxxThrowException,VectorGSI_DestroyRange,Array_FreeStride38
+000000014034a990	000000014031edf0	prop3r0	callee 3/3 via _CxxThrowException,DeleteArray32,EhCleanup_IdentityWrapper

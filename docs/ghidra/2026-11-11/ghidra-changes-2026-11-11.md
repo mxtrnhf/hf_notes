@@ -77,3 +77,38 @@ address pair table).
 - The 1.151 scan for `aircraftStateHandler` (and other unmatched
   version-affected functions: `FireGun` twins already exist by name in 1.151)
   remains open; the propagation tier stalls below 3 anchored callees.
+
+## Rounds 2 and 3 (same day, after the check-in)
+
+Three further passes were applied and checked in after the first round:
+
+- **Round 2 (147 pairs)**: 95 *group* tier — whole ICF-merged groups where the
+  1.163 side is uniformly named and the 1.151 group is uniformly unnamed,
+  ported member-for-member by sorted address (this also absorbed the 6
+  "duplicate name" pairs the round-1 uniqueness rule had rejected, e.g. both
+  `VectorStride48_InsertMove` instances); 23 *strings2* (>=60% string-set
+  overlap + anchored-callee support + 25% score margin); 29 *prop2*
+  (relaxed >=2 anchored callees). Includes `Body_AreaDamageFromBlast`
+  `0x14002cdc0 -> 0x14002dca0` - exactly the porting guide's anchor pair.
+- **Round 3 (96 pairs)**: repaired a format bug that had silently dropped the
+  3,063 `port_work/M.json` anchor pairs from the anchor map (short vs
+  16-digit address keys); with the full anchor set, 47+1 more
+  callee-propagation matches and a new **caller-vote tier** (48): >=3 of the
+  target's 1.163 callers map to 1.151 functions that call the same candidate,
+  best unique with margin, spatial-delta consistent. Examples:
+  `Effect_Add*Param` family, `Body_SetHealth`, `RbTree_DestroySubtree`.
+- **Inline comments (1,378)**: all PLATE(68)/POST(1310) comments of 1.163
+  sitting on instructions of identical-body pairs (tiers hash/group), ported
+  by instruction index with the mnemonic sequence guaranteed equal by the
+  tier. 80 target instructions already had a comment and kept it. PRE/EOL
+  comments on non-identical pairs were deliberately not ported (index mapping
+  is unsafe when the bodies differ).
+
+Cumulative state after round 3 (live audit): 2,609 of 4,923 functions named
+(53%), 1,723 functions carry plate comments, plus 1,378 inline comments.
+Remaining rejects of interest: `aircraftStateHandler` (163 `0x14000fbc0`) -
+the only content-supported candidate (`0x1400d51d0`) is spatially impossible
+and no other candidate shares even one anchored callee; the true 1.151 twin
+needs a decompile-level comparison. `Profile_GetActive`, `Vec2_WorldToScreen`,
+`Trail_DrawLayer` and four more caller-vote candidates were rejected by
+spatial delta with thin content evidence.
