@@ -16,8 +16,15 @@ library `newNode_`, virtual `+0xb8`; helper `retCreature154c?`
 |---|---|---|---|
 | 5 strength-tables (ids 0-4) | `somethingSpawnShips` `0x140203b80` | strength-budget roll loop inside it | city garrisons, event escadras, group-6 fleets, endgame garrisons |
 | Weighted hull catalogue | `Endgame_BuildEscadra` `0x1402077c0` | budget roll loop inside it | roaming Strike Groups (campaign start + endgame) |
-| 46-name price-bucket catalogue | `Fleet_GenerateShipNames` `0x140205ae0` | `Fleet_AddNamedShipToPool` `0x1401a7a40` + `Fleet_SelectShipsForBudget` `0x140206060` | general enemies in scenario slots |
+| 46-name price-bucket catalogue | `Fleet_GenerateShipNames` `0x140205ae0` | `Fleet_AddNamedShipToPool` `0x1401a7a40` + `Fleet_SelectShipsForBudget` `0x140206060` | the skirmish escadras |
 
+A fourth pool family, the tarkhan ships for hire / event reinforcements, is
+documented in [mercenary-ships.md](mercenary-ships.md):
+`addReinforceingShips` `0x14021b8c0` rolls one design name per call from its
+tier tables (tier 0 event path, tier 1 the `ASK_REINFORCE` city dialog,
+tier 2 an unused copy of tier 1), and instantiates it as a `NEW_SHIP` in the
+player's escadra. Nominal check 2026-11-12: entry, size and callers
+(`Dialog_ExecuteChoiceActions`, `creatureLogic`) confirmed unchanged.
 ## 1. `somethingSpawnShips(out, strength, poolId, chanceA, chanceB, flag)`
 
 Builds a `CVec` of 0x28-byte `(EscadraName name, float strength)` pairs, then
