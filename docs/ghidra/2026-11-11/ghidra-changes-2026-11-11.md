@@ -112,3 +112,59 @@ and no other candidate shares even one anchored callee; the true 1.151 twin
 needs a decompile-level comparison. `Profile_GetActive`, `Vec2_WorldToScreen`,
 `Trail_DrawLayer` and four more caller-vote candidates were rejected by
 spatial delta with thin content evidence.
+
+## Round 4: mod-function port (2026-11-11, second save)
+
+Same-session round driven by the mods: extracted every hard-coded 1.163
+address from `hf_ally/src` and `hf_ai/src` (42 code sites, 40 unique containing
+functions plus 2 missed by the first pass, `PlayRadioSounds_` and the level
+loader), and resolved where each lands in 1.151.
+
+Method for the 34 functions without an existing pair: mnemonic-sequence
+matching. Ghidra listing scripts (`DumpMn163/DumpMn151/DumpMn163c/DumpMn151b/c`)
+dumped per-instruction mnemonic strings for all targets and all 1.151
+candidates (spatial-delta window +/-0x40000..0x60000, instruction-count band,
+1,351 unique candidates). Ranking by shared 8-gram fingerprints, confirmation
+by full LCS over the mnemonic sequence plus mapped-callee set identity;
+`!ClickFunc` / `creatureLogic` and the other giants were script-only, never
+run through the MCP decompiler. Description: `mod-port-2026-11-11.md`, data:
+`data/modaddr_163_151.tsv`.
+
+Renames applied in 1.151 (3, current names replaced; old names recorded in
+the plates):
+
+- `0x1402a52b0`: handleRamming?? -> **battleManagerTick** (163 `0x1402cc260`,
+  LCS 274/292 + identical mapped callee set; hf_ally BATTLE_RVA target).
+- `0x1402ad0b0`: rammingCheckCollision?? -> **deployFromReserve** (163
+  `0x1402d6e90`, LCS 118/130 + callee anchor; hf_ally DEPLOY target; the
+  hf_ally source documents this exact 163 function formerly carrying the
+  same old name).
+- `0x140074bb0`: rep_...CRT-HEAP...::free (mislabel) ->
+  **AiShip_ChooseTarget** (163 `0x140078b40`, LCS 466/540 + decompile
+  cross-check: role-2 bombing branch, sensor-list walk, 20000/distance
+  scoring).
+
+Verified-equivalent pairs recorded without renaming (1.151 side already
+carries a meaningful name): buildPrecombatScreen=mainPrecombatScreen,
+AiShip_BuildThreatList=PopulateEngagementQueue, CreatureUpdate=
+UpdatePlayerShipTactical, AiShipTick=TacticalAI_MasterUpdate,
+Profile_SetControlledShip=Body_SetSlotOccupant, FireFlareLauncher=LaunchFlar?,
+GetStats=GetShipPart, Node_GetRootPart=traverseLinkedListCreature?,
+LaunchZenithAtOwnerTarget=BindHardpointTarget (moderate, flagged),
+resetGuiStrings/Font_SetupByName/Get_Profile? (ICF-fold collisions).
+
+No 1.151 twin: `buildSquadPrecombatScreen` - the standalone squad precombat
+screen (secondaryPrecombatButtons dispatcher seams) is a 1.163 feature;
+TarkhanGUIDispatchOperator has one precombat caller in 1.151 vs two in 1.163.
+
+Also resolved today (earlier rounds had already renamed them; a stale local
+audit had said otherwise): Creature_RegisterInWorldLists,
+Creature_SpawnFromTemplate, CollectDeadNodes, Creature_SetPartsOwnerRef - all live and
+correct.
+
+Data globals used by the mods (LEVEL_NAME, RESERVE, CREATURES_BEGIN, CLOCK,
+CONTROLLED_LINKS, BODIES, arena bounds, FRAME_DELTA, GUI_LIST, RETREAT_POINT,
+RNG_SCENARIO, AIRCRAFT_SELECTOR, ~45 total) were NOT ported; that needs a
+separate global-label pass.
+
+Program saved once after the renames (second check-in of the day).

@@ -1,0 +1,46 @@
+addr163	name163	addr151	name151	status	evidence	mod_ref
+14006bf60	Creature_RegisterInWorldLists	1400687e0	Creature_RegisterInWorldLists	renamed-round1	hash body 87i identical	hf_ally ADD_RVA
+1402672c0	Creature_SpawnFromTemplate	1402454a0	Creature_SpawnFromTemplate	renamed-round2	anchored-callee prop2 + caller vote	hf_ally SPAWN_RVA
+1402cc260	battleManagerTick	1402a52b0	battleManagerTick	renamed-2026-11-11	LCS 274/292=0.938 + identical mapped callee set; old name handleRamming??	hf_ally BATTLE_RVA
+1402d6e90	deployFromReserve	1402ad0b0	deployFromReserve	renamed-2026-11-11	LCS 118/130=0.908 + callee anchor; old name rammingCheckCollision?? (same 163 lineage)	hf_ally DEPLOY + PLAYER_DEPLOY_CALLER site 1402d6f7a
+140078b40	AiShip_ChooseTarget	140074bb0	AiShip_ChooseTarget	renamed-2026-11-11	LCS 466/540=0.863 + decompile match (role-2 branch, vote map, 20000/d scoring); old name rep...CRT-HEAP::free (mislabel)	hf_ally TARGET_FN
+1401be250	CollectDeadNodes	1401ade20	CollectDeadNodes	renamed-round1	hash 72i identical; old rep_ mislabel documented in plate	hf_ally telemetry dead-node/joint sites 1401be274/1401be2f8
+14007a160	Creature_SetPartsOwnerRef	140075bb0	Creature_SetPartsOwnerRef	renamed-round1	hash 46i identical	hf_ally OFF_FUEL burn site 14007a210
+14020ef30	rep_1401f3c10_APP:MoveVolume	1401f3c10	rep_1401f3c10_APP:MoveVolume	named	same embedded name; callee-anchored (battleManagerTick twins)	hf_ally EXTRACT
+1402a7e30	Profile_SetControlledShip	140284160	Body_SetSlotOccupant	equivalent-diff-name	LCS 55/73 + callee anchor in battleManagerTick twins; both names meaningful, no rename	hf_ally SET_CONTROLLED
+140292a90	Get_Profile?	14026ff50	Get_Profile	equivalent-canonical	3i tail-jump wrapper in 163 folds into the 13i canonical getter; callee anchor	hf_ally GET_PROFILE
+140194de0	SetLink	140187120	SetLink	named	LCS 33/33 identical; callee anchor confirmed	hf_ally SET_LINK
+140275850	TarkhanGUIDispatchOperator	140253b80	TarkhanGUIDispatchOperator	named	LCS 1931/1935 identical	hf_ally PRECOMBAT_SEAM_TARGET
+1402d7620	buildPrecombatScreen	1402ad2e0	mainPrecombatScreen	equivalent-diff-name	LCS 687/1060 + matching PRECOMBAT_* string set + shared callees (SetLink/GUI_2/setXposYpos/SetBackground?/New/TGDO); no rename	hf_ally PRECOMBAT_SEAM 1402d88bb
+1402d73a0	buildSquadPrecombatScreen		no-twin	REMOVED/163-ONLY	TarkhanGUIDispatchOperator has no 4th caller in 1.151; squad screen with secondaryPrecombatButtons is a 1.163 feature	hf_ally PRECOMBAT_B1/B2_SEAM
+140334094	New	140309078	New	named	20-token body identical; callee anchor in precombat twins	hf_ally GUI_NEW
+14012a910	GUI_2	140121c30	GUI_2	named	LCS 108/108 identical	hf_ally GUI_CTOR
+1400520b0	setXposYpos	14004fb90	setXposYpos	named	LCS 68/68 identical	hf_ally GUI_SETPOS
+14001be50	SetBackground?	14001b950	SetBackground?	named	LCS 74/74 identical	hf_ally GUI_SETBG
+14015cc30	resetGuiStrings	140151880	rep_140151880_CopyString	equivalent-ICF-name-kept	hash identical + callee position in precombat twins; CopyString label is the ICF family label	hf_ally GUI_RESET
+1401a9170	FindGuiElement	140199890	FindGuiElement	named	LCS 45/45 identical	hf_ally GUI_FIND
+14018dbf0	SomethingInputTask	1401804a0	SomethingInputTask	named	LCS 327/365=0.896 (163 grew it)	hf_ally INPUT_TASK
+14012f120	!ClickFunc	1401261d0	!ClickFunc	named	LCS 11946/12238=0.976; never decompile directly, script only	hf_ally CLICK_ENTRY
+140083b50	checkD3DEngineStatus?	14007f300	checkD3DEngineStatus?	named	LCS 49/49 identical	hf_ally FLUSH
+1401703e0	LoadNameIntoMedia	1401648f0	LoadNameIntoMedia	named	LCS 17/17 (ICF twins 140164740 loadMediaByName? / 140164780 CopyNameIntoMedia?)	hf_ally GET_FONT
+1401a8710	Font_SetupByName	140198e70	rep_140198e70_LoadNameIntoMedia	equivalent-ICF-name-kept	hash 30i identical; ICF collision with LoadNameIntoMedia family	hf_ally STYLE_FONT
+14016eb40	displayLableRotation?	140163050	displayLableRotation?	named	LCS 266/266 identical	hf_ally FONT_RENDER
+1402e30e0	playSFXSound?	1402b7950	playSFXSound?	named	LCS 224/253=0.885; radio SFX strings	hf_ally PLAY_SFX
+1402d5910	PlayRadioSounds?	1402abb30	PlayRadioSounds?	named	LCS 1152/1152 = 1.000 (whole body); radio_go* string sets identical	hf_ally PlayRadioSounds_ comment
+14026f880	ammoSelectButtonPress?	14024dcc0	ammoSelectButtonPress?	named	LCS 63/63 identical	hf_ally AMMO_PRESS
+14025afd0	SetLevelSeriaToLoad?	140239190	SetLevelSeriaToLoad?	named	LCS 146/149=0.980; Map.seria string sets match; other 151 SetLevelSeria family members are different functions	hf_ally LEVEL_NAME loader
+1400d6f70	displayinShipworks?	1400d1dc0	displayinShipworks?	named	28% smaller in 151; matching prologue pattern + Shipworks semantics; both named	hf_ai strategic_twr site 1400d7443
+1400625a0	AiShip_BuildThreatList	1400601a0	PopulateEngagementQueue	equivalent-diff-name	LCS 520/529=0.983; both names meaningful, no rename	hf_ally intercept SITE 140062812
+140049470	checkShipPartFlagActive	140047960	checkShipPartFlagActive	named	LCS 20/20 identical	hf_ally intercept CHECK_FN
+1400486e0	returnMass	1400463c0	returnMass	named	2-token body; unique in window	hf_ai returnMass
+140048fc0	Node_GetRootPart	140046c70	traverseLinkedListCreature?	equivalent-diff-name	LCS 15/15 identical body; names disagree, flagged for review	hf_ai CREATURE_BODY_RVA
+140281e00	GetStats	14025fb50	GetShipPart	equivalent-diff-name	13-token body identical (unique holder); names disagree (stats lookup vs part lookup), flagged	for hf_ai STATS_RVA review
+14020fb80	magnitudeCreatureBodyVector	1401f47f0	magnitudeCreatureBodyVector	named	LCS 56/56 identical	hf_ai DISTANCE_RVA
+14007eb50	CreatureUpdate	14007a2b0	UpdatePlayerShipTactical	equivalent-diff-name	LCS 839/866=0.969; both names meaningful (creature update vs tactical update), flagged hf_ally on_target_chosen / hf_ai UPDATE_RVA + flare hook 14007f864
+140062f90	AiShipTick	140060b50	TacticalAI_MasterUpdate	equivalent-diff-name	LCS 1735/1988=0.873; 2594i vs 1988i (1.163 AI additions); contains hf_ai STEER 140064a8d / BOOST 140065744 / ARM 140065bd9-140065c07 / ROLL 140065c6c / LAUNCH 140065edb sites
+140033b90	creatureLogic	1400335b0	creatureLogic	named	LCS 1645/2829=0.581; 5422i vs 2829i heavy version drift, same name both sides; hf_ai FLARE_CRASH site 140036bb5
+14002eed0	FireFlareLauncher	14002f6f0	LaunchFlare?	equivalent-diff-name	LCS 240/253=0.949	hf_ai RELEASE_RVA
+14002ff60	LaunchZenithAtOwnerTarget	140030720	BindHardpointTarget	equivalent-diff-moderate	LCS 46/51=0.902 over 88i-vs-51i; moderate evidence, flagged	hf_ai LAUNCH
+140036bb5	(FLARE_CRASH_RVA site in creatureLogic)	1400335b0	creatureLogic	site-holder	site lives inside creatureLogic in both builds; exact byte offset not ported	hf_ai FLARE_CRASH_RVA
+1402d6f7a	(PLAYER_DEPLOY call site in deployFromReserve)	1402ad0b0	deployFromReserve	site-holder	call site lives inside deployFromReserve in both builds; exact byte offset not ported	hf_ally PLAYER_DEPLOY_CALLER_RVA
+1402d88bb	(PRECOMBAT_SEAM site inside buildPrecombatScreen)	1402ad2e0	mainPrecombatScreen	site-holder	site lives inside the precombat screen builder in both builds; exact byte offset not ported (use the TarkhanGUIDispatchOperator call as the landmark)	hf_ally PRECOMBAT_SEAM
