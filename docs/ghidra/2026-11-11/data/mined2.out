@@ -1,0 +1,282 @@
+global pairs (direct [addr] refs), decisive votes:
+  0x140004b00 -> 0x1400045e0  votes 5/5
+  0x1400056e0 -> 0x1400051c0  votes 12/13
+  0x140006270 -> 0x140005e10  votes 2/2
+  0x140006940 -> 0x140006340  votes 2/2
+  0x1400076d0 -> 0x1400071a0  votes 2/2
+  0x140007950 -> 0x140007420  votes 2/2
+  0x140011010 -> 0x140010e30  votes 2/2
+  0x14001be50 -> 0x14001b950  votes 4/4
+  0x14001bf2c -> 0x14001ba2c  votes 3/3
+  0x14002e3a0 -> 0x14002ef50  votes 2/2
+  0x140048b10 -> 0x1400467c0  votes 2/2
+  0x140048b60 -> 0x140046810  votes 4/4
+  0x140048fc0 -> 0x140046c70  votes 10/10
+  0x140049470 -> 0x140047960  votes 5/6
+  0x1400533f0 -> 0x140050be0  votes 4/4
+  0x1400559e0 -> 0x140053940  votes 2/2
+  0x14005c0b0 -> 0x140059f30  votes 2/2
+  0x1400630cf -> 0x140060c33  votes 2/2
+  0x14006340e -> 0x140060db0  votes 3/3
+  0x140063892 -> 0x1400611fd  votes 2/2
+  0x1400638e9 -> 0x14006122a  votes 3/3
+  0x14006397b -> 0x1400612f4  votes 2/2
+  0x140063990 -> 0x14006130e  votes 4/4
+  0x140063c01 -> 0x140061724  votes 2/2
+  0x140063c32 -> 0x140061605  votes 2/2
+  0x140063c9b -> 0x1400617bc  votes 2/2
+  0x140063d67 -> 0x140061882  votes 2/2
+  0x140063dbb -> 0x140061533  votes 3/5
+  0x140063ec1 -> 0x140061958  votes 2/2
+  0x14006480d -> 0x140061b58  votes 2/2
+  0x140064b2a -> 0x140061d58  votes 2/2
+  0x140064f09 -> 0x140062089  votes 2/2
+  0x140065233 -> 0x140062387  votes 2/2
+  0x1400652d7 -> 0x140062430  votes 2/2
+  0x1400658a6 -> 0x140062f7e  votes 14/14
+  0x140065917 -> 0x1400629c4  votes 2/2
+  0x1400659c1 -> 0x140062a6f  votes 3/3
+  0x140065b6e -> 0x140062c0b  votes 7/7
+  0x140065c07 -> 0x140062ca1  votes 4/4
+  0x140065d00 -> 0x140062d99  votes 2/2
+  0x140065dac -> 0x140062e3f  votes 3/3
+  0x14006c0c0 -> 0x140068940  votes 2/2
+  0x14006c0ca -> 0x14006894a  votes 5/5
+  0x1400702a0 -> 0x14006ca50  votes 2/2
+  0x140074080 -> 0x1400704d0  votes 7/7
+  0x140078c26 -> 0x140074c5a  votes 3/3
+  0x140078ddc -> 0x140074e09  votes 7/7
+  0x140078f1e -> 0x140074f4e  votes 8/8
+  0x140078f2b -> 0x140074f5b  votes 2/2
+  0x140078f73 -> 0x140074fa3  votes 2/2
+  0x140078f9f -> 0x140074fcf  votes 2/2
+  0x140078ffc -> 0x14007502c  votes 4/4
+  0x14007905a -> 0x14007508a  votes 2/2
+  0x140079083 -> 0x1400750b3  votes 2/2
+  0x1400790af -> 0x1400750df  votes 2/2
+  0x140079156 -> 0x140075186  votes 2/2
+  0x140079ed0 -> 0x140075920  votes 2/2
+  0x14007a24e -> 0x140075ca1  votes 2/2
+  0x14007a34f -> 0x140075d94  votes 2/2
+  0x14007a39e -> 0x140075de4  votes 3/3
+  0x14007a459 -> 0x140075e9d  votes 2/2
+  0x14007a472 -> 0x140075eb6  votes 2/2
+  0x14007a48b -> 0x140075ecf  votes 2/2
+  0x14007a4a2 -> 0x140075ee6  votes 3/3
+  0x14007a4a7 -> 0x140075eeb  votes 3/3
+  0x14007ecc4 -> 0x14007a5ba  votes 2/2
+  0x14007ee19 -> 0x14007a4d9  votes 2/2
+  0x14007eec6 -> 0x14007a586  votes 2/2
+  0x14007ef16 -> 0x14007a5e6  votes 6/6
+  0x14007efeb -> 0x14007a6a7  votes 2/2
+  0x14007f02e -> 0x14007a6ea  votes 2/2
+  0x14007f058 -> 0x14007a70d  votes 3/3
+  0x14007f062 -> 0x14007a717  votes 4/4
+  0x14007f06a -> 0x14007a71f  votes 3/3
+  0x14007f089 -> 0x14007a73e  votes 3/3
+  0x14007f130 -> 0x14007a7e5  votes 2/2
+  0x14007f5a8 -> 0x14007ac60  votes 2/2
+  0x14007f656 -> 0x14007ad0e  votes 2/2
+  0x14007f699 -> 0x14007ad51  votes 2/2
+  0x14007f6ac -> 0x14007ad64  votes 3/3
+  0x14007f782 -> 0x14007ae3a  votes 2/2
+  0x14007f799 -> 0x14007ae51  votes 3/3
+  0x14007f7d0 -> 0x14007ae8b  votes 2/2
+  0x14007f7d9 -> 0x14007ae94  votes 3/3
+  0x14007f810 -> 0x14007aecb  votes 2/2
+  0x14007f819 -> 0x14007aed4  votes 3/3
+  0x14007f84e -> 0x14007af09  votes 2/2
+  0x14007f953 -> 0x14007b005  votes 2/2
+  0x14007fa43 -> 0x14007b0f3  votes 2/2
+  0x14007fa8a -> 0x14007b13a  votes 3/3
+  0x14007faa1 -> 0x14007b151  votes 2/2
+  0x14007fc31 -> 0x14007b2f0  votes 2/2
+  0x14007fc41 -> 0x14007b300  votes 4/4
+  0x14007fc4e -> 0x14007b30d  votes 3/3
+  0x14007fc79 -> 0x14007b338  votes 3/3
+  0x14007fc87 -> 0x14007b346  votes 2/2
+  0x1400a0b10 -> 0x14009c2e0  votes 3/4
+  0x1401218f0 -> 0x14011b820  votes 3/3
+  0x14012a910 -> 0x140121c30  votes 3/4
+  0x14015cc30 -> 0x140151880  votes 2/3
+  0x140194b80 -> 0x140186ec0  votes 6/7
+  0x140194bd0 -> 0x140186f10  votes 5/5
+  0x140194d20 -> 0x140187060  votes 8/8
+  0x140194de0 -> 0x140187120  votes 8/9
+  0x1401954f0 -> 0x140187830  votes 2/2
+  0x140195c10 -> 0x140187f50  votes 2/2
+  0x1401b1fb0 -> 0x1401a2080  votes 2/2
+  0x14020f205 -> 0x1401f4191  votes 2/2
+  0x14020f2d0 -> 0x1401f3d09  votes 3/3
+  0x14020f35d -> 0x1401f3d94  votes 2/2
+  0x14020f458 -> 0x1401f3e98  votes 3/3
+  0x14020f46c -> 0x1401f3eac  votes 3/3
+  0x14020f475 -> 0x1401f3eb5  votes 3/3
+  0x14020f539 -> 0x1401f3f79  votes 2/2
+  0x14021b070 -> 0x1401fdd20  votes 5/5
+  0x14022a690 -> 0x14020ca20  votes 2/2
+  0x140233110 -> 0x140214fe0  votes 2/2
+  0x14025b208 -> 0x1402393cb  votes 2/2
+  0x14025b26e -> 0x14023941b  votes 2/2
+  0x14026740e -> 0x14024560e  votes 2/2
+  0x140267575 -> 0x140245777  votes 2/2
+  0x140267615 -> 0x140245815  votes 2/2
+  0x140267646 -> 0x140245846  votes 3/3
+  0x1402676dc -> 0x140245a62  votes 2/2
+  0x14026f926 -> 0x14024dd66  votes 2/2
+  0x14026f96d -> 0x14024ddad  votes 2/2
+  0x14026f975 -> 0x14024ddb5  votes 2/2
+  0x140271200 -> 0x14024f4f0  votes 2/2
+  0x14027fb00 -> 0x14025d850  votes 2/2
+  0x140281e00 -> 0x14025fb50  votes 4/4
+  0x1402924d0 -> 0x14026ff50  votes 2/2
+  0x140292a90 -> 0x14026ff50  votes 15/17
+  0x1402c99e0 -> 0x1402a2f40  votes 3/3
+  0x1402cc34f -> 0x1402a538f  votes 4/4
+  0x1402cc3ae -> 0x1402a53ee  votes 3/3
+  0x1402cc3b8 -> 0x1402a53f8  votes 3/3
+  0x1402cc43e -> 0x1402a5475  votes 8/8
+  0x1402cc51b -> 0x1402a5557  votes 2/2
+  0x1402cc6e3 -> 0x1402a5723  votes 4/4
+  0x1402cc78c -> 0x1402a57ce  votes 3/3
+  0x1402cd9a0 -> 0x1402a5820  votes 2/2
+  0x1402cdf6d -> 0x1402a5ccd  votes 2/2
+  0x1402d22e0 -> 0x1402a8540  votes 2/3
+  0x1402d6efe -> 0x1402ad134  votes 2/2
+  0x1402d785a -> 0x1402ad631  votes 2/2
+  0x1402d8066 -> 0x1402ade78  votes 2/2
+  0x1402d8905 -> 0x1402ae37d  votes 2/2
+  0x1402d8952 -> 0x1402ae3ca  votes 2/2
+  0x1402e30e0 -> 0x1402b7950  votes 3/3
+  0x140333ff9 -> 0x140308fdf  votes 3/3
+  0x140334094 -> 0x140309078  votes 10/12
+  0x1403340d0 -> 0x1403090b4  votes 18/23
+  0x1403345a0 -> 0x140309450  votes 3/4
+  0x14033659a -> 0x14030b5fa  votes 3/3
+  0x1403365dc -> 0x14030b63c  votes 24/25
+  0x1403365e8 -> 0x14030b648  votes 2/2
+  0x1403365fa -> 0x14030b65a  votes 5/5
+  0x1403517c0 -> 0x140325818  votes 10/12
+  0x1403524d8 -> 0x1403263e8  votes 22/22
+  0x1403524dc -> 0x1403263ec  votes 2/2
+  0x1403524e0 -> 0x1403263f0  votes 5/6
+  0x1403524ec -> 0x1403263fc  votes 6/7
+  0x140352588 -> 0x140326490  votes 2/2
+  0x14035278c -> 0x14032667c  votes 2/2
+  0x140352798 -> 0x140326688  votes 2/2
+  0x1403527a4 -> 0x140326694  votes 5/5
+  0x1403527cc -> 0x1403266bc  votes 2/2
+  0x1403527e8 -> 0x1403266d8  votes 3/3
+  0x140352818 -> 0x140326708  votes 4/6
+  0x140352834 -> 0x140326724  votes 2/2
+  0x140352838 -> 0x1403263f4  votes 7/7
+  0x14035284c -> 0x14032673c  votes 2/3
+  0x140352890 -> 0x140326780  votes 7/7
+  0x140352954 -> 0x140326844  votes 2/2
+  0x140352962 -> 0x140326852  votes 8/8
+  0x140353628 -> 0x1403274f0  votes 2/2
+  0x1403538d8 -> 0x140327800  votes 3/3
+  0x1403539e8 -> 0x140327820  votes 2/2
+  0x140354698 -> 0x140328518  votes 3/3
+  0x1403546b0 -> 0x140328530  votes 2/2
+  0x1403547f4 -> 0x14032866c  votes 2/2
+  0x1403548f4 -> 0x140328778  votes 2/2
+  0x140355078 -> 0x140328e88  votes 2/2
+  0x140355ad8 -> 0x140329800  votes 2/2
+  0x140355ae0 -> 0x140329808  votes 2/2
+  0x140355ae4 -> 0x14032980c  votes 2/2
+  0x140356634 -> 0x14032a2d0  votes 2/2
+  0x14035af50 -> 0x14032ee08  votes 2/2
+  0x14036eb80 -> 0x140348b68  votes 2/2
+  0x1403c126c -> 0x140391184  votes 3/3
+  0x1403c2bc0 -> 0x140392c38  votes 3/4
+  0x1403c2bc4 -> 0x140392c3c  votes 2/2
+  0x1403c2bc8 -> 0x140392c40  votes 4/5
+  0x1403c2bcc -> 0x140392c44  votes 3/4
+  0x1403c2e38 -> 0x140393e18  votes 4/4
+  0x1403ef118 -> 0x1403ac718  votes 5/5
+  0x1403ef11c -> 0x1403ac71c  votes 3/3
+  0x1403ef368 -> 0x1403ac968  votes 4/4
+  0x1439ef238 -> 0x14391dd48  votes 2/2
+  0x143a118a8 -> 0x14391ffc8  votes 3/3
+  0x143a119c0 -> 0x143942540  votes 2/2
+  0x143a119d0 -> 0x14394254c  votes 2/2
+  0x143a119e0 -> 0x143921f70  votes 7/7
+  0x143a13b90 -> 0x143942690  votes 3/3
+  0x143a13e5c -> 0x14394293c  votes 2/2
+  0x143a158fc -> 0x1439443dc  votes 2/2
+  0x143a1c260 -> 0x14394ad40  votes 2/2
+  0x143a2de10 -> 0x143954920  votes 2/2
+  0x143faa5d8 -> 0x143ed10d8  votes 10/10
+  0x143faa5e0 -> 0x143ed10e0  votes 10/10
+  0x143faa5e8 -> 0x143ed10e8  votes 2/2
+  0x143faa5f8 -> 0x143ed10f8  votes 2/2
+  0x143faa610 -> 0x143ed1110  votes 2/2
+  0x143faa640 -> 0x143ed1140  votes 2/2
+  0x143faa658 -> 0x143ed1158  votes 2/2
+  0x147fc6f88 -> 0x147eed960  votes 6/6
+  0x147fc6fb3 -> 0x147eed991  votes 2/2
+  0x147fc6fb7 -> 0x147eed995  votes 2/2
+  0x147fc6fd4 -> 0x147eed9ae  votes 6/6
+  0x147fc6fdb -> 0x147eed9b5  votes 5/5
+  0x147fc7004 -> 0x147eed9dc  votes 3/3
+  0x147fc7008 -> 0x147eed9e0  votes 2/2
+  0x147fc700c -> 0x147eed9e4  votes 2/2
+  0x147fc7010 -> 0x147eed9e8  votes 2/2
+  0x147fc7020 -> 0x147eed9f4  votes 4/4
+  0x147fc73b0 -> 0x147eedd78  votes 5/5
+  0x147fc73d8 -> 0x147eedde0  votes 8/8
+  0x147fc73e0 -> 0x147eedde8  votes 4/4
+  0x147fc7550 -> 0x147eede68  votes 7/7
+  0x147fc7558 -> 0x147eede70  votes 2/2
+  0x147fc7590 -> 0x147eedea8  votes 9/9
+  0x147fc7598 -> 0x147eedeb0  votes 3/3
+  0x147fc75a8 -> 0x147eedec0  votes 4/4
+
+ambiguous-field context (163 instruction -> aligned 151 instruction):
+  [AiShipTick] 140063108: MOV R15,qword ptr [R14 + 0xb00]
+        140060c77: MOV qword ptr [RSP + 0x1c8],R15
+  [AiShipTick] 1400638a0: MOV dword ptr [R14 + 0xbdc],0x2
+        14006120b: MOV dword ptr [R14 + 0xb74],0x2
+  [AiShipTick] 1400638ce: CMP dword ptr [R14 + 0xbdc],0x2
+        140061253: CMP dword ptr [R14 + 0xb74],0x2
+  [AiShipTick] 140064a8d: MOVSS dword ptr [R14 + 0xbf0],XMM9
+        140061cbd: MOVSS dword ptr [R14 + 0xb88],XMM10
+  [AiShipTick] 140064a9b: MOVSS dword ptr [R14 + 0xbf4],XMM10
+        140061ccb: MOVSS dword ptr [R14 + 0xb8c],XMM11
+  [AiShipTick] 140065bc5: MOV R8,qword ptr [R14 + 0xb00]
+        140062c60: MOV R8,qword ptr [R14 + 0xac8]
+  [AiShip_ChooseTarget] 140078b86: MOV R12,qword ptr [RCX + 0xb00]
+        140074bed: MOV R12,qword ptr [RCX + 0xac8]
+  [AiShip_ChooseTarget] 140078e51: MOV RDI,qword ptr [RDI + 0xb00]
+        140074e7e: MOV RDI,qword ptr [RDI + 0xac8]
+  [AiShip_ChooseTarget] 140079105: CMP qword ptr [R13 + 0xb00],0x0
+        140075135: CMP qword ptr [R13 + 0xac8],0x0
+  [AiShip_ChooseTarget] 14007910f: MOV dword ptr [R13 + 0xbdc],0x2
+        14007513f: MOV dword ptr [R13 + 0xb74],0x2
+  [AiShip_ChooseTarget] 140079563: MOVSS XMM0,dword ptr [RDI + 0x15ec]
+        14007537a: MOVSS dword ptr [R13 + 0xc10],XMM0
+  [AiShip_ChooseTarget] 140079652: MOV dword ptr [R13 + 0xc78],EBX
+        140075451: MOV byte ptr [R13 + 0xc0c],AL
+  [CreatureUpdate] 14007f7d9: CMP byte ptr [RSI + 0xbbd],0x0
+        14007ae94: CMP byte ptr [RSI + 0xb55],0x0
+  [CreatureUpdate] 14007f864: CMP byte ptr [RSI + 0xbc0],0x0
+        14007af1f: CMP byte ptr [RSI + 0xb58],0x0
+  [Creature_RegisterInWorldLists] 14006c029: CMP dword ptr [RBX + 0xbdc],0x6
+        1400688a9: CMP dword ptr [RBX + 0xb74],0x6
+  [battleManagerTick] 1402cc314: MOV RDI,qword ptr [RBX + 0xb00]
+        1402a5354: MOV RDI,qword ptr [RBX + 0xac8]
+  [battleManagerTick] 1402cc65d: MOV EAX,dword ptr [RAX + 0xbdc]
+        1402a569d: MOV RCX,qword ptr [RAX + 0x60]
+  [rep_1401f3c10_APP:MoveVolume] 14020ef87: MOV EAX,dword ptr [RDI + 0xbdc]
+        1401f3c6b: MOV EAX,dword ptr [RDI + 0xb74]
+  [rep_1401f3c10_APP:MoveVolume] 14020f424: CMP qword ptr [RCX + 0xbc0],0x0
+        1401f3e64: CMP qword ptr [RCX + 0xb88],0x0
+  [GUI_2] 14012a9c9: MOV qword ptr [RDI + 0xb28],RCX
+        140121ce9: MOV qword ptr [RDI + 0xaf0],RCX
+  [GUI_2] 14012aa34: MOV qword ptr [RDI + 0xbc0],RCX
+        140121d54: MOV qword ptr [RDI + 0xb88],RCX
+  [GUI_2] 14012aa5e: MOV qword ptr [RDI + 0xbf0],RCX
+        140121d7e: MOV qword ptr [RDI + 0xbb8],RCX
+  [ammoSelectButtonPress?] 14026f8f3: MOV RAX,qword ptr [RDX + 0xbc0]
+        14024dd33: MOV RAX,qword ptr [RDX + 0xb88]

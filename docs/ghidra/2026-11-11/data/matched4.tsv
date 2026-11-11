@@ -1,0 +1,7 @@
+addr163	addr151	tier	ev
+00000001401c3bd0	0000000140047e60	body-lcs	LCS 109/113=0.965 + callee vote; spatial override (renamed, was rep_140047e60_New)
+000000014004af00	00000001400b4dd0	body-ident+callers	9/9 instructions; 3 mapped callers; ICF fold of 4 copies (renamed, was FUN_1400b4dd0)
+0000000140061dc0	00000001400eaef0	body-ident+callers	31/31 instructions; 4 mapped callers; ICF fold of 2 copies (renamed, was rep_..free mislabel)
+000000014015ccb0	00000001401ac200	body-ident+callers	29/29 instructions; 4 mapped callers; ICF fold of 2 copies (renamed, was rep_..free mislabel)
+00000001401adfc0	000000014019e6e0	body-ident	LCS 28/28; spatial override (renamed, was SetAimRectZoom???)
+000000014000fbc0	000000014000f890	body-ident	LCS 129/129; equivalence only, both sides already named (aircraftStateHandler <-> AircraftLogicStateMachine)

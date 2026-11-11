@@ -1,0 +1,97 @@
+
+=== Aircraft_CollectActiveCraft (14000a360, 191i) rejected candidate 14026d620
+  candidate: rep_14026d620_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free 215i  LCS 115/191 = 0.602
+  contains 0.239: 14000faa0 AircraftLogic_Mode0_SelectTarget             376i shared8g=44
+  contains 0.223: 14000a030 rep_14000a030_New                            166i shared8g=41
+  contains 0.217: 14021c350 memmoveMAIN                                 2056i shared8g=40
+  contains 0.212: 14023e1b0 rep_14023e1b0_New                            320i shared8g=39
+  contains 0.207: 1400e1220 rep_1400e1220_API-MS-WIN-CRT-RUNTIME-L1-1-   974i shared8g=38
+  contains 0.190: 1401f64e0 rep_1401f64e0_VCRUNTIME140.DLL::memcmp       243i shared8g=35
+
+=== Hull_CreateAntennaChain (1401c3bd0, 115i) rejected candidate 140047e60
+  candidate: rep_140047e60_New 113i  LCS 109/113 = 0.965
+  contains 0.778: 140047e60 rep_140047e60_New                            113i shared8g=84  ~ partial
+  contains 0.426: 1402454a0 Creature_SpawnFromTemplate                   373i shared8g=46
+  contains 0.241: 1401261d0 !ClickFunc                                 12238i shared8g=26
+  contains 0.139: 14010c3a0 UpdateStrategicFleet                        3534i shared8g=15
+  contains 0.130: 140022b80 shipKill                                     736i shared8g=14
+  contains 0.130: 140019ee0 rep_140019ee0_New                            320i shared8g=14
+
+=== Profile_GetActive (140292ab0, 85i) rejected candidate 14007d750
+  candidate: rep_14007d750_VCRUNTIME140.DLL::memmove 102i  LCS 59/85 = 0.694
+  contains 0.192: 14019e980 Vector8_ResizeFill                            80i shared8g=15
+  contains 0.192: 1400e2c50 Vector_Resize8                                80i shared8g=15
+  contains 0.192: 14005e090 rep_14005e090_API-MS-WIN-CRT-HEAP-L1-1-0.D   218i shared8g=15
+  contains 0.179: 1400e4360 renderMissilesOnMap                          698i shared8g=14
+  contains 0.167: 1401b7c50 cinematicDialouge?                          1656i shared8g=13
+  contains 0.167: 140096840 rep_140096840_API-MS-WIN-CRT-RUNTIME-L1-1-   129i shared8g=13
+
+=== String_Tidy (140006d70, 25i) rejected candidate 14005c210
+  candidate: rep_14005c210_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free 31i  LCS 22/25 = 0.880
+  contains 1.000: 140197890 rep_140197890_API-MS-WIN-CRT-HEAP-L1-1-0.D    25i shared8g=18  <<< CONTAINS nearly all
+  contains 1.000: 140196f60 rep_140196f60_API-MS-WIN-CRT-HEAP-L1-1-0.D    43i shared8g=18  <<< CONTAINS nearly all
+  contains 1.000: 140193c10 rep_140193c10_API-MS-WIN-CRT-HEAP-L1-1-0.D    25i shared8g=18  <<< CONTAINS nearly all
+  contains 1.000: 140180de0 rep_140180de0_API-MS-WIN-CRT-HEAP-L1-1-0.D    43i shared8g=18  <<< CONTAINS nearly all
+  contains 1.000: 140097850 rep_140097850_API-MS-WIN-CRT-RUNTIME-L1-1-    43i shared8g=18  <<< CONTAINS nearly all
+  contains 1.000: 140017dc0 rep_140017dc0_API-MS-WIN-CRT-RUNTIME-L1-1-    25i shared8g=18  <<< CONTAINS nearly all
+
+=== Vector8_PushBackRealloc (14004af00, 9i) rejected candidate 1400b4dd0
+  candidate: FUN_1400b4dd0 9i  LCS 9/9 = 1.000
+  contains 1.000: 1402194b0 FUN_1402194b0                                  9i shared8g=2  <<< CONTAINS nearly all
+  contains 1.000: 1400b4dd0 FUN_1400b4dd0                                  9i shared8g=2  <<< CONTAINS nearly all
+  contains 1.000: 140070630 Vector8_PushBack                               9i shared8g=2  <<< CONTAINS nearly all
+  contains 1.000: 140070610 FUN_140070610                                  9i shared8g=2  <<< CONTAINS nearly all
+
+=== LinkedList_ClearFree (140061dc0, 31i) rejected candidate 1400eaef0
+  candidate: rep_1400eaef0_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free 31i  LCS 31/31 = 1.000
+  contains 1.000: 1400eaef0 rep_1400eaef0_API-MS-WIN-CRT-HEAP-L1-1-0.D    31i shared8g=24  <<< CONTAINS nearly all
+  contains 1.000: 1400eae70 rep_1400eae70_API-MS-WIN-CRT-HEAP-L1-1-0.D    31i shared8g=24  <<< CONTAINS nearly all
+  contains 0.750: 1401965e0 rep_1401965e0_API-MS-WIN-CRT-HEAP-L1-1-0.D    28i shared8g=18  ~ partial
+  contains 0.750: 140196570 rep_140196570_API-MS-WIN-CRT-HEAP-L1-1-0.D    28i shared8g=18  ~ partial
+  contains 0.750: 14005c1a0 rep_14005c1a0_API-MS-WIN-CRT-HEAP-L1-1-0.D    28i shared8g=18  ~ partial
+  contains 0.542: 1403234e0 rep_1403234e0_API-MS-WIN-CRT-HEAP-L1-1-0.D    25i shared8g=13  ~ partial
+
+=== Trail_DrawLayer (140124eb0, 89i) rejected candidate 140080b70
+  candidate: rep_wrap_0_FastFail? 89i  LCS 14/89 = 0.157
+  contains 0.280: 14011e570 FUN_14011e570                                 60i shared8g=23
+  contains 0.049: 140059c70 SortEngagementQueue_AI                       188i shared8g=4
+  contains 0.037: 14002e9e0 Body_PickAtPoint                             220i shared8g=3
+  contains 0.024: 1402ab3d0 City_InitBuildingTypes                       377i shared8g=2
+  contains 0.024: 140290a60 SomethingWithLevelSerias_SCR_MAP_140290a60  6774i shared8g=2
+  contains 0.024: 140264460 SomethingPreTask                             224i shared8g=2
+
+=== RbTree_ClearFreeResetHeader (14015ccb0, 29i) rejected candidate 1401ac200
+  candidate: rep_1401ac200_API-MS-WIN-CRT-HEAP-L1-1-0.DLL::free 29i  LCS 29/29 = 1.000
+  contains 1.000: 1401ac200 rep_1401ac200_API-MS-WIN-CRT-HEAP-L1-1-0.D    29i shared8g=22  <<< CONTAINS nearly all
+  contains 1.000: 14017d150 rep_14017d150_API-MS-WIN-CRT-HEAP-L1-1-0.D    29i shared8g=22  <<< CONTAINS nearly all
+  contains 0.818: 1401842c0 miiProperty_Clear                             31i shared8g=18  ~ partial
+  contains 0.682: 140196710 rep_140196710_API-MS-WIN-CRT-HEAP-L1-1-0.D    25i shared8g=15  ~ partial
+  contains 0.682: 1401966b0 rep_1401966b0_API-MS-WIN-CRT-HEAP-L1-1-0.D    25i shared8g=15  ~ partial
+  contains 0.682: 140179ab0 rep_140179ab0_API-MS-WIN-CRT-HEAP-L1-1-0.D    25i shared8g=15  ~ partial
+
+=== Vec2_WorldToScreen (1401adfc0, 28i) rejected candidate 140243ba0
+  candidate: rep_140243ba0_MSVCP140.DLL::_Xtime_get_ticks 35i  LCS 5/28 = 0.179
+  contains 1.000: 14019e6e0 SetAimRectZoom???                             28i shared8g=21  <<< CONTAINS nearly all
+  contains 0.381: 1401a48b0 rep_1401a48b0_API-MS-WIN-CRT-MATH-L1-1-0.D   451i shared8g=8
+  contains 0.190: 14004c7f0 SetShipZoom???                                68i shared8g=4
+  contains 0.048: 140229cc0 rep_140229cc0_API-MS-WIN-CRT-MATH-L1-1-0.D   238i shared8g=1
+  contains 0.048: 140198dd0 Gui_WorldToScreenPoint                        30i shared8g=1
+  contains 0.048: 1400e6e00 CheckMapMotionEncounter                      222i shared8g=1
+
+=== Gfx_BuildFullscreenProjection (1402ee440, 48i) rejected candidate 14007ef50
+  candidate: rep_14007ef50_FastFail? 42i  LCS 18/42 = 0.429
+  contains 0.293: 1402c2eb0 rep_1402c2eb0_FastFail?                      115i shared8g=12
+  contains 0.122: 1402ca140 rep_1402ca140_FastFail?                      472i shared8g=5
+  contains 0.122: 1402c30e0 Gfx_SetMirroredOrthoProjection                53i shared8g=5
+  contains 0.122: 1400f9190 handleRefuelingNoises?                       135i shared8g=5
+  contains 0.098: 1400ee4f0 Missile_PredictPosition                       96i shared8g=4
+  contains 0.073: 1402caae0 rep_1402caae0_FastFail?                      486i shared8g=3
+
+=== aircraftStateHandler (14000fbc0, 129i) rejected candidate 1400d51d0
+  candidate: rep_1400d51d0_WriteToClientLogEDITOR 128i  LCS 75/128 = 0.586
+  contains 1.000: 14000f890 AircraftLogicStateMachine                    129i shared8g=122  <<< CONTAINS nearly all
+  contains 0.279: 1400e1220 rep_1400e1220_API-MS-WIN-CRT-RUNTIME-L1-1-   974i shared8g=34
+  contains 0.230: 1401a6ee0 free                                         653i shared8g=28
+  contains 0.221: 140074bb0 AiShip_ChooseTarget                          540i shared8g=27
+  contains 0.197: 140201f90 maincpp                                      614i shared8g=24
+  contains 0.164: 1402b0710 Body_TryAttachBodies                         873i shared8g=20

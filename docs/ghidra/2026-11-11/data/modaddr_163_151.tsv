@@ -12,7 +12,7 @@ addr163	name163	addr151	name151	status	evidence	mod_ref
 140194de0	SetLink	140187120	SetLink	named	LCS 33/33 identical; callee anchor confirmed	hf_ally SET_LINK
 140275850	TarkhanGUIDispatchOperator	140253b80	TarkhanGUIDispatchOperator	named	LCS 1931/1935 identical	hf_ally PRECOMBAT_SEAM_TARGET
 1402d7620	buildPrecombatScreen	1402ad2e0	mainPrecombatScreen	equivalent-diff-name	LCS 687/1060 + matching PRECOMBAT_* string set + shared callees (SetLink/GUI_2/setXposYpos/SetBackground?/New/TGDO); no rename	hf_ally PRECOMBAT_SEAM 1402d88bb
-1402d73a0	buildSquadPrecombatScreen		no-twin	REMOVED/163-ONLY	TarkhanGUIDispatchOperator has no 4th caller in 1.151; squad screen with secondaryPrecombatButtons is a 1.163 feature	hf_ally PRECOMBAT_B1/B2_SEAM
+1402d73a0	buildSquadPrecombatScreen	1402ad2e0	mainPrecombatScreen	inlined-into-twin	127/134 instructions align inside mainPrecombatScreen (round 5 revision); epilogue POPs match; the B2 dispatcher seam 0x1402d75f2 maps to the TGDO call at 0x1402ae333; first seam region aligns near 0x1402ad8e5. The standalone 134i function was inlined into the precombat screen builder in 1.151, not removed.	hf_ally PRECOMBAT_B1/B2_SEAM
 140334094	New	140309078	New	named	20-token body identical; callee anchor in precombat twins	hf_ally GUI_NEW
 14012a910	GUI_2	140121c30	GUI_2	named	LCS 108/108 identical	hf_ally GUI_CTOR
 1400520b0	setXposYpos	14004fb90	setXposYpos	named	LCS 68/68 identical	hf_ally GUI_SETPOS

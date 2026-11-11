@@ -168,3 +168,66 @@ RNG_SCENARIO, AIRCRAFT_SELECTOR, ~45 total) were NOT ported; that needs a
 separate global-label pass.
 
 Program saved once after the renames (second check-in of the day).
+
+## Round 5: no-twin re-audit, field/global mapping (2026-11-11, third save)
+
+Two parts, both driven by review feedback.
+
+### Part A: the same inlining/correction check on every "no twin" verdict
+
+The buildSquadPrecombatScreen "no twin" claim was wrong and the same check
+was applied to the full reject pile (rounds 1-3 reject lists recovered by
+re-running round3.py in a sandbox - reproducible, FINAL 96):
+
+- *buildSquadPrecombatScreen 0x1402d73a0*: INLINED into
+  mainPrecombatScreen 0x1402ad2e0. 127/134 instructions align; epilogue POPs
+  match mainPrecombatScreen's tail; the B2 dispatcher seam (0x1402d75f2)
+  maps to the TGDO call at 0x1402ae333. The earlier "1.163-only" statement
+  in the round-4 report was an instruction-count-band artifact and is
+  retracted (erratum added to mod-port-2026-11-11.md).
+- Renames applied (identical/near-identical bodies; the spatial-delta guard
+  had false-rejected them; content evidence overrides):
+  Hull_CreateAntennaChain 0x140047e60 (LCS 109/113; was rep_140047e60_New),
+  Vector8_PushBackRealloc 0x1400b4dd0 (9/9; ICF fold of 4, caller-voted),
+  LinkedList_ClearFree 0x1400eaef0 (31/31; was a CRT-free mislabel),
+  RbTree_ClearFreeResetHeader 0x1401ac200 (29/29; same),
+  Vec2_WorldToScreen 0x14019e6e0 (28/28; was SetAimRectZoom???).
+- aircraftStateHandler (round-1 leftover): 1.151 twin IS
+  AircraftLogicStateMachine 0x14000f890 - 129/129 instructions identical.
+  The round-1 content candidate (0x1400d51d0) was wrong. Equivalence recorded
+  in the plate, no rename (both sides already meaningfully named).
+- Still open after content checks: Aircraft_CollectActiveCraft,
+  Profile_GetActive, Trail_DrawLayer, Gfx_BuildFullscreenProjection (candidates
+  not confirmed by body similarity) and String_Tidy (byte-identical ICF group
+  of seven 151 copies; mapped callers call none of them, no unique member).
+- New verified pairs recorded in data/matched4.tsv.
+
+### Part B: field/global mapping for the mod port (fields_163_151.tsv)
+
+Full-instruction dumps (address + mnemonic + operand text) for 18 matched
+anchor pairs; LCS alignment with traceback; displacement votes for creature
+field offsets and direct [addr] reference votes for data globals. Key
+results now applied in the 1.151 program:
+
+- 32 data-global labels with provenance plates (CLOCK, HGE_PTR, all ten
+  creature-list sentinels CREATURES/NEG/AI/POS/ZERO, GUI_ROOT,
+  SCRIPTED_SCENARIO, BATTLE_RESULT, WAVE_TIMER, RESERVE, ENEMIES_BEGIN/END,
+  ROSTER_BEGIN/END, Role2_VoteMap, FRAME_DELTA, arena bounds, INIT_DIM_A/B,
+  CONTROLLED_LINKS, DeadNodeList, F32_ONE, INIT_SCALE). FRAME_DELTA coexists
+  with the pre-existing primary label time_related_global? at 0x140391184.
+- Creature field migration table (1.163 offset -> 1.151 offset), the
+  mod-critical contract: side 0xad4->0xa9c, target link 0xaf8->0xac0, target
+  node 0xb00->0xac8, retarget timer 0xb28->0xaf0 (family-delta inference),
+  steering waypoint 0xbf0/0xbf4->0xb88/0xb8c (exact STEER site match),
+  fire-flag bytes 0xbbc-0xbc0->0xb54-0xb58, aggression 0xbc4->0xb5c,
+  fuel at start 0xbd0->0xb68, driver state 0xbdc->0xb74, launch cooldown
+  0xd60->0xcf0, role/mode 0xd70->0xcfc, order 0xc98->0xc30, part fields
+  0x848/0x858/0x860->0x834/0x844/0x84c, fuel 0x1638/0x1640->0x1588/0x1590,
+  position 0x1840/0x1844->0x1784/0x1788. Unresolved: the ChooseTarget weapons
+  pair 0x15e8/0x15ec (moved near 0xc0c/0xc10 with a width change - needs
+  manual review at port time) and the 0x48 active flag.
+- Six EOL landmark comments at the 1.151 hook-site counterparts (waypoint
+  writes, state-forced writes, target reads), e.g. the hf_ai STEER site:
+  163 0x140064a8d (creature+0xbf0) -> 151 0x140061cbd (creature+0xb88).
+
+Program saved once after all of part A + part B (third check-in of the day).

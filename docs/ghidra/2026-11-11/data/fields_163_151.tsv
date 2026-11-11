@@ -1,0 +1,60 @@
+kind	item163	off163_or_addr	item151	off151_or_addr	status	evidence	mod_const
+field	creature.side (f32)	0xad4	creature.side	0xa9c	decisive	votes 7/8 (AiShipTick, ChooseTarget, SetPartsOwnerRef)	OFF_SIDE
+field	creature.driver_state (i32)	0xbdc	creature.driver_state	0xb74	decisive	votes 5/6 + exact sites 0x1400638a0->0x14006120b	OFF_STATE
+field	creature.target_link (ptr)	0xaf8	creature.target_link	0xac0	decisive	votes 4/4 (ChooseTarget + friends)	OFF_TARGET_LINK
+field	creature.target_node (ptr)	0xb00	creature.target_node	0xac8	sites	votes 5/6 + sites 0x140065bc5->0x140062c60	OFF_TARGET
+field	creature.retarget_timer (f32)	0xb28	creature.retarget_timer	0xaf0	inferred	family delta -0x38 bracketed by 0xaf8->0xac0, 0xb00->0xac8, 0xb18->0xae0	OFF_RETARGET
+field	creature.waypoint_x (f32)	0xbf0	creature.waypoint_x	0xb88	site	STEER site 0x140064a8d -> 0x140061cbd (EOL comment placed)	OFF_WAYPOINT_X
+field	creature.waypoint_y (f32)	0xbf4	creature.waypoint_y	0xb8c	site	STEER resume block 0x140064a9b -> 0x140061ccb	OFF_WAYPOINT_Y
+field	creature.fire_flags (bytes)	0xbbc-0xbc0	creature.fire_flags	0xb54-0xb58	sites	0xbbc->0xb54 (2/2), 0xbbd->0xb55 (CreatureUpdate site), 0xbc0->0xb58 (site); +0xbbe inferred +0xb56	OFF_FLAGS
+field	creature.aggression (f32)	0xbc4	creature.aggression	0xb5c	decisive	votes 15/15	OFF_AGGRESSION
+field	creature.fuel_at_start (f32)	0xbd0	creature.fuel_at_start	0xb68	votes	2/3 (spawn/init path)	OFF_FUEL_AT_START
+field	creature.mode_role (i32)	0xd70	creature.mode_role	0xcfc	decisive	votes 12/12	OFF_MODE_D70
+field	creature.launch_cooldown (f32)	0xd60	creature.launch_cooldown	0xcf0	votes	2/3	OFF_LAUNCH_CD
+field	creature.order_index (i32)	0xc98	creature.order_index	0xc30	votes	2/2	OFF_ORDER
+field	part.cooldown (f32)	0x848	(create-part field)	0x834	inferred	family delta -0x14: 0x858->0x844 (8/8), 0x860->0x84c (2/2)	OFF_PART_COOLDOWN
+field	part.reserve (i32)	0x858	(create-part field)	0x844	decisive	votes 8/8	OFF_PART_RESERVE
+field	part.loaded (f32)	0x860	(create-part field)	0x84c	votes	2/2	OFF_PART_LOADED
+field	creature.fuel (f64)	0x1638	creature.fuel	0x1588	decisive	votes 3/3 (BurnFuel/SetPartsOwnerRef)	OFF_FUEL
+field	creature.fuel_capacity (f64)	0x1640	creature.fuel_capacity	0x1590	votes	2/2	OFF_FUEL_CAPACITY
+field	creature.pos_x (f32)	0x1840	creature.pos_x	0x1784	sites	votes 6/7	OFF_POS_X
+field	creature.pos_y (f32)	0x1844	creature.pos_y	0x1788	sites	votes 7/7	OFF_POS_Y
+field	creature.weapons_pair	0x15e8/0x15ec	(weapon counters)	~0xc0c/~0xc10	unresolved	alignment slips in ChooseTarget; widths changed (dword -> word/byte seen at 0xc0c); MANUAL REVIEW at port time	weapons pair in ChooseTarget scoring
+field	creature.active (i32)	0x48	(unknown)		unresolved	small-offset votes contaminated by stack slots	OFF_ACTIVE
+global	CLOCK	0x143a119c0	CLOCK (labeled)	0x143942540	labeled	votes 2/2	CLOCK / GAME_TIME
+global	HGE_PTR	0x143a119e0	HGE_PTR (labeled)	0x143921f70	labeled	votes 7/7	HGE_PTR
+global	CREATURES_BEGIN/END	0x143faa5d8/5e0	CREATURES_BEGIN/END (labeled)	0x143ed10d8/0x143ed10e0	labeled	votes 10/10 each	CREATURES_BEGIN/END
+global	NEG_BEGIN/END	0x143faa5f0/5f8	NEG_BEGIN/END (labeled)	0x143ed10f0/0x143ed10f8	labeled	END votes 2/2, BEGIN cluster-interp -0xf4f00	NEG_BEGIN/END
+global	AI_BEGIN/END	0x143faa608/610	AI_BEGIN/END (labeled)	0x143ed1108/0x143ed1110	labeled	END votes 2/2, BEGIN cluster-interp	AI_BEGIN/END
+global	POS_BEGIN/END	0x143faa638/640	POS_BEGIN/END (labeled)	0x143ed1138/0x143ed1140	labeled	END votes 2/2, BEGIN cluster-interp	POS_BEGIN/END
+global	ZERO_BEGIN/END	0x143faa650/658	ZERO_BEGIN/END (labeled)	0x143ed1150/0x143ed1158	labeled	END votes 2/2, BEGIN cluster-interp	ZERO_BEGIN/END
+global	GUI_ROOT	0x147fc6f88	GUI_ROOT (labeled)	0x147eed960	labeled	votes 6/6	GUI_ROOT
+global	SCRIPTED_SCENARIO	0x147fc6fdb	SCRIPTED_SCENARIO (labeled)	0x147eed9b5	labeled	votes 5/5	SCRIPTED_SCENARIO / RNG_SCENARIO
+global	BATTLE_RESULT	0x147fc7004	BATTLE_RESULT (labeled)	0x147eed9dc	labeled	votes 3/3	BATTLE_RESULT
+global	WAVE_TIMER	0x147fc7020	WAVE_TIMER (labeled)	0x147eed9f4	labeled	votes 4/4	WAVE_TIMER
+global	RESERVE	0x147fc73b0	RESERVE (labeled)	0x147eedd78	labeled	votes 5/5	RESERVE
+global	ENEMIES_BEGIN/END	0x147fc73d8/73e0	ENEMIES_BEGIN/END (labeled)	0x147eedde0/de8	labeled	votes 8/8, 4/4	ENEMIES_BEGIN/END
+global	ROSTER_BEGIN/END	0x147fc7590/7598	ROSTER_BEGIN/END (labeled)	0x147eedea8/eb0	labeled	9/9, 3/3	ROSTER_BEGIN/END
+global	Role2 vote map	0x147fc7550	Role2_VoteMap (labeled)	0x147eede68	labeled	votes 7/7 (163 plate: allowance map)
+global	FRAME_DELTA	0x1403c126c	FRAME_DELTA co-label; primary name there is time_related_global?	0x140391184	labeled	votes 3/3	FRAME_DELTA / dt
+global	ARENA_X_HIGH	0x1403c2bc0	ARENA_X_HIGH (labeled)	0x140392c38	labeled	votes 3/4	ARENA_X_HIGH
+global	ARENA_X_LOW	0x1403c2bc8	ARENA_X_LOW (labeled)	0x140392c40	labeled	votes 4/5	ARENA_X_LOW
+global	ARENA_Y_LOW	0x1403c2bcc	ARENA_Y_LOW (labeled)	0x140392c44	labeled	votes 3/4	ARENA_Y_LOW
+global	INIT_DIM_B	0x143a13e5c	INIT_DIM_B (labeled)	0x14394293c	labeled	votes 2/2	INIT_DIM_B
+global	INIT_DIM_A	0x143a158fc	INIT_DIM_A (labeled)	0x1439443dc	labeled	votes 2/2	INIT_DIM_A
+global	CONTROLLED_LINKS	0x143a1c260	CONTROLLED_LINKS (labeled)	0x14394ad40	labeled	votes 2/2	CONTROLLED_LINKS
+global	DeadNodeList	0x143a2de10	DeadNodeList (labeled)	0x143954920	labeled	votes 2/2 (163 CollectDeadNodes plate)
+global	f32 1.0	0x1403524d8	F32_ONE (labeled)	0x1403263e8	labeled	votes 22/22	INIT_ONE / DEPLOY_AGGR
+global	INIT_SCALE	0x140354698	INIT_SCALE (labeled)	0x140328518	labeled	votes 3/3	INIT_SCALE
+global	LEVEL_NAME	0x1403c1390		unresolved	no direct ref in aligned anchors; SetLevelSeriaToLoad writes it via helper	LEVEL_NAME
+global	GUI_LIST / GUI_COUNT	0x143a13ac8/13ad0		unresolved	no anchor coverage	GUI_LIST / GUI_COUNT
+global	MEDIA_RES	0x143a119e8		unresolved	no anchor coverage	MEDIA_RES
+global	BODIES / BODY_COUNT	0x143a33c90/0x143a51150		unresolved	physics cluster anchors needed	BODIES / BODY_COUNT
+global	AIRCRAFT_SELECTOR	0x1403bd008		unresolved	no anchor coverage	AIRCRAFT_SELECTOR
+global	RETREAT_POINT	0x147fc7638		unresolved	cluster spacing changes after ROSTER; interpolation unsafe	RETREAT_POINT
+global	SCENE_SELECTOR	0x147fc6fc4		unresolved	cluster spacing nonlinear; needs xref pass	SCENE_SELECTOR
+global	CURRENT_LOCATION / PLAYER_ESCADRA	0x143a11940/0x143a13eb0		unresolved	cluster deltas differ; needs xref pass	CURRENT_LOCATION / PLAYER_ESCADRA
+global	AMMO_LIST_BEGIN	0x143a13be0		unresolved	interpolation drift +-0x10; verify at port time	AMMO_LIST_BEGIN
+global	VC_BASE / AIM_ADDRESS	0x1403c0dc0/0x1403c0dc8		unresolved	no anchor coverage	VC_BASE / AIM_ADDRESS
+global	ZOOM_LEVEL	0x1403c11cc		unresolved	no anchor coverage	ZOOM_LEVEL
+global	INIT_F2 / INIT_F3	0x148075ce8		unresolved	GUI recipe vtable constants; redo per 1.151 GUI layout	INIT_F2 / INIT_F3

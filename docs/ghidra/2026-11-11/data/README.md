@@ -31,3 +31,24 @@ Round 4 additions (mod-function port, see `../mod-port-2026-11-11.md`):
   confirmation of the top 3 candidates per target.
 - `verify.py`, `verify2.py`: targeted verification of the specific pairing
   hypotheses (level-seria family, radio, GUI New, displayShipworks).
+
+Round 5 additions (no-twin re-audit + field/global mapping, see the change log):
+
+- `fields_163_151.tsv`: creature field-offset migrations (1.163 off ->
+  1.151 off, with status/evidence) and the data-global mapping (labeled vs
+  unresolved).
+- `matched4.tsv`: the six pairs accepted in the round-5 content re-audit
+  (five renames + aircraftStateHandler equivalence).
+- `r3_recover.py`: sandboxed re-run of round3.py used to recover the full
+  P3/C3-DELTA-REJ reject lists (writes only inside r3sandbox/).
+- `notwin_check.py`, `notwin_refine.py`: the reject re-audit itself -
+  LCS against the rejected candidate plus a containment scan over ALL 4923
+  1.151 functions (`mn_all151.tsv.gz`) for the inlining pattern.
+- `ins_squad163.tsv`/`ins_prec151.tsv` + `align_squad.py`/`align_squad2.py`:
+  the buildSquadPrecombatScreen-inlined-into-mainPrecombatScreen revision.
+- `ins163all.tsv`/`ins151all.tsv` (.gz): full instruction listings (index,
+  address, mnemonic, operand text) for the 18 anchor pairs; input of
+  `mine_offsets.py`/`mine_pass2.py`, which produced `mined_map.json` and
+  `globals_map.json` (raw votes).
+- `choose_ctx.py`: targeted neighborhood pull used to resolve the waypoint
+  and retimer fields.
