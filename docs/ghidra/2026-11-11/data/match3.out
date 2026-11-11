@@ -1,0 +1,10 @@
+targets: 3980
+tier1 hash: 1280 rejected-dup: 6
+after tier2 strings: 1344 rejected: 0
+anchors inv total: 1948
+  T3-DELTA-REJ 000000014000fbc0 aircraftStateHandler -> 00000001400d51d0 d-ok= False
+round 0 added 59 total 1403
+round 1 added 1 total 1404
+round 2 added 0 total 1404
+FINAL 1404 {'hash': 1280, 'strings': 64, 'prop0': 59, 'prop1': 1}
+with plates to port: 1337
