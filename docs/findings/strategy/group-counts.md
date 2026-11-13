@@ -72,6 +72,12 @@ positions total.
   `strikegroups.sprinkle` in `hf_hee` v0.5.0, **default-on since v0.5.1**
   (`"sprinkle": false` restores vanilla).
 
+  **[game] Confirmed in a real save** (`Saves/Profile_1/profile.seria`, Steam
+  1.163, 2026-11-13, `"count": "*50"` on `traders` + `strikegroups`, hf_hee
+  v0.4.0): exactly 1500 role-1 convoys (30×50) and 300 role-5 SGs (6×50);
+  without sprinkle 295/300 SGs at city `ISA`, convoys spread over 853 distinct
+  positions. v0.5.1 sprinkle validated in game (SGs spread across cities).
+
 ### 2.2 Endgame Khiva assault wave — vector walk (vanilla up to 4)
 
 In `spawnEndgameShips?` (`0x140261a20`):
