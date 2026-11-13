@@ -48,6 +48,29 @@ In `restOfEventsPrologueAntIsaiah`:
   `CMP ESI, imm32(new)` + `JGE` to `0x14028fd5f`, fall-through jumps to
   `0x14028fd52`.
 
+#### 2.1a Why high counts stack on one city (and the sprinkle fix)
+
+Each loop iteration picks the spawn city by scanning `Profile::locations`
+(`[profile+0x210]`..`[profile+0x218]`, fetched at `0x14028fbb2`/`0x14028fbb9`) **in
+vector order**, keeping a city only if dword `[loc+0x2e8] >= 2` (`0x14028fbd8`),
+float `[loc+0x248] != 0.0` (`0x14028fbe1`), and — once a candidate exists — a
+Y-spacing rule (`COMISS XMM6, |loc.y - XMM7|` at `0x14028fc06`, threshold relaxed
+per iteration by `SUBSS XMM7, XMM0` at `0x14028fb95`). The scan result lands in
+`RBX` (`MOV RBX, RAX` `0x14028fc1b`), scan exit is **`TEST RBX, RBX; JZ 0x14028fd4b`
+at `0x14028fc27`** (9 bytes `48 85 db 0f 84 1b 01 00 00`). With vanilla's 6
+iterations this yields ~6 different cities; with e.g. `*50` (300 iterations) the
+same first-eligible city wins almost every time — observed in a real save:
+295 of 300 role-5 escadras at city `ISA` (1428.7, -10930), only 6 distinct
+positions total.
+
+* **Sprinkle hook:** detour the 9 bytes at `0x14028fc27`; trampoline calls a helper
+  returning a **uniformly random eligible city** (same `+0x2e8 >= 2` /
+  `+0x248 != 0` filters, `HGE::RandInt(0, eligible-1)` over the vector), then
+  `MOV RBX, RAX; TEST RBX, RBX; JZ` — continue `0x14028fc30`, skip `0x14028fd4b`.
+  `RBX` is the spawn position (`LEA R8, [RBX+0x150]` `0x14028fccf`) and the
+  escadra's linked city (`0x14028fd0b`), so both move together. Implemented as
+  `strikegroups.sprinkle` in `hf_hee` v0.5.0.
+
 ### 2.2 Endgame Khiva assault wave — vector walk (vanilla up to 4)
 
 In `spawnEndgameShips?` (`0x140261a20`):
@@ -109,3 +132,4 @@ forwards them as `XMM3` / `[RSP+0x28]`).
 | Campaign SG bound | `0x14028fd4d` | `83 fe 06 7d 0d` | 5 | `CMP ESI, 6; JGE` |
 | Khiva wave entry | `0x1402623de` | `48 3b de 0f 84 58 0f 00 00` | 9 | `CMP RBX, RSI; JZ` |
 | Outer wave bound | `0x1402629b1` | `83 f8 03 0f 8c 26 fd ff ff` | 9 | `CMP EAX, 3; JL` |
+| Campaign SG city pick (sprinkle) | `0x14028fc27` | `48 85 db 0f 84 1b 01 00 00` | 9 | `TEST RBX, RBX; JZ` after the location scan |
