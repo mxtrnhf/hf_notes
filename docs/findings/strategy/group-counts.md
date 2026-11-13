@@ -69,7 +69,8 @@ positions total.
   `MOV RBX, RAX; TEST RBX, RBX; JZ` — continue `0x14028fc30`, skip `0x14028fd4b`.
   `RBX` is the spawn position (`LEA R8, [RBX+0x150]` `0x14028fccf`) and the
   escadra's linked city (`0x14028fd0b`), so both move together. Implemented as
-  `strikegroups.sprinkle` in `hf_hee` v0.5.0.
+  `strikegroups.sprinkle` in `hf_hee` v0.5.0, **default-on since v0.5.1**
+  (`"sprinkle": false` restores vanilla).
 
 ### 2.2 Endgame Khiva assault wave — vector walk (vanilla up to 4)
 
