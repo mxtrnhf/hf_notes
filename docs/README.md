@@ -143,6 +143,7 @@ One self-contained note per question; each ends with unknowns or a live-test rec
 | [docs/findings/crashes/flare-crash-hunt.md](findings/crashes/flare-crash-hunt.md) | the flare/proximity-fuse crash: fixed upstream by highfleet-qol (site and null pointer), plus the flare release path and flare body layout |
 | [docs/findings/crashes/collect-dead-crash.md](findings/crashes/collect-dead-crash.md) | stock fatal assertion "Collect_dead node with m_master" (one crash, cause open), the collector and the hf_ally v0.12.10 diagnostic |
 | [docs/findings/engine/mouse-sensitivity.md](findings/engine/mouse-sensitivity.md) | mouse sensitivity path; A220 slowdown not yet located (partial) |
+| [docs/findings/engine/global-500-readers.md](findings/engine/global-500-readers.md) | the shared `500.0f` at `0x140352838` and all 82 readers: engine overheat trip, enemy pre-fire gun laser, rocket thrust (and its HUD path preview), plus the AI/aircraft/UI sites that are not touched |
 | [docs/findings/engine/source-file-names.md](findings/engine/source-file-names.md) | the 15 original source-file paths embedded in the exe (`HYBRID FLEET 2013EX`) and what they say about the code layout |
 
 ## Mods
