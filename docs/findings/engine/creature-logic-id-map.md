@@ -18,8 +18,15 @@ Tag **[V]** (jump and byte tables read from the image). `creatureLogic` is vtabl
 | 150 | `0x140033e0b` | not read |
 | 160 | `0x14003409f` | **proximity shell** (`_PROXY`): 150 range, 36 deg cone, 5..15 fragments; weapons-index.md s5.5 |
 | 190 | `0x1400342a1` | **rocket-burst bomblet** (made by `FUN_14001c890`); weapons-index.md s5.6 |
-| 200 | `0x140035652` | **hull stabiliser** (hull-stabiliser-engine-logic.md, hull-stabiliser-coupling.md) |
-| 210 | `0x1400357d6` | not read |
-| 400 | `0x140038767` | rotor / helicopter-style motor (commands 400) |
+| 200 | `0x140035652` | **all engine parts: hull stabiliser** (user-confirmed 2026-11-25). Uses `Stats.m_mdl_at` (`+0x100`, getter `GetMdlAt 0x140048720`); one `Body_AddTorque` per engine part per tick on the root Frame, clamped to +-`m_at`. The further the hull is from level, the stronger the restoring term. Formula: hull-stabiliser-engine-logic.md, hull-stabiliser-coupling.md |
+| 210 | `0x1400357d6` | **escape pod** (`MDL_EVAC`) (user, 2026-11-25). While the pod is inside the level bounds (`Body_IsInsideLevelBounds 0x14021ccb0`) it flies its attitude/velocity controller; once outside it calls `Creature_OnDestroyed 0x140210620` (removal) |
+| 400 | `0x140038767` | **landing legs, not a rotor** (user + code, 2026-11-25). Only runs when the landing/arcade flags `0x147fc6fd4`, `0x147fc6fb7` or `0x147fc6f82` are set; finds the leg bodies in the `creature+0x230` list and drives their joint motors (`Joint_SetMotor 0x1401949d0`), i.e. the landing-gear controller. Inactive in an ordinary battle |
 | all other ids | `0x14004501f` | nothing |
 | 550 | `0x140038d8d` (via `0x140038d63` table) | **debris fragment** from `Body_DieExplode`; weapons-index.md s5.7 |
+
+## Update 2026-11-25 (user, checked against the 1.163 code)
+
+* **200 is every engine part, not a separate "hull stabiliser part".** The user confirmed it in play; the case itself is one call per engine part. `m_mdl_at` (`OL.seria` -> `Stats+0x100`, `GetMdlAt 0x140048720`) is the per-part torque authority: the case applies `-w*I*kd*m_at/gate` plus an angle term `-a*I*kp*m_at/gate` (clamped to +-`m_at`) through `Body_AddTorque` **once per engine part per tick/frame**; the further the hull tilts from level, the larger the restoring term. Full formula and constants: `../physics/hull-stabiliser-engine-logic.md`.
+* **210 is the escape pod** (`MDL_EVAC`). The block (`0x1400357d6`) checks `Body_IsInsideLevelBounds` and then runs an attitude/velocity controller; when the pod leaves the level bounds it calls `Creature_OnDestroyed 0x140210620` (the pod is removed).
+* **400 is the landing-leg controller**, not a rotor. The block (`0x140038767`) is gated on the arcade/landing flags `0x147fc6fd4` / `0x147fc6fb7` / `0x147fc6f82`, walks the `creature+0x230` list for the leg bodies and drives their joints via `Joint_SetMotor 0x1401949d0` with a contact-angle target. It does nothing in a normal battle. The old "rotor / helicopter-style motor" label was wrong.
+* 1.151 block addresses for the same cases: 200 -> `0x1400342D9`, 210 -> `0x14003447A`, 400 -> `0x1400372A6` (from the 1.151 dispatch tables `0x140043060` / `0x14004302C`).
