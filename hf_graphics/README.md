@@ -32,7 +32,7 @@ existing data directory, linked below rather than duplicated.
 |---|---|
 | Frame and scene layers | [Overview](frame-overview.md), [pipeline](render-pipeline.md), [editor frame](editor-frame.md) |
 | Fonts and text | [Font inventory, metrics and samples](fonts.md) |
-| Images and resources | [Sprites and resource getters](images-and-sprites.md) |
+| Images and resources | [Sprites and resource getters](images-and-sprites.md), [sprite blend byte and HUD opacity](sprite-blend-byte.md) |
 | Native controls | [Early construction evidence](gui-elements.md), [pre-combat screen](precombat-screen.md) |
 | Click routing | [ClickFunc](click-func.md), [archived analysis/corrections](click-func-analysis.md) |
 | Combat HUD | [Callouts and colours](battle-hud-callouts.md), [ship panels](battle-ship-panels.md) |

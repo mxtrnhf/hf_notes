@@ -47,7 +47,7 @@ A `GetSprite` (type 7) wrapper was **not found**; the game seems to use Animatio
 |---|---|
 | quad: 4 vertices, stride `0x58` | start of the object |
 | vertex colour | `+0x18` of each vertex (`SetColor` `0x140172ae0`: all four when index is -1, writes `+0x18`, `+0x70`, `+0xc8`, `+0x120`; else `index*0x58+0x18`) |
-| blend | `+0x168` (set by `hgeFont::SetBlendMode`) |
+| blend | `+0x168` (set by `hgeFont::SetBlendMode`) - see [the blend byte](sprite-blend-byte.md) for what the value means |
 | width / height | `+0x188` / `+0x18c` |
 | hotspot x / y | `+0x198` / `+0x19c` |
 
